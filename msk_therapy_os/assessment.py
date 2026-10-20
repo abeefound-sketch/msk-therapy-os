@@ -200,7 +200,7 @@ def list_questionnaires(
         "FROM questionnaires"
     )
     params = []
-    if region:
+    if region and region.strip().lower() != "all":
         query += " WHERE region = ?"
         params.append(region.strip().lower())
     query += " ORDER BY region, item_id"

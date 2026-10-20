@@ -1037,9 +1037,14 @@
         document.querySelectorAll(".region-btn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         activeRegion = btn.dataset.region;
-        document.getElementById("selectedRegionTitle").textContent = activeRegion;
+        document.getElementById("selectedRegionTitle").textContent = activeRegion === "all" ? "Full Body (All Regions)" : activeRegion;
         loadRegionAnatomy(activeRegion);
         loadRegionQuestionnaires(activeRegion);
+        if (activeRegion === "all") {
+          if (!layerStates.meridians) {
+            toggleAtlasLayer('meridians');
+          }
+        }
         atlasCommand('set_region', { region: activeRegion });
       });
     });

@@ -115,8 +115,8 @@
       const verifiedMeridianCodes = ['GV', 'BL', 'GB', 'SI', 'TE', 'LI'];
 
       for (const mCode in acuData.meridians) {
-        // If verified only, only render verified pathways
-        if (verifiedOnly && !verifiedMeridianCodes.includes(mCode)) continue;
+        // If verified only, only render verified pathways unless full body view is selected
+        if (verifiedOnly && filterRegion !== 'all' && !verifiedMeridianCodes.includes(mCode)) continue;
 
         const m = acuData.meridians[mCode];
         for (const p of m.paths || []) {
@@ -212,8 +212,8 @@
         const isVerified = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
         const isSurface = pt.registration_status === 'SURFACE_REGISTERED_FJ2810';
 
-        // Filter: verified anchors only toggle
-        if (verifiedOnly && !isVerified) continue;
+        // Filter: verified anchors only toggle (unless full body view is selected)
+        if (verifiedOnly && filterRegion !== 'all' && !isVerified) continue;
 
         // Filter: region
         if (!matchesRegion(pt.region, filterRegion)) continue;
@@ -363,7 +363,7 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
       const codes = Object.keys(acuData.points).filter(code => {
         const p = acuData.points[code];
         const isVer = p.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
-        if (verifiedOnly && !isVer) return false;
+        if (verifiedOnly && filterRegion !== 'all' && !isVer) return false;
         if (!matchesRegion(p.region, filterRegion)) return false;
         if (searchQuery) {
           const q = searchQuery.toLowerCase();
@@ -579,6 +579,19 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
       filterRegion = ev.data.region || 'neck_shoulder';
       const sel = document.getElementById('selAcuRegion');
       if (sel) sel.value = filterRegion;
+
+      const r = getRenderer();
+      if (filterRegion === 'all' && r) {
+        // Automatically zoom out to full body overview
+        r.camera.target = [0, 0.85, 0];
+        r.camera.dist = 2.45;
+        r.camera.pitch = 0.02;
+        r.camera.yaw = 0.0;
+        showMeridians = true;
+        const cMer = document.getElementById('chkShowMeridians');
+        if (cMer) cMer.checked = true;
+        if (typeof r._draw === 'function') r._draw();
+      }
       buildSidebarControls();
       render();
     } else if (ev.data.action === 'update_point_coords') {

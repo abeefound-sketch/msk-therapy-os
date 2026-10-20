@@ -368,7 +368,7 @@ def list_anatomy(
     )
     conditions = []
     params: list = []
-    if region:
+    if region and region.strip().lower() != "all":
         conditions.append("region = ?")
         params.append(region.strip().lower())
     if namespace:
