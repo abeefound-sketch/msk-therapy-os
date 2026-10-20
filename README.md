@@ -41,7 +41,11 @@ python -m msk_therapy_os timeline --db demo.sqlite3 --case DEMO-NECK-001
 # 10. Generate comprehensive offline case report (Markdown with audit warnings)
 python -m msk_therapy_os report --db demo.sqlite3 --case DEMO-NECK-001 --out report_DEMO_NECK_001.md
 
-# 11. Run all automated unit tests
+# 11. Launch Milestone M2 Interactive Body-Map Web UI (Zero pip dependencies)
+python -m msk_therapy_os serve --db demo.sqlite3 --port 8080
+# Open browser at: http://127.0.0.1:8080/
+
+# 12. Run all automated unit tests (38 tests)
 python -m unittest discover -s tests -v
 ```
 

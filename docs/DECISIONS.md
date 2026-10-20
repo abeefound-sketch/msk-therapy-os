@@ -31,3 +31,8 @@
 ## ADR-008 - Role-based supervision workflow and offline Markdown reports
 **Status:** Accepted in M1.  
 **Rationale:** Students can draft SOAP notes (`DRAFT`), while only accounts with the `reviewer` role can approve notes (`APPROVED`). Offline case reports audit missing intakes, missing SOAP notes, and flag incomparability when different ROM instruments are mixed.
+
+
+## ADR-009 - 2D Interactive SVG Body-Map and Zero-Dependency HTTP Server (Milestone M2)
+**Status:** Accepted in M2.  
+**Rationale:** Target workstation hardware (Intel Core i7-5600U, Intel HD 5500, 8 GB RAM) struggles with full-resolution local 3D WebGL meshes without heavy GPU resources. Milestone M2 delivers a 2D interactive SVG body-map running in standard HTML5/CSS/Vanilla JS served by Python's built-in `http.server`. Detailed 3D anatomical structures link outward to Open Anatomy Atlas via BodyParts3D FMA query URLs, achieving instantaneous 60fps responsiveness and zero external runtime dependencies.

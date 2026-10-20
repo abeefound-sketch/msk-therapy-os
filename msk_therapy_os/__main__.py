@@ -188,6 +188,12 @@ def build_parser() -> argparse.ArgumentParser:
     q_cmd.add_argument("--db", default="demo.sqlite3")
     q_cmd.add_argument("--region", help="Filter by body region")
 
+    # 10. M2 Body-Map Web Server
+    srv = sub.add_parser("serve", help="Launch local HTTP web server for Milestone M2 Body-Map UI")
+    srv.add_argument("--db", default="demo.sqlite3")
+    srv.add_argument("--host", default="127.0.0.1")
+    srv.add_argument("--port", type=int, default=8080)
+
     return p
 
 
@@ -216,6 +222,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Instructions: {res.escalation_instructions}")
         print(f"Clinical Rationale: {res.clinical_rationale}")
         print(f"Evidence Source: {res.evidence_id}")
+        return 0
+
+    if args.action == "serve":
+        if not Path(args.db).exists():
+            print("Database missing. Run init first.")
+            return 2
+        from msk_therapy_os.server import run_server
+        run_server(db_path=args.db, host=args.host, port=args.port)
         return 0
 
     if args.action != "init" and not Path(args.db).exists():

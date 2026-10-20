@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSK-Therapy-OS - Clinical Learning & Longitudinal Documentation</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --border: #475569;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 14px;
+      padding-bottom: 40px;
+    }
+    header {
+      background: #020617;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand h1 { font-size: 18px; font-weight: 700; color: var(--primary); }
+    .brand .badge {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    select, button, input, textarea {
+      font-family: inherit;
+      font-size: 13px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 12px;
+      outline: none;
+    }
+    select:focus, input:focus, textarea:focus { border-color: var(--primary); }
+    button {
+      background: var(--primary);
+      color: #0f172a;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s ease;
+    }
+    button:hover { background: var(--primary-hover); }
+    button.btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    button.btn-secondary:hover { background: var(--surface-hover); }
+    .disclaimer-banner {
+      background: #7f1d1d;
+      color: #fef2f2;
+      text-align: center;
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #991b1b;
+    }
+    .nav-tabs {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      padding: 0 24px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 12px 18px;
+      font-weight: 600;
+    }
+    .tab-btn:hover { color: var(--text); background: transparent; }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: transparent;
+    }
+    .main-container {
+      max-width: 1400px;
+      margin: 24px auto;
+      padding: 0 24px;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .grid-2col { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    /* SVG Body Map Styles */
+    .body-map-container {
+      text-align: center;
+    }
+    .body-svg {
+      width: 100%;
+      max-height: 480px;
+    }
+    .body-part {
+      fill: #334155;
+      stroke: #64748b;
+      stroke-width: 1.5;
+      cursor: pointer;
+      transition: fill 0.2s, stroke 0.2s;
+    }
+    .body-part:hover {
+      fill: #0284c7;
+      stroke: #38bdf8;
+    }
+    .body-part.active {
+      fill: #0369a1;
+      stroke: #7dd3fc;
+      stroke-width: 2.5;
+    }
+    .body-label {
+      font-size: 11px;
+      fill: #e2e8f0;
+      font-weight: 600;
+      pointer-events: none;
+      text-anchor: middle;
+    }
+    /* Lists and items */
+    .item-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .item-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    .tag {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .tag-evidence { background: #1e3a8a; color: #93c5fd; }
+    .tag-trad { background: #78350f; color: #fde68a; }
+    .tag-dien { background: #701a75; color: #f5d0fe; }
+    .tag-stop { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+    .tag-safe { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+    .link-atlas {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .link-atlas:hover { text-decoration: underline; }
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    th { background: rgba(15, 23, 42, 0.8); color: var(--text-muted); font-weight: 600; }
+    /* Alerts */
+    .alert-box {
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .alert-danger { background: var(--danger-bg); border: 1px solid var(--danger); color: #fca5a5; }
+    .alert-warning { background: var(--warning-bg); border: 1px solid var(--warning); color: #fde047; }
+    .alert-info { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary); color: #bae6fd; }
+    /* Forms */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 12px; color: var(--text-muted); }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; }
+    .form-row { display: flex; gap: 12px; }
+    .form-row > * { flex: 1; }
+    pre {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      overflow-x: auto;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="disclaimer-banner">
+    ⚠️ SYNTHETIC EDUCATIONAL PROOF OF CONCEPT ONLY — DO NOT ENTER REAL PATIENT DATA — NOT FOR DIAGNOSIS OR DDS CONTROL ⚠️
+  </div>
+
+  <header>
+    <div class="brand">
+      <h1>MSK-Therapy-OS</h1>
+      <span class="badge">Milestone M2 (Body-Map UI)</span>
+      <span class="badge">Windows x64 / Intel HD 5500</span>
+    </div>
+    <div class="header-controls">
+      <label for="caseSelect" style="color:var(--text-muted); font-size:12px;">Active Demo Case:</label>
+      <select id="caseSelect"></select>
+      
+      <label for="roleSelect" style="color:var(--text-muted); font-size:12px;">Operator Role:</label>
+      <select id="roleSelect">
+        <option value="student">Student (Drafting)</option>
+        <option value="reviewer">Clinical Supervisor (Reviewer)</option>
+      </select>
+
+      <button id="refreshBtn" class="btn-secondary">↻ Refresh</button>
+    </div>
+  </header>
+
+  <nav class="nav-tabs">
+    <button class="tab-btn active" data-tab="tab-bodymap">Interactive Body-Map & Anatomy</button>
+    <button class="tab-btn" data-tab="tab-safety">Safety & Red Flags Gating Drill</button>
+    <button class="tab-btn" data-tab="tab-case">Longitudinal Visits & ROM</button>
+    <button class="tab-btn" data-tab="tab-soap">Structured SOAP & Supervision</button>
+    <button class="tab-btn" data-tab="tab-evidence">Curated Evidence Catalog</button>
+    <button class="tab-btn" data-tab="tab-report">Offline Markdown Report</button>
+  </nav>
+
+  <main class="main-container">
+    <!-- TAB 1: BODY MAP & ANATOMY -->
+    <section id="tab-bodymap" class="tab-content">
+      <div class="grid-2col">
+        <div class="card body-map-container">
+          <div class="card-title">
+            <span>2D Interactive Body-Map</span>
+            <small style="color:var(--primary); font-size:11px;">Select a region</small>
+          </div>
+          <svg class="body-svg" viewBox="0 0 300 480">
+            <!-- Head / Face -->
+            <ellipse id="part-face" class="body-part" cx="150" cy="40" rx="30" ry="32" data-region="face" />
+            <text x="150" y="44" class="body-label">Face</text>
+
+            <!-- Neck / Cervical -->
+            <rect id="part-neck" class="body-part active" x="135" y="72" width="30" height="25" rx="4" data-region="neck" />
+            <text x="150" y="88" class="body-label">Neck</text>
+
+            <!-- Shoulders -->
+            <path id="part-shoulder-l" class="body-part" d="M100,100 L135,97 L135,115 L90,125 Z" data-region="shoulder" />
+            <path id="part-shoulder-r" class="body-part" d="M165,97 L200,100 L210,125 L165,115 Z" data-region="shoulder" />
+            <text x="75" y="112" class="body-label">Shoulder</text>
+
+            <!-- Thoracic Spine / Trunk -->
+            <path id="part-thoracic" class="body-part" d="M115,100 L185,100 L175,175 L125,175 Z" data-region="thoracic" />
+            <text x="150" y="140" class="body-label">Thoracic</text>
+
+            <!-- Low Back / Lumbar -->
+            <rect id="part-lowback" class="body-part" x="120" y="178" width="60" height="42" rx="4" data-region="low_back" />
+            <text x="150" y="202" class="body-label">Low Back</text>
+
+            <!-- Hip / Pelvis -->
+            <path id="part-hip" class="body-part" d="M115,222 L185,222 L195,260 L105,260 Z" data-region="hip" />
+            <text x="150" y="245" class="body-label">Hip / Pelvis</text>
+
+            <!-- Lower Extremities indicator -->
+            <rect x="110" y="265" width="35" height="180" rx="6" fill="#1e293b" stroke="#475569" />
+            <rect x="155" y="265" width="35" height="180" rx="6" fill="#1e293b" stroke="#475569" />
+          </svg>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:10px;">
+            CPU-Optimized 2D SVG View (Intel HD 5500 Compatible).
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">
+              <span>Region Structures: <strong id="selectedRegionTitle" style="color:var(--primary);">neck</strong></span>
+              <span id="structureCount" class="badge">0 structures</span>
+            </div>
+            <div id="structuresList">Loading structures...</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span>Scenario Questionnaires for Region</span>
+            </div>
+            <div id="questionnairesList">Loading questionnaires...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: SAFETY DRILL -->
+    <section id="tab-safety" class="tab-content" style="display:none;">
+      <div class="card">
+        <div class="card-title">
+          <span>Rule-Based Clinical Safety Gate Simulator</span>
+          <span class="badge" style="background:#dc2626; color:#fff;">IFOMPT / NICE / FDA Validated</span>
+        </div>
+        <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
+          Deterministic rule engine screening red flags and modality contraindications. Positive red flags strictly trigger <code>STOP_AND_REFER</code>.
+        </p>
+        
+        <div class="grid-2col">
+          <div>
+            <div class="form-group">
+              <label for="safetyFlag">Reported Red Flag:</label>
+              <select id="safetyFlag"></select>
+            </div>
+            <div class="form-group">
+              <label for="safetyModality">Planned Educational Modality:</label>
+              <select id="safetyModality">
+                <option value="none">Observation only</option>
+                <option value="manual_massage">Manual Massage / Effleurage</option>
+                <option value="dds_device">DDS / Electrical Stimulation Device</option>
+                <option value="passive_stretch">Passive Gentle Stretch</option>
+                <option value="spinal_manipulation">Spinal Manipulation (High-Velocity Thrust)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Potential Contraindications:</label>
+              <div id="contraindicationsList" style="display:grid; grid-template-columns:1fr; gap:6px;">
+                <label><input type="checkbox" value="cardiac_pacemaker"> Cardiac Pacemaker or Implanted Defibrillator</label>
+                <label><input type="checkbox" value="active_dvt"> Suspected / Active Deep Vein Thrombosis</label>
+                <label><input type="checkbox" value="systemic_infection"> Acute Febrile / Systemic Infection</label>
+                <label><input type="checkbox" value="pregnancy"> Pregnancy (for electrical stimulation)</label>
+                <label><input type="checkbox" value="missing_device_specs"> Unverified DDS Device Model / Waveform</label>
+              </div>
+            </div>
+            <button id="runSafetyCheckBtn" style="width:100%; margin-top:10px;">Evaluate Safety Gate</button>
+          </div>
+
+          <div>
+            <div class="card-title">Safety Triage Evaluation Result</div>
+            <div id="safetyResultArea">
+              <div class="alert-box alert-info">
+                Select safety parameters and click <strong>Evaluate Safety Gate</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: VISITS & ROM -->
+    <section id="tab-case" class="tab-content" style="display:none;">
+      <div class="card">
+        <div class="card-title">
+          <span>Case Intake & Baseline Profile: <span id="intakeCaseId" style="color:var(--primary);"></span></span>
+        </div>
+        <div id="intakeProfileArea">Loading intake...</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Longitudinal Visit Timeline</span>
+        </div>
+        <div id="timelineTableArea">Loading visits...</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Add Synthetic Visit & Objective ROM</div>
+        <form id="addVisitForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Visit Date:</label>
+              <input type="date" id="visDate" required>
+            </div>
+            <div class="form-group">
+              <label>Region:</label>
+              <select id="visRegion">
+                <option value="neck">Neck</option>
+                <option value="low_back">Low Back</option>
+                <option value="thoracic">Thoracic</option>
+                <option value="shoulder">Shoulder</option>
+                <option value="hip">Hip</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Pain Score (VAS 0–10):</label>
+              <input type="number" id="visPain" min="0" max="10" value="5" required>
+            </div>
+            <div class="form-group">
+              <label>Gross ROM (deg):</label>
+              <input type="number" id="visRom" min="0" max="360" value="45" step="0.5" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Safety Red Flag:</label>
+              <select id="visFlag"></select>
+            </div>
+            <div class="form-group">
+              <label>Fictional Simulation Note:</label>
+              <input type="text" id="visNote" placeholder="Educational simulation notes only" required>
+            </div>
+          </div>
+          <button type="submit">Record Visit</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 4: SOAP & SUPERVISION -->
+    <section id="tab-soap" class="tab-content" style="display:none;">
+      <div class="card">
+        <div class="card-title">
+          <span>Draft Structured SOAP Note</span>
+          <span class="badge" id="soapRoleBadge">Role: student</span>
+        </div>
+        <form id="addSoapForm">
+          <div class="form-group">
+            <label for="soapVisitId">Select Target Visit:</label>
+            <select id="soapVisitId"></select>
+          </div>
+          <div class="form-group">
+            <label>S - Subjective (Reported symptoms & functional limitation):</label>
+            <textarea id="soapS" rows="2" required placeholder="Patient reports..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>O - Objective (Observable ROM & clearly labeled palpation findings):</label>
+            <textarea id="soapO" rows="2" required placeholder="Active motion restricted to..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>A - Assessment (Educational working hypothesis — NO MEDICAL DIAGNOSIS):</label>
+            <textarea id="soapA" rows="2" required placeholder="Hypothesis for educational reasoning..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>P - Plan (Educational procedure OR medical referral if red flag):</label>
+            <textarea id="soapP" rows="2" required placeholder="Gentle educational ROM OR referral..."></textarea>
+          </div>
+          <button type="submit">Save SOAP Note</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recorded SOAP Notes & Supervision Status</div>
+        <div id="soapListArea">Loading SOAP records...</div>
+      </div>
+    </section>
+
+    <!-- TAB 5: EVIDENCE CATALOG -->
+    <section id="tab-evidence" class="tab-content" style="display:none;">
+      <div class="card">
+        <div class="card-title">
+          <span>Vetted Clinical & Anatomical Evidence Catalog (Tiers 1–4)</span>
+        </div>
+        <div id="evidenceTableArea">Loading evidence...</div>
+      </div>
+    </section>
+
+    <!-- TAB 6: OFFLINE REPORT -->
+    <section id="tab-report" class="tab-content" style="display:none;">
+      <div class="card">
+        <div class="card-title">
+          <span>Offline Clinical Learning Report</span>
+          <button id="copyReportBtn" class="btn-secondary">Copy Markdown</button>
+        </div>
+        <pre id="reportPreArea">Generating report...</pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // State
+    let activeCaseId = "DEMO-NECK-001";
+    let activeRegion = "neck";
+    let activeRole = "student";
+    let availableRedFlags = [];
+
+    // Tab Navigation
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
+        btn.classList.add("active");
+        const target = btn.dataset.tab;
+        document.getElementById(target).style.display = "block";
+        if (target === "tab-report") loadReport();
+        if (target === "tab-evidence") loadEvidence();
+      });
+    });
+
+    // Region SVG click
+    document.querySelectorAll(".body-part").forEach(part => {
+      part.addEventListener("click", () => {
+        document.querySelectorAll(".body-part").forEach(p => p.classList.remove("active"));
+        part.classList.add("active");
+        activeRegion = part.dataset.region;
+        document.getElementById("selectedRegionTitle").textContent = activeRegion;
+        loadRegionAnatomy(activeRegion);
+        loadRegionQuestionnaires(activeRegion);
+      });
+    });
+
+    // Role switcher
+    document.getElementById("roleSelect").addEventListener("change", (e) => {
+      activeRole = e.target.value;
+      document.getElementById("soapRoleBadge").textContent = `Role: ${activeRole}`;
+      loadCaseData(activeCaseId);
+    });
+
+    // Case switcher
+    document.getElementById("caseSelect").addEventListener("change", (e) => {
+      activeCaseId = e.target.value;
+      loadCaseData(activeCaseId);
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      loadCases();
+      loadCaseData(activeCaseId);
+      loadRegionAnatomy(activeRegion);
+    });
+
+    // Data Loaders
+    async function loadCases() {
+      try {
+        const res = await fetch("/api/cases");
+        const cases = await res.json();
+        const sel = document.getElementById("caseSelect");
+        sel.innerHTML = "";
+        cases.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.case_id;
+          opt.textContent = `${c.case_id} (${c.label})`;
+          if (c.case_id === activeCaseId) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Failed to load cases", err);
+      }
+    }
+
+    async function loadRegionAnatomy(region) {
+      const container = document.getElementById("structuresList");
+      container.innerHTML = "Loading structures...";
+      try {
+        const res = await fetch(`/api/anatomy?region=${encodeURIComponent(region)}`);
+        const structures = await res.json();
+        document.getElementById("structureCount").textContent = `${structures.length} structures`;
+        if (structures.length === 0) {
+          container.innerHTML = `<p style="color:var(--text-muted)">No registered structures for region '${region}'.</p>`;
+          return;
+        }
+        container.innerHTML = structures.map(s => {
+          let tagClass = "tag-evidence";
+          let badgeText = "Modern Anatomy";
+          if (s.namespace === "TRADITIONAL_MERIDIAN") {
+            tagClass = "tag-trad";
+            badgeText = "Traditional Thai Sen";
+          } else if (s.namespace === "DIEN_CHAN_REFLEX") {
+            tagClass = "tag-dien";
+            badgeText = "Dien Chan Reflex";
+          }
+
+          const bpText = s.bodyparts3d_id ? `<span style="font-size:11px; color:#38bdf8;">FMA: ${s.bodyparts3d_id}</span>` : "";
+          const linkHtml = `<a href="${s.atlas_url}" target="_blank" class="link-atlas">↗ Open in 3D Atlas</a>`;
+
+          return `
+            <div class="item-card">
+              <div class="item-card-header">
+                <strong>${s.name}</strong>
+                <span class="tag ${tagClass}">${badgeText}</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+                Dataset: ${s.source_dataset} ${bpText} | Ref: ${s.evidence_id}
+              </div>
+              ${linkHtml}
+            </div>
+          `;
+        }).join("");
+      } catch (err) {
+        container.innerHTML = `<div class="alert-box alert-danger">Error loading anatomy: ${err}</div>`;
+      }
+    }
+
+    async function loadRegionQuestionnaires(region) {
+      const container = document.getElementById("questionnairesList");
+      container.innerHTML = "Loading...";
+      try {
+        const res = await fetch(`/api/questionnaires?region=${encodeURIComponent(region)}`);
+        const qs = await res.json();
+        if (qs.length === 0) {
+          container.innerHTML = `<p style="color:var(--text-muted)">No specific scenario questionnaires for '${region}'.</p>`;
+          return;
+        }
+        container.innerHTML = qs.map(q => `
+          <div class="item-card">
+            <div class="item-card-header">
+              <strong>${q.scenario_title}</strong>
+              <span class="tag ${q.safety_critical ? 'tag-stop' : 'tag-safe'}">
+                ${q.safety_critical ? 'Safety Critical Red Flag' : 'Clinical Assessment'}
+              </span>
+            </div>
+            <p style="font-size:13px; margin: 4px 0;">${q.question_text}</p>
+            <small style="color:var(--text-muted)">Ref: ${q.evidence_id}</small>
+          </div>
+        `).join("");
+      } catch (err) {
+        container.innerHTML = `<div class="alert-box alert-danger">Error: ${err}</div>`;
+      }
+    }
+
+    async function loadCaseData(caseId) {
+      document.getElementById("intakeCaseId").textContent = caseId;
+      try {
+        const res = await fetch(`/api/case?case_id=${encodeURIComponent(caseId)}`);
+        const data = await res.json();
+
+        // Intake profile
+        const intakeDiv = document.getElementById("intakeProfileArea");
+        if (data.intake) {
+          intakeDiv.innerHTML = `
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+              <div><small style="color:var(--text-muted)">Age Band:</small> <div><strong>${data.intake.age_band}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Primary Region:</small> <div><strong>${data.intake.primary_region}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Symptom Onset:</small> <div><strong>${data.intake.symptom_onset}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Functional Limitation:</small> <div><strong>${data.intake.functional_limits}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Prior Care:</small> <div><strong>${data.intake.prior_care}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Recorded by Role:</small> <div><strong>${data.intake.operator_role}</strong></div></div>
+            </div>
+          `;
+        } else {
+          intakeDiv.innerHTML = `<div class="alert-box alert-warning">⚠️ AUDIT WARNING: Missing structured intake for ${caseId}.</div>`;
+        }
+
+        // Visits table
+        const visDiv = document.getElementById("timelineTableArea");
+        const soapSelect = document.getElementById("soapVisitId");
+        soapSelect.innerHTML = "";
+
+        if (data.visits.length === 0) {
+          visDiv.innerHTML = "<p style='color:var(--text-muted)'>No recorded visits yet for this case.</p>";
+        } else {
+          visDiv.innerHTML = `
+            <table>
+              <thead>
+                <tr>
+                  <th>Visit ID</th>
+                  <th>Date</th>
+                  <th>Region</th>
+                  <th>Pain</th>
+                  <th>Gross ROM</th>
+                  <th>Red Flag</th>
+                  <th>Disposition</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.visits.map(v => {
+                  const isStop = v.disposition === "STOP_AND_REFER";
+                  const dispBadge = `<span class="tag ${isStop ? 'tag-stop' : 'tag-safe'}">${v.disposition}</span>`;
+                  return `
+                    <tr>
+                      <td>#${v.id}</td>
+                      <td>${v.visit_date}</td>
+                      <td>${v.region}</td>
+                      <td><strong>${v.pain}/10</strong></td>
+                      <td>${v.rom_deg}°</td>
+                      <td>${v.flag}</td>
+                      <td>${dispBadge}</td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          `;
+          data.visits.forEach(v => {
+            const opt = document.createElement("option");
+            opt.value = v.id;
+            opt.textContent = `Visit #${v.id} (${v.visit_date}) - ${v.region} (Pain: ${v.pain}/10, Flag: ${v.flag})`;
+            soapSelect.appendChild(opt);
+          });
+        }
+
+        // SOAP records
+        renderSOAPRecords(data.soaps);
+
+      } catch (err) {
+        console.error("Error loading case", err);
+      }
+    }
+
+    function renderSOAPRecords(soaps) {
+      const container = document.getElementById("soapListArea");
+      if (!soaps || soaps.length === 0) {
+        container.innerHTML = "<p style='color:var(--text-muted)'>No structured SOAP notes recorded for this case yet.</p>";
+        return;
+      }
+      container.innerHTML = soaps.map(s => {
+        let statusBadge = `<span class="tag tag-safe">[APPROVED]</span>`;
+        if (s.review_status === "DRAFT") statusBadge = `<span class="tag tag-trad">[DRAFT]</span>`;
+        if (s.review_status === "REJECTED") statusBadge = `<span class="tag tag-stop">[REJECTED]</span>`;
+        if (s.review_status === "SUPERVISED") statusBadge = `<span class="tag tag-evidence">[SUPERVISED]</span>`;
+
+        let supervisorActions = "";
+        if (activeRole === "reviewer" && s.review_status !== "APPROVED") {
+          supervisorActions = `
+            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); display:flex; gap:8px;">
+              <input type="text" id="feedback-${s.id}" placeholder="Supervisor review comments..." style="flex:1;">
+              <button onclick="approveSOAP(${s.id}, 'APPROVED')" style="background:var(--success); color:#000;">Approve</button>
+              <button onclick="approveSOAP(${s.id}, 'REJECTED')" style="background:var(--danger); color:#fff;">Reject</button>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="item-card" style="margin-bottom:14px;">
+            <div class="item-card-header">
+              <strong>Visit #${s.visit_id} - SOAP Note #${s.id} (Author: ${s.author_role})</strong>
+              <div>${statusBadge}</div>
+            </div>
+            ${s.reviewed_by ? `<div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Reviewed by: <strong>${s.reviewed_by}</strong> ${s.review_notes ? `— <em>"${s.review_notes}"</em>` : ''}</div>` : ''}
+            <div style="font-size:13px; line-height:1.6;">
+              <p><strong>S:</strong> ${s.subjective}</p>
+              <p><strong>O:</strong> ${s.objective}</p>
+              <p><strong>A:</strong> ${s.assessment}</p>
+              <p><strong>P:</strong> ${s.plan}</p>
+            </div>
+            ${supervisorActions}
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function approveSOAP(soapId, decision) {
+      const feedbackInput = document.getElementById(`feedback-${soapId}`);
+      const feedback = feedbackInput ? feedbackInput.value : "";
+      try {
+        const res = await fetch("/api/review-soap", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            soap_id: soapId,
+            reviewer: "Clinical Supervisor",
+            role: activeRole,
+            decision: decision,
+            feedback: feedback
+          })
+        });
+        const out = await res.json();
+        if (out.error) alert(`Error: ${out.error}`);
+        else loadCaseData(activeCaseId);
+      } catch (err) {
+        alert(`Request failed: ${err}`);
+      }
+    }
+
+    // Safety Gate Simulator
+    async function loadSafetyFlags() {
+      const sel = document.getElementById("safetyFlag");
+      const visSel = document.getElementById("visFlag");
+      sel.innerHTML = "";
+      visSel.innerHTML = "";
+      const flags = [
+        "none",
+        "progressive_weakness",
+        "bowel_bladder_change",
+        "saddle_numbness",
+        "fever_with_spinal_pain",
+        "major_trauma",
+        "unexplained_weight_loss_history_cancer",
+        "severe_unremitting_night_pain",
+        "acute_cervical_myelopathy",
+        "vascular_stroke_signs",
+        "dvt_thrombosis_signs",
+        "suspected_fracture"
+      ];
+      flags.forEach(f => {
+        const opt1 = document.createElement("option");
+        opt1.value = f;
+        opt1.textContent = f;
+        sel.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = f;
+        opt2.textContent = f;
+        visSel.appendChild(opt2);
+      });
+    }
+
+    document.getElementById("runSafetyCheckBtn").addEventListener("click", async () => {
+      const flag = document.getElementById("safetyFlag").value;
+      const modality = document.getElementById("safetyModality").value;
+      const contras = Array.from(document.querySelectorAll("#contraindicationsList input:checked")).map(c => c.value);
+
+      const area = document.getElementById("safetyResultArea");
+      area.innerHTML = "Evaluating...";
+
+      try {
+        const res = await fetch("/api/screen-safety", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ flag, modality, contraindications: contras })
+        });
+        const data = await res.json();
+        const isStop = data.disposition === "STOP_AND_REFER";
+        const alertClass = isStop ? "alert-danger" : "alert-info";
+
+        area.innerHTML = `
+          <div class="alert-box ${alertClass}">
+            <h3 style="margin-bottom:6px;">DISPOSITION: ${data.disposition}</h3>
+            <p><strong>Safe to Proceed with Observation:</strong> ${data.is_safe_to_proceed ? 'YES' : 'NO'}</p>
+            ${data.flags_triggered.length ? `<p><strong>Flags:</strong> ${data.flags_triggered.join(', ')}</p>` : ''}
+            ${data.contraindications_triggered.length ? `<p><strong>Contraindications:</strong> ${data.contraindications_triggered.join(', ')}</p>` : ''}
+            <div style="margin-top:10px; font-weight:600;">${data.escalation_instructions}</div>
+            <div style="margin-top:6px; font-size:12px;"><strong>Rationale:</strong> ${data.clinical_rationale}</div>
+            <small style="display:block; margin-top:8px; color:var(--text-muted)">Citing Guideline: ${data.evidence_id}</small>
+          </div>
+        `;
+      } catch (err) {
+        area.innerHTML = `<div class="alert-box alert-danger">Error: ${err}</div>`;
+      }
+    });
+
+    // Form submissions
+    document.getElementById("addVisitForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        case: activeCaseId,
+        when: document.getElementById("visDate").value,
+        region: document.getElementById("visRegion").value,
+        pain: parseInt(document.getElementById("visPain").value, 10),
+        rom: parseFloat(document.getElementById("visRom").value),
+        flag: document.getElementById("visFlag").value,
+        note: document.getElementById("visNote").value
+      };
+      try {
+        const res = await fetch("/api/visit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const out = await res.json();
+        if (out.error) alert(`Error: ${out.error}`);
+        else {
+          alert(`Recorded visit! Disposition: ${out.disposition}`);
+          loadCaseData(activeCaseId);
+        }
+      } catch (err) {
+        alert(`Failed: ${err}`);
+      }
+    });
+
+    document.getElementById("addSoapForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        visit_id: parseInt(document.getElementById("soapVisitId").value, 10),
+        subjective: document.getElementById("soapS").value,
+        objective: document.getElementById("soapO").value,
+        assessment: document.getElementById("soapA").value,
+        plan: document.getElementById("soapP").value,
+        role: activeRole
+      };
+      try {
+        const res = await fetch("/api/soap", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const out = await res.json();
+        if (out.error) alert(`Error: ${out.error}`);
+        else {
+          alert(`Created SOAP note #${out.soap_id}!`);
+          document.getElementById("addSoapForm").reset();
+          loadCaseData(activeCaseId);
+        }
+      } catch (err) {
+        alert(`Failed: ${err}`);
+      }
+    });
+
+    // Report
+    async function loadReport() {
+      const pre = document.getElementById("reportPreArea");
+      pre.textContent = "Generating...";
+      try {
+        const res = await fetch(`/api/report?case_id=${encodeURIComponent(activeCaseId)}`);
+        const text = await res.text();
+        pre.textContent = text;
+      } catch (err) {
+        pre.textContent = `Error loading report: ${err}`;
+      }
+    }
+
+    document.getElementById("copyReportBtn").addEventListener("click", () => {
+      const text = document.getElementById("reportPreArea").textContent;
+      navigator.clipboard.writeText(text);
+      alert("Report copied to clipboard!");
+    });
+
+    // Evidence
+    async function loadEvidence() {
+      const area = document.getElementById("evidenceTableArea");
+      area.innerHTML = "Loading evidence catalog...";
+      try {
+        const res = await fetch("/api/evidence");
+        const list = await res.json();
+        area.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tier</th>
+                <th>Title & Organization</th>
+                <th>Scope</th>
+                <th>Reviewer</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${list.map(e => `
+                <tr>
+                  <td><strong>${e.evidence_id}</strong></td>
+                  <td><span class="tag tag-evidence">Tier ${e.tier}</span></td>
+                  <td>
+                    <div><strong>${e.title}</strong></div>
+                    <small style="color:var(--text-muted)">${e.organization} (${e.year}) | License: ${e.license}</small>
+                  </td>
+                  <td><small>${e.claim_scope}</small></td>
+                  <td><small>${e.reviewer} (${e.reviewed_on})</small></td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+      } catch (err) {
+        area.innerHTML = `<div class="alert-box alert-danger">Error: ${err}</div>`;
+      }
+    }
+
+    // Set today's date in form
+    document.getElementById("visDate").value = new Date().toISOString().split("T")[0];
+
+    // Initial boot
+    loadCases();
+    loadCaseData(activeCaseId);
+    loadRegionAnatomy(activeRegion);
+    loadRegionQuestionnaires(activeRegion);
+    loadSafetyFlags();
+  </script>
+</body>
+</html>

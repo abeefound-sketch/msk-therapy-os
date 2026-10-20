@@ -25,7 +25,10 @@ msk_therapy_os/
 ├── anatomy.py       # AnatomyAdapter with BodyParts3D FMA mapping, deep-linking, and namespace isolation
 ├── assessment.py    # Structured intake validation, scenario questionnaires, and objective ROM schema
 ├── soap.py          # Structured SOAP notes, student vs reviewer role permissions, and review audit trail
-└── reporting.py     # Offline clinical education report generator with progress deltas and audit warnings
+├── reporting.py     # Offline clinical education report generator with progress deltas and audit warnings
+├── server.py        # Lightweight zero-dependency HTTP server for Milestone M2 Body-Map UI
+└── static/          # Pure HTML5/CSS/Vanilla JS single-page application with 2D interactive SVG body-map
+    └── index.html
 ```
 
 ## Component Contracts
@@ -38,6 +41,7 @@ msk_therapy_os/
 | `SOAPManager` (`soap.py`) | S/O/A/P text sections, author role, supervisor feedback | Relational SOAP notes, review lifecycle (`DRAFT`, `SUPERVISED`, `APPROVED`) | Authorizing non-supervisory sign-off; generating autonomous treatment prescriptions |
 | `EvidenceLibrary` (`evidence.py`) | Evidence ID, tier query (1-4) | Verified citations with DOI/URL, license, organization, review date | Unsubstantiated clinical efficacy claims |
 | `ReportGenerator` (`reporting.py`) | Case ID | Structured Markdown report with synthetic banner, ROM progress, and audit gaps | Exporting unreviewed drafts as certified medical records |
+| `WebServer` (`server.py`) | HTTP REST requests (cases, anatomy, safety, SOAP) | JSON payloads & interactive 2D SVG SPA | Multi-tenant auth, cloud syncing, unvetted external scripts |
 
 ## Evidence Tier Boundaries
 
