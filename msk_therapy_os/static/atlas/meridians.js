@@ -57,6 +57,17 @@
     return window.__atlasDebug ? window.__atlasDebug.renderer : null;
   }
 
+  // Camera facing / occlusion test in horizontal plane
+  function isFacingCamera(pos, r) {
+    if (!r) return true;
+    const eye = r._eye();
+    const target = r.camera.target || [0, 0.9, 0];
+    const h = pos[0] * (eye[0] - target[0]) + pos[2] * (eye[2] - target[2]);
+    // If camera has steep pitch looking down from above, top shoulder points stay visible
+    if (r.camera.pitch > 0.45 && pos[1] > 1.40) return true;
+    return h >= -0.012;
+  }
+
   function render() {
     const r = getRenderer();
     if (!r || !acuData) return;
@@ -89,6 +100,13 @@
           }
 
           for (const pts of pointSets) {
+            // Occlusion culling for meridian paths
+            const facingCount = pts.filter(pt => isFacingCamera(pt, r)).length;
+            const pathFacing = facingCount >= pts.length * 0.35;
+            if (!r.xray && !pathFacing) continue;
+
+            const pathOpacity = pathFacing ? "0.85" : "0.22";
+            const pathFilter = pathFacing ? 'filter="url(#glow)"' : '';
             let d = '';
             for (let i = 0; i < pts.length; i++) {
               const pt = pts[i];
@@ -100,7 +118,7 @@
               d += (d === '' ? 'M ' : ' L ') + s[0].toFixed(1) + ' ' + s[1].toFixed(1);
             }
             if (d && d.includes('L')) {
-              pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" filter="url(#glow)"/>`;
+              pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${pathOpacity}" ${pathFilter}/>`;
             }
           }
         }
@@ -159,18 +177,33 @@
           if (!s || s[0] < -20 || s[1] < -20 || s[0] > sw + 20 || s[1] > sh + 20) continue;
 
           const isSel = selectedCode === code;
+          const facing = isFacingCamera(inst.pos, r);
+
+          // Occlusion culling: hide points that are facing away unless X-ray is active or point is selected
+          if (!r.xray && !facing && !isSel) {
+            continue;
+          }
+
           let rad = isSel ? 7 : (isVerified ? 5 : 4);
           let fill = isSel ? '#facc15' : (isVerified ? '#10b981' : '#f59e0b');
           let stroke = isSel ? '#ffffff' : (isVerified ? '#047857' : '#78350f');
           let swidth = isSel ? 2.5 : 1.5;
           let dash = isVerified ? '' : 'stroke-dasharray="2,2"';
+          let ptOpacity = '1.0';
 
-          ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${swidth}" ${dash} class="acu-marker" data-code="${code}" data-side="${inst.side}" style="cursor:pointer;">
-            <title>${pt.code} - ${pt.name_en} (${pt.name_zh}) [${isVerified ? 'VERIFIED ANCHOR' : 'UNCERTAIN POSTURE'}]</title>
+          if (!facing) {
+            // Occluded point depth cue
+            ptOpacity = isSel ? '0.45' : '0.22';
+            dash = 'stroke-dasharray="2,2"';
+            stroke = '#94a3b8';
+          }
+
+          ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${swidth}" ${dash} opacity="${ptOpacity}" class="acu-marker" data-code="${code}" data-side="${inst.side}" style="cursor:pointer;">
+            <title>${pt.code} - ${pt.name_en} (${pt.name_zh}) [${isVerified ? 'VERIFIED ANCHOR' : 'UNCERTAIN POSTURE'}]${!facing ? ' (Dorsal/Occluded)' : ''}</title>
           </circle>`;
 
           if (isSel) {
-            ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="13" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4" opacity="0.9">
+            ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="13" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4" opacity="${facing ? '0.9' : '0.4'}">
               <animateTransform attributeName="transform" type="rotate" from="0 ${s[0]} ${s[1]}" to="360 ${s[0]} ${s[1]}" dur="5s" repeatCount="indefinite"/>
             </circle>`;
           }
@@ -229,6 +262,21 @@
     render();
 
     if (notifyParent) {
+      if (r) {
+        // Auto-align camera view if selected point is on dorsal or anterior aspect
+        const isBackPoint = pt.position[2] < -0.035;
+        const isFrontPoint = pt.position[2] > 0.035;
+        const yawNorm = Math.abs(r.camera.yaw % (Math.PI * 2));
+        const camFacingFront = yawNorm < 0.7 || yawNorm > 5.58;
+        const camFacingBack = Math.abs(yawNorm - Math.PI) < 0.7;
+
+        if (isBackPoint && camFacingFront) {
+          r.view('back');
+        } else if (isFrontPoint && camFacingBack) {
+          r.view('front');
+        }
+      }
+
       window.parent.postMessage({
         type: 'msk_acupoint_selected',
         point: pt,
@@ -378,7 +426,12 @@
   // Listen for commands from parent window
   window.addEventListener('message', (ev) => {
     if (!ev.data) return;
-    if (ev.data.action === 'select_acupoint') {
+    if (ev.data.action === 'clear_selection' || ev.data.action === 'reset_view') {
+      selectedCode = null;
+      const pin = document.getElementById('pin');
+      if (pin) pin.hidden = true;
+      render();
+    } else if (ev.data.action === 'select_acupoint') {
       showPoints = true;
       const chk = document.getElementById('chkShowPoints');
       if (chk) chk.checked = true;

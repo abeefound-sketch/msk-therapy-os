@@ -44,7 +44,8 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .brand h1 { font-size: 18px; font-weight: 700; color: var(--primary); }
     .brand .badge {
@@ -55,9 +56,14 @@
       padding: 2px 8px;
       border-radius: 999px;
     }
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
     .header-controls {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 12px;
     }
     select, button, input, textarea {
@@ -126,10 +132,31 @@
     .grid-2col {
       display: grid;
       grid-template-columns: 380px 1fr;
-      gap: 24px;
+      gap: 20px;
     }
-    @media (max-width: 900px) {
+    .grid-atlas {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 1024px) {
+      .grid-atlas { grid-template-columns: 1fr; }
       .grid-2col { grid-template-columns: 1fr; }
+      .main-container { padding: 0 16px; margin: 16px auto; }
+      .header-controls { flex-wrap: wrap; }
+    }
+    @media (max-width: 640px) {
+      .main-container { padding: 0 10px; margin: 10px auto; }
+      .card { padding: 14px; margin-bottom: 14px; }
+      #atlasContainer { height: 420px !important; }
+      .nav-tabs { padding: 0 8px; }
+      .tab-btn { padding: 10px 10px; font-size: 12px; }
+      header { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 14px; width: 100%; max-width: 100%; box-sizing: border-box; }
+      .header-controls { display: flex; flex-direction: column; align-items: stretch; width: 100%; gap: 6px; }
+      .header-controls select, .header-controls button { width: 100%; max-width: 100%; }
+      .brand { flex-wrap: wrap; gap: 6px; }
+      .brand h1 { font-size: 16px; margin: 0; }
+      .brand .badge { font-size: 10px; }
     }
     .card {
       background: var(--surface);
@@ -289,7 +316,7 @@
   <main class="main-container">
     <!-- TAB 1: BODY MAP & ANATOMY -->
     <section id="tab-bodymap" class="tab-content">
-      <div class="grid-2col" style="grid-template-columns: 1.35fr 1fr;">
+      <div class="grid-atlas">
         <div class="card body-map-container" style="min-height:640px;">
           <div class="card-title">
             <span>3D Anatomy Atlas <small style="color:var(--primary); font-size:11px;">(Open Anatomy Atlas + BodyParts3D 4.0)</small></span>
@@ -336,6 +363,16 @@
         </div>
 
         <div>
+          <!-- No Selection Placeholder Hint -->
+          <div id="atlasNoSelectionHint" class="card" style="border-style:dashed; border-color:var(--border); background:rgba(30,41,59,0.25); margin-bottom:14px; text-align:center; padding:16px 12px;">
+            <div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;">
+              🔍 Interactive 3D Anatomy & Acupoint Inspector
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); line-height:1.5;">
+              Select any anatomical structure or acupuncture point in the 3D model, or click <strong>🔍 3D Focus</strong> below to inspect anatomical details and clinical evidence.
+            </div>
+          </div>
+
           <!-- Selected 3D Acupoint Interactive Banner (M2.1) -->
           <div id="atlasAcupointCard" class="card" style="display:none; border-color:#38bdf8; background:rgba(15,23,42,0.95); margin-bottom:14px;">
             <div class="card-title">
@@ -779,16 +816,30 @@
         showAtlasSelection(name, fmaId, category);
       } else if (ev.data.type === "msk_acupoint_selected") {
         showAtlasAcupoint(ev.data.point);
+      } else if (ev.data.type === "msk_selection_cleared") {
+        clearAtlasInspector();
       } else if (ev.data.type === "msk_atlas_ready") {
         const overlay = document.getElementById("atlasLoadingOverlay");
         if (overlay) { overlay.style.opacity = "0"; setTimeout(() => overlay.style.display = "none", 400); }
       }
     });
 
-    function atlasSelectStructure(fmaId, isolate) {
+    function clearAtlasInspector() {
+      lastSelectedStructure = null;
+      lastSelectedAcupoint = null;
+      const bStruct = document.getElementById("atlasSelectionCard");
+      if (bStruct) bStruct.style.display = "none";
+      const bAcu = document.getElementById("atlasAcupointCard");
+      if (bAcu) bAcu.style.display = "none";
+      const hint = document.getElementById("atlasNoSelectionHint");
+      if (hint) hint.style.display = "block";
+    }
+
+    function atlasSelectStructure(fmaId, isolate, encodedName) {
       const f = document.getElementById("atlasFrame");
       if (f && f.contentWindow) {
-        f.contentWindow.postMessage({ action: "select_fma", fmaId, isolate }, "*");
+        const name = encodedName ? decodeURIComponent(encodedName) : "";
+        f.contentWindow.postMessage({ action: "select_fma", fmaId, isolate, name }, "*");
       }
     }
 
@@ -803,6 +854,9 @@
       const f = document.getElementById("atlasFrame");
       if (f && f.contentWindow) {
         f.contentWindow.postMessage({ action, ...params }, "*");
+      }
+      if (action === "reset_view" || action === "clear_selection") {
+        clearAtlasInspector();
       }
     }
 
@@ -830,6 +884,7 @@
 
     function showAtlasSelection(name, fmaId, category) {
       lastSelectedStructure = { name, fmaId, category };
+      lastSelectedAcupoint = null;
       const banner = document.getElementById("atlasSelectionCard");
       if (banner) {
         banner.style.display = "block";
@@ -837,13 +892,22 @@
         document.getElementById("selectedStructureFMA").textContent = fmaId ? `FMA: ${fmaId}` : "";
         document.getElementById("selectedStructureCat").textContent = category || "Anatomy";
       }
+      const bAcu = document.getElementById("atlasAcupointCard");
+      if (bAcu) bAcu.style.display = "none";
+      const hint = document.getElementById("atlasNoSelectionHint");
+      if (hint) hint.style.display = "none";
     }
 
     function showAtlasAcupoint(pt) {
       lastSelectedAcupoint = pt;
+      lastSelectedStructure = null;
       const card = document.getElementById("atlasAcupointCard");
       if (!card) return;
       card.style.display = "block";
+      const bStruct = document.getElementById("atlasSelectionCard");
+      if (bStruct) bStruct.style.display = "none";
+      const hint = document.getElementById("atlasNoSelectionHint");
+      if (hint) hint.style.display = "none";
 
       document.getElementById("acuPointTitle").textContent = `${pt.name_en} (${pt.code} / ${pt.name_zh} - ${pt.pinyin})`;
       document.getElementById("acuMeridianInfo").textContent = `${pt.meridian_name} (${pt.meridian_code}) • Region: ${pt.region || 'Head/Neck'}`;
@@ -1034,10 +1098,11 @@
           const bpText = s.bodyparts3d_id ? `<span style="font-size:11px; color:#38bdf8;">FMA: ${s.bodyparts3d_id}</span>` : "";
           const fmaId = s.bodyparts3d_id || "";
           let actionButtons = "";
+          const safeName = encodeURIComponent(s.name);
           if (fmaId) {
             actionButtons = `<div style="display:flex; gap:6px; margin-top:8px;">
-                 <button class="btn-secondary" onclick="atlasSelectStructure('${fmaId}', false)" style="font-size:11px; padding:3px 8px; cursor:pointer;">🔍 3D Focus</button>
-                 <button class="btn-secondary" onclick="atlasSelectStructure('${fmaId}', true)" style="font-size:11px; padding:3px 8px; cursor:pointer;">⚡ 3D Isolate</button>
+                 <button class="btn-secondary" onclick="atlasSelectStructure('${fmaId}', false, '${safeName}')" style="font-size:11px; padding:3px 8px; cursor:pointer;">🔍 3D Focus</button>
+                 <button class="btn-secondary" onclick="atlasSelectStructure('${fmaId}', true, '${safeName}')" style="font-size:11px; padding:3px 8px; cursor:pointer;">⚡ 3D Isolate</button>
                </div>`;
           } else if (s.structure_id.startsWith("ACU-")) {
             const ptCode = s.structure_id.replace("ACU-", "");

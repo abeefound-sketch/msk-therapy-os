@@ -158,12 +158,77 @@
 
     // MSK-Therapy-OS Integration Bridge
     window._msk_bridge_installed = true;
+
+    const FMA_CONCEPT_MAP = {
+      'FJ9914': 'cervical_spine',
+      'FMA9914': 'cervical_spine',
+      'FMA32529': 'trapezius',
+      'FMA32557': 'trapezius',
+      'FMA32556': 'trapezius',
+      'FMA32555': 'trapezius',
+      'FMA32519': 'trapezius',
+      'FMA32522': 'deltoid',
+      'FMA32527': 'pectoralis',
+      'FMA9915': 'thoracic_spine',
+      'FMA7130': 'skull',
+      'FMA13394': 'deltoid'
+    };
+
+    function resolveConceptIndex(fmaId, name) {
+      if (!atlas || !atlas.concepts) return -1;
+      const cleanId = (fmaId || '').trim().toUpperCase();
+
+      // 1. Direct ID match
+      let ci = atlas.concepts.findIndex(c => c.id && c.id.trim().toUpperCase() === cleanId);
+      if (ci >= 0) return ci;
+
+      // 2. Swapped prefix match (FJ <-> FMA)
+      if (cleanId.startsWith('FJ')) {
+        const alt = 'FMA' + cleanId.slice(2);
+        ci = atlas.concepts.findIndex(c => c.id && c.id.trim().toUpperCase() === alt);
+        if (ci >= 0) return ci;
+      } else if (cleanId.startsWith('FMA')) {
+        const alt = 'FJ' + cleanId.slice(3);
+        ci = atlas.concepts.findIndex(c => c.id && c.id.trim().toUpperCase() === alt);
+        if (ci >= 0) return ci;
+      }
+
+      // 3. Procedural DEMO- id
+      const demoId = 'DEMO-' + cleanId.toLowerCase();
+      ci = atlas.concepts.findIndex(c => c.id && c.id.toLowerCase() === demoId);
+      if (ci >= 0) return ci;
+
+      // 4. Known FMA mapping
+      if (FMA_CONCEPT_MAP[cleanId]) {
+        const partKey = FMA_CONCEPT_MAP[cleanId];
+        ci = atlas.concepts.findIndex(c => (c.id && c.id.toLowerCase().includes(partKey)) || (c.name && c.name.toLowerCase().includes(partKey)));
+        if (ci >= 0) return ci;
+      }
+
+      // 5. Name match or search
+      if (name) {
+        const cleanName = name.toLowerCase();
+        const found = atlas.search(cleanName, 5);
+        if (found.length) return found[0];
+        ci = atlas.concepts.findIndex(c => c.name && (c.name.toLowerCase().includes(cleanName) || cleanName.includes(c.name.toLowerCase())));
+        if (ci >= 0) return ci;
+      }
+
+      // 6. Substring numeric match
+      const digits = cleanId.replace(/\D+/g, '');
+      if (digits && digits.length >= 3) {
+        ci = atlas.concepts.findIndex(c => c.id && c.id.includes(digits));
+        if (ci >= 0) return ci;
+      }
+
+      return -1;
+    }
+
     window.addEventListener('message', (ev) => {
       if (!ev.data || typeof ev.data !== 'object') return;
-      const { action, fmaId, query, preset, isolate, enabled } = ev.data;
-      if (action === 'select_fma' && fmaId && atlas) {
-        const targetId = fmaId.trim().toUpperCase();
-        const ci = atlas.concepts.findIndex(c => c.id && c.id.trim().toUpperCase() === targetId);
+      const { action, fmaId, name, query, preset, isolate, enabled } = ev.data;
+      if (action === 'select_fma' && (fmaId || name) && atlas) {
+        const ci = resolveConceptIndex(fmaId, name);
         if (ci >= 0) {
           select(ci, { focus: true });
           if (isolate) isolateSelection();
@@ -177,6 +242,8 @@
         }
       } else if (action === 'isolate_selection') {
         isolateSelection();
+      } else if (action === 'clear_selection') {
+        clearSelection();
       } else if (action === 'reset_view') {
         resetAll();
       } else if (action === 'set_view' && preset && renderer) {
@@ -363,6 +430,11 @@
     renderer.requestRender();
     markTree();
     showInspector();
+    if (window.parent && window.parent !== window) {
+      try {
+        window.parent.postMessage({ type: 'msk_selection_cleared' }, '*');
+      } catch (_) {}
+    }
   }
 
   function focusSelection() {

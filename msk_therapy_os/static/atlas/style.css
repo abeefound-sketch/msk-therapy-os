@@ -262,11 +262,28 @@ dialog { width: min(640px, 94vw); max-height: 90vh; }
 
 /* ---------- embedded mode ---------- */
 body.embedded #app {
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 220px 1fr;
   grid-template-areas: "top top" "side stage" "status status";
 }
 body.embedded .inspector {
   display: none !important;
+}
+
+@media (max-width: 600px) {
+  body.embedded #app {
+    grid-template-columns: 1fr;
+    grid-template-areas: "top" "stage" "status";
+  }
+  body.embedded .sidebar {
+    display: none !important;
+  }
+  .topbar {
+    padding: 0 8px;
+    gap: 8px;
+  }
+  .topbar .brand span {
+    display: none;
+  }
 }
 
 
