@@ -142,6 +142,59 @@ DEFAULT_ANATOMY_CATALOG: List[AnatomyRecord] = [
         namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
         evidence_id="EVID-A-002",
     ),
+    # -----------------------------------------------------------------------
+    # Verified Traditional Meridian & Acupoints (WHO 2008 & GB/T 12346-2021)
+    # -----------------------------------------------------------------------
+    AnatomyRecord(
+        structure_id="ACU-GB21",
+        name="Jianjing (GB21 / 肩井 - Trapezius Trigger Point Zone)",
+        region="neck",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / chino-meds",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-GB20",
+        name="Fengchi (GB20 / 风池 - Suboccipital Region)",
+        region="neck",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / chino-meds",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-GV14",
+        name="Dazhui (GV14 / 大椎 - C7-T1 Spinous Process Junction)",
+        region="neck",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / chino-meds",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-BL10",
+        name="Tianzhu (BL10 / 天柱 - Paraspinal Cervical Border)",
+        region="neck",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / chino-meds",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-LI4",
+        name="Hegu (LI4 / 合谷 - First Dorsal Interosseous)",
+        region="shoulder",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / chino-meds",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
     # Traditional Thai Line Schema (Separate namespace)
     AnatomyRecord(
         structure_id="TRAD-THAI-001",
@@ -163,6 +216,16 @@ DEFAULT_ANATOMY_CATALOG: List[AnatomyRecord] = [
         namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
         evidence_id="EVID-T-001",
     ),
+    AnatomyRecord(
+        structure_id="TRAD-THAI-003",
+        name="Sen Sumana (Central midline spinal trajectory)",
+        region="neck",
+        source_dataset="Department of Thai Traditional and Alternative Medicine (DTAM)",
+        bodyparts3d_id=None,
+        atlas_url=DEFAULT_ATLAS_BASE,
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-001",
+    ),
     # Dien Chan Facial Reflexology Schema (Separate namespace)
     AnatomyRecord(
         structure_id="TRAD-DIEN-001",
@@ -177,6 +240,16 @@ DEFAULT_ANATOMY_CATALOG: List[AnatomyRecord] = [
     AnatomyRecord(
         structure_id="TRAD-DIEN-002",
         name="Point 19 (Subnasal reflex projection for autonomic/spine)",
+        region="face",
+        source_dataset="International Multireflexology Dien Chan Academy",
+        bodyparts3d_id=None,
+        atlas_url=DEFAULT_ATLAS_BASE,
+        namespace=KnowledgeNamespace.DIEN_CHAN_REFLEX.value,
+        evidence_id="EVID-T-002",
+    ),
+    AnatomyRecord(
+        structure_id="TRAD-DIEN-003",
+        name="Point 34 (Above medial brow / shoulder reflex)",
         region="face",
         source_dataset="International Multireflexology Dien Chan Academy",
         bodyparts3d_id=None,

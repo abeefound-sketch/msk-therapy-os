@@ -33,6 +33,14 @@ from msk_therapy_os.soap import (
     get_soap_notes_for_visit,
     review_soap_note,
 )
+from msk_therapy_os.tracking import (
+    export_case_fhir,
+    get_patient_timeline,
+    list_observations,
+    list_sessions,
+    record_observation,
+    record_session,
+)
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 ATLAS_UI_DIR = STATIC_DIR / "atlas"
@@ -364,6 +372,56 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     report_md = generate_case_report(db, case_id)
                     self._send_text(report_md, content_type="text/markdown; charset=utf-8")
 
+                elif path == "/api/timeline":
+                    case_id = query.get("case_id", ["DEMO-NECK-001"])[0]
+                    timeline_data = get_patient_timeline(db, case_id)
+                    self._send_json(timeline_data)
+
+                elif path == "/api/observations":
+                    v_id = query.get("visit_id", [None])[0]
+                    c_id = query.get("case_id", [None])[0]
+                    s_id = query.get("structure_id", [None])[0]
+                    obs = list_observations(db, visit_id=int(v_id) if v_id else None, case_id=c_id, structure_id=s_id)
+                    self._send_json([{
+                        "id": o.id,
+                        "visit_id": o.visit_id,
+                        "structure_id": o.structure_id,
+                        "structure_type": o.structure_type,
+                        "observation_type": o.observation_type,
+                        "severity": o.severity,
+                        "finding": o.finding,
+                        "interpretation": o.interpretation,
+                        "created_utc": o.created_utc,
+                    } for o in obs])
+
+                elif path == "/api/sessions":
+                    v_id = query.get("visit_id", [None])[0]
+                    c_id = query.get("case_id", [None])[0]
+                    sess = list_sessions(db, visit_id=int(v_id) if v_id else None, case_id=c_id)
+                    self._send_json([{
+                        "id": s.id,
+                        "visit_id": s.visit_id,
+                        "modality": s.modality,
+                        "duration_min": s.duration_min,
+                        "target_structures": s.target_structures,
+                        "parameters": s.parameters,
+                        "adverse_reactions": s.adverse_reactions,
+                        "practitioner_role": s.practitioner_role,
+                        "created_utc": s.created_utc,
+                    } for s in sess])
+
+                elif path == "/api/export-fhir":
+                    case_id = query.get("case_id", ["DEMO-NECK-001"])[0]
+                    fhir_bundle = export_case_fhir(db, case_id)
+                    self._send_json(fhir_bundle)
+
+                elif path == "/api/acupuncture-3d":
+                    acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
+                    if acu_file.exists():
+                        self._send_text(acu_file.read_text(encoding="utf-8"), content_type="application/json")
+                    else:
+                        self._send_json({"error": "Acupuncture 3D dataset not found"}, status=HTTPStatus.NOT_FOUND)
+
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
             except Exception as e:
@@ -448,6 +506,32 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         feedback=body.get("feedback", ""),
                     )
                     self._send_json({"status": "reviewed", "decision": body["decision"]})
+
+                elif path == "/api/observation":
+                    obs_id = record_observation(
+                        db,
+                        visit_id=int(body["visit_id"]),
+                        structure_id=body["structure_id"],
+                        structure_type=body.get("structure_type", "anatomy"),
+                        observation_type=body.get("observation_type", "palpation"),
+                        severity=int(body.get("severity", 5)),
+                        finding=body["finding"],
+                        interpretation=body.get("interpretation", ""),
+                    )
+                    self._send_json({"status": "created", "observation_id": obs_id})
+
+                elif path == "/api/session":
+                    sess_id = record_session(
+                        db,
+                        visit_id=int(body["visit_id"]),
+                        modality=body["modality"],
+                        duration_min=int(body["duration_min"]),
+                        target_structures=body.get("target_structures", "[]"),
+                        parameters=body.get("parameters", ""),
+                        adverse_reactions=body.get("adverse_reactions", "none"),
+                        practitioner_role=body.get("role", "student"),
+                    )
+                    self._send_json({"status": "created", "session_id": sess_id})
 
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)

@@ -120,6 +120,32 @@ class AnatomyRecord:
 
 
 @dataclass(frozen=True)
+class ObservationRecord:
+    id: Optional[int]
+    visit_id: int
+    structure_id: str
+    structure_type: str
+    observation_type: str
+    severity: int
+    finding: str
+    interpretation: str
+    created_utc: str
+
+
+@dataclass(frozen=True)
+class SessionRecord:
+    id: Optional[int]
+    visit_id: int
+    modality: str
+    duration_min: int
+    target_structures: str
+    parameters: str
+    adverse_reactions: str
+    practitioner_role: str
+    created_utc: str
+
+
+@dataclass(frozen=True)
 class QuestionnaireItem:
     item_id: str
     region: str

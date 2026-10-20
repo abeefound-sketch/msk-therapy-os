@@ -47,6 +47,7 @@
       <button class="tab on" data-tab="layers" role="tab">Layers</button>
       <button class="tab" data-tab="tree" role="tab">Structures</button>
       <button class="tab" data-tab="sections" role="tab">Sections</button>
+      <button class="tab" data-tab="meridians" role="tab">Meridians</button>
     </nav>
 
     <section class="pane" data-pane="layers">
@@ -78,10 +79,12 @@
       <input id="planePos" type="range" min="0" max="1000" value="500" disabled>
       <label class="check"><input id="planeFlip" type="checkbox" disabled> Keep the other side</label>
     </section>
+    <section class="pane" data-pane="meridians" id="panelMeridians" hidden></section>
   </aside>
 
   <main class="stage">
     <canvas id="viewport" tabindex="0" aria-label="3D anatomy view. Drag to rotate, right-drag to pan, scroll to zoom, click to identify."></canvas>
+    <svg id="acupunctureOverlay" class="acupuncture-overlay"></svg>
     <div id="pin" class="pin" hidden><span></span></div>
     <div id="hoverTip" class="hover-tip" hidden></div>
     <div id="loading" class="loading"><span id="loadingText">Loading atlas</span><div class="bar"><div id="loadingBar"></div></div></div>
@@ -221,5 +224,6 @@
 <script src="wiki.js"></script>
 <script src="gl.js"></script>
 <script src="app.js"></script>
+<script src="meridians.js"></script>
 </body>
 </html>

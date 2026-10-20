@@ -116,6 +116,18 @@ DEFAULT_EVIDENCE_CATALOG: List[EvidenceRecord] = [
         reviewed_on="2026-10-19",
         reviewer="Integrative Medicine Reviewer",
     ),
+    EvidenceRecord(
+        evidence_id="EVID-T-003",
+        title="WHO Standard Acupuncture Point Locations & Nomenclature (WHO 2008 / GB/T 12346-2021)",
+        url="https://iris.who.int/handle/10665/207797",
+        organization="World Health Organization (WHO) / Standardization Administration of China",
+        year=2021,
+        license="WHO Open Access / National Standard",
+        tier=EvidenceTier.TIER_4_TRADITIONAL_SCHEMA.value,
+        claim_scope="Standardized surface topography and nomenclature for 361 classical acupuncture points. Traditional meridian construct; not physically equivalent to anatomical nerves, blood vessels, or fascia.",
+        reviewed_on="2026-10-20",
+        reviewer="Acupuncture & Integrative Medicine Governance Panel",
+    ),
 ]
 
 

@@ -280,7 +280,7 @@
   <nav class="nav-tabs">
     <button class="tab-btn active" data-tab="tab-bodymap">Interactive Body-Map & Anatomy</button>
     <button class="tab-btn" data-tab="tab-safety">Safety & Red Flags Gating Drill</button>
-    <button class="tab-btn" data-tab="tab-case">Longitudinal Visits & ROM</button>
+    <button class="tab-btn" data-tab="tab-case">Longitudinal Tracking & Timeline</button>
     <button class="tab-btn" data-tab="tab-soap">Structured SOAP & Supervision</button>
     <button class="tab-btn" data-tab="tab-evidence">Curated Evidence Catalog</button>
     <button class="tab-btn" data-tab="tab-report">Offline Markdown Report</button>
@@ -311,8 +311,17 @@
               <div style="color:var(--text-muted); font-size:11px; margin-top:6px;">BodyParts3D 4.0 — 2,234 meshes, 3,434 structures</div>
             </div>
           </div>
+          <!-- Multimodal 3D Layer Toggles (M2.1) -->
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; padding:8px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
+            <span style="font-size:11px; font-weight:600; color:var(--film);">3D Layers:</span>
+            <button id="btnToggleAcupoints" class="btn-secondary active" onclick="toggleAtlasLayer('points')" style="font-size:11px; padding:3px 8px; background:#0284c7; color:#fff; border-color:#38bdf8;">📍 Acupoints (WHO)</button>
+            <button id="btnToggleMeridians" class="btn-secondary active" onclick="toggleAtlasLayer('meridians')" style="font-size:11px; padding:3px 8px; background:#0f766e; color:#fff; border-color:#2dd4bf;">⚡ 14 Meridians</button>
+            <button id="btnToggleThai" class="btn-secondary" onclick="toggleAtlasLayer('thai')" style="font-size:11px; padding:3px 8px;">🇹🇭 Thai Sen Sib</button>
+            <button id="btnToggleDienChan" class="btn-secondary" onclick="toggleAtlasLayer('dien_chan')" style="font-size:11px; padding:3px 8px;">🇻🇳 Dien Chan Reflex</button>
+          </div>
+
           <div style="font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-            <span>BodyParts3D © DBCLS, CC BY 4.0 • Open Anatomy Atlas (MIT) by Cognition Lab, SNUC</span>
+            <span>BodyParts3D © DBCLS, CC BY 4.0 • WHO 2008 & GB/T 12346-2021 (CC0 Data)</span>
             <span>Region selector:</span>
           </div>
           <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
@@ -326,6 +335,38 @@
         </div>
 
         <div>
+          <!-- Selected 3D Acupoint Interactive Banner (M2.1) -->
+          <div id="atlasAcupointCard" class="card" style="display:none; border-color:#38bdf8; background:rgba(15,23,42,0.95); margin-bottom:14px;">
+            <div class="card-title">
+              <span style="color:#38bdf8; font-weight:700;">Selected Acupuncture Point</span>
+              <span id="acuEvidenceBadge" class="badge" style="background:#0f766e; color:#fff;"></span>
+            </div>
+            <div style="font-size:16px; font-weight:700; color:#fff; margin-bottom:2px;" id="acuPointTitle"></div>
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;" id="acuMeridianInfo"></div>
+            
+            <div style="display:grid; grid-template-columns: 1fr; gap:6px; font-size:12px; line-height:1.4; margin-bottom:8px;">
+              <div><strong style="color:var(--text);">Location:</strong> <span id="acuLocationText" style="color:var(--text-muted);"></span></div>
+              <div><strong style="color:var(--text);">Deep Anatomy:</strong> <span id="acuAnatomyText" style="color:var(--text-muted);"></span></div>
+              <div><strong style="color:var(--text);">Indications:</strong> <span id="acuIndicationsText" style="color:#38bdf8;"></span></div>
+              <div><strong style="color:var(--text);">Tuina Technique:</strong> <span id="acuTuinaText" style="color:var(--text-muted);"></span></div>
+              <div id="acuTriggerBox" style="background:rgba(234,179,8,0.1); border-left:3px solid #eab308; padding:4px 8px; border-radius:2px;">
+                <strong style="color:#eab308;">Trigger Point Correlation:</strong> <span id="acuTriggerText" style="color:var(--text);"></span>
+              </div>
+              <div id="acuCautionBox" style="background:rgba(239,68,68,0.1); border-left:3px solid #ef4444; padding:4px 8px; border-radius:2px;">
+                <strong style="color:#ef4444;">Safety Caution:</strong> <span id="acuCautionText" style="color:var(--text);"></span>
+              </div>
+            </div>
+
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:10px;" id="acuStandards">
+              Standards: WHO 2008 & GB/T 12346-2021 • Traditional Meridian Construct (Not Physical Vessel)
+            </div>
+
+            <div style="display:flex; gap:8px;">
+              <button onclick="addAcupointToObservation()" style="font-size:11px; padding:4px 10px; background:#0f766e; color:#fff;">+ Add to Observations</button>
+              <button onclick="addAcupointToSOAP()" style="font-size:11px; padding:4px 10px; background:#0284c7; color:#fff;">+ Add to SOAP Note</button>
+            </div>
+          </div>
+
           <!-- Selected 3D Structure Interactive Banner -->
           <div id="atlasSelectionCard" class="card" style="display:none; border-color:var(--primary); background:rgba(56,189,248,0.08); margin-bottom:14px;">
             <div class="card-title">
@@ -413,18 +454,202 @@
       </div>
     </section>
 
-    <!-- TAB 3: VISITS & ROM -->
+    <!-- TAB 3: LONGITUDINAL TRACKING, OBSERVATIONS & TIMELINE (M2.2) -->
     <section id="tab-case" class="tab-content" style="display:none;">
+      <!-- Patient Profile Header -->
       <div class="card">
         <div class="card-title">
-          <span>Case Intake & Baseline Profile: <span id="intakeCaseId" style="color:var(--primary);"></span></span>
+          <span>Patient Profile & Clinical Baseline: <span id="intakeCaseId" style="color:var(--primary);"></span></span>
+          <div style="display:flex; gap:6px;">
+            <button onclick="exportFHIR()" class="btn-secondary" style="font-size:11px; padding:3px 9px; background:#0284c7; color:#fff;">📤 Export HL7 FHIR R4 Bundle</button>
+          </div>
         </div>
         <div id="intakeProfileArea">Loading intake...</div>
       </div>
 
+      <!-- Longitudinal Progress & Day-by-Day Trajectory Dashboard -->
+      <div class="card" style="border-color:#38bdf8;">
+        <div class="card-title">
+          <span style="color:#38bdf8; font-weight:700;">Longitudinal Therapy Progress Dashboard (Day 1 ➔ Day 3 ➔ Day 7)</span>
+          <span id="trendSummaryBadge" class="badge" style="background:#16a34a; color:#fff;">Progressing</span>
+        </div>
+        
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:14px;">
+          <!-- Pain Trend Card -->
+          <div style="background:rgba(30,41,59,0.7); border:1px solid var(--border); border-radius:6px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Pain Severity (VAS 0–10)</span>
+              <span id="painDeltaBadge" style="font-size:11px; color:#4ade80; font-weight:700;">Δ -4 (-66.7%)</span>
+            </div>
+            <div style="display:flex; align-items:baseline; gap:8px;">
+              <span style="font-size:24px; font-weight:800; color:#ef4444;" id="painStartVal">6</span>
+              <span style="color:var(--text-muted);">➔</span>
+              <span style="font-size:24px; font-weight:800; color:#f59e0b;" id="painMidVal">4</span>
+              <span style="color:var(--text-muted);">➔</span>
+              <span style="font-size:24px; font-weight:800; color:#22c55e;" id="painEndVal">2</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">Target: &le; 2</span>
+            </div>
+            <div style="height:6px; width:100%; background:#334155; border-radius:3px; margin-top:8px; overflow:hidden;">
+              <div id="painProgressBar" style="height:100%; width:67%; background:linear-gradient(90deg, #ef4444, #22c55e); border-radius:3px;"></div>
+            </div>
+          </div>
+
+          <!-- ROM Trend Card -->
+          <div style="background:rgba(30,41,59,0.7); border:1px solid var(--border); border-radius:6px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Active Cervical Rotation (Deg)</span>
+              <span id="romDeltaBadge" style="font-size:11px; color:#4ade80; font-weight:700;">Δ +20° (+44.4%)</span>
+            </div>
+            <div style="display:flex; align-items:baseline; gap:8px;">
+              <span style="font-size:24px; font-weight:800; color:#ef4444;" id="romStartVal">45°</span>
+              <span style="color:var(--text-muted);">➔</span>
+              <span style="font-size:24px; font-weight:800; color:#f59e0b;" id="romMidVal">55°</span>
+              <span style="color:var(--text-muted);">➔</span>
+              <span style="font-size:24px; font-weight:800; color:#22c55e;" id="romEndVal">65°</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">Normal: 60°–80°</span>
+            </div>
+            <div style="height:6px; width:100%; background:#334155; border-radius:3px; margin-top:8px; overflow:hidden;">
+              <div id="romProgressBar" style="height:100%; width:81%; background:linear-gradient(90deg, #38bdf8, #22c55e); border-radius:3px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sequential Visit Cards -->
+        <div id="longitudinalCardsArea" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Structure-Linked Observations & Palpation Findings -->
       <div class="card">
         <div class="card-title">
-          <span>Longitudinal Visit Timeline</span>
+          <span>Structured Anatomical & Acupoint Observations</span>
+          <button onclick="toggleObservationForm()" class="btn-secondary" style="font-size:11px; padding:2px 8px;">+ Record New Observation</button>
+        </div>
+        <div id="observationsTableArea">Loading observations...</div>
+
+        <!-- New Observation Form (Collapsible) -->
+        <div id="newObservationFormBox" style="display:none; margin-top:14px; padding:12px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
+          <h4 style="margin:0 0 10px 0; font-size:13px; color:var(--primary);">Record Structured Clinical Observation</h4>
+          <form id="addObservationForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Target Visit:</label>
+                <select id="obsVisitSelect" required></select>
+              </div>
+              <div class="form-group">
+                <label>Structure / Acupoint ID:</label>
+                <input type="text" id="obsStructureId" placeholder="e.g. STR-CERV-002 or ACU-GB21" required>
+              </div>
+              <div class="form-group">
+                <label>Structure Type:</label>
+                <select id="obsStructureType">
+                  <option value="anatomy">Anatomical Muscle/Bone (FMA)</option>
+                  <option value="acupoint">Acupuncture Point (WHO)</option>
+                  <option value="traditional_sen">Traditional Sen Sib / Reflex</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Observation Type:</label>
+                <select id="obsType">
+                  <option value="palpation">Palpation Tenderness / Texture</option>
+                  <option value="trigger_point">Myofascial Trigger Point</option>
+                  <option value="pain_location">Somatic Pain Location</option>
+                  <option value="rom_restriction">ROM Restriction Endpoint</option>
+                  <option value="neurological">Neurological Symptom Screen</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Severity (0–10 VAS):</label>
+                <input type="number" id="obsSeverity" min="0" max="10" value="5" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Objective Finding (Observable physical signs):</label>
+              <input type="text" id="obsFinding" placeholder="Describe palpation, taut band, texture, or pain response" required>
+            </div>
+            <div class="form-group">
+              <label>Clinical Interpretation (Working hypothesis):</label>
+              <input type="text" id="obsInterpretation" placeholder="Postural myofascial tension; rule out radiculopathy">
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button type="submit" style="font-size:12px; padding:6px 14px;">Save Observation</button>
+              <button type="button" onclick="toggleObservationForm()" class="btn-secondary" style="font-size:12px; padding:6px 14px;">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Therapy Sessions Documentation -->
+      <div class="card">
+        <div class="card-title">
+          <span>Documented Therapy Sessions (Massage, Thai Massage, Acupressure, DDS)</span>
+          <button onclick="toggleSessionForm()" class="btn-secondary" style="font-size:11px; padding:2px 8px;">+ Document Session</button>
+        </div>
+        <div id="sessionsTableArea">Loading sessions...</div>
+
+        <!-- New Session Form (Collapsible) -->
+        <div id="newSessionFormBox" style="display:none; margin-top:14px; padding:12px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
+          <h4 style="margin:0 0 10px 0; font-size:13px; color:var(--primary);">Document Therapy Intervention Session</h4>
+          <form id="addSessionForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Visit:</label>
+                <select id="sessVisitSelect" required></select>
+              </div>
+              <div class="form-group">
+                <label>Modality:</label>
+                <select id="sessModality">
+                  <option value="massage">Swedish / Clinical Massage</option>
+                  <option value="acupressure">Targeted Acupressure / Tuina</option>
+                  <option value="thai_massage">Traditional Thai Bodywork</option>
+                  <option value="dds">DDS / Electrical Stimulation Device</option>
+                  <option value="active_stretching">Active Mobilization & Ergonomics</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Duration (Minutes):</label>
+                <input type="number" id="sessDuration" min="5" max="120" value="20" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Target Structures (IDs):</label>
+              <input type="text" id="sessTargets" placeholder='["STR-CERV-002", "ACU-GB21"]' required>
+            </div>
+            <div class="form-group">
+              <label>Technique Parameters:</label>
+              <input type="text" id="sessParams" placeholder="e.g. Ischemic compression 30s x 3, gentle passive stretching" required>
+            </div>
+            <div class="form-group">
+              <label>Adverse Reactions:</label>
+              <input type="text" id="sessAdverse" value="none" required>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button type="submit" style="font-size:12px; padding:6px 14px;">Save Session</button>
+              <button type="button" onclick="toggleSessionForm()" class="btn-secondary" style="font-size:12px; padding:6px 14px;">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- FHIR Bundle Modal / Display -->
+      <div id="fhirExportBox" class="card" style="display:none; border-color:#0284c7; background:rgba(15,23,42,0.98);">
+        <div class="card-title">
+          <span>HL7 FHIR R4 Bundle Export (Medplum Interoperability Spec)</span>
+          <button onclick="document.getElementById('fhirExportBox').style.display='none'" class="btn-secondary" style="font-size:11px;">Close</button>
+        </div>
+        <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px 0;">
+          Exported synthetic patient record conforming to HL7 FHIR R4 (Resources: Patient, Encounter, Observation for Pain/ROM/Anatomy).
+        </p>
+        <pre id="fhirPreArea" style="max-height:360px; overflow:auto; background:#0a0f1d; padding:12px; border-radius:6px; font-size:11px; color:#38bdf8;"></pre>
+      </div>
+
+      <!-- Standard Visits Table -->
+      <div class="card">
+        <div class="card-title">
+          <span>All Recorded Visits</span>
         </div>
         <div id="timelineTableArea">Loading visits...</div>
       </div>
@@ -538,6 +763,8 @@
     let activeRole = "student";
     let availableRedFlags = [];
     let lastSelectedStructure = null;
+    let lastSelectedAcupoint = null;
+    let layerStates = { points: true, meridians: true, thai: false, dien_chan: false };
 
     // MSK 3D Atlas Communication Bridge
     window.addEventListener("message", (ev) => {
@@ -545,6 +772,8 @@
       if (ev.data.type === "msk_structure_selected") {
         const { name, fmaId, category } = ev.data;
         showAtlasSelection(name, fmaId, category);
+      } else if (ev.data.type === "msk_acupoint_selected") {
+        showAtlasAcupoint(ev.data.point);
       } else if (ev.data.type === "msk_atlas_ready") {
         const overlay = document.getElementById("atlasLoadingOverlay");
         if (overlay) { overlay.style.opacity = "0"; setTimeout(() => overlay.style.display = "none", 400); }
@@ -572,6 +801,27 @@
       }
     }
 
+    function toggleAtlasLayer(layer) {
+      layerStates[layer] = !layerStates[layer];
+      atlasCommand("toggle_meridian_layer", { layer, enabled: layerStates[layer] });
+      const btnMap = {
+        points: "btnToggleAcupoints",
+        meridians: "btnToggleMeridians",
+        thai: "btnToggleThai",
+        dien_chan: "btnToggleDienChan"
+      };
+      const btn = document.getElementById(btnMap[layer]);
+      if (btn) {
+        if (layerStates[layer]) {
+          btn.classList.add("active");
+          btn.style.borderColor = "var(--primary)";
+        } else {
+          btn.classList.remove("active");
+          btn.style.borderColor = "var(--border)";
+        }
+      }
+    }
+
     function showAtlasSelection(name, fmaId, category) {
       lastSelectedStructure = { name, fmaId, category };
       const banner = document.getElementById("atlasSelectionCard");
@@ -580,6 +830,37 @@
         document.getElementById("selectedStructureName").textContent = name;
         document.getElementById("selectedStructureFMA").textContent = fmaId ? `FMA: ${fmaId}` : "";
         document.getElementById("selectedStructureCat").textContent = category || "Anatomy";
+      }
+    }
+
+    function showAtlasAcupoint(pt) {
+      lastSelectedAcupoint = pt;
+      const card = document.getElementById("atlasAcupointCard");
+      if (!card) return;
+      card.style.display = "block";
+
+      document.getElementById("acuPointTitle").textContent = `${pt.name_en} (${pt.code} / ${pt.name_zh} - ${pt.pinyin})`;
+      document.getElementById("acuMeridianInfo").textContent = `${pt.meridian_name} (${pt.meridian_code}) • Region: ${pt.region || 'Head/Neck'}`;
+      document.getElementById("acuEvidenceBadge").textContent = `Tier 4: Grade ${pt.evidence_grade} Evidence`;
+      document.getElementById("acuLocationText").textContent = `${pt.location_zh || ''} (${pt.location_method || ''})`;
+      document.getElementById("acuAnatomyText").textContent = pt.anatomy || "Subcutaneous tissue, muscular fascia";
+      document.getElementById("acuIndicationsText").textContent = `${(pt.functions || []).join(', ')} | ${(pt.indications || []).join(', ')}`;
+      document.getElementById("acuTuinaText").textContent = pt.tuina_method || "Gentle sustained acupressure 1-2 min";
+
+      const triggerBox = document.getElementById("acuTriggerBox");
+      if (pt.trigger_point_note) {
+        triggerBox.style.display = "block";
+        document.getElementById("acuTriggerText").textContent = pt.trigger_point_note;
+      } else {
+        triggerBox.style.display = "none";
+      }
+
+      const cautionBox = document.getElementById("acuCautionBox");
+      if (pt.cautions && pt.cautions.length) {
+        cautionBox.style.display = "block";
+        document.getElementById("acuCautionText").textContent = pt.cautions.join("; ");
+      } else {
+        cautionBox.style.display = "none";
       }
     }
 
@@ -597,6 +878,48 @@
       }
     }
 
+    function addAcupointToSOAP() {
+      if (!lastSelectedAcupoint) return;
+      const objInput = document.getElementById("soapO");
+      if (objInput) {
+        const note = `Examined acupoint: ${lastSelectedAcupoint.name_en} (${lastSelectedAcupoint.code} / ${lastSelectedAcupoint.name_zh}) on ${lastSelectedAcupoint.meridian_name}. Palpation tenderness assessed; trigger point correlation: ${lastSelectedAcupoint.trigger_point_note || 'none'}.`;
+        if (objInput.value.trim()) {
+          objInput.value += "\n" + note;
+        } else {
+          objInput.value = note;
+        }
+        alert(`Added acupoint "${lastSelectedAcupoint.code}" to SOAP Objective note.`);
+      }
+    }
+
+    function addAcupointToObservation() {
+      if (!lastSelectedAcupoint) return;
+      // Switch tab to case
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
+      document.querySelector('[data-tab="tab-case"]').classList.add("active");
+      document.getElementById("tab-case").style.display = "block";
+
+      toggleObservationForm(true);
+      document.getElementById("obsStructureId").value = `ACU-${lastSelectedAcupoint.code}`;
+      document.getElementById("obsStructureType").value = "acupoint";
+      document.getElementById("obsType").value = "palpation";
+      document.getElementById("obsFinding").value = `Palpation sensitivity at ${lastSelectedAcupoint.name_en} (${lastSelectedAcupoint.code}); taut band noted.`;
+      document.getElementById("obsInterpretation").value = lastSelectedAcupoint.trigger_point_note || "Traditional channel tension correlation.";
+    }
+
+    function toggleObservationForm(forceOpen) {
+      const box = document.getElementById("newObservationFormBox");
+      if (forceOpen === true) box.style.display = "block";
+      else box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+
+    function toggleSessionForm(forceOpen) {
+      const box = document.getElementById("newSessionFormBox");
+      if (forceOpen === true) box.style.display = "block";
+      else box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+
     // Tab Navigation
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -607,10 +930,11 @@
         document.getElementById(target).style.display = "block";
         if (target === "tab-report") loadReport();
         if (target === "tab-evidence") loadEvidence();
+        if (target === "tab-case") loadCaseData(activeCaseId);
       });
     });
 
-    // Region button click (replaces SVG body-part click)
+    // Region button click
     document.querySelectorAll(".region-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".region-btn").forEach(b => b.classList.remove("active"));
@@ -621,15 +945,6 @@
         loadRegionQuestionnaires(activeRegion);
       });
     });
-
-    // Hide atlas loading overlay once iframe loads
-    const atlasFrame = document.getElementById("atlasFrame");
-    if (atlasFrame) {
-      atlasFrame.addEventListener("load", () => {
-        const overlay = document.getElementById("atlasLoadingOverlay");
-        if (overlay) { overlay.style.opacity = "0"; setTimeout(() => overlay.style.display = "none", 600); }
-      });
-    }
 
     // Role switcher
     document.getElementById("roleSelect").addEventListener("change", (e) => {
@@ -685,7 +1000,7 @@
           let badgeText = "Modern Anatomy";
           if (s.namespace === "TRADITIONAL_MERIDIAN") {
             tagClass = "tag-trad";
-            badgeText = "Traditional Thai Sen";
+            badgeText = s.structure_id.startsWith("ACU-") ? "Acupoint (WHO)" : "Thai Sen Sib";
           } else if (s.namespace === "DIEN_CHAN_REFLEX") {
             tagClass = "tag-dien";
             badgeText = "Dien Chan Reflex";
@@ -693,14 +1008,22 @@
 
           const bpText = s.bodyparts3d_id ? `<span style="font-size:11px; color:#38bdf8;">FMA: ${s.bodyparts3d_id}</span>` : "";
           const fmaId = s.bodyparts3d_id || "";
-          const actionButtons = fmaId
-            ? `<div style="display:flex; gap:6px; margin-top:8px;">
+          let actionButtons = "";
+          if (fmaId) {
+            actionButtons = `<div style="display:flex; gap:6px; margin-top:8px;">
                  <button class="btn-secondary" onclick="atlasSelectStructure('${fmaId}', false)" style="font-size:11px; padding:3px 8px; cursor:pointer;">🔍 3D Focus</button>
                  <button class="btn-secondary" onclick="atlasSelectStructure('${fmaId}', true)" style="font-size:11px; padding:3px 8px; cursor:pointer;">⚡ 3D Isolate</button>
-               </div>`
-            : `<div style="display:flex; gap:6px; margin-top:8px;">
+               </div>`;
+          } else if (s.structure_id.startsWith("ACU-")) {
+            const ptCode = s.structure_id.replace("ACU-", "");
+            actionButtons = `<div style="display:flex; gap:6px; margin-top:8px;">
+                 <button class="btn-secondary" onclick="atlasCommand('select_acupoint', {code:'${ptCode}'})" style="font-size:11px; padding:3px 8px; cursor:pointer; background:#0f766e; color:#fff;">📍 3D Point</button>
+               </div>`;
+          } else {
+            actionButtons = `<div style="display:flex; gap:6px; margin-top:8px;">
                  <button class="btn-secondary" onclick="atlasSearchStructure('${s.name}', false)" style="font-size:11px; padding:3px 8px; cursor:pointer;">🔍 3D Search</button>
                </div>`;
+          }
 
           return `
             <div class="item-card">
@@ -722,7 +1045,7 @@
 
     async function loadRegionQuestionnaires(region) {
       const container = document.getElementById("questionnairesList");
-      container.innerHTML = "Loading...";
+      container.innerHTML = "Loading questionnaires...";
       try {
         const res = await fetch(`/api/questionnaires?region=${encodeURIComponent(region)}`);
         const qs = await res.json();
@@ -750,76 +1073,188 @@
     async function loadCaseData(caseId) {
       document.getElementById("intakeCaseId").textContent = caseId;
       try {
-        const res = await fetch(`/api/case?case_id=${encodeURIComponent(caseId)}`);
-        const data = await res.json();
+        const res = await fetch(`/api/timeline?case_id=${encodeURIComponent(caseId)}`);
+        const timeline = await res.json();
 
-        // Intake profile
+        // 1. Intake profile
         const intakeDiv = document.getElementById("intakeProfileArea");
-        if (data.intake) {
+        if (timeline.intake) {
           intakeDiv.innerHTML = `
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
-              <div><small style="color:var(--text-muted)">Age Band:</small> <div><strong>${data.intake.age_band}</strong></div></div>
-              <div><small style="color:var(--text-muted)">Primary Region:</small> <div><strong>${data.intake.primary_region}</strong></div></div>
-              <div><small style="color:var(--text-muted)">Symptom Onset:</small> <div><strong>${data.intake.symptom_onset}</strong></div></div>
-              <div><small style="color:var(--text-muted)">Functional Limitation:</small> <div><strong>${data.intake.functional_limits}</strong></div></div>
-              <div><small style="color:var(--text-muted)">Prior Care:</small> <div><strong>${data.intake.prior_care}</strong></div></div>
-              <div><small style="color:var(--text-muted)">Recorded by Role:</small> <div><strong>${data.intake.operator_role}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Age Band:</small> <div><strong>${timeline.intake.age_band}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Primary Region:</small> <div><strong>${timeline.intake.primary_region}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Symptom Onset:</small> <div><strong>${timeline.intake.symptom_onset}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Functional Limitation:</small> <div><strong>${timeline.intake.functional_limits}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Prior Care:</small> <div><strong>${timeline.intake.prior_care}</strong></div></div>
+              <div><small style="color:var(--text-muted)">Recorded by Role:</small> <div><strong>${timeline.intake.operator_role}</strong></div></div>
             </div>
           `;
         } else {
           intakeDiv.innerHTML = `<div class="alert-box alert-warning">⚠️ AUDIT WARNING: Missing structured intake for ${caseId}.</div>`;
         }
 
-        // Visits table
-        const visDiv = document.getElementById("timelineTableArea");
-        const soapSelect = document.getElementById("soapVisitId");
-        soapSelect.innerHTML = "";
+        // 2. Trends & Longitudinal Dashboard
+        if (timeline.trends && timeline.trends.pain && timeline.trends.pain.length >= 2) {
+          const pList = timeline.trends.pain;
+          const rList = timeline.trends.rom;
+          document.getElementById("painStartVal").textContent = pList[0].pain;
+          document.getElementById("painMidVal").textContent = pList[Math.floor(pList.length / 2)].pain;
+          document.getElementById("painEndVal").textContent = pList[pList.length - 1].pain;
+          document.getElementById("painDeltaBadge").textContent = `Δ ${timeline.trends.pain_delta} (${((timeline.trends.pain_delta / pList[0].pain)*100).toFixed(1)}%)`;
 
-        if (data.visits.length === 0) {
-          visDiv.innerHTML = "<p style='color:var(--text-muted)'>No recorded visits yet for this case.</p>";
+          document.getElementById("romStartVal").textContent = `${rList[0].rom_deg}°`;
+          document.getElementById("romMidVal").textContent = `${rList[Math.floor(rList.length / 2)].rom_deg}°`;
+          document.getElementById("romEndVal").textContent = `${rList[rList.length - 1].rom_deg}°`;
+          document.getElementById("romDeltaBadge").textContent = `Δ +${timeline.trends.rom_delta}° (+${((timeline.trends.rom_delta / rList[0].rom_deg)*100).toFixed(1)}%)`;
+        }
+
+        // Sequential Visit Progression Cards
+        const cardsArea = document.getElementById("longitudinalCardsArea");
+        cardsArea.innerHTML = timeline.visits.map((v, i) => `
+          <div style="background:rgba(15,23,42,0.6); border:1px solid var(--border); border-radius:6px; padding:10px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <strong style="color:var(--primary); font-size:12px;">Day ${i === 0 ? '1' : i === 1 ? '3' : '7'} (${v.visit_date})</strong>
+              <span class="tag tag-safe">Visit #${v.visit_id}</span>
+            </div>
+            <div style="font-size:12px; margin-bottom:4px;"><strong>Pain:</strong> ${v.pain}/10 • <strong>ROM:</strong> ${v.rom_deg}° (${v.region})</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">${v.note}</div>
+            <div style="font-size:11px; color:#38bdf8;">
+              ${v.observations.length} Observations • ${v.sessions.length} Sessions
+            </div>
+          </div>
+        `).join("");
+
+        // 3. Populate Visit dropdowns
+        const soapSelect = document.getElementById("soapVisitId");
+        const obsSelect = document.getElementById("obsVisitSelect");
+        const sessSelect = document.getElementById("sessVisitSelect");
+        soapSelect.innerHTML = "";
+        obsSelect.innerHTML = "";
+        sessSelect.innerHTML = "";
+
+        timeline.visits.forEach(v => {
+          const optText = `Visit #${v.visit_id} (${v.visit_date}) - Pain: ${v.pain}/10`;
+          const o1 = document.createElement("option"); o1.value = v.visit_id; o1.textContent = optText; soapSelect.appendChild(o1);
+          const o2 = document.createElement("option"); o2.value = v.visit_id; o2.textContent = optText; obsSelect.appendChild(o2);
+          const o3 = document.createElement("option"); o3.value = v.visit_id; o3.textContent = optText; sessSelect.appendChild(o3);
+        });
+
+        // 4. Observations Table
+        const obsArea = document.getElementById("observationsTableArea");
+        const allObs = [];
+        timeline.visits.forEach(v => {
+          v.observations.forEach(o => allObs.push({ ...o, visit_date: v.visit_date }));
+        });
+
+        if (allObs.length === 0) {
+          obsArea.innerHTML = "<p style='color:var(--text-muted);'>No structured observations recorded yet.</p>";
         } else {
-          visDiv.innerHTML = `
+          obsArea.innerHTML = `
             <table>
               <thead>
                 <tr>
-                  <th>Visit ID</th>
-                  <th>Date</th>
-                  <th>Region</th>
-                  <th>Pain</th>
-                  <th>Gross ROM</th>
-                  <th>Red Flag</th>
-                  <th>Disposition</th>
+                  <th>Visit</th>
+                  <th>Structure</th>
+                  <th>Type</th>
+                  <th>Observation</th>
+                  <th>Severity</th>
+                  <th>Findings & Interpretation</th>
                 </tr>
               </thead>
               <tbody>
-                ${data.visits.map(v => {
-                  const isStop = v.disposition === "STOP_AND_REFER";
-                  const dispBadge = `<span class="tag ${isStop ? 'tag-stop' : 'tag-safe'}">${v.disposition}</span>`;
-                  return `
-                    <tr>
-                      <td>#${v.id}</td>
-                      <td>${v.visit_date}</td>
-                      <td>${v.region}</td>
-                      <td><strong>${v.pain}/10</strong></td>
-                      <td>${v.rom_deg}°</td>
-                      <td>${v.flag}</td>
-                      <td>${dispBadge}</td>
-                    </tr>
-                  `;
-                }).join("")}
+                ${allObs.map(o => `
+                  <tr>
+                    <td><strong>${o.visit_date}</strong></td>
+                    <td><span style="color:#38bdf8; font-weight:600;">${o.structure_id}</span></td>
+                    <td><span class="tag ${o.structure_type === 'acupoint' ? 'tag-trad' : 'tag-evidence'}">${o.structure_type}</span></td>
+                    <td>${o.observation_type}</td>
+                    <td><strong>${o.severity}/10</strong></td>
+                    <td>
+                      <div>${o.finding}</div>
+                      ${o.interpretation ? `<small style="color:var(--text-muted); font-style:italic;">"${o.interpretation}"</small>` : ''}
+                    </td>
+                  </tr>
+                `).join("")}
               </tbody>
             </table>
           `;
-          data.visits.forEach(v => {
-            const opt = document.createElement("option");
-            opt.value = v.id;
-            opt.textContent = `Visit #${v.id} (${v.visit_date}) - ${v.region} (Pain: ${v.pain}/10, Flag: ${v.flag})`;
-            soapSelect.appendChild(opt);
-          });
         }
 
-        // SOAP records
-        renderSOAPRecords(data.soaps);
+        // 5. Sessions Table
+        const sessArea = document.getElementById("sessionsTableArea");
+        const allSess = [];
+        timeline.visits.forEach(v => {
+          v.sessions.forEach(s => allSess.push({ ...s, visit_date: v.visit_date }));
+        });
+
+        if (allSess.length === 0) {
+          sessArea.innerHTML = "<p style='color:var(--text-muted);'>No therapy sessions documented yet.</p>";
+        } else {
+          sessArea.innerHTML = `
+            <table>
+              <thead>
+                <tr>
+                  <th>Visit</th>
+                  <th>Modality</th>
+                  <th>Duration</th>
+                  <th>Target Structures</th>
+                  <th>Technique Parameters</th>
+                  <th>Adverse Reactions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${allSess.map(s => `
+                  <tr>
+                    <td><strong>${s.visit_date}</strong></td>
+                    <td><span class="tag tag-safe">${s.modality}</span></td>
+                    <td>${s.duration_min} min</td>
+                    <td><small style="color:#38bdf8;">${s.target_structures}</small></td>
+                    <td>${s.parameters}</td>
+                    <td>${s.adverse_reactions === 'none' ? '<span style="color:#4ade80;">none</span>' : `<span style="color:#ef4444;">${s.adverse_reactions}</span>`}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          `;
+        }
+
+        // 6. Standard Visits Table
+        const visDiv = document.getElementById("timelineTableArea");
+        visDiv.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Visit ID</th>
+                <th>Date</th>
+                <th>Region</th>
+                <th>Pain</th>
+                <th>Gross ROM</th>
+                <th>Red Flag</th>
+                <th>Disposition</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${timeline.visits.map(v => `
+                <tr>
+                  <td>#${v.visit_id}</td>
+                  <td>${v.visit_date}</td>
+                  <td>${v.region}</td>
+                  <td><strong>${v.pain}/10</strong></td>
+                  <td>${v.rom_deg}°</td>
+                  <td>${v.flag}</td>
+                  <td><span class="tag ${v.disposition === 'STOP_AND_REFER' ? 'tag-stop' : 'tag-safe'}">${v.disposition}</span></td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+
+        // 7. SOAP records
+        const allSoaps = [];
+        timeline.visits.forEach(v => {
+          v.soaps.forEach(sp => allSoaps.push(sp));
+        });
+        renderSOAPRecords(allSoaps);
 
       } catch (err) {
         console.error("Error loading case", err);
@@ -868,9 +1303,110 @@
       }).join("");
     }
 
+    // Submit new observation
+    document.getElementById("addObservationForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const visit_id = document.getElementById("obsVisitSelect").value;
+      const structure_id = document.getElementById("obsStructureId").value.trim();
+      const structure_type = document.getElementById("obsStructureType").value;
+      const observation_type = document.getElementById("obsType").value;
+      const severity = parseInt(document.getElementById("obsSeverity").value);
+      const finding = document.getElementById("obsFinding").value.trim();
+      const interpretation = document.getElementById("obsInterpretation").value.trim();
+
+      try {
+        const res = await fetch("/api/observation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ visit_id, structure_id, structure_type, observation_type, severity, finding, interpretation })
+        });
+        const out = await res.json();
+        if (out.error) alert(`Error: ${out.error}`);
+        else {
+          alert("Observation recorded successfully!");
+          document.getElementById("newObservationFormBox").style.display = "none";
+          loadCaseData(activeCaseId);
+        }
+      } catch (err) {
+        alert(`Request failed: ${err}`);
+      }
+    });
+
+    // Submit new session
+    document.getElementById("addSessionForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const visit_id = document.getElementById("sessVisitSelect").value;
+      const modality = document.getElementById("sessModality").value;
+      const duration_min = parseInt(document.getElementById("sessDuration").value);
+      const target_structures = document.getElementById("sessTargets").value.trim();
+      const parameters = document.getElementById("sessParams").value.trim();
+      const adverse_reactions = document.getElementById("sessAdverse").value.trim();
+
+      try {
+        const res = await fetch("/api/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ visit_id, modality, duration_min, target_structures, parameters, adverse_reactions, role: activeRole })
+        });
+        const out = await res.json();
+        if (out.error) alert(`Error: ${out.error}`);
+        else {
+          alert("Session documented successfully!");
+          document.getElementById("newSessionFormBox").style.display = "none";
+          loadCaseData(activeCaseId);
+        }
+      } catch (err) {
+        alert(`Request failed: ${err}`);
+      }
+    });
+
+    // FHIR Export
+    async function exportFHIR() {
+      const box = document.getElementById("fhirExportBox");
+      const pre = document.getElementById("fhirPreArea");
+      box.style.display = "block";
+      pre.textContent = "Generating HL7 FHIR R4 Bundle...";
+      try {
+        const res = await fetch(`/api/export-fhir?case_id=${encodeURIComponent(activeCaseId)}`);
+        const bundle = await res.json();
+        pre.textContent = JSON.stringify(bundle, null, 2);
+      } catch (err) {
+        pre.textContent = `Failed to export FHIR bundle: ${err}`;
+      }
+    }
+
+    // Submit SOAP Note
+    document.getElementById("soapForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const visit_id = document.getElementById("soapVisitId").value;
+      const subjective = document.getElementById("soapS").value;
+      const objective = document.getElementById("soapO").value;
+      const assessment = document.getElementById("soapA").value;
+      const plan = document.getElementById("soapP").value;
+
+      try {
+        const res = await fetch("/api/soap", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ visit_id, subjective, objective, assessment, plan, role: activeRole })
+        });
+        const out = await res.json();
+        if (out.error) alert(`Error: ${out.error}`);
+        else {
+          alert("SOAP Note submitted for clinical supervision!");
+          document.getElementById("soapS").value = "";
+          document.getElementById("soapO").value = "";
+          document.getElementById("soapA").value = "";
+          document.getElementById("soapP").value = "";
+          loadCaseData(activeCaseId);
+        }
+      } catch (err) {
+        alert(`Request failed: ${err}`);
+      }
+    });
+
     async function approveSOAP(soapId, decision) {
-      const feedbackInput = document.getElementById(`feedback-${soapId}`);
-      const feedback = feedbackInput ? feedbackInput.value : "";
+      const feedback = document.getElementById(`feedback-${soapId}`).value;
       try {
         const res = await fetch("/api/review-soap", {
           method: "POST",
@@ -938,84 +1474,55 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ flag, modality, contraindications: contras })
         });
-        const data = await res.json();
-        if (data.error) {
-          area.innerHTML = `<div class="alert-box alert-danger">Error: ${data.error}</div>`;
+        const out = await res.json();
+        if (out.error) {
+          area.innerHTML = `<div class="alert-box alert-danger">Error: ${out.error}</div>`;
           return;
         }
-        const isStop = data.disposition === "STOP_AND_REFER";
-        const alertClass = isStop ? "alert-danger" : "alert-info";
 
+        const isStop = out.disposition === "STOP_AND_REFER";
         area.innerHTML = `
-          <div class="alert-box ${alertClass}">
-            <h3 style="margin-bottom:6px;">DISPOSITION: ${data.disposition}</h3>
-            <p><strong>Safe to Proceed with Observation:</strong> ${data.is_safe_to_proceed ? 'YES' : 'NO'}</p>
-            ${(data.flags_triggered || []).length ? `<p><strong>Flags:</strong> ${data.flags_triggered.join(', ')}</p>` : ''}
-            ${(data.contraindications_triggered || []).length ? `<p><strong>Contraindications:</strong> ${data.contraindications_triggered.join(', ')}</p>` : ''}
-            <div style="margin-top:10px; font-weight:600;">${data.escalation_instructions}</div>
-            <div style="margin-top:6px; font-size:12px;"><strong>Rationale:</strong> ${data.clinical_rationale}</div>
-            <small style="display:block; margin-top:8px; color:var(--text-muted)">Citing Guideline: ${data.evidence_id}</small>
+          <div class="alert-box ${isStop ? 'alert-danger' : 'alert-success'}" style="margin-top:0;">
+            <div style="font-size:16px; font-weight:800; margin-bottom:6px;">
+              DISPOSITION: ${out.disposition}
+            </div>
+            <div><strong>Safe to Proceed with Observation:</strong> ${out.is_safe_to_proceed ? 'YES' : 'NO'}</div>
+            <div><strong>Flags:</strong> ${out.flags_triggered.join(', ') || 'none'}</div>
+            ${out.contraindications_triggered.length ? `<div><strong>Contraindications:</strong> ${out.contraindications_triggered.join(', ')}</div>` : ''}
+            <div style="margin-top:8px; font-weight:600;">${out.escalation_instructions}</div>
+            <div style="font-size:12px; margin-top:6px; color:var(--text);">${out.clinical_rationale}</div>
+            <div style="font-size:11px; margin-top:8px; color:var(--text-muted);">Citing Guideline: ${out.evidence_id}</div>
           </div>
         `;
       } catch (err) {
-        area.innerHTML = `<div class="alert-box alert-danger">Error: ${err}</div>`;
+        area.innerHTML = `<div class="alert-box alert-danger">Request failed: ${err}</div>`;
       }
     });
 
-    // Form submissions
+    // Add Visit Form
     document.getElementById("addVisitForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const payload = {
-        case: activeCaseId,
-        when: document.getElementById("visDate").value,
-        region: document.getElementById("visRegion").value,
-        pain: parseInt(document.getElementById("visPain").value, 10),
-        rom: parseFloat(document.getElementById("visRom").value),
-        flag: document.getElementById("visFlag").value,
-        note: document.getElementById("visNote").value
-      };
+      const when = document.getElementById("visDate").value;
+      const region = document.getElementById("visRegion").value;
+      const pain = parseInt(document.getElementById("visPain").value);
+      const rom = parseFloat(document.getElementById("visRom").value);
+      const flag = document.getElementById("visFlag").value;
+      const note = document.getElementById("visNote").value;
+
       try {
         const res = await fetch("/api/visit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ case: activeCaseId, when, region, pain, rom, flag, note })
         });
         const out = await res.json();
         if (out.error) alert(`Error: ${out.error}`);
         else {
-          alert(`Recorded visit! Disposition: ${out.disposition}`);
+          alert(`Visit recorded! Disposition: ${out.disposition}`);
           loadCaseData(activeCaseId);
         }
       } catch (err) {
-        alert(`Failed: ${err}`);
-      }
-    });
-
-    document.getElementById("addSoapForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const payload = {
-        visit_id: parseInt(document.getElementById("soapVisitId").value, 10),
-        subjective: document.getElementById("soapS").value,
-        objective: document.getElementById("soapO").value,
-        assessment: document.getElementById("soapA").value,
-        plan: document.getElementById("soapP").value,
-        role: activeRole
-      };
-      try {
-        const res = await fetch("/api/soap", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        const out = await res.json();
-        if (out.error) alert(`Error: ${out.error}`);
-        else {
-          alert(`Created SOAP note #${out.soap_id}!`);
-          document.getElementById("addSoapForm").reset();
-          loadCaseData(activeCaseId);
-        }
-      } catch (err) {
-        alert(`Failed: ${err}`);
+        alert(`Request failed: ${err}`);
       }
     });
 
