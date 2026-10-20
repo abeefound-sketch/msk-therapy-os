@@ -143,6 +143,52 @@ DEFAULT_ANATOMY_CATALOG: List[AnatomyRecord] = [
         evidence_id="EVID-A-002",
     ),
     # -----------------------------------------------------------------------
+    # Arm & Forearm Region
+    # -----------------------------------------------------------------------
+    AnatomyRecord(
+        structure_id="STR-ARM-001",
+        name="Biceps Brachii",
+        region="arm",
+        source_dataset="BodyParts3D 4.0 / FMA37670",
+        bodyparts3d_id="FMA37670",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    AnatomyRecord(
+        structure_id="STR-ARM-002",
+        name="Brachioradialis",
+        region="arm",
+        source_dataset="BodyParts3D 4.0 / FMA38485",
+        bodyparts3d_id="FMA38485",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    # -----------------------------------------------------------------------
+    # Leg & Lower Extremity Region
+    # -----------------------------------------------------------------------
+    AnatomyRecord(
+        structure_id="STR-LEG-001",
+        name="Tibialis Anterior",
+        region="leg",
+        source_dataset="BodyParts3D 4.0 / FMA22532",
+        bodyparts3d_id="FMA22532",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    AnatomyRecord(
+        structure_id="STR-LEG-002",
+        name="Gastrocnemius",
+        region="leg",
+        source_dataset="BodyParts3D 4.0 / FMA22541",
+        bodyparts3d_id="FMA22541",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    # -----------------------------------------------------------------------
     # Verified Traditional Meridian & Acupoints (WHO 2008 & GB/T 12346-2021)
     # -----------------------------------------------------------------------
     AnatomyRecord(
@@ -188,8 +234,58 @@ DEFAULT_ANATOMY_CATALOG: List[AnatomyRecord] = [
     AnatomyRecord(
         structure_id="ACU-LI4",
         name="Hegu (LI4 / 合谷 - First Dorsal Interosseous)",
-        region="shoulder",
-        source_dataset="WHO 2008 / GB/T 12346-2021 / chino-meds",
+        region="arm",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / JICio Surface Registered",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-LI11",
+        name="Quchi (LI11 / 曲池 - Lateral Epicondyle / Brachioradialis)",
+        region="arm",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / JICio Surface Registered",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-PC6",
+        name="Neiguan (PC6 / 内关 - Flexor Carpi Radialis Tendon)",
+        region="arm",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / JICio Surface Registered",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-ST36",
+        name="Zusanli (ST36 / 足三里 - Anterior Tibial Muscle)",
+        region="leg",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / JICio Surface Registered",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-SP6",
+        name="Sanyinjiao (SP6 / 三阴交 - Posterior Border of Tibia)",
+        region="leg",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / JICio Surface Registered",
+        bodyparts3d_id=None,
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,
+        evidence_id="EVID-T-003",
+    ),
+    AnatomyRecord(
+        structure_id="ACU-GB34",
+        name="Yanglingquan (GB34 / 阳陵泉 - Fibular Head / Peroneus Longus)",
+        region="leg",
+        source_dataset="WHO 2008 / GB/T 12346-2021 / JICio Surface Registered",
         bodyparts3d_id=None,
         atlas_url=f"{DEFAULT_ATLAS_BASE}",
         namespace=KnowledgeNamespace.TRADITIONAL_MERIDIAN.value,

@@ -187,6 +187,13 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_text("static/index.html not found", status=HTTPStatus.NOT_FOUND)
             return
 
+        # Serve static assets directly from STATIC_DIR (e.g. meridianEditor.js)
+        if not path.startswith(("/api/", "/atlas/", "/data/")):
+            static_file = (STATIC_DIR / path.lstrip("/")).resolve()
+            if str(static_file).startswith(str(STATIC_DIR.resolve())) and static_file.is_file():
+                if self._serve_file(static_file):
+                    return
+
         # --- Atlas UI: serve renderer files at /atlas/ ---
         if path.startswith("/atlas/") or path == "/atlas":
             rel = path[7:] if path.startswith("/atlas/") else ""

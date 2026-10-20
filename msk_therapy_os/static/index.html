@@ -346,6 +346,7 @@
             <button id="btnToggleMeridians" class="btn-secondary" onclick="toggleAtlasLayer('meridians')" style="font-size:11px; padding:3px 8px;">⚡ 14 Meridians</button>
             <button id="btnToggleThai" class="btn-secondary" onclick="toggleAtlasLayer('thai')" style="font-size:11px; padding:3px 8px;">🇹🇭 Thai Sen Sib</button>
             <button id="btnToggleDienChan" class="btn-secondary" onclick="toggleAtlasLayer('dien_chan')" style="font-size:11px; padding:3px 8px;">🇻🇳 Dien Chan Reflex</button>
+            <button id="btnOpenStudioEditor" class="btn-secondary" onclick="openStudioEditorModal()" style="font-size:11px; padding:3px 8px; background:#4338ca; color:#e0e7ff; border-color:#6366f1;">🛠️ Meridian Studio</button>
           </div>
 
           <div style="font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
@@ -358,7 +359,10 @@
             <button class="btn-secondary region-btn" data-region="thoracic" style="font-size:11px; padding:3px 10px;">Thoracic</button>
             <button class="btn-secondary region-btn" data-region="low_back" style="font-size:11px; padding:3px 10px;">Low Back</button>
             <button class="btn-secondary region-btn" data-region="hip" style="font-size:11px; padding:3px 10px;">Hip / Pelvis</button>
+            <button class="btn-secondary region-btn" data-region="arm" style="font-size:11px; padding:3px 10px;">Arm / Hand</button>
+            <button class="btn-secondary region-btn" data-region="leg" style="font-size:11px; padding:3px 10px;">Leg / Foot</button>
             <button class="btn-secondary region-btn" data-region="face" style="font-size:11px; padding:3px 10px;">Face</button>
+            <button class="btn-secondary region-btn" data-region="all" style="font-size:11px; padding:3px 10px;">Full Body</button>
           </div>
         </div>
 
@@ -406,6 +410,7 @@
             <div style="display:flex; gap:8px;">
               <button onclick="addAcupointToObservation()" style="font-size:11px; padding:4px 10px; background:#0f766e; color:#fff;">+ Add to Observations</button>
               <button onclick="addAcupointToSOAP()" style="font-size:11px; padding:4px 10px; background:#0284c7; color:#fff;">+ Add to SOAP Note</button>
+              <button onclick="openStudioEditorModal(lastSelectedAcupoint)" style="font-size:11px; padding:4px 10px; background:#4338ca; color:#e0e7ff; border:1px solid #6366f1;">🛠️ Calibrate in Studio</button>
             </div>
           </div>
 
@@ -918,8 +923,11 @@
       const isVer = pt.registration_status === "VERIFIED_ANATOMICAL_ANCHOR";
       const regBanner = document.getElementById("acuRegistrationBanner");
       if (regBanner) {
+        const isSurf = pt.registration_status === "SURFACE_REGISTERED_FJ2810";
         if (isVer) {
           regBanner.innerHTML = `<span class="badge" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; font-weight:700;">✓ Verified Anatomical Anchor (BodyParts3D Ground Truth)</span>`;
+        } else if (isSurf) {
+          regBanner.innerHTML = `<span class="badge" style="background:#0e7490; color:#cffafe; border:1px solid #06b6d4; font-weight:700;">FJ2810 Surface Registered (JICio Skin Intersection)</span>`;
         } else {
           regBanner.innerHTML = `<span class="badge" style="background:#78350f; color:#fde68a; border:1px solid #f59e0b; font-weight:700;">⚠️ Uncertain Posture Offset (External Reference)</span>`;
         }
@@ -1032,6 +1040,7 @@
         document.getElementById("selectedRegionTitle").textContent = activeRegion;
         loadRegionAnatomy(activeRegion);
         loadRegionQuestionnaires(activeRegion);
+        atlasCommand('set_region', { region: activeRegion });
       });
     });
 
@@ -1685,5 +1694,6 @@
     loadRegionQuestionnaires(activeRegion);
     loadSafetyFlags();
   </script>
+  <script src="/meridianEditor.js"></script>
 </body>
 </html>

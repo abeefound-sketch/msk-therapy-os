@@ -1,5 +1,6 @@
 // MSK-Therapy-OS: 3D Acupuncture & Traditional Meridian Visualization Layer
 // Calibrated to BodyParts3D 4.0 Anatomical Ground Truth (FMA Standards)
+// Enhanced with JICio Surface Registration + Meridian Studio Authoring Pipeline
 (() => {
   'use strict';
 
@@ -9,14 +10,15 @@
   let showMeridians = false;
   let showThai = false;
   let showDienChan = false;
-  let verifiedOnly = true; // Default to verified anatomical anchors only (Requirement 5)
-  let filterRegion = 'neck'; // Focus on Neck-Shoulder-Upper-Back scenario (Requirement 9)
+  let verifiedOnly = true; // Default to verified anatomical anchors only
+  let filterRegion = 'neck_shoulder'; // Focus scenario
   let selectedCode = null;
+  let searchQuery = '';
 
   const overlaySvg = document.getElementById('acupunctureOverlay');
   if (!overlaySvg) return;
 
-  // Create SVG element containers
+  // Create SVG element containers with glow filter
   overlaySvg.innerHTML = `
     <defs>
       <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -63,9 +65,36 @@
     const eye = r._eye();
     const target = r.camera.target || [0, 0.9, 0];
     const h = pos[0] * (eye[0] - target[0]) + pos[2] * (eye[2] - target[2]);
-    // If camera has steep pitch looking down from above, top shoulder points stay visible
+    // If camera has steep pitch looking down from above, top shoulder/head points stay visible
     if (r.camera.pitch > 0.45 && pos[1] > 1.40) return true;
     return h >= -0.012;
+  }
+
+  // Fast inline projection using cached matrix to prevent GC churn on Intel HD 5500
+  function createProjector(r) {
+    const { vp } = r._matrices();
+    const cw = r.canvas.clientWidth;
+    const ch = r.canvas.clientHeight;
+    return function fastProject(pos) {
+      const x = vp[0] * pos[0] + vp[4] * pos[1] + vp[8] * pos[2] + vp[12];
+      const y = vp[1] * pos[0] + vp[5] * pos[1] + vp[9] * pos[2] + vp[13];
+      const w = vp[3] * pos[0] + vp[7] * pos[1] + vp[11] * pos[2] + vp[15];
+      if (w <= 0.001) return null;
+      return [(x / w * 0.5 + 0.5) * cw, (1 - (y / w * 0.5 + 0.5)) * ch];
+    };
+  }
+
+  function matchesRegion(reg, target) {
+    if (target === 'all') return true;
+    if (target === 'neck_shoulder') return ['neck', 'shoulder', 'upper_back'].includes(reg);
+    if (target === 'neck') return reg === 'neck';
+    if (target === 'shoulder') return reg === 'shoulder';
+    if (target === 'head') return reg === 'head';
+    if (target === 'arm') return reg === 'arm';
+    if (target === 'leg') return reg === 'leg';
+    if (target === 'back') return ['upper_back', 'low_back'].includes(reg);
+    if (target === 'torso') return reg === 'torso';
+    return true;
   }
 
   function render() {
@@ -76,49 +105,73 @@
     if (!stage) return;
     const sw = stage.clientWidth;
     const sh = stage.clientHeight;
+    const fastProject = createProjector(r);
 
-    // 1. Render Meridians
+    // 1. Render Continuous Surface-Conforming Meridians (10,762 Vertices)
     if (!showMeridians) {
       groupMeridians.innerHTML = '';
     } else {
       let pathsHtml = '';
+      const verifiedMeridianCodes = ['GV', 'BL', 'GB', 'SI', 'TE', 'LI'];
+
       for (const mCode in acuData.meridians) {
-        // If verified only, only render Cervical/Shoulder/Upper-back pathways (GV, BL, GB)
-        if (verifiedOnly && !['GV', 'BL', 'GB', 'SI', 'TE', 'LI'].includes(mCode)) continue;
+        // If verified only, only render verified pathways
+        if (verifiedOnly && !verifiedMeridianCodes.includes(mCode)) continue;
 
         const m = acuData.meridians[mCode];
-        for (const p of m.paths) {
-          if (!p.points || p.points.length < 2) continue;
+        for (const p of m.paths || []) {
+          const pts = p.surface_vertices || p.points;
+          if (!pts || pts.length < 2) continue;
 
-          // Bilateral rendering for lateral meridians
-          const pointSets = [p.points];
-          const isMidline = ['GV', 'CV'].includes(mCode);
-          if (!isMidline && p.points.some(pt => Math.abs(pt[0]) > 0.005)) {
-            // Also project left-side companion path
-            const mirrored = p.points.map(pt => [-pt[0], pt[1], pt[2]]);
-            pointSets.push(mirrored);
+          // Bilateral handling: if path has explicit side, render directly.
+          // Otherwise, mirror if not midline.
+          let pointSets;
+          if (p.side) {
+            pointSets = [pts];
+          } else {
+            pointSets = [pts];
+            const isMidline = ['GV', 'CV'].includes(mCode);
+            if (!isMidline && pts.some(pt => Math.abs(pt[0]) > 0.005)) {
+              pointSets.push(pts.map(pt => [-pt[0], pt[1], pt[2]]));
+            }
           }
 
-          for (const pts of pointSets) {
-            // Occlusion culling for meridian paths
-            const facingCount = pts.filter(pt => isFacingCamera(pt, r)).length;
-            const pathFacing = facingCount >= pts.length * 0.35;
+          for (const poly of pointSets) {
+            // Occlusion culling: sample points along curve
+            let facingCount = 0;
+            let sampleCount = 0;
+            const step = Math.max(1, Math.floor(poly.length / 16));
+            for (let i = 0; i < poly.length; i += step) {
+              if (isFacingCamera(poly[i], r)) facingCount++;
+              sampleCount++;
+            }
+            const pathFacing = sampleCount > 0 && (facingCount / sampleCount) >= 0.35;
             if (!r.xray && !pathFacing) continue;
 
-            const pathOpacity = pathFacing ? "0.85" : "0.22";
+            const pathOpacity = pathFacing ? "0.88" : "0.22";
             const pathFilter = pathFacing ? 'filter="url(#glow)"' : '';
             let d = '';
-            for (let i = 0; i < pts.length; i++) {
-              const pt = pts[i];
-              // If verified only, restrict to neck-shoulder-upperback height (Y >= 1.30m)
-              if (verifiedOnly && pt[1] < 1.30) continue;
 
-              const s = r.project(pt);
+            for (let i = 0; i < poly.length; i++) {
+              const pt = poly[i];
+              // Optional region filter for meridian paths
+              if (filterRegion === 'neck_shoulder' && (pt[1] < 1.15 || pt[1] > 1.68)) continue;
+              if (filterRegion === 'neck' && (pt[1] < 1.32 || pt[1] > 1.58)) continue;
+              if (filterRegion === 'shoulder' && (pt[1] < 1.25 || pt[1] > 1.60 || Math.abs(pt[0]) < 0.08)) continue;
+              if (filterRegion === 'head' && pt[1] < 1.50) continue;
+              if (filterRegion === 'arm' && (Math.abs(pt[0]) < 0.16 || pt[1] > 1.45)) continue;
+              if (filterRegion === 'leg' && pt[1] > 0.95) continue;
+              if (filterRegion === 'upper_back' && (pt[1] < 1.15 || pt[1] > 1.55 || pt[2] > 0.0)) continue;
+              if (filterRegion === 'low_back' && (pt[1] < 0.82 || pt[1] > 1.18 || pt[2] > 0.0)) continue;
+              if (filterRegion === 'torso' && (pt[1] < 0.85 || pt[1] > 1.45 || Math.abs(pt[0]) > 0.22)) continue;
+
+              const s = fastProject(pt);
               if (!s) continue;
               d += (d === '' ? 'M ' : ' L ') + s[0].toFixed(1) + ' ' + s[1].toFixed(1);
             }
+
             if (d && d.includes('L')) {
-              pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${pathOpacity}" ${pathFilter}/>`;
+              pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${pathOpacity}" ${pathFilter}/>`;
             }
           }
         }
@@ -132,23 +185,24 @@
     } else {
       let thaiHtml = '';
       for (const line of acuData.thai_lines || []) {
-        for (const p of line.paths) {
-          if (!p.points || p.points.length < 2) continue;
+        for (const p of line.paths || []) {
+          const pts = p.points || p.surface_vertices;
+          if (!pts || pts.length < 2) continue;
           let d = '';
-          for (let i = 0; i < p.points.length; i++) {
-            const s = r.project(p.points[i]);
+          for (let i = 0; i < pts.length; i++) {
+            const s = fastProject(pts[i]);
             if (!s) continue;
             d += (d === '' ? 'M ' : ' L ') + s[0].toFixed(1) + ' ' + s[1].toFixed(1);
           }
-          if (d) {
-            thaiHtml += `<path d="${d}" stroke="${line.color}" stroke-width="3" stroke-dasharray="6,4" fill="none" opacity="0.9" />`;
+          if (d && d.includes('L')) {
+            thaiHtml += `<path d="${d}" stroke="${line.color || '#f59e0b'}" stroke-width="2.8" stroke-dasharray="6,4" fill="none" opacity="0.9" />`;
           }
         }
       }
       groupThai.innerHTML = thaiHtml;
     }
 
-    // 3. Render Acupuncture Points
+    // 3. Render Acupuncture Points (362 WHO Standard Points)
     if (!showPoints) {
       groupPoints.innerHTML = '';
     } else {
@@ -156,13 +210,21 @@
       for (const code in acuData.points) {
         const pt = acuData.points[code];
         const isVerified = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
+        const isSurface = pt.registration_status === 'SURFACE_REGISTERED_FJ2810';
 
-        // Filter: verified anchors only or posture offset
+        // Filter: verified anchors only toggle
         if (verifiedOnly && !isVerified) continue;
 
-        if (filterRegion !== 'all') {
-          const ptRegion = pt.region || '';
-          if (filterRegion === 'neck' && !isVerified && !ptRegion.includes('头面颈项') && !ptRegion.includes('腰背')) continue;
+        // Filter: region
+        if (!matchesRegion(pt.region, filterRegion)) continue;
+
+        // Filter: search text
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const matchCode = pt.code.toLowerCase().includes(q);
+          const matchEn = (pt.name_en || '').toLowerCase().includes(q);
+          const matchZh = (pt.name_zh || '').includes(q);
+          if (!matchCode && !matchEn && !matchZh) continue;
         }
 
         // Bilateral point instances
@@ -173,37 +235,41 @@
         }
 
         for (const inst of instances) {
-          const s = r.project(inst.pos);
+          const s = fastProject(inst.pos);
           if (!s || s[0] < -20 || s[1] < -20 || s[0] > sw + 20 || s[1] > sh + 20) continue;
 
           const isSel = selectedCode === code;
           const facing = isFacingCamera(inst.pos, r);
 
-          // Occlusion culling: hide points that are facing away unless X-ray is active or point is selected
+          // Occlusion culling: hide points facing away unless X-ray is active or point is selected
           if (!r.xray && !facing && !isSel) {
             continue;
           }
 
-          let rad = isSel ? 7 : (isVerified ? 5 : 4);
-          let fill = isSel ? '#facc15' : (isVerified ? '#10b981' : '#f59e0b');
-          let stroke = isSel ? '#ffffff' : (isVerified ? '#047857' : '#78350f');
-          let swidth = isSel ? 2.5 : 1.5;
-          let dash = isVerified ? '' : 'stroke-dasharray="2,2"';
+          let rad = isSel ? 7 : (isVerified ? 5.5 : 4.5);
+          let fill = isSel ? '#facc15' : (isVerified ? '#10b981' : (isSurface ? '#06b6d4' : '#f59e0b'));
+          let stroke = isSel ? '#ffffff' : (isVerified ? '#047857' : (isSurface ? '#0891b2' : '#78350f'));
+          let swidth = isSel ? 2.5 : (isVerified ? 2.0 : 1.5);
+          let dash = isVerified || isSurface ? '' : 'stroke-dasharray="2,2"';
           let ptOpacity = '1.0';
 
           if (!facing) {
             // Occluded point depth cue
-            ptOpacity = isSel ? '0.45' : '0.22';
+            ptOpacity = isSel ? '0.5' : '0.25';
             dash = 'stroke-dasharray="2,2"';
             stroke = '#94a3b8';
           }
 
+          const statusLabel = isVerified ? 'VERIFIED ANCHOR' : (isSurface ? 'SURFACE REGISTERED (FJ2810)' : 'UNCERTAIN POSTURE OFFSET');
+
           ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${swidth}" ${dash} opacity="${ptOpacity}" class="acu-marker" data-code="${code}" data-side="${inst.side}" style="cursor:pointer;">
-            <title>${pt.code} - ${pt.name_en} (${pt.name_zh}) [${isVerified ? 'VERIFIED ANCHOR' : 'UNCERTAIN POSTURE'}]${!facing ? ' (Dorsal/Occluded)' : ''}</title>
+            <title>${pt.code} - ${pt.name_en} (${pt.name_zh}) [${statusLabel}] [${inst.side.toUpperCase()}]
+Pos: [${inst.pos[0].toFixed(3)}, ${inst.pos[1].toFixed(3)}, ${inst.pos[2].toFixed(3)}]m
+${!facing ? ' (Dorsal/Occluded)' : ''}</title>
           </circle>`;
 
           if (isSel) {
-            ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="13" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4" opacity="${facing ? '0.9' : '0.4'}">
+            ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="14" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4" opacity="${facing ? '0.95' : '0.45'}">
               <animateTransform attributeName="transform" type="rotate" from="0 ${s[0]} ${s[1]}" to="360 ${s[0]} ${s[1]}" dur="5s" repeatCount="indefinite"/>
             </circle>`;
           }
@@ -218,7 +284,7 @@
     } else {
       let dcHtml = '';
       for (const dc of acuData.dien_chan || []) {
-        const s = r.project(dc.position);
+        const s = fastProject(dc.position);
         if (!s || s[0] < -10 || s[1] < -10 || s[0] > sw + 10 || s[1] > sh + 10) continue;
         dcHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="4.5" fill="#ec4899" stroke="#ffffff" stroke-width="1.5" class="acu-marker" data-code="${dc.code}">
           <title>${dc.name} [Dien Chan]</title>
@@ -245,7 +311,8 @@
 
     // Position pin
     if (r) {
-      const s = r.project(pt.position);
+      const fastProject = createProjector(r);
+      const s = fastProject(pt.position);
       const pin = document.getElementById('pin');
       if (pin && s) {
         pin.hidden = false;
@@ -253,7 +320,7 @@
         pin.style.top = s[1] + 'px';
         const span = pin.querySelector('span');
         if (span) {
-          const statusTag = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? ' [✓ Verified]' : ' [⚠️ Posture Offset]';
+          const statusTag = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? ' [✓ Verified]' : ' [Surface Registered]';
           span.textContent = `${pt.name_en} (${pt.code} / ${pt.name_zh})${statusTag}`;
         }
       }
@@ -263,7 +330,7 @@
 
     if (notifyParent) {
       if (r) {
-        // Auto-align camera view if selected point is on dorsal or anterior aspect
+        // Auto-align camera view if selected point is clearly on dorsal or anterior aspect
         const isBackPoint = pt.position[2] < -0.035;
         const isFrontPoint = pt.position[2] > 0.035;
         const yawNorm = Math.abs(r.camera.yaw % (Math.PI * 2));
@@ -289,25 +356,59 @@
     const panel = document.getElementById('panelMeridians');
     if (!panel || !acuData) return;
 
-    let pointsListHtml = '';
-    const sortedCodes = Object.keys(acuData.points).sort((a, b) => {
-      const vA = acuData.points[a].registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? 0 : 1;
-      const vB = acuData.points[b].registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? 0 : 1;
-      return vA - vB;
-    });
+    function renderPointsList() {
+      const dir = document.getElementById('acuPointsDirectory');
+      if (!dir) return;
 
-    for (const code of sortedCodes) {
-      const p = acuData.points[code];
-      const isVer = p.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
-      const badge = isVer ? '<span style="background:#065f46; color:#a7f3d0; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:600;">✓ ANCHOR</span>' : '<span style="background:#78350f; color:#fde68a; font-size:9px; padding:1px 4px; border-radius:3px;">⚠️ UNVERIFIED</span>';
-      pointsListHtml += `
-        <div class="acu-list-item" data-code="${code}" style="display:flex; justify-content:space-between; align-items:center; padding:5px 8px; font-size:11px; border-bottom:1px solid var(--line); cursor:pointer;">
-          <div>
-            <strong>${p.code}</strong> ${p.name_en} <small style="color:var(--muted)">(${p.name_zh})</small>
+      const codes = Object.keys(acuData.points).filter(code => {
+        const p = acuData.points[code];
+        const isVer = p.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
+        if (verifiedOnly && !isVer) return false;
+        if (!matchesRegion(p.region, filterRegion)) return false;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          return p.code.toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || (p.name_zh || '').includes(q);
+        }
+        return true;
+      }).sort((a, b) => {
+        const vA = acuData.points[a].registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? 0 : 1;
+        const vB = acuData.points[b].registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? 0 : 1;
+        if (vA !== vB) return vA - vB;
+        return a.localeCompare(b);
+      });
+
+      let listHtml = '';
+      for (const code of codes) {
+        const p = acuData.points[code];
+        const isVer = p.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
+        const isSurf = p.registration_status === 'SURFACE_REGISTERED_FJ2810';
+        let badge = isVer 
+          ? '<span style="background:#065f46; color:#a7f3d0; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:600;">✓ ANCHOR</span>'
+          : (isSurf ? '<span style="background:#0e7490; color:#cffafe; font-size:9px; padding:1px 4px; border-radius:3px;">FJ2810</span>' : '<span style="background:#78350f; color:#fde68a; font-size:9px; padding:1px 4px; border-radius:3px;">⚠️ UNVERIFIED</span>');
+
+        listHtml += `
+          <div class="acu-list-item" data-code="${code}" style="display:flex; justify-content:space-between; align-items:center; padding:5px 8px; font-size:11px; border-bottom:1px solid var(--line); cursor:pointer;">
+            <div>
+              <strong>${p.code}</strong> ${p.name_en} <small style="color:var(--muted)">(${p.name_zh})</small>
+            </div>
+            <div>${badge}</div>
           </div>
-          <div>${badge}</div>
-        </div>
-      `;
+        `;
+      }
+
+      dir.innerHTML = listHtml || '<div style="padding:10px; color:var(--muted); font-size:11px;">No matching points.</div>';
+
+      dir.querySelectorAll('.acu-list-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const code = item.getAttribute('data-code');
+          if (code) {
+            showPoints = true;
+            const chk = document.getElementById('chkShowPoints');
+            if (chk) chk.checked = true;
+            selectPoint(code, true);
+          }
+        });
+      });
     }
 
     panel.innerHTML = `
@@ -320,7 +421,7 @@
         <div style="display:flex; flex-direction:column; gap:6px; background:var(--panel-2); padding:8px; border-radius:var(--r-s);">
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
             <input type="checkbox" id="chkShowPoints" ${showPoints ? 'checked' : ''} />
-            <span>📍 3D Acupoints</span>
+            <span>📍 3D Acupoints (362 WHO)</span>
           </label>
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-left:16px;">
             <input type="checkbox" id="chkVerifiedOnly" ${verifiedOnly ? 'checked' : ''} />
@@ -343,31 +444,42 @@
         <div style="display:flex; flex-direction:column; gap:4px;">
           <label style="font-size:11px; color:var(--muted);">Region Focus:</label>
           <select id="selAcuRegion" style="background:var(--panel-2); color:var(--bone); border:1px solid var(--line); padding:4px 6px; border-radius:var(--r-s); font-size:11px;">
-            <option value="neck" ${filterRegion === 'neck' ? 'selected' : ''}>Neck, Shoulder & Upper Back (Verified Scenario)</option>
-            <option value="all" ${filterRegion === 'all' ? 'selected' : ''}>Full Body (All Regions)</option>
+            <option value="neck_shoulder" ${filterRegion === 'neck_shoulder' ? 'selected' : ''}>Neck, Shoulder & Upper Back</option>
+            <option value="head" ${filterRegion === 'head' ? 'selected' : ''}>Head & Face (61 points)</option>
+            <option value="arm" ${filterRegion === 'arm' ? 'selected' : ''}>Arm & Hand (57 points - LI4, LI11...)</option>
+            <option value="leg" ${filterRegion === 'leg' ? 'selected' : ''}>Leg & Foot (75 points - ST36, SP6...)</option>
+            <option value="back" ${filterRegion === 'back' ? 'selected' : ''}>Back (Upper & Lower - 62 points)</option>
+            <option value="torso" ${filterRegion === 'torso' ? 'selected' : ''}>Torso / Chest & Abdomen (85 points)</option>
+            <option value="all" ${filterRegion === 'all' ? 'selected' : ''}>Full Body (All 362 Points)</option>
           </select>
         </div>
 
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <input type="text" id="txtAcuSearch" placeholder="Search (e.g. LI4, ST36, Hegu, 合谷)..." style="background:var(--panel-2); color:var(--bone); border:1px solid var(--line); padding:4px 6px; border-radius:var(--r-s); font-size:11px;" />
+        </div>
+
         <div style="font-weight:600; color:var(--bone); font-size:11px; margin-top:4px;">
-          Key Clinical Points (Neck-Shoulder):
+          Quick Landmarks:
         </div>
         <div style="display:flex; gap:4px; flex-wrap:wrap;">
           <button class="btn-acu-quick" data-code="GB21" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">GB21 肩井 (Trapezius)</button>
           <button class="btn-acu-quick" data-code="GV14" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">GV14 大椎 (C7 Spine)</button>
           <button class="btn-acu-quick" data-code="GB20" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">GB20 风池 (Suboccipital)</button>
-          <button class="btn-acu-quick" data-code="BL10" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">BL10 天柱 (Trapezius)</button>
-          <button class="btn-acu-quick" data-code="SI15" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">SI15 肩中俞 (C7 Paramedian)</button>
-          <button class="btn-acu-quick" data-code="TE15" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">TE15 天髎 (Supraspinous)</button>
+          <button class="btn-acu-quick" data-code="LI4" style="font-size:10px; padding:3px 6px; background:#0e7490; color:#cffafe; border:1px solid #06b6d4; border-radius:3px; cursor:pointer;">LI4 合谷 (Hand/Arm)</button>
+          <button class="btn-acu-quick" data-code="LI11" style="font-size:10px; padding:3px 6px; background:#0e7490; color:#cffafe; border:1px solid #06b6d4; border-radius:3px; cursor:pointer;">LI11 曲池 (Elbow)</button>
+          <button class="btn-acu-quick" data-code="ST36" style="font-size:10px; padding:3px 6px; background:#0e7490; color:#cffafe; border:1px solid #06b6d4; border-radius:3px; cursor:pointer;">ST36 足三里 (Leg)</button>
+          <button class="btn-acu-quick" data-code="SP6" style="font-size:10px; padding:3px 6px; background:#0e7490; color:#cffafe; border:1px solid #06b6d4; border-radius:3px; cursor:pointer;">SP6 三阴交 (Medial Leg)</button>
         </div>
 
-        <div style="font-weight:600; color:var(--bone); font-size:11px; margin-top:6px;">
-          Points Directory:
+        <div style="font-weight:600; color:var(--bone); font-size:11px; margin-top:6px; display:flex; justify-content:space-between;">
+          <span>Points Directory:</span>
+          <span id="acuPointCountBadge" style="color:#38bdf8; font-size:10px;"></span>
         </div>
-        <div id="acuPointsDirectory" style="overflow-y:auto; max-height:220px; background:var(--panel-2); border-radius:var(--r-s);">
-          ${pointsListHtml}
-        </div>
+        <div id="acuPointsDirectory" style="overflow-y:auto; max-height:220px; background:var(--panel-2); border-radius:var(--r-s);"></div>
       </div>
     `;
+
+    renderPointsList();
 
     // Event listeners
     document.getElementById('chkShowPoints').addEventListener('change', (e) => {
@@ -376,6 +488,7 @@
     });
     document.getElementById('chkVerifiedOnly').addEventListener('change', (e) => {
       verifiedOnly = e.target.checked;
+      renderPointsList();
       render();
     });
     document.getElementById('chkShowMeridians').addEventListener('change', (e) => {
@@ -392,10 +505,16 @@
     });
     document.getElementById('selAcuRegion').addEventListener('change', (e) => {
       filterRegion = e.target.value;
+      renderPointsList();
+      render();
+    });
+    document.getElementById('txtAcuSearch').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderPointsList();
       render();
     });
 
-    panel.querySelectorAll('.btn-acu-quick, .acu-list-item').forEach(btn => {
+    panel.querySelectorAll('.btn-acu-quick').forEach(btn => {
       btn.addEventListener('click', () => {
         const code = btn.getAttribute('data-code');
         if (code) {
@@ -457,10 +576,34 @@
       }
       render();
     } else if (ev.data.action === 'set_region') {
-      filterRegion = ev.data.region || 'neck';
+      filterRegion = ev.data.region || 'neck_shoulder';
       const sel = document.getElementById('selAcuRegion');
       if (sel) sel.value = filterRegion;
+      buildSidebarControls();
       render();
+    } else if (ev.data.action === 'update_point_coords') {
+      // Live coordinate update from Meridian Studio Editor (Requirement 9)
+      const { code, position, normal, registration_status, source_provenance, notes } = ev.data;
+      if (acuData && acuData.points[code]) {
+        const pt = acuData.points[code];
+        if (position) pt.position = position;
+        if (normal) pt.normal = normal;
+        if (registration_status) pt.registration_status = registration_status;
+        if (source_provenance) pt.source_provenance = source_provenance;
+        if (notes) pt.verification_notes = notes;
+        selectPoint(code, false);
+        render();
+        console.log(`[meridians.js] Live calibrated point ${code}:`, position);
+      }
+    } else if (ev.data.action === 'load_custom_points') {
+      if (acuData && ev.data.points) {
+        Object.assign(acuData.points, ev.data.points);
+        buildSidebarControls();
+        render();
+        console.log(`[meridians.js] Loaded ${Object.keys(ev.data.points).length} custom points.`);
+      }
+    } else if (ev.data.action === 'reset_points_baseline') {
+      loadData();
     }
   });
 
