@@ -289,48 +289,60 @@
   <main class="main-container">
     <!-- TAB 1: BODY MAP & ANATOMY -->
     <section id="tab-bodymap" class="tab-content">
-      <div class="grid-2col">
-        <div class="card body-map-container">
+      <div class="grid-2col" style="grid-template-columns: 1.35fr 1fr;">
+        <div class="card body-map-container" style="min-height:640px;">
           <div class="card-title">
-            <span>2D Interactive Body-Map</span>
-            <small style="color:var(--primary); font-size:11px;">Select a region</small>
+            <span>3D Anatomy Atlas <small style="color:var(--primary); font-size:11px;">(Open Anatomy Atlas + BodyParts3D 4.0)</small></span>
+            <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
+              <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'front'})" style="font-size:11px; padding:3px 7px;">Front</button>
+              <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'back'})" style="font-size:11px; padding:3px 7px;">Back</button>
+              <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'left'})" style="font-size:11px; padding:3px 7px;">Left</button>
+              <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'right'})" style="font-size:11px; padding:3px 7px;">Right</button>
+              <button class="btn-secondary" onclick="atlasCommand('reset_view')" style="font-size:11px; padding:3px 7px;">Reset</button>
+              <button class="btn-secondary" onclick="atlasCommand('set_xray')" style="font-size:11px; padding:3px 7px;">X-Ray</button>
+              <button class="btn-secondary" onclick="atlasCommand('start_quiz')" style="font-size:11px; padding:3px 8px; background:#0284c7; color:#fff;">🎯 Quiz</button>
+              <button class="btn-secondary" onclick="window.open('/atlas/','_blank')" style="font-size:11px; padding:3px 7px;">⛶ Full</button>
+            </div>
           </div>
-          <svg class="body-svg" viewBox="0 0 300 480">
-            <!-- Head / Face -->
-            <ellipse id="part-face" class="body-part" cx="150" cy="40" rx="30" ry="32" data-region="face" />
-            <text x="150" y="44" class="body-label">Face</text>
-
-            <!-- Neck / Cervical -->
-            <rect id="part-neck" class="body-part active" x="135" y="72" width="30" height="25" rx="4" data-region="neck" />
-            <text x="150" y="88" class="body-label">Neck</text>
-
-            <!-- Shoulders -->
-            <path id="part-shoulder-l" class="body-part" d="M100,100 L135,97 L135,115 L90,125 Z" data-region="shoulder" />
-            <path id="part-shoulder-r" class="body-part" d="M165,97 L200,100 L210,125 L165,115 Z" data-region="shoulder" />
-            <text x="75" y="112" class="body-label">Shoulder</text>
-
-            <!-- Thoracic Spine / Trunk -->
-            <path id="part-thoracic" class="body-part" d="M115,100 L185,100 L175,175 L125,175 Z" data-region="thoracic" />
-            <text x="150" y="140" class="body-label">Thoracic</text>
-
-            <!-- Low Back / Lumbar -->
-            <rect id="part-lowback" class="body-part" x="120" y="178" width="60" height="42" rx="4" data-region="low_back" />
-            <text x="150" y="202" class="body-label">Low Back</text>
-
-            <!-- Hip / Pelvis -->
-            <path id="part-hip" class="body-part" d="M115,222 L185,222 L195,260 L105,260 Z" data-region="hip" />
-            <text x="150" y="245" class="body-label">Hip / Pelvis</text>
-
-            <!-- Lower Extremities indicator -->
-            <rect x="110" y="265" width="35" height="180" rx="6" fill="#1e293b" stroke="#475569" />
-            <rect x="155" y="265" width="35" height="180" rx="6" fill="#1e293b" stroke="#475569" />
-          </svg>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:10px;">
-            CPU-Optimized 2D SVG View (Intel HD 5500 Compatible).
+          <div id="atlasContainer" style="position:relative; width:100%; height:580px; background:#1a1a2e; border-radius:6px; overflow:hidden;">
+            <iframe id="atlasFrame" src="/atlas/?embedded=1" style="width:100%; height:100%; border:none; border-radius:6px;"></iframe>
+            <div id="atlasLoadingOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; transition:opacity 0.5s;">
+              <div style="color:var(--primary); font-size:14px; font-weight:600;">Loading 3D Anatomy Atlas...</div>
+              <div style="color:var(--text-muted); font-size:11px; margin-top:6px;">BodyParts3D 4.0 — 2,234 meshes, 3,434 structures</div>
+            </div>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+            <span>BodyParts3D © DBCLS, CC BY 4.0 • Open Anatomy Atlas (MIT) by Cognition Lab, SNUC</span>
+            <span>Region selector:</span>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+            <button class="btn-secondary region-btn active" data-region="neck" style="font-size:11px; padding:3px 10px;">Neck</button>
+            <button class="btn-secondary region-btn" data-region="shoulder" style="font-size:11px; padding:3px 10px;">Shoulder</button>
+            <button class="btn-secondary region-btn" data-region="thoracic" style="font-size:11px; padding:3px 10px;">Thoracic</button>
+            <button class="btn-secondary region-btn" data-region="low_back" style="font-size:11px; padding:3px 10px;">Low Back</button>
+            <button class="btn-secondary region-btn" data-region="hip" style="font-size:11px; padding:3px 10px;">Hip / Pelvis</button>
+            <button class="btn-secondary region-btn" data-region="face" style="font-size:11px; padding:3px 10px;">Face</button>
           </div>
         </div>
 
         <div>
+          <!-- Selected 3D Structure Interactive Banner -->
+          <div id="atlasSelectionCard" class="card" style="display:none; border-color:var(--primary); background:rgba(56,189,248,0.08); margin-bottom:14px;">
+            <div class="card-title">
+              <span>Selected 3D Structure</span>
+              <span id="selectedStructureCat" class="badge"></span>
+            </div>
+            <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:4px;" id="selectedStructureName"></div>
+            <div style="font-size:12px; color:var(--primary); margin-bottom:8px;" id="selectedStructureFMA"></div>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
+              Source: BodyParts3D 4.0 / CC BY 4.0 International (DBCLS, Japan)
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button onclick="atlasCommand('isolate_selection')" class="btn-secondary" style="font-size:11px; padding:4px 10px;">⚡ Isolate</button>
+              <button onclick="addSelectedToSOAP()" style="font-size:11px; padding:4px 10px;">+ Add to SOAP Note</button>
+            </div>
+          </div>
+
           <div class="card">
             <div class="card-title">
               <span>Region Structures: <strong id="selectedRegionTitle" style="color:var(--primary);">neck</strong></span>
@@ -525,6 +537,65 @@
     let activeRegion = "neck";
     let activeRole = "student";
     let availableRedFlags = [];
+    let lastSelectedStructure = null;
+
+    // MSK 3D Atlas Communication Bridge
+    window.addEventListener("message", (ev) => {
+      if (!ev.data || typeof ev.data !== "object") return;
+      if (ev.data.type === "msk_structure_selected") {
+        const { name, fmaId, category } = ev.data;
+        showAtlasSelection(name, fmaId, category);
+      } else if (ev.data.type === "msk_atlas_ready") {
+        const overlay = document.getElementById("atlasLoadingOverlay");
+        if (overlay) { overlay.style.opacity = "0"; setTimeout(() => overlay.style.display = "none", 400); }
+      }
+    });
+
+    function atlasSelectStructure(fmaId, isolate) {
+      const f = document.getElementById("atlasFrame");
+      if (f && f.contentWindow) {
+        f.contentWindow.postMessage({ action: "select_fma", fmaId, isolate }, "*");
+      }
+    }
+
+    function atlasSearchStructure(query, isolate) {
+      const f = document.getElementById("atlasFrame");
+      if (f && f.contentWindow) {
+        f.contentWindow.postMessage({ action: "search_select", query, isolate }, "*");
+      }
+    }
+
+    function atlasCommand(action, params = {}) {
+      const f = document.getElementById("atlasFrame");
+      if (f && f.contentWindow) {
+        f.contentWindow.postMessage({ action, ...params }, "*");
+      }
+    }
+
+    function showAtlasSelection(name, fmaId, category) {
+      lastSelectedStructure = { name, fmaId, category };
+      const banner = document.getElementById("atlasSelectionCard");
+      if (banner) {
+        banner.style.display = "block";
+        document.getElementById("selectedStructureName").textContent = name;
+        document.getElementById("selectedStructureFMA").textContent = fmaId ? `FMA: ${fmaId}` : "";
+        document.getElementById("selectedStructureCat").textContent = category || "Anatomy";
+      }
+    }
+
+    function addSelectedToSOAP() {
+      if (!lastSelectedStructure) return;
+      const objInput = document.getElementById("soapO");
+      if (objInput) {
+        const note = `Examined structure: ${lastSelectedStructure.name}${lastSelectedStructure.fmaId ? ' (' + lastSelectedStructure.fmaId + ')' : ''}. Palpation and local tissue response assessed.`;
+        if (objInput.value.trim()) {
+          objInput.value += "\n" + note;
+        } else {
+          objInput.value = note;
+        }
+        alert(`Added "${lastSelectedStructure.name}" to SOAP Objective note.`);
+      }
+    }
 
     // Tab Navigation
     document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -539,17 +610,26 @@
       });
     });
 
-    // Region SVG click
-    document.querySelectorAll(".body-part").forEach(part => {
-      part.addEventListener("click", () => {
-        document.querySelectorAll(".body-part").forEach(p => p.classList.remove("active"));
-        part.classList.add("active");
-        activeRegion = part.dataset.region;
+    // Region button click (replaces SVG body-part click)
+    document.querySelectorAll(".region-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".region-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeRegion = btn.dataset.region;
         document.getElementById("selectedRegionTitle").textContent = activeRegion;
         loadRegionAnatomy(activeRegion);
         loadRegionQuestionnaires(activeRegion);
       });
     });
+
+    // Hide atlas loading overlay once iframe loads
+    const atlasFrame = document.getElementById("atlasFrame");
+    if (atlasFrame) {
+      atlasFrame.addEventListener("load", () => {
+        const overlay = document.getElementById("atlasLoadingOverlay");
+        if (overlay) { overlay.style.opacity = "0"; setTimeout(() => overlay.style.display = "none", 600); }
+      });
+    }
 
     // Role switcher
     document.getElementById("roleSelect").addEventListener("change", (e) => {
@@ -612,7 +692,15 @@
           }
 
           const bpText = s.bodyparts3d_id ? `<span style="font-size:11px; color:#38bdf8;">FMA: ${s.bodyparts3d_id}</span>` : "";
-          const linkHtml = `<a href="${s.atlas_url}" target="_blank" class="link-atlas">↗ Open in 3D Atlas</a>`;
+          const fmaId = s.bodyparts3d_id || "";
+          const actionButtons = fmaId
+            ? `<div style="display:flex; gap:6px; margin-top:8px;">
+                 <button class="btn-secondary" onclick="atlasSelectStructure('${fmaId}', false)" style="font-size:11px; padding:3px 8px; cursor:pointer;">🔍 3D Focus</button>
+                 <button class="btn-secondary" onclick="atlasSelectStructure('${fmaId}', true)" style="font-size:11px; padding:3px 8px; cursor:pointer;">⚡ 3D Isolate</button>
+               </div>`
+            : `<div style="display:flex; gap:6px; margin-top:8px;">
+                 <button class="btn-secondary" onclick="atlasSearchStructure('${s.name}', false)" style="font-size:11px; padding:3px 8px; cursor:pointer;">🔍 3D Search</button>
+               </div>`;
 
           return `
             <div class="item-card">
@@ -623,7 +711,7 @@
               <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">
                 Dataset: ${s.source_dataset} ${bpText} | Ref: ${s.evidence_id}
               </div>
-              ${linkHtml}
+              ${actionButtons}
             </div>
           `;
         }).join("");
@@ -851,6 +939,10 @@
           body: JSON.stringify({ flag, modality, contraindications: contras })
         });
         const data = await res.json();
+        if (data.error) {
+          area.innerHTML = `<div class="alert-box alert-danger">Error: ${data.error}</div>`;
+          return;
+        }
         const isStop = data.disposition === "STOP_AND_REFER";
         const alertClass = isStop ? "alert-danger" : "alert-info";
 
@@ -858,8 +950,8 @@
           <div class="alert-box ${alertClass}">
             <h3 style="margin-bottom:6px;">DISPOSITION: ${data.disposition}</h3>
             <p><strong>Safe to Proceed with Observation:</strong> ${data.is_safe_to_proceed ? 'YES' : 'NO'}</p>
-            ${data.flags_triggered.length ? `<p><strong>Flags:</strong> ${data.flags_triggered.join(', ')}</p>` : ''}
-            ${data.contraindications_triggered.length ? `<p><strong>Contraindications:</strong> ${data.contraindications_triggered.join(', ')}</p>` : ''}
+            ${(data.flags_triggered || []).length ? `<p><strong>Flags:</strong> ${data.flags_triggered.join(', ')}</p>` : ''}
+            ${(data.contraindications_triggered || []).length ? `<p><strong>Contraindications:</strong> ${data.contraindications_triggered.join(', ')}</p>` : ''}
             <div style="margin-top:10px; font-weight:600;">${data.escalation_instructions}</div>
             <div style="margin-top:6px; font-size:12px;"><strong>Rationale:</strong> ${data.clinical_rationale}</div>
             <small style="display:block; margin-top:8px; color:var(--text-muted)">Citing Guideline: ${data.evidence_id}</small>

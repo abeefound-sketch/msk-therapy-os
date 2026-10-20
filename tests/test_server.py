@@ -179,6 +179,45 @@ class TestWebServer(unittest.TestCase):
             self.assertIn("SYNTHETIC CLINICAL LEARNING REPORT", text)
             self.assertIn("DEMO-NECK-001", text)
 
+    def test_get_atlas_html(self):
+        req = urllib.request.Request(f"{self.base_url}/atlas/")
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            self.assertIn("text/html", resp.headers.get("Content-Type", ""))
+            html = resp.read().decode("utf-8")
+            self.assertIn("Open Anatomy Atlas", html)
+            self.assertIn('id="viewport"', html)
+
+    def test_get_atlas_status(self):
+        for endpoint in ["/atlas/api/status", "/api/status"]:
+            req = urllib.request.Request(f"{self.base_url}{endpoint}")
+            with urllib.request.urlopen(req) as resp:
+                self.assertEqual(resp.status, 200)
+                status = json.loads(resp.read().decode("utf-8"))
+                self.assertIn("ready", status)
+                self.assertTrue(status["ready"])
+                self.assertEqual(status["active"], "bp3d40")
+                self.assertIn("counts", status)
+                self.assertGreaterEqual(status["counts"]["elements"], 1000)
+
+    def test_get_atlas_data_index(self):
+        for endpoint in ["/atlas/data/index.json", "/data/index.json"]:
+            req = urllib.request.Request(f"{self.base_url}{endpoint}")
+            with urllib.request.urlopen(req) as resp:
+                self.assertEqual(resp.status, 200)
+                idx = json.loads(resp.read().decode("utf-8"))
+                self.assertEqual(idx["name"], "BodyParts3D")
+                self.assertEqual(idx["version"], "4.0")
+                self.assertIn("concepts", idx)
+                self.assertGreater(len(idx["concepts"]), 2000)
+
+    def test_get_atlas_assets(self):
+        for asset, expected_type in [("/atlas/app.js", "javascript"), ("/atlas/style.css", "css")]:
+            req = urllib.request.Request(f"{self.base_url}{asset}")
+            with urllib.request.urlopen(req) as resp:
+                self.assertEqual(resp.status, 200)
+                self.assertIn(expected_type, resp.headers.get("Content-Type", ""))
+
 
 if __name__ == "__main__":
     unittest.main()

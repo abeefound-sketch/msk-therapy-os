@@ -1,10 +1,17 @@
-"""Lightweight, zero-dependency HTTP server for MSK-Therapy-OS Milestone M2 Body-Map UI."""
+"""Lightweight, zero-dependency HTTP server for MSK-Therapy-OS Milestone M2 Body-Map UI.
+
+Serves the Open Anatomy Atlas renderer at /atlas/ and proxies BodyParts3D data files
+from the local dataset directory, providing an integrated 3D anatomy learning experience
+without cross-origin issues.
+"""
 from __future__ import annotations
 
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import os
 from pathlib import Path
+import shutil
 import sqlite3
 from typing import Any, Dict, Optional
 from urllib.parse import parse_qs, urlparse
@@ -28,6 +35,21 @@ from msk_therapy_os.soap import (
 )
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+ATLAS_UI_DIR = STATIC_DIR / "atlas"
+
+# Resolve the Open Anatomy Atlas data directory (same location the atlas tools use).
+_APPDATA = os.environ.get("APPDATA", "")
+ATLAS_DATA_DIR = Path(_APPDATA) / "open-anatomy-atlas" / "dataset" if _APPDATA else None
+
+MIME_TYPES = {
+    ".html": "text/html; charset=utf-8",
+    ".js": "text/javascript; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".json": "application/json",
+    ".png": "image/png",
+    ".svg": "image/svg+xml",
+    ".bin": "application/octet-stream",
+}
 
 
 class MSKRequestHandler(BaseHTTPRequestHandler):
@@ -62,6 +84,88 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         raw = self.rfile.read(content_len)
         return json.loads(raw.decode("utf-8"))
 
+    def _serve_file(self, file_path: Path) -> bool:
+        """Serve a static file by streaming. Returns True if served, False if not found."""
+        if not file_path.exists() or file_path.is_dir():
+            return False
+        ext = file_path.suffix.lower()
+        content_type = MIME_TYPES.get(ext, "application/octet-stream")
+        file_size = file_path.stat().st_size
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(file_size))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        with open(file_path, "rb") as f:
+            shutil.copyfileobj(f, self.wfile, 65536)
+        return True
+
+    def _atlas_status(self) -> Dict[str, Any]:
+        """Read atlas status from the local data directory (mirrors Open Anatomy Atlas API)."""
+        if not ATLAS_DATA_DIR or not ATLAS_DATA_DIR.exists():
+            return {"ready": False, "error": "No atlas data directory found"}
+        active_file = ATLAS_DATA_DIR / "active.json"
+        active_id = None
+        if active_file.exists():
+            try:
+                active_id = json.loads(active_file.read_text(encoding="utf-8")).get("id")
+            except Exception:
+                pass
+        atlases = []
+        atlases_dir = ATLAS_DATA_DIR / "atlases"
+        if atlases_dir.exists():
+            for d in sorted(atlases_dir.iterdir()):
+                if not d.is_dir():
+                    continue
+                idx_file = d / "build" / "index.json"
+                info: Dict[str, Any] = {"id": d.name, "ready": idx_file.exists()}
+                if idx_file.exists():
+                    try:
+                        idx = json.loads(idx_file.read_text(encoding="utf-8"))
+                        info.update({
+                            "name": idx.get("name"),
+                            "version": idx.get("version"),
+                            "counts": idx.get("counts"),
+                            "attribution": idx.get("attribution"),
+                            "license": idx.get("license"),
+                        })
+                    except Exception:
+                        pass
+                atlases.append(info)
+        ready_ids = [a["id"] for a in atlases if a.get("ready")]
+        if active_id not in ready_ids and ready_ids:
+            active_id = ready_ids[0]
+        active_atlas = next((a for a in atlases if a["id"] == active_id), None)
+        result: Dict[str, Any] = {
+            "ready": bool(active_atlas and active_atlas.get("ready")),
+            "active": active_id,
+            "atlases": atlases,
+            "dataDir": str(ATLAS_DATA_DIR),
+        }
+        if active_atlas:
+            for k in ("name", "version", "counts", "attribution", "license"):
+                if k in active_atlas:
+                    result[k] = active_atlas[k]
+        return result
+
+    def _resolve_atlas_data_file(self, rel_path: str) -> Optional[Path]:
+        """Resolve a data/ path to an actual file inside the active atlas build directory."""
+        if not ATLAS_DATA_DIR:
+            return None
+        status = self._atlas_status()
+        active = status.get("active")
+        if not active:
+            return None
+        build_dir = ATLAS_DATA_DIR / "atlases" / active / "build"
+        target = (build_dir / rel_path).resolve()
+        # Security: ensure the resolved path is inside build_dir
+        if not str(target).startswith(str(build_dir.resolve())):
+            return None
+        if target.exists() and target.is_file():
+            return target
+        return None
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         path = parsed.path
@@ -73,6 +177,51 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_text(index_file.read_text(encoding="utf-8"), content_type="text/html; charset=utf-8")
             else:
                 self._send_text("static/index.html not found", status=HTTPStatus.NOT_FOUND)
+            return
+
+        # --- Atlas UI: serve renderer files at /atlas/ ---
+        if path.startswith("/atlas/") or path == "/atlas":
+            rel = path[7:] if path.startswith("/atlas/") else ""
+            if not rel or rel == "index.html":
+                atlas_index = ATLAS_UI_DIR / "index.html"
+                if atlas_index.exists():
+                    self._send_text(
+                        atlas_index.read_text(encoding="utf-8"),
+                        content_type="text/html; charset=utf-8",
+                    )
+                else:
+                    self._send_text("Atlas UI not installed", status=HTTPStatus.NOT_FOUND)
+                return
+            # /atlas/data/ -> serve from the local BodyParts3D dataset
+            if rel.startswith("data/"):
+                data_rel = rel[5:]  # strip "data/"
+                data_file = self._resolve_atlas_data_file(data_rel)
+                if data_file and self._serve_file(data_file):
+                    return
+                self._send_text("Atlas data file not found", status=HTTPStatus.NOT_FOUND)
+                return
+            # /atlas/api/status -> atlas status JSON
+            if rel == "api/status":
+                self._send_json(self._atlas_status())
+                return
+            # Serve other atlas UI assets (JS, CSS, brand/)
+            safe_path = (ATLAS_UI_DIR / rel).resolve()
+            if str(safe_path).startswith(str(ATLAS_UI_DIR.resolve())):
+                if self._serve_file(safe_path):
+                    return
+            self._send_text("Not found", status=HTTPStatus.NOT_FOUND)
+            return
+
+        # --- Direct Atlas Data & Status Endpoints ---
+        if path.startswith("/data/"):
+            data_file = self._resolve_atlas_data_file(path[6:])
+            if data_file and self._serve_file(data_file):
+                return
+            self._send_text("Atlas data file not found", status=HTTPStatus.NOT_FOUND)
+            return
+
+        if path == "/api/status":
+            self._send_json(self._atlas_status())
             return
 
         with open_db(self.db_path) as db:

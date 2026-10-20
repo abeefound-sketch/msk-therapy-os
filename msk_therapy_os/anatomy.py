@@ -7,8 +7,15 @@ from msk_therapy_os.models import AnatomyRecord, KnowledgeNamespace
 
 DEFAULT_ATLAS_BASE = "https://CognitionLabSNUC.github.io/open-anatomy-atlas/"
 
+# Local atlas path served by the MSK-Therapy-OS server at /atlas/
+LOCAL_ATLAS_PATH = "/atlas/"
+
 DEFAULT_ANATOMY_CATALOG: List[AnatomyRecord] = [
-    # Modern Evidence-Based Anatomy
+    # -----------------------------------------------------------------------
+    # Modern Evidence-Based Anatomy — Neck & Cervical Region
+    # FMA IDs verified against BodyParts3D 4.0 index.json (2,234 meshes,
+    # 3,434 named structures, downloaded 2026-10-20 from dbarchive.biosciencedbc.jp).
+    # -----------------------------------------------------------------------
     AnatomyRecord(
         structure_id="STR-CERV-001",
         name="Cervical Spine (C1-C7 vertebrae)",
@@ -21,51 +28,117 @@ DEFAULT_ANATOMY_CATALOG: List[AnatomyRecord] = [
     ),
     AnatomyRecord(
         structure_id="STR-CERV-002",
-        name="Trapezius Muscle (Descending/Transverse/Ascending parts)",
+        name="Zone of Trapezius (Descending/Transverse/Ascending)",
         region="neck",
-        source_dataset="BodyParts3D 4.0 / FMA 9626",
-        bodyparts3d_id="FJ9626",
-        atlas_url=f"{DEFAULT_ATLAS_BASE}?part=FJ9626",
+        source_dataset="BodyParts3D 4.0 / FMA32529",
+        bodyparts3d_id="FMA32529",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
         namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
         evidence_id="EVID-A-002",
     ),
     AnatomyRecord(
         structure_id="STR-CERV-003",
-        name="Levator Scapulae Muscle",
+        name="Levator Scapulae",
         region="neck",
-        source_dataset="BodyParts3D 4.0 / FMA 32519",
-        bodyparts3d_id="FJ32519",
-        atlas_url=f"{DEFAULT_ATLAS_BASE}?part=FJ32519",
+        source_dataset="BodyParts3D 4.0 / FMA32519",
+        bodyparts3d_id="FMA32519",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
         namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
         evidence_id="EVID-A-002",
     ),
     AnatomyRecord(
+        structure_id="STR-CERV-004",
+        name="Descending Part of Trapezius (Upper Trapezius)",
+        region="neck",
+        source_dataset="BodyParts3D 4.0 / FMA32557",
+        bodyparts3d_id="FMA32557",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    AnatomyRecord(
+        structure_id="STR-CERV-005",
+        name="Transverse Part of Trapezius (Middle Trapezius)",
+        region="neck",
+        source_dataset="BodyParts3D 4.0 / FMA32556",
+        bodyparts3d_id="FMA32556",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    AnatomyRecord(
+        structure_id="STR-CERV-006",
+        name="Ascending Part of Trapezius (Lower Trapezius)",
+        region="neck",
+        source_dataset="BodyParts3D 4.0 / FMA32555",
+        bodyparts3d_id="FMA32555",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    # -----------------------------------------------------------------------
+    # Shoulder Region
+    # -----------------------------------------------------------------------
+    AnatomyRecord(
+        structure_id="STR-SHLD-001",
+        name="Clavicle",
+        region="shoulder",
+        source_dataset="BodyParts3D 4.0 / FMA13321",
+        bodyparts3d_id="FMA13321",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    AnatomyRecord(
+        structure_id="STR-SHLD-002",
+        name="Deep Extrinsic Muscle of Shoulder",
+        region="shoulder",
+        source_dataset="BodyParts3D 4.0 / FMA32518",
+        bodyparts3d_id="FMA32518",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    AnatomyRecord(
+        structure_id="STR-SHLD-003",
+        name="Extrinsic Muscle of Shoulder",
+        region="shoulder",
+        source_dataset="BodyParts3D 4.0 / FMA32516",
+        bodyparts3d_id="FMA32516",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
+        namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
+        evidence_id="EVID-A-002",
+    ),
+    # -----------------------------------------------------------------------
+    # Lumbar / Low-Back Region
+    # -----------------------------------------------------------------------
+    AnatomyRecord(
         structure_id="STR-LUMB-001",
-        name="Lumbar Vertebrae (L1-L5)",
+        name="Lumbar Vertebral Column",
         region="low_back",
-        source_dataset="BodyParts3D 4.0 / FMA 9922",
-        bodyparts3d_id="FJ9922",
-        atlas_url=f"{DEFAULT_ATLAS_BASE}?part=FJ9922",
+        source_dataset="BodyParts3D 4.0 / FMA16203",
+        bodyparts3d_id="FMA16203",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
         namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
         evidence_id="EVID-A-002",
     ),
     AnatomyRecord(
         structure_id="STR-LUMB-002",
-        name="Erector Spinae Muscle Group",
+        name="Lumbar Vertebra (L1-L5)",
         region="low_back",
-        source_dataset="BodyParts3D 4.0 / FMA 71302",
-        bodyparts3d_id="FJ71302",
-        atlas_url=f"{DEFAULT_ATLAS_BASE}?part=FJ71302",
+        source_dataset="BodyParts3D 4.0 / FMA9921",
+        bodyparts3d_id="FMA9921",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
         namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
         evidence_id="EVID-A-002",
     ),
     AnatomyRecord(
         structure_id="STR-LUMB-003",
-        name="Piriformis Muscle & Sciatic Pathway Reference",
+        name="Piriformis",
         region="low_back",
-        source_dataset="BodyParts3D 4.0 / FMA 22357",
-        bodyparts3d_id="FJ22357",
-        atlas_url=f"{DEFAULT_ATLAS_BASE}?part=FJ22357",
+        source_dataset="BodyParts3D 4.0 / FMA19082",
+        bodyparts3d_id="FMA19082",
+        atlas_url=f"{DEFAULT_ATLAS_BASE}",
         namespace=KnowledgeNamespace.ANATOMY_EVIDENCE.value,
         evidence_id="EVID-A-002",
     ),
