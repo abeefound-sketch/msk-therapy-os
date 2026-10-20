@@ -1,14 +1,16 @@
 // MSK-Therapy-OS: 3D Acupuncture & Traditional Meridian Visualization Layer
-// Integrates WHO 2008 / GB/T 12346-2021 acupoints and 14 meridian courses into Open Anatomy Atlas.
+// Calibrated to BodyParts3D 4.0 Anatomical Ground Truth (FMA Standards)
 (() => {
   'use strict';
 
   let acuData = null;
-  let showPoints = true;
-  let showMeridians = true;
+  // Default to clean anatomical view with unnecessary overlays disabled (Requirement 7)
+  let showPoints = false;
+  let showMeridians = false;
   let showThai = false;
   let showDienChan = false;
-  let filterRegion = 'all';
+  let verifiedOnly = true; // Default to verified anatomical anchors only (Requirement 5)
+  let filterRegion = 'neck'; // Focus on Neck-Shoulder-Upper-Back scenario (Requirement 9)
   let selectedCode = null;
 
   const overlaySvg = document.getElementById('acupunctureOverlay');
@@ -70,18 +72,36 @@
     } else {
       let pathsHtml = '';
       for (const mCode in acuData.meridians) {
+        // If verified only, only render Cervical/Shoulder/Upper-back pathways (GV, BL, GB)
+        if (verifiedOnly && !['GV', 'BL', 'GB', 'SI', 'TE', 'LI'].includes(mCode)) continue;
+
         const m = acuData.meridians[mCode];
         for (const p of m.paths) {
           if (!p.points || p.points.length < 2) continue;
-          let d = '';
-          for (let i = 0; i < p.points.length; i++) {
-            const pt = p.points[i];
-            const s = r.project(pt);
-            if (!s) continue;
-            d += (d === '' ? 'M ' : ' L ') + s[0].toFixed(1) + ' ' + s[1].toFixed(1);
+
+          // Bilateral rendering for lateral meridians
+          const pointSets = [p.points];
+          const isMidline = ['GV', 'CV'].includes(mCode);
+          if (!isMidline && p.points.some(pt => Math.abs(pt[0]) > 0.005)) {
+            // Also project left-side companion path
+            const mirrored = p.points.map(pt => [-pt[0], pt[1], pt[2]]);
+            pointSets.push(mirrored);
           }
-          if (d) {
-            pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" filter="url(#glow)"/>`;
+
+          for (const pts of pointSets) {
+            let d = '';
+            for (let i = 0; i < pts.length; i++) {
+              const pt = pts[i];
+              // If verified only, restrict to neck-shoulder-upperback height (Y >= 1.30m)
+              if (verifiedOnly && pt[1] < 1.30) continue;
+
+              const s = r.project(pt);
+              if (!s) continue;
+              d += (d === '' ? 'M ' : ' L ') + s[0].toFixed(1) + ' ' + s[1].toFixed(1);
+            }
+            if (d && d.includes('L')) {
+              pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" filter="url(#glow)"/>`;
+            }
           }
         }
       }
@@ -117,25 +137,43 @@
       let ptsHtml = '';
       for (const code in acuData.points) {
         const pt = acuData.points[code];
-        if (filterRegion !== 'all' && pt.region !== filterRegion) continue;
+        const isVerified = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
 
-        const s = r.project(pt.position);
-        if (!s || s[0] < -20 || s[1] < -20 || s[0] > sw + 20 || s[1] > sh + 20) continue;
+        // Filter: verified anchors only or posture offset
+        if (verifiedOnly && !isVerified) continue;
 
-        const isSel = selectedCode === code;
-        const rad = isSel ? 7 : 4;
-        const fill = isSel ? '#facc15' : '#38bdf8';
-        const stroke = isSel ? '#ffffff' : '#0f172a';
-        const swidth = isSel ? 2.5 : 1.5;
+        if (filterRegion !== 'all') {
+          const ptRegion = pt.region || '';
+          if (filterRegion === 'neck' && !isVerified && !ptRegion.includes('头面颈项') && !ptRegion.includes('腰背')) continue;
+        }
 
-        ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${swidth}" class="acu-marker" data-code="${code}">
-          <title>${pt.code} - ${pt.name_en} (${pt.name_zh}) [${pt.meridian_name}]</title>
-        </circle>`;
+        // Bilateral point instances
+        const isMidline = Math.abs(pt.position[0]) < 0.005;
+        const instances = [{ pos: pt.position, side: isMidline ? 'midline' : 'right' }];
+        if (!isMidline && pt.position[0] > 0.005) {
+          instances.push({ pos: [-pt.position[0], pt.position[1], pt.position[2]], side: 'left' });
+        }
 
-        if (isSel) {
-          ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="12" fill="none" stroke="#facc15" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.8">
-            <animateTransform attributeName="transform" type="rotate" from="0 ${s[0]} ${s[1]}" to="360 ${s[0]} ${s[1]}" dur="6s" repeatCount="indefinite"/>
+        for (const inst of instances) {
+          const s = r.project(inst.pos);
+          if (!s || s[0] < -20 || s[1] < -20 || s[0] > sw + 20 || s[1] > sh + 20) continue;
+
+          const isSel = selectedCode === code;
+          let rad = isSel ? 7 : (isVerified ? 5 : 4);
+          let fill = isSel ? '#facc15' : (isVerified ? '#10b981' : '#f59e0b');
+          let stroke = isSel ? '#ffffff' : (isVerified ? '#047857' : '#78350f');
+          let swidth = isSel ? 2.5 : 1.5;
+          let dash = isVerified ? '' : 'stroke-dasharray="2,2"';
+
+          ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${swidth}" ${dash} class="acu-marker" data-code="${code}" data-side="${inst.side}" style="cursor:pointer;">
+            <title>${pt.code} - ${pt.name_en} (${pt.name_zh}) [${isVerified ? 'VERIFIED ANCHOR' : 'UNCERTAIN POSTURE'}]</title>
           </circle>`;
+
+          if (isSel) {
+            ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="13" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4" opacity="0.9">
+              <animateTransform attributeName="transform" type="rotate" from="0 ${s[0]} ${s[1]}" to="360 ${s[0]} ${s[1]}" dur="5s" repeatCount="indefinite"/>
+            </circle>`;
+          }
         }
       }
       groupPoints.innerHTML = ptsHtml;
@@ -149,7 +187,7 @@
       for (const dc of acuData.dien_chan || []) {
         const s = r.project(dc.position);
         if (!s || s[0] < -10 || s[1] < -10 || s[0] > sw + 10 || s[1] > sh + 10) continue;
-        dcHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="4" fill="#ec4899" stroke="#ffffff" stroke-width="1.5" class="acu-marker" data-code="${dc.code}">
+        dcHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="4.5" fill="#ec4899" stroke="#ffffff" stroke-width="1.5" class="acu-marker" data-code="${dc.code}">
           <title>${dc.name} [Dien Chan]</title>
         </circle>`;
       }
@@ -181,7 +219,10 @@
         pin.style.left = s[0] + 'px';
         pin.style.top = s[1] + 'px';
         const span = pin.querySelector('span');
-        if (span) span.textContent = `${pt.name_en} (${pt.code} / ${pt.name_zh})`;
+        if (span) {
+          const statusTag = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? ' [✓ Verified]' : ' [⚠️ Posture Offset]';
+          span.textContent = `${pt.name_en} (${pt.code} / ${pt.name_zh})${statusTag}`;
+        }
       }
     }
 
@@ -198,64 +239,95 @@
   // Build sidebar controls inside #panelMeridians
   function buildSidebarControls() {
     const panel = document.getElementById('panelMeridians');
-    if (!panel) return;
+    if (!panel || !acuData) return;
+
+    let pointsListHtml = '';
+    const sortedCodes = Object.keys(acuData.points).sort((a, b) => {
+      const vA = acuData.points[a].registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? 0 : 1;
+      const vB = acuData.points[b].registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? 0 : 1;
+      return vA - vB;
+    });
+
+    for (const code of sortedCodes) {
+      const p = acuData.points[code];
+      const isVer = p.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
+      const badge = isVer ? '<span style="background:#065f46; color:#a7f3d0; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:600;">✓ ANCHOR</span>' : '<span style="background:#78350f; color:#fde68a; font-size:9px; padding:1px 4px; border-radius:3px;">⚠️ UNVERIFIED</span>';
+      pointsListHtml += `
+        <div class="acu-list-item" data-code="${code}" style="display:flex; justify-content:space-between; align-items:center; padding:5px 8px; font-size:11px; border-bottom:1px solid var(--line); cursor:pointer;">
+          <div>
+            <strong>${p.code}</strong> ${p.name_en} <small style="color:var(--muted)">(${p.name_zh})</small>
+          </div>
+          <div>${badge}</div>
+        </div>
+      `;
+    }
 
     panel.innerHTML = `
-      <div style="padding: 12px; display: flex; flex-direction: column; gap: 14px;">
-        <div>
-          <h3 style="margin: 0 0 6px 0; font-size: 13px; color: var(--film); font-weight: 600;">Traditional Meridian Layers</h3>
-          <p style="margin: 0; font-size: 11px; color: var(--muted); line-height: 1.4;">
-            WHO 2008 & GB/T 12346-2021 standard surface topography. Cultural constructs; not equivalent to physical nerves or fascia.
-          </p>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:10px; font-size:12px;">
+        <div style="font-weight:600; color:var(--bone); font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+          <span>Anatomical Overlays</span>
+          <span style="font-size:10px; color:#38bdf8;">BodyParts3D Ground Truth</span>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; cursor: pointer;">
-            <span>Acupuncture Points (${acuData.metadata.count_points})</span>
-            <input type="checkbox" id="chkShowPoints" ${showPoints ? 'checked' : ''}>
+        <div style="display:flex; flex-direction:column; gap:6px; background:var(--panel-2); padding:8px; border-radius:var(--r-s);">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="chkShowPoints" ${showPoints ? 'checked' : ''} />
+            <span>📍 3D Acupoints</span>
           </label>
-          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; cursor: pointer;">
-            <span>14 Primary Meridians</span>
-            <input type="checkbox" id="chkShowMeridians" ${showMeridians ? 'checked' : ''}>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-left:16px;">
+            <input type="checkbox" id="chkVerifiedOnly" ${verifiedOnly ? 'checked' : ''} />
+            <span style="color:#10b981; font-weight:600;">✓ Verified Anchors Only</span>
           </label>
-          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; cursor: pointer;">
-            <span>Thai Sen Sib Lines (DTAM)</span>
-            <input type="checkbox" id="chkShowThai" ${showThai ? 'checked' : ''}>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="chkShowMeridians" ${showMeridians ? 'checked' : ''} />
+            <span>⚡ 14 Meridian Pathways</span>
           </label>
-          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; cursor: pointer;">
-            <span>Dien Chan Facial Reflexes</span>
-            <input type="checkbox" id="chkShowDienChan" ${showDienChan ? 'checked' : ''}>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="chkShowThai" ${showThai ? 'checked' : ''} />
+            <span>🇹🇭 Thai Sen Sib Lines</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="chkShowDienChan" ${showDienChan ? 'checked' : ''} />
+            <span>🇻🇳 Dien Chan Reflex Points</span>
           </label>
         </div>
 
-        <div style="border-top: 1px solid var(--line); padding-top: 10px;">
-          <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px;">Region Focus</label>
-          <select id="selAcuRegion" style="width: 100%; padding: 4px 8px; background: var(--stage); border: 1px solid var(--line); border-radius: var(--r-s); font-size: 12px;">
-            <option value="all">All Anatomical Regions</option>
-            <option value="头面颈项">Head & Neck (GB20, BL10, GV14)</option>
-            <option value="肩背">Shoulder & Back (GB21, SI14, SI15)</option>
-            <option value="上肢">Upper Extremity (LI4, LU5, PC6)</option>
-            <option value="腰背">Lumbar Spine & Sacrum (BL23, GV4)</option>
-            <option value="下肢">Lower Extremity (ST36, GB34, SP6)</option>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <label style="font-size:11px; color:var(--muted);">Region Focus:</label>
+          <select id="selAcuRegion" style="background:var(--panel-2); color:var(--bone); border:1px solid var(--line); padding:4px 6px; border-radius:var(--r-s); font-size:11px;">
+            <option value="neck" ${filterRegion === 'neck' ? 'selected' : ''}>Neck, Shoulder & Upper Back (Verified Scenario)</option>
+            <option value="all" ${filterRegion === 'all' ? 'selected' : ''}>Full Body (All Regions)</option>
           </select>
         </div>
 
-        <div style="border-top: 1px solid var(--line); padding-top: 10px;">
-          <div style="font-size: 11px; font-weight: 600; color: var(--film); margin-bottom: 6px;">Key MSK Clinical Points</div>
-          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <button class="pill-btn" data-point="GB21" title="Trapezius Trigger Point #1">GB21 (Jianjing)</button>
-            <button class="pill-btn" data-point="GB20" title="Suboccipital Release">GB20 (Fengchi)</button>
-            <button class="pill-btn" data-point="GV14" title="C7-T1 Cervicothoracic">GV14 (Dazhui)</button>
-            <button class="pill-btn" data-point="BL10" title="Paraspinal Neck">BL10 (Tianzhu)</button>
-            <button class="pill-btn" data-point="LI4" title="Distal Analgesic Point">LI4 (Hegu)</button>
-          </div>
+        <div style="font-weight:600; color:var(--bone); font-size:11px; margin-top:4px;">
+          Key Clinical Points (Neck-Shoulder):
+        </div>
+        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+          <button class="btn-acu-quick" data-code="GB21" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">GB21 肩井 (Trapezius)</button>
+          <button class="btn-acu-quick" data-code="GV14" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">GV14 大椎 (C7 Spine)</button>
+          <button class="btn-acu-quick" data-code="GB20" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">GB20 风池 (Suboccipital)</button>
+          <button class="btn-acu-quick" data-code="BL10" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">BL10 天柱 (Trapezius)</button>
+          <button class="btn-acu-quick" data-code="SI15" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">SI15 肩中俞 (C7 Paramedian)</button>
+          <button class="btn-acu-quick" data-code="TE15" style="font-size:10px; padding:3px 6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; border-radius:3px; cursor:pointer;">TE15 天髎 (Supraspinous)</button>
+        </div>
+
+        <div style="font-weight:600; color:var(--bone); font-size:11px; margin-top:6px;">
+          Points Directory:
+        </div>
+        <div id="acuPointsDirectory" style="overflow-y:auto; max-height:220px; background:var(--panel-2); border-radius:var(--r-s);">
+          ${pointsListHtml}
         </div>
       </div>
     `;
 
-    // Hook listeners
+    // Event listeners
     document.getElementById('chkShowPoints').addEventListener('change', (e) => {
       showPoints = e.target.checked;
+      render();
+    });
+    document.getElementById('chkVerifiedOnly').addEventListener('change', (e) => {
+      verifiedOnly = e.target.checked;
       render();
     });
     document.getElementById('chkShowMeridians').addEventListener('change', (e) => {
@@ -275,71 +347,71 @@
       render();
     });
 
-    panel.querySelectorAll('.pill-btn').forEach(btn => {
+    panel.querySelectorAll('.btn-acu-quick, .acu-list-item').forEach(btn => {
       btn.addEventListener('click', () => {
-        const code = btn.getAttribute('data-point');
-        selectPoint(code, true);
+        const code = btn.getAttribute('data-code');
+        if (code) {
+          showPoints = true;
+          const chk = document.getElementById('chkShowPoints');
+          if (chk) chk.checked = true;
+          selectPoint(code, true);
+        }
       });
     });
   }
 
-  // Hook into renderer's onFrame
+  // Hook into renderer's animation frame loop
   function hookFrame() {
     const r = getRenderer();
-    if (r) {
-      const prevOnFrame = r.onFrame;
-      r.onFrame = () => {
-        if (typeof prevOnFrame === 'function') prevOnFrame();
-        render();
-      };
-      render();
-    } else {
+    if (!r) {
       setTimeout(hookFrame, 200);
+      return;
     }
+    const prevOnFrame = r.onFrame;
+    r.onFrame = () => {
+      if (typeof prevOnFrame === 'function') prevOnFrame();
+      render();
+    };
+    render();
   }
 
-  // Listen to parent postMessages
+  // Listen for commands from parent window
   window.addEventListener('message', (ev) => {
-    if (!ev.data || typeof ev.data !== 'object') return;
-    const { action, layer, enabled, code, region } = ev.data;
-
-    if (action === 'toggle_meridian_layer') {
-      if (layer === 'points') showPoints = enabled ?? !showPoints;
-      if (layer === 'meridians') showMeridians = enabled ?? !showMeridians;
-      if (layer === 'thai') showThai = enabled ?? !showThai;
-      if (layer === 'dien_chan') showDienChan = enabled ?? !showDienChan;
-      const chkP = document.getElementById('chkShowPoints');
-      const chkM = document.getElementById('chkShowMeridians');
-      const chkT = document.getElementById('chkShowThai');
-      const chkD = document.getElementById('chkShowDienChan');
-      if (chkP) chkP.checked = showPoints;
-      if (chkM) chkM.checked = showMeridians;
-      if (chkT) chkT.checked = showThai;
-      if (chkD) chkD.checked = showDienChan;
+    if (!ev.data) return;
+    if (ev.data.action === 'select_acupoint') {
+      showPoints = true;
+      const chk = document.getElementById('chkShowPoints');
+      if (chk) chk.checked = true;
+      selectPoint(ev.data.code, true);
+    } else if (ev.data.action === 'toggle_layer' || ev.data.action === 'toggle_meridian_layer') {
+      const layer = ev.data.layer;
+      const val = ev.data.enabled;
+      if (layer === 'points') {
+        showPoints = (val !== undefined) ? val : !showPoints;
+        const c = document.getElementById('chkShowPoints'); if (c) c.checked = showPoints;
+      } else if (layer === 'meridians') {
+        showMeridians = (val !== undefined) ? val : !showMeridians;
+        const c = document.getElementById('chkShowMeridians'); if (c) c.checked = showMeridians;
+      } else if (layer === 'verified_only') {
+        verifiedOnly = (val !== undefined) ? val : !verifiedOnly;
+        const c = document.getElementById('chkVerifiedOnly'); if (c) c.checked = verifiedOnly;
+      } else if (layer === 'thai') {
+        showThai = (val !== undefined) ? val : !showThai;
+        const c = document.getElementById('chkShowThai'); if (c) c.checked = showThai;
+      } else if (layer === 'dien_chan') {
+        showDienChan = (val !== undefined) ? val : !showDienChan;
+        const c = document.getElementById('chkShowDienChan'); if (c) c.checked = showDienChan;
+      }
       render();
-    } else if (action === 'select_acupoint' && code) {
-      selectPoint(code.toUpperCase(), true);
-    } else if (action === 'filter_meridians' && region) {
-      filterRegion = region;
+    } else if (ev.data.action === 'set_region') {
+      filterRegion = ev.data.region || 'neck';
+      const sel = document.getElementById('selAcuRegion');
+      if (sel) sel.value = filterRegion;
       render();
     }
   });
 
-  // Expose API
-  window.__mskMeridians = {
-    render,
-    selectPoint,
-    toggleLayer: (layer, enabled) => {
-      if (layer === 'points') showPoints = enabled;
-      if (layer === 'meridians') showMeridians = enabled;
-      if (layer === 'thai') showThai = enabled;
-      if (layer === 'dien_chan') showDienChan = enabled;
-      render();
-    },
-    getData: () => acuData,
-  };
-
-  // Initialize
+  // Start initialization
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       loadData();

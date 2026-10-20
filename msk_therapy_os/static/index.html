@@ -311,11 +311,12 @@
               <div style="color:var(--text-muted); font-size:11px; margin-top:6px;">BodyParts3D 4.0 — 2,234 meshes, 3,434 structures</div>
             </div>
           </div>
-          <!-- Multimodal 3D Layer Toggles (M2.1) -->
+          <!-- Multimodal 3D Layer Toggles (Clean Anatomy Default / Verified Anchor Filter) -->
           <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; padding:8px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
-            <span style="font-size:11px; font-weight:600; color:var(--film);">3D Layers:</span>
-            <button id="btnToggleAcupoints" class="btn-secondary active" onclick="toggleAtlasLayer('points')" style="font-size:11px; padding:3px 8px; background:#0284c7; color:#fff; border-color:#38bdf8;">📍 Acupoints (WHO)</button>
-            <button id="btnToggleMeridians" class="btn-secondary active" onclick="toggleAtlasLayer('meridians')" style="font-size:11px; padding:3px 8px; background:#0f766e; color:#fff; border-color:#2dd4bf;">⚡ 14 Meridians</button>
+            <span style="font-size:11px; font-weight:600; color:var(--film);">3D Overlays:</span>
+            <button id="btnToggleVerified" class="btn-secondary active" onclick="toggleAtlasLayer('verified_only')" style="font-size:11px; padding:3px 8px; background:#065f46; color:#a7f3d0; border-color:#10b981;">✓ Verified MSK Anchors</button>
+            <button id="btnToggleAcupoints" class="btn-secondary" onclick="toggleAtlasLayer('points')" style="font-size:11px; padding:3px 8px;">📍 Acupoints (WHO)</button>
+            <button id="btnToggleMeridians" class="btn-secondary" onclick="toggleAtlasLayer('meridians')" style="font-size:11px; padding:3px 8px;">⚡ 14 Meridians</button>
             <button id="btnToggleThai" class="btn-secondary" onclick="toggleAtlasLayer('thai')" style="font-size:11px; padding:3px 8px;">🇹🇭 Thai Sen Sib</button>
             <button id="btnToggleDienChan" class="btn-secondary" onclick="toggleAtlasLayer('dien_chan')" style="font-size:11px; padding:3px 8px;">🇻🇳 Dien Chan Reflex</button>
           </div>
@@ -343,6 +344,10 @@
             </div>
             <div style="font-size:16px; font-weight:700; color:#fff; margin-bottom:2px;" id="acuPointTitle"></div>
             <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;" id="acuMeridianInfo"></div>
+            <div id="acuRegistrationBanner" style="margin-bottom:8px;"></div>
+            <div id="acuAnchorBox" style="display:none; background:rgba(6,95,70,0.15); border-left:3px solid #10b981; padding:4px 8px; border-radius:2px; margin-bottom:6px; font-size:12px;">
+              <strong style="color:#10b981;">Anatomical Anchor:</strong> <span id="acuAnchorText" style="color:var(--text);"></span>
+            </div>
             
             <div style="display:grid; grid-template-columns: 1fr; gap:6px; font-size:12px; line-height:1.4; margin-bottom:8px;">
               <div><strong style="color:var(--text);">Location:</strong> <span id="acuLocationText" style="color:var(--text-muted);"></span></div>
@@ -764,7 +769,7 @@
     let availableRedFlags = [];
     let lastSelectedStructure = null;
     let lastSelectedAcupoint = null;
-    let layerStates = { points: true, meridians: true, thai: false, dien_chan: false };
+    let layerStates = { points: false, meridians: false, verified_only: true, thai: false, dien_chan: false };
 
     // MSK 3D Atlas Communication Bridge
     window.addEventListener("message", (ev) => {
@@ -807,6 +812,7 @@
       const btnMap = {
         points: "btnToggleAcupoints",
         meridians: "btnToggleMeridians",
+        verified_only: "btnToggleVerified",
         thai: "btnToggleThai",
         dien_chan: "btnToggleDienChan"
       };
@@ -844,6 +850,25 @@
       document.getElementById("acuEvidenceBadge").textContent = `Tier 4: Grade ${pt.evidence_grade} Evidence`;
       document.getElementById("acuLocationText").textContent = `${pt.location_zh || ''} (${pt.location_method || ''})`;
       document.getElementById("acuAnatomyText").textContent = pt.anatomy || "Subcutaneous tissue, muscular fascia";
+
+      const isVer = pt.registration_status === "VERIFIED_ANATOMICAL_ANCHOR";
+      const regBanner = document.getElementById("acuRegistrationBanner");
+      if (regBanner) {
+        if (isVer) {
+          regBanner.innerHTML = `<span class="badge" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; font-weight:700;">✓ Verified Anatomical Anchor (BodyParts3D Ground Truth)</span>`;
+        } else {
+          regBanner.innerHTML = `<span class="badge" style="background:#78350f; color:#fde68a; border:1px solid #f59e0b; font-weight:700;">⚠️ Uncertain Posture Offset (External Reference)</span>`;
+        }
+      }
+      const anchorBox = document.getElementById("acuAnchorBox");
+      if (anchorBox) {
+        if (pt.anchor_structure) {
+          anchorBox.style.display = "block";
+          document.getElementById("acuAnchorText").textContent = `${pt.anchor_structure} — ${pt.verification_notes || ''}`;
+        } else {
+          anchorBox.style.display = "none";
+        }
+      }
       document.getElementById("acuIndicationsText").textContent = `${(pt.functions || []).join(', ')} | ${(pt.indications || []).join(', ')}`;
       document.getElementById("acuTuinaText").textContent = pt.tuina_method || "Gentle sustained acupressure 1-2 min";
 
