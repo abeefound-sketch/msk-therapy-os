@@ -30,7 +30,7 @@ a { color: var(--film); }
 #app {
   height: 100vh;
   display: grid;
-  grid-template-columns: 280px 1fr 340px;
+  grid-template-columns: 320px 1fr 340px;
   grid-template-rows: 52px 1fr 30px;
   grid-template-areas: "top top top" "side stage insp" "status status status";
 }
@@ -80,7 +80,7 @@ a { color: var(--film); }
 /* ---------- sidebar ---------- */
 .sidebar { grid-area: side; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
 .tabs { display: flex; border-bottom: 1px solid var(--line); }
-.tab { flex: 1; border: 0; background: none; padding: 11px 0 10px; color: var(--muted); border-bottom: 2px solid transparent; }
+.tab { flex: 1; border: 0; background: none; padding: 10px 4px; font-size: 12px; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-align: center; }
 .tab.on { color: var(--bone); border-bottom-color: var(--film); }
 .pane { flex: 1; overflow: auto; min-height: 0; display: flex; flex-direction: column; }
 .pane[data-pane="sections"] { padding: 14px; gap: 10px; }

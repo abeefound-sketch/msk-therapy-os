@@ -1376,7 +1376,8 @@
     }
 
     // Submit SOAP Note
-    document.getElementById("soapForm").addEventListener("submit", async (e) => {
+    const soapFormEl = document.getElementById("addSoapForm");
+    if (soapFormEl) soapFormEl.addEventListener("submit", async (e) => {
       e.preventDefault();
       const visit_id = document.getElementById("soapVisitId").value;
       const subjective = document.getElementById("soapS").value;
