@@ -181,6 +181,66 @@ class AtlasRenderer {
     const aspect = Math.max(1e-3, this.canvas.width / Math.max(1, this.canvas.height));
     return this._matricesForAspect(aspect);
   }
+
+  // Formal Viewport & Projection Descriptor Contract
+  getViewportDescriptor(target = 'overlay') {
+    const cw = this.canvas.clientWidth;
+    const ch = this.canvas.clientHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const isComp = this.renderMode === 'comparative';
+
+    if (isComp) {
+      const halfW = Math.floor(cw * 0.5);
+      if (target === 'left' || target === 'musculoskeletal') {
+        const aspect = Math.max(1e-3, halfW / Math.max(1, ch));
+        const mats = this._matricesForAspect(aspect);
+        return {
+          x: 0,
+          y: 0,
+          width: halfW,
+          height: ch,
+          devicePixelRatio: dpr,
+          aspect,
+          viewProjectionMatrix: mats.vp,
+          eye: mats.eye,
+          mode: 'musculoskeletal',
+          clippingBounds: [0, 0, halfW, ch]
+        };
+      } else {
+        // 'right', 'surface', 'overlay'
+        const rightW = cw - halfW;
+        const aspect = Math.max(1e-3, rightW / Math.max(1, ch));
+        const mats = this._matricesForAspect(aspect);
+        return {
+          x: halfW,
+          y: 0,
+          width: rightW,
+          height: ch,
+          devicePixelRatio: dpr,
+          aspect,
+          viewProjectionMatrix: mats.vp,
+          eye: mats.eye,
+          mode: 'surface',
+          clippingBounds: [halfW, 0, cw, ch]
+        };
+      }
+    } else {
+      const aspect = Math.max(1e-3, cw / Math.max(1, ch));
+      const mats = this._matricesForAspect(aspect);
+      return {
+        x: 0,
+        y: 0,
+        width: cw,
+        height: ch,
+        devicePixelRatio: dpr,
+        aspect,
+        viewProjectionMatrix: mats.vp,
+        eye: mats.eye,
+        mode: this.renderMode,
+        clippingBounds: [0, 0, cw, ch]
+      };
+    }
+  }
   orbit(dx, dy) {
     this.anim = null;
     this.camera.yaw -= dx * 0.006;
@@ -490,13 +550,19 @@ class AtlasRenderer {
   }
 
   // World point -> CSS pixel position inside the canvas.
-  project(p) {
-    const { vp } = this._matrices();
+  project(p, target = 'overlay') {
+    const vpDesc = this.getViewportDescriptor(target);
+    const vp = vpDesc.viewProjectionMatrix;
     const x = vp[0] * p[0] + vp[4] * p[1] + vp[8] * p[2] + vp[12];
     const y = vp[1] * p[0] + vp[5] * p[1] + vp[9] * p[2] + vp[13];
     const w = vp[3] * p[0] + vp[7] * p[1] + vp[11] * p[2] + vp[15];
-    if (w <= 0) return null;
-    return [(x / w * 0.5 + 0.5) * this.canvas.clientWidth, (1 - (y / w * 0.5 + 0.5)) * this.canvas.clientHeight];
+    if (w <= 0.005) return null;
+    const ndcX = x / w;
+    const ndcY = y / w;
+    if (!isFinite(ndcX) || !isFinite(ndcY)) return null;
+    const sx = vpDesc.x + (ndcX * 0.5 + 0.5) * vpDesc.width;
+    const sy = vpDesc.y + (1.0 - (ndcY * 0.5 + 0.5)) * vpDesc.height;
+    return [sx, sy];
   }
 
   snapshot() {

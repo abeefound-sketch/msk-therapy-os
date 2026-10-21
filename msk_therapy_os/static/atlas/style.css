@@ -127,7 +127,7 @@ input[type="range"] { width: 100%; accent-color: var(--film); }
 input[type="radio"], input[type="checkbox"] { accent-color: var(--film); }
 
 /* ---------- stage ---------- */
-.stage { grid-area: stage; position: relative; min-width: 0; min-height: 0; background: radial-gradient(ellipse at 50% 40%, #27303b 0%, var(--stage) 70%); }
+.stage { grid-area: stage; position: relative; min-width: 0; min-height: 0; overflow: hidden; contain: paint; background: radial-gradient(ellipse at 50% 40%, #27303b 0%, var(--stage) 70%); }
 #viewport { width: 100%; height: 100%; display: block; cursor: grab; outline: none; }
 #viewport.dragging { cursor: grabbing; }
 .stage-hint { position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; margin: 0; color: var(--muted); font-size: 12px; pointer-events: none; opacity: 0.8; }
@@ -295,7 +295,8 @@ body.embedded .inspector {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  overflow: visible;
+  overflow: hidden;
+  contain: paint;
   z-index: 5;
 }
 .acu-marker {

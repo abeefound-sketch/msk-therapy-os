@@ -20,24 +20,32 @@
   const overlaySvg = document.getElementById('acupunctureOverlay');
   if (!overlaySvg) return;
 
-  // Create SVG element containers with glow filter
+  // Create SVG element containers with glow filter and dynamic viewport clipping
   overlaySvg.innerHTML = `
     <defs>
       <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
         <feGaussianBlur stdDeviation="2" result="blur" />
         <feComposite in="SourceGraphic" in2="blur" operator="over" />
       </filter>
+      <clipPath id="overlayViewportClip">
+        <rect id="overlayClipRect" x="0" y="0" width="100%" height="100%"/>
+      </clipPath>
     </defs>
-    <g id="groupMeridians"></g>
-    <g id="groupThai"></g>
-    <g id="groupPoints"></g>
-    <g id="groupDienChan"></g>
+    <g id="overlayContent" clip-path="url(#overlayViewportClip)">
+      <g id="groupMeridians"></g>
+      <g id="groupThai"></g>
+      <g id="groupPoints"></g>
+      <g id="groupDienChan"></g>
+    </g>
+    <g id="groupComparativeOverlay"></g>
   `;
 
+  const overlayClipRect = document.getElementById('overlayClipRect');
   const groupMeridians = document.getElementById('groupMeridians');
   const groupThai = document.getElementById('groupThai');
   const groupPoints = document.getElementById('groupPoints');
   const groupDienChan = document.getElementById('groupDienChan');
+  const groupComparativeOverlay = document.getElementById('groupComparativeOverlay');
 
   // Load consolidated 3D dataset
   async function loadData() {
@@ -79,23 +87,174 @@
     return h >= -0.012;
   }
 
-  // Fast inline projection supporting both single viewport and comparative dual-split
-  function createProjector(r) {
-    const isComp = r && r.renderMode === 'comparative';
-    const cw = r.canvas.clientWidth;
-    const ch = r.canvas.clientHeight;
-    const aspect = isComp ? Math.max(1e-3, (cw * 0.5) / Math.max(1, ch)) : Math.max(1e-3, cw / Math.max(1, ch));
-    const { vp } = isComp ? r._matricesForAspect(aspect) : r._matrices();
-    const xOffset = isComp ? cw * 0.5 : 0;
-    const xSpan = isComp ? cw * 0.5 : cw;
+  // ---------------------------------------------------------------------------
+  // Topologically-Preserving Viewport Projection & Frustum Clipping Engine
+  // ---------------------------------------------------------------------------
 
-    return function fastProject(pos) {
-      const x = vp[0] * pos[0] + vp[4] * pos[1] + vp[8] * pos[2] + vp[12];
-      const y = vp[1] * pos[0] + vp[5] * pos[1] + vp[9] * pos[2] + vp[13];
-      const w = vp[3] * pos[0] + vp[7] * pos[1] + vp[11] * pos[2] + vp[15];
-      if (w <= 0.001) return null;
-      return [xOffset + (x / w * 0.5 + 0.5) * xSpan, (1 - (y / w * 0.5 + 0.5)) * ch];
-    };
+  // 4D Homogeneous Near-Plane Segment Clipping (w >= wNear)
+  function clipSegmentNearPlane(c0, c1, wNear = 0.005) {
+    const w0 = c0[3];
+    const w1 = c1[3];
+    if (w0 < wNear && w1 < wNear) return null;
+    let cc0 = c0;
+    let cc1 = c1;
+    if (w0 < wNear && w1 >= wNear) {
+      const t = (wNear - w0) / (w1 - w0);
+      cc0 = [
+        c0[0] + t * (c1[0] - c0[0]),
+        c0[1] + t * (c1[1] - c0[1]),
+        c0[2] + t * (c1[2] - c0[2]),
+        wNear
+      ];
+    } else if (w0 >= wNear && w1 < wNear) {
+      const t = (wNear - w0) / (w1 - w0);
+      cc1 = [
+        c0[0] + t * (c1[0] - c0[0]),
+        c0[1] + t * (c1[1] - c0[1]),
+        c0[2] + t * (c1[2] - c0[2]),
+        wNear
+      ];
+    }
+    return [cc0, cc1];
+  }
+
+  // 2D Liang-Barsky Segment Clipping against strict screen bounds [xmin, ymin, xmax, ymax]
+  function clipSegment2D(x0, y0, x1, y1, bounds) {
+    const [xmin, ymin, xmax, ymax] = bounds;
+    const dx = x1 - x0;
+    const dy = y1 - y0;
+    const p = [-dx, dx, -dy, dy];
+    const q = [x0 - xmin, xmax - x0, y0 - ymin, ymax - y0];
+    let u1 = 0.0;
+    let u2 = 1.0;
+
+    for (let i = 0; i < 4; i++) {
+      if (p[i] === 0) {
+        if (q[i] < 0) return null; // Parallel and outside
+      } else {
+        const t = q[i] / p[i];
+        if (p[i] < 0) {
+          if (t > u2) return null;
+          if (t > u1) u1 = t;
+        } else {
+          if (t < u1) return null;
+          if (t < u2) u2 = t;
+        }
+      }
+    }
+
+    const cx0 = Math.max(xmin, Math.min(xmax, x0 + u1 * dx));
+    const cy0 = Math.max(ymin, Math.min(ymax, y0 + u1 * dy));
+    const cx1 = Math.max(xmin, Math.min(xmax, x0 + u2 * dx));
+    const cy1 = Math.max(ymin, Math.min(ymax, y0 + u2 * dy));
+    return [[cx0, cy0], [cx1, cy1]];
+  }
+
+  // Project single 3D point to 2D viewport coordinates with near-plane and bounds validation
+  function projectPoint(pos, vp, viewport) {
+    const x = vp[0] * pos[0] + vp[4] * pos[1] + vp[8] * pos[2] + vp[12];
+    const y = vp[1] * pos[0] + vp[5] * pos[1] + vp[9] * pos[2] + vp[13];
+    const w = vp[3] * pos[0] + vp[7] * pos[1] + vp[11] * pos[2] + vp[15];
+    if (w <= 0.005) return null;
+
+    const ndcX = x / w;
+    const ndcY = y / w;
+    if (!isFinite(ndcX) || !isFinite(ndcY)) return null;
+
+    const sx = viewport.x + (ndcX * 0.5 + 0.5) * viewport.width;
+    const sy = viewport.y + (1.0 - (ndcY * 0.5 + 0.5)) * viewport.height;
+
+    const [xmin, ymin, xmax, ymax] = viewport.clippingBounds;
+    if (sx < xmin || sx > xmax || sy < ymin || sy > ymax) return null;
+    return [sx, sy];
+  }
+
+  // Topology-preserving 3D-to-2D polyline segment projection and clipping
+  function projectAndClipPolyline(pts, vp, viewport, filterFn = null) {
+    if (!pts || pts.length < 2) return '';
+    let d = '';
+    let lastPoint = null;
+
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i];
+      const p1 = pts[i + 1];
+
+      if (filterFn && (!filterFn(p0) || !filterFn(p1))) {
+        lastPoint = null;
+        continue;
+      }
+
+      // 1. Transform to 4D clip space
+      const c0 = [
+        vp[0] * p0[0] + vp[4] * p0[1] + vp[8] * p0[2] + vp[12],
+        vp[1] * p0[0] + vp[5] * p0[1] + vp[9] * p0[2] + vp[13],
+        vp[2] * p0[0] + vp[6] * p0[1] + vp[10] * p0[2] + vp[14],
+        vp[3] * p0[0] + vp[7] * p0[1] + vp[11] * p0[2] + vp[15]
+      ];
+      const c1 = [
+        vp[0] * p1[0] + vp[4] * p1[1] + vp[8] * p1[2] + vp[12],
+        vp[1] * p1[0] + vp[5] * p1[1] + vp[9] * p1[2] + vp[13],
+        vp[2] * p1[0] + vp[6] * p1[1] + vp[10] * p1[2] + vp[14],
+        vp[3] * p1[0] + vp[7] * p1[1] + vp[11] * p1[2] + vp[15]
+      ];
+
+      // 2. Homogeneous near-plane clip
+      const clippedClip = clipSegmentNearPlane(c0, c1, 0.005);
+      if (!clippedClip) {
+        lastPoint = null;
+        continue;
+      }
+
+      const [cc0, cc1] = clippedClip;
+
+      // 3. Perspective division & viewport mapping
+      const ndc0X = cc0[0] / cc0[3];
+      const ndc0Y = cc0[1] / cc0[3];
+      const ndc1X = cc1[0] / cc1[3];
+      const ndc1Y = cc1[1] / cc1[3];
+      if (!isFinite(ndc0X) || !isFinite(ndc0Y) || !isFinite(ndc1X) || !isFinite(ndc1Y)) {
+        lastPoint = null;
+        continue;
+      }
+
+      const s0x = viewport.x + (ndc0X * 0.5 + 0.5) * viewport.width;
+      const s0y = viewport.y + (1.0 - (ndc0Y * 0.5 + 0.5)) * viewport.height;
+      const s1x = viewport.x + (ndc1X * 0.5 + 0.5) * viewport.width;
+      const s1y = viewport.y + (1.0 - (ndc1Y * 0.5 + 0.5)) * viewport.height;
+
+      // 4. 2D Viewport bounds clip (Liang-Barsky)
+      const clipped2D = clipSegment2D(s0x, s0y, s1x, s1y, viewport.clippingBounds);
+      if (!clipped2D) {
+        lastPoint = null;
+        continue;
+      }
+
+      const [[q0x, q0y], [q1x, q1y]] = clipped2D;
+
+      // 5. Topology-preserving SVG path construction
+      if (lastPoint && Math.hypot(q0x - lastPoint[0], q0y - lastPoint[1]) < 0.6) {
+        d += ` L ${q1x.toFixed(1)} ${q1y.toFixed(1)}`;
+      } else {
+        d += (d ? ' ' : '') + `M ${q0x.toFixed(1)} ${q0y.toFixed(1)} L ${q1x.toFixed(1)} ${q1y.toFixed(1)}`;
+      }
+      lastPoint = [q1x, q1y];
+    }
+
+    return d;
+  }
+
+  function matchesRegionPath(pt, filterRegion) {
+    if (filterRegion === 'all') return true;
+    if (filterRegion === 'neck_shoulder' && (pt[1] < 1.15 || pt[1] > 1.68)) return false;
+    if (filterRegion === 'neck' && (pt[1] < 1.32 || pt[1] > 1.58)) return false;
+    if (filterRegion === 'shoulder' && (pt[1] < 1.25 || pt[1] > 1.60 || Math.abs(pt[0]) < 0.08)) return false;
+    if (filterRegion === 'head' && pt[1] < 1.50) return false;
+    if (filterRegion === 'arm' && (Math.abs(pt[0]) < 0.16 || pt[1] > 1.45)) return false;
+    if (filterRegion === 'leg' && pt[1] > 0.95) return false;
+    if (filterRegion === 'upper_back' && (pt[1] < 1.15 || pt[1] > 1.55 || pt[2] > 0.0)) return false;
+    if (filterRegion === 'low_back' && (pt[1] < 0.82 || pt[1] > 1.18 || pt[2] > 0.0)) return false;
+    if (filterRegion === 'torso' && (pt[1] < 0.85 || pt[1] > 1.45 || Math.abs(pt[0]) > 0.22)) return false;
+    return true;
   }
 
   function matchesRegion(reg, target) {
@@ -119,7 +278,19 @@
     if (!stage) return;
     const sw = stage.clientWidth;
     const sh = stage.clientHeight;
-    const fastProject = createProjector(r);
+
+    // Get authoritative Viewport Descriptor from Renderer
+    const viewport = r.getViewportDescriptor('overlay');
+    const vp = viewport.viewProjectionMatrix;
+
+    // Update SVG clipPath rect
+    const clipRect = document.getElementById('overlayClipRect');
+    if (clipRect) {
+      clipRect.setAttribute('x', String(viewport.clippingBounds[0]));
+      clipRect.setAttribute('y', String(viewport.clippingBounds[1]));
+      clipRect.setAttribute('width', String(viewport.clippingBounds[2] - viewport.clippingBounds[0]));
+      clipRect.setAttribute('height', String(viewport.clippingBounds[3] - viewport.clippingBounds[1]));
+    }
 
     const isMusculo = r.renderMode === 'musculoskeletal';
     const isComp = r.renderMode === 'comparative';
@@ -129,12 +300,14 @@
       groupMeridians.innerHTML = '';
       groupThai.innerHTML = '';
       groupPoints.innerHTML = '';
+      groupDienChan.innerHTML = '';
+      if (groupComparativeOverlay) groupComparativeOverlay.innerHTML = '';
       const pin = document.getElementById('pin');
       if (pin) pin.hidden = true;
       return;
     }
 
-    // 1. Render Continuous Surface-Conforming Meridians (10,762 Vertices)
+    // 1. Render Continuous Surface-Conforming Meridians (Topology-Preserving & Frustum-Clipped)
     if (!showMeridians) {
       groupMeridians.innerHTML = '';
     } else {
@@ -142,12 +315,9 @@
       const verifiedMeridianCodes = ['GV', 'CV', 'BL', 'GB', 'SI', 'TE', 'LI', 'LU', 'ST', 'SP', 'HT', 'KI', 'PC', 'LR'];
 
       for (const mCode in acuData.meridians) {
-        // Filter: individual meridian channel
         if (filterMeridian !== 'all') {
           if (mCode !== filterMeridian) continue;
-          // When a specific channel is selected (e.g. CV Ren Mai), do not suppress it with verifiedOnly or region filter
         } else {
-          // If verified only in multi-meridian view, only render verified pathways unless full body view is selected
           if (verifiedOnly && filterRegion !== 'all' && !verifiedMeridianCodes.includes(mCode)) continue;
         }
 
@@ -156,21 +326,14 @@
           const pts = p.surface_vertices || p.points;
           if (!pts || pts.length < 2) continue;
 
-          // Bilateral handling: if path has explicit side, render directly.
-          // Otherwise, mirror if not midline.
           let pointSets;
           if (p.side) {
             pointSets = [pts];
           } else {
             pointSets = [pts];
-            const isMidline = ['GV', 'CV'].includes(mCode);
-            if (!isMidline && pts.some(pt => Math.abs(pt[0]) > 0.005)) {
-              pointSets.push(pts.map(pt => [-pt[0], pt[1], pt[2]]));
-            }
           }
 
           for (const poly of pointSets) {
-            // Occlusion culling: sample points along curve
             let facingCount = 0;
             let sampleCount = 0;
             const step = Math.max(1, Math.floor(poly.length / 16));
@@ -183,34 +346,9 @@
 
             const pathOpacity = pathFacing ? "0.88" : "0.22";
             const pathFilter = pathFacing ? 'filter="url(#glow)"' : '';
-            let d = '';
-            let inSubpath = false;
 
-            for (let i = 0; i < poly.length; i++) {
-              const pt = poly[i];
-              // Optional region filter for meridian paths when in 'all' multi-channel overview
-              if (filterMeridian === 'all') {
-                if (filterRegion === 'neck_shoulder' && (pt[1] < 1.15 || pt[1] > 1.68)) { inSubpath = false; continue; }
-                if (filterRegion === 'neck' && (pt[1] < 1.32 || pt[1] > 1.58)) { inSubpath = false; continue; }
-                if (filterRegion === 'shoulder' && (pt[1] < 1.25 || pt[1] > 1.60 || Math.abs(pt[0]) < 0.08)) { inSubpath = false; continue; }
-                if (filterRegion === 'head' && pt[1] < 1.50) { inSubpath = false; continue; }
-                if (filterRegion === 'arm' && (Math.abs(pt[0]) < 0.16 || pt[1] > 1.45)) { inSubpath = false; continue; }
-                if (filterRegion === 'leg' && pt[1] > 0.95) { inSubpath = false; continue; }
-                if (filterRegion === 'upper_back' && (pt[1] < 1.15 || pt[1] > 1.55 || pt[2] > 0.0)) { inSubpath = false; continue; }
-                if (filterRegion === 'low_back' && (pt[1] < 0.82 || pt[1] > 1.18 || pt[2] > 0.0)) { inSubpath = false; continue; }
-                if (filterRegion === 'torso' && (pt[1] < 0.85 || pt[1] > 1.45 || Math.abs(pt[0]) > 0.22)) { inSubpath = false; continue; }
-              }
-
-              const s = fastProject(pt);
-              if (!s) { inSubpath = false; continue; }
-              if (!inSubpath) {
-                d += (d ? ' ' : '') + `M ${s[0].toFixed(1)} ${s[1].toFixed(1)}`;
-                inSubpath = true;
-              } else {
-                d += ` L ${s[0].toFixed(1)} ${s[1].toFixed(1)}`;
-              }
-            }
-
+            const filterFn = (filterMeridian === 'all') ? (pt) => matchesRegionPath(pt, filterRegion) : null;
+            const d = projectAndClipPolyline(poly, vp, viewport, filterFn);
             if (d && d.includes('L')) {
               pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${pathOpacity}" ${pathFilter}/>`;
             }
@@ -220,7 +358,7 @@
       groupMeridians.innerHTML = pathsHtml;
     }
 
-    // 2. Render Thai Sen Sib Lines
+    // 2. Render Thai Sen Sib Lines (3 Educational Lines, Dashed Gold)
     if (!showThai) {
       groupThai.innerHTML = '';
     } else {
@@ -229,12 +367,7 @@
         for (const p of line.paths || []) {
           const pts = p.points || p.surface_vertices;
           if (!pts || pts.length < 2) continue;
-          let d = '';
-          for (let i = 0; i < pts.length; i++) {
-            const s = fastProject(pts[i]);
-            if (!s) continue;
-            d += (d === '' ? 'M ' : ' L ') + s[0].toFixed(1) + ' ' + s[1].toFixed(1);
-          }
+          const d = projectAndClipPolyline(pts, vp, viewport, null);
           if (d && d.includes('L')) {
             thaiHtml += `<path d="${d}" stroke="${line.color || '#f59e0b'}" stroke-width="2.8" stroke-dasharray="6,4" fill="none" opacity="0.9" />`;
           }
@@ -250,102 +383,70 @@
       let ptsHtml = '';
       if (showPoints) {
         for (const code in acuData.points) {
-        const pt = acuData.points[code];
-        const isVerified = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
-        const isSurface = pt.registration_status === 'SURFACE_REGISTERED_FJ2810';
+          const pt = acuData.points[code];
+          const isVerified = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
+          const isSurface = pt.registration_status === 'SURFACE_REGISTERED_FJ2810';
 
-        // Filter: individual meridian channel
-        if (filterMeridian !== 'all') {
-          if (pt.meridian_code !== filterMeridian) continue;
-        } else {
-          // Filter: verified anchors only toggle (unless full body view is selected)
-          if (verifiedOnly && filterRegion !== 'all' && !isVerified) continue;
-
-          // Filter: region
-          if (!matchesRegion(pt.region, filterRegion)) continue;
-        }
-
-        // Filter: search text
-        if (searchQuery) {
-          const q = searchQuery.toLowerCase();
-          const matchCode = pt.code.toLowerCase().includes(q);
-          const matchEn = (pt.name_en || '').toLowerCase().includes(q);
-          const matchZh = (pt.name_zh || '').includes(q);
-          if (!matchCode && !matchEn && !matchZh) continue;
-        }
-
-        // Bilateral point instances
-        const isMidline = Math.abs(pt.position[0]) < 0.005;
-        const instances = [{ pos: pt.position, side: isMidline ? 'midline' : 'right' }];
-        if (!isMidline && pt.position[0] > 0.005) {
-          instances.push({ pos: [-pt.position[0], pt.position[1], pt.position[2]], side: 'left' });
-        }
-
-        for (const inst of instances) {
-          const s = fastProject(inst.pos);
-          if (!s || s[0] < -20 || s[1] < -20 || s[0] > sw + 20 || s[1] > sh + 20) continue;
-
-          const isSel = selectedCode === code;
-          const norm = inst.side === 'left' && pt.normal ? [-pt.normal[0], pt.normal[1], pt.normal[2]] : pt.normal;
-          const facing = isFacingCamera(inst.pos, r, norm);
-
-          // Occlusion culling: hide points facing away unless X-ray is active or point is selected
-          if (!r.xray && !facing && !isSel) {
-            continue;
+          if (filterMeridian !== 'all') {
+            if (pt.meridian_code !== filterMeridian) continue;
+          } else {
+            if (verifiedOnly && filterRegion !== 'all' && !isVerified) continue;
+            if (!matchesRegion(pt.region, filterRegion)) continue;
           }
 
-          let rad = isSel ? 7 : (isVerified ? 5.5 : 4.5);
-          let fill = isSel ? '#facc15' : (isVerified ? '#10b981' : (isSurface ? '#06b6d4' : '#f59e0b'));
-          let stroke = isSel ? '#ffffff' : (isVerified ? '#047857' : (isSurface ? '#0891b2' : '#78350f'));
-          let swidth = isSel ? 2.5 : (isVerified ? 2.0 : 1.5);
-          let dash = isVerified || isSurface ? '' : 'stroke-dasharray="2,2"';
-          let ptOpacity = '1.0';
-
-          if (!facing) {
-            // Occluded point depth cue
-            ptOpacity = isSel ? '0.5' : '0.25';
-            dash = 'stroke-dasharray="2,2"';
-            stroke = '#94a3b8';
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            const matchCode = pt.code.toLowerCase().includes(q);
+            const matchEn = (pt.name_en || '').toLowerCase().includes(q);
+            const matchZh = (pt.name_zh || '').includes(q);
+            if (!matchCode && !matchEn && !matchZh) continue;
           }
 
-          const statusLabel = isVerified ? 'VERIFIED ANCHOR' : (isSurface ? 'SURFACE REGISTERED (FJ2810)' : 'UNCERTAIN POSTURE OFFSET');
+          const isMidline = Math.abs(pt.position[0]) < 0.005;
+          const instances = [{ pos: pt.position, side: isMidline ? 'midline' : 'right' }];
+          if (!isMidline && pt.position[0] > 0.005) {
+            instances.push({ pos: [-pt.position[0], pt.position[1], pt.position[2]], side: 'left' });
+          }
 
-          ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${swidth}" ${dash} opacity="${ptOpacity}" class="acu-marker" data-code="${code}" data-side="${inst.side}" style="cursor:pointer;">
-            <title>${pt.code} - ${pt.name_en} (${pt.name_zh}) [${statusLabel}] [${inst.side.toUpperCase()}]
+          for (const inst of instances) {
+            const s = projectPoint(inst.pos, vp, viewport);
+            if (!s) continue;
+
+            const isSel = selectedCode === code;
+            const norm = inst.side === 'left' && pt.normal ? [-pt.normal[0], pt.normal[1], pt.normal[2]] : pt.normal;
+            const facing = isFacingCamera(inst.pos, r, norm);
+
+            if (!r.xray && !facing && !isSel) continue;
+
+            let rad = isSel ? 7 : (isVerified ? 5.5 : 4.5);
+            let fill = isSel ? '#facc15' : (isVerified ? '#10b981' : (isSurface ? '#06b6d4' : '#f59e0b'));
+            let stroke = isSel ? '#ffffff' : (isVerified ? '#047857' : (isSurface ? '#0891b2' : '#78350f'));
+            let swidth = isSel ? 2.5 : (isVerified ? 2.0 : 1.5);
+            let dash = isVerified || isSurface ? '' : 'stroke-dasharray="2,2"';
+            let ptOpacity = '1.0';
+
+            if (!facing) {
+              ptOpacity = isSel ? '0.5' : '0.25';
+              dash = 'stroke-dasharray="2,2"';
+              stroke = '#94a3b8';
+            }
+
+            const statusLabel = isVerified ? 'VERIFIED ANCHOR' : (isSurface ? 'SURFACE REGISTERED (FJ2810)' : 'UNCERTAIN POSTURE OFFSET');
+
+            ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${swidth}" ${dash} opacity="${ptOpacity}" class="acu-marker" data-code="${code}" data-side="${inst.side}" style="cursor:pointer;">
+              <title>${pt.code} - ${pt.name_en} (${pt.name_zh}) [${statusLabel}] [${inst.side.toUpperCase()}]
 Pos: [${inst.pos[0].toFixed(3)}, ${inst.pos[1].toFixed(3)}, ${inst.pos[2].toFixed(3)}]m
 ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
-          </circle>`;
-
-          if (isSel) {
-            ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="14" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4" opacity="${facing ? '0.95' : '0.45'}">
-              <animateTransform attributeName="transform" type="rotate" from="0 ${s[0]} ${s[1]}" to="360 ${s[0]} ${s[1]}" dur="5s" repeatCount="indefinite"/>
             </circle>`;
+
+            if (isSel) {
+              ptsHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="14" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4" opacity="${facing ? '0.95' : '0.45'}">
+                <animateTransform attributeName="transform" type="rotate" from="0 ${s[0]} ${s[1]}" to="360 ${s[0]} ${s[1]}" dur="5s" repeatCount="indefinite"/>
+              </circle>`;
+            }
           }
         }
       }
-      }
-    // Comparative split badges and divider
-    if (isComp) {
-      ptsHtml += `
-        <line x1="${(sw / 2).toFixed(1)}" y1="0" x2="${(sw / 2).toFixed(1)}" y2="${sh}" stroke="#475569" stroke-width="2" stroke-dasharray="6,4" opacity="0.8"/>
-        <g transform="translate(16, 26)">
-          <rect x="-6" y="-16" width="225" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#38bdf8" stroke-width="1"/>
-          <text fill="#38bdf8" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">🦴 MUSCULOSKELETAL ANATOMY</text>
-        </g>
-        <g transform="translate(${(sw / 2 + 16).toFixed(1)}, 26)">
-          <rect x="-6" y="-16" width="195" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#10b981" stroke-width="1"/>
-          <text fill="#34d399" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">🌐 SURFACE & MERIDIANS</text>
-        </g>
-      `;
-    } else if (isMusculo && showSurfaceReference) {
-      ptsHtml += `
-        <g transform="translate(16, 26)">
-          <rect x="-6" y="-16" width="285" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#eab308" stroke-width="1"/>
-          <text fill="#facc15" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">📍 SURFACE REFERENCE (Non-physical)</text>
-        </g>
-      `;
-    }
-
       groupPoints.innerHTML = ptsHtml;
     }
 
@@ -355,13 +456,13 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
     } else {
       let dcHtml = '';
       for (const dc of acuData.dien_chan || []) {
-        const s = fastProject(dc.position);
-        if (!s || s[0] < -10 || s[1] < -10 || s[0] > sw + 10 || s[1] > sh + 10) continue;
+        const s = projectPoint(dc.position, vp, viewport);
+        if (!s) continue;
         const isSel = selectedCode === dc.code;
         const fill = isSel ? '#facc15' : '#ec4899';
         const rad = isSel ? 6.5 : 5.0;
         const stroke = isSel ? '#ffffff' : '#be185d';
-        dcHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="2.0" class="acu-marker" data-code="${dc.code}" style="cursor:pointer;">
+        dcHtml += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="2.0" class="acu-marker dien-chan-marker" data-code="${dc.code}" style="cursor:pointer;">
           <title>${dc.code} - ${dc.name} [Vietnamese Dien Chan Reflex - 4 records incomplete educational dataset]</title>
         </circle>`;
         if (isSel) {
@@ -371,6 +472,74 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
         }
       }
       groupDienChan.innerHTML = dcHtml;
+    }
+
+    // 5. Render Comparative Split Badges and Divider (Unclipped in groupComparativeOverlay)
+    if (groupComparativeOverlay) {
+      if (isComp) {
+        const halfW = viewport.clippingBounds[0];
+        groupComparativeOverlay.innerHTML = `
+          <line x1="${halfW}" y1="0" x2="${halfW}" y2="${sh}" stroke="#475569" stroke-width="2" stroke-dasharray="6,4" opacity="0.8"/>
+          <g transform="translate(16, 26)">
+            <rect x="-6" y="-16" width="225" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#38bdf8" stroke-width="1"/>
+            <text fill="#38bdf8" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">🦴 MUSCULOSKELETAL ANATOMY</text>
+          </g>
+          <g transform="translate(${halfW + 16}, 26)">
+            <rect x="-6" y="-16" width="195" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#10b981" stroke-width="1"/>
+            <text fill="#34d399" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">🌐 SURFACE & MERIDIANS</text>
+          </g>
+        `;
+      } else if (isMusculo && showSurfaceReference) {
+        groupComparativeOverlay.innerHTML = `
+          <g transform="translate(16, 26)">
+            <rect x="-6" y="-16" width="285" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#eab308" stroke-width="1"/>
+            <text fill="#facc15" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">📍 SURFACE REFERENCE (Non-physical)</text>
+          </g>
+        `;
+      } else {
+        groupComparativeOverlay.innerHTML = '';
+      }
+    }
+
+    // Update active selection pin
+    updatePin();
+  }
+
+  // Authoritative Selection Pin Positioning
+  function updatePin() {
+    const pin = document.getElementById('pin');
+    if (!pin) return;
+    const r = getRenderer();
+    if (!r) { pin.hidden = true; return; }
+    const viewport = r.getViewportDescriptor('overlay');
+    const vp = viewport.viewProjectionMatrix;
+
+    let pos = null;
+    let label = '';
+    if (selectedCode && selectedCode.startsWith('DIEN-') && window.__selectedDienChan) {
+      pos = window.__selectedDienChan.position;
+      label = `${window.__selectedDienChan.name} [🇻🇳 Dien Chan Reflex]`;
+    } else if (selectedCode && window.__selectedAcupoint) {
+      pos = window.__selectedAcupoint.position;
+      const pt = window.__selectedAcupoint;
+      const statusTag = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? ' [✓ Verified]' : ' [Surface Registered]';
+      label = `${pt.name_en} (${pt.code} / ${pt.name_zh})${statusTag}`;
+    }
+
+    if (!pos) {
+      pin.hidden = true;
+      return;
+    }
+
+    const s = projectPoint(pos, vp, viewport);
+    if (!s) {
+      pin.hidden = true;
+    } else {
+      pin.hidden = false;
+      pin.style.left = s[0] + 'px';
+      pin.style.top = s[1] + 'px';
+      const span = pin.querySelector('span');
+      if (span && label) span.textContent = label;
     }
   }
 
@@ -398,19 +567,7 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
 
     const r = getRenderer();
     if (r) {
-      const fastProject = createProjector(r);
-      const s = fastProject(dc.position);
-      const pin = document.getElementById('pin');
-      if (pin && s) {
-        pin.hidden = false;
-        pin.style.left = s[0] + 'px';
-        pin.style.top = s[1] + 'px';
-        const span = pin.querySelector('span');
-        if (span) {
-          span.textContent = `${dc.name} [🇻🇳 Dien Chan Reflex]`;
-        }
-      }
-
+      updatePin();
       // Smooth camera focus to face
       r._animateTo({
         yaw: 0.0,
@@ -451,20 +608,7 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
 
     // Position pin
     if (r) {
-      const fastProject = createProjector(r);
-      const s = fastProject(pt.position);
-      const pin = document.getElementById('pin');
-      if (pin && s) {
-        pin.hidden = false;
-        pin.style.left = s[0] + 'px';
-        pin.style.top = s[1] + 'px';
-        const span = pin.querySelector('span');
-        if (span) {
-          const statusTag = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR' ? ' [✓ Verified]' : ' [Surface Registered]';
-          span.textContent = `${pt.name_en} (${pt.code} / ${pt.name_zh})${statusTag}`;
-        }
-      }
-
+      updatePin();
       // Dynamic OrbitControls target update to the 3D acupoint!
       // This centers rotation and zooming directly on the acupoint (e.g. C7 / GV14)
       const targetPos = pt.position.slice();
