@@ -155,7 +155,10 @@ class AtlasRenderer {
     const eye = this._eye();
     const aspect = Math.max(1e-3, this.canvas.width / Math.max(1, this.canvas.height));
     const d = this.camera.dist;
-    const proj = mat4.perspective(mat4.create(), this.camera.fov, aspect, Math.max(0.001, d * 0.02), d * 20 + 10);
+    // Intelligent near plane to prevent clipping when zoomed into detail (e.g. neck/cervical points)
+    const near = Math.min(0.015, Math.max(0.001, d * 0.015));
+    const far = Math.max(25.0, d * 15 + 20);
+    const proj = mat4.perspective(mat4.create(), this.camera.fov, aspect, near, far);
     const view = mat4.lookAt(mat4.create(), eye, this.camera.target, [0, 1, 0]);
     return { vp: mat4.multiply(mat4.create(), proj, view), eye };
   }
@@ -167,19 +170,45 @@ class AtlasRenderer {
   }
   pan(dx, dy) {
     this.anim = null;
-    const { yaw, dist, fov } = this.camera;
+    const { yaw, pitch, dist, fov } = this.camera;
     const s = (2 * dist * Math.tan(fov / 2)) / Math.max(1, this.canvas.clientHeight);
     const right = [Math.cos(yaw), 0, -Math.sin(yaw)];
+    // True Up unit vector in world space accounting for camera pitch
+    const up = [
+      -Math.sin(pitch) * Math.sin(yaw),
+      Math.cos(pitch),
+      -Math.sin(pitch) * Math.cos(yaw),
+    ];
     const t = this.camera.target;
-    t[0] -= right[0] * dx * s; t[2] -= right[2] * dx * s;
-    t[1] += dy * s;
+    // Dragging right moves object right with cursor
+    t[0] -= right[0] * dx * s;
+    t[2] -= right[2] * dx * s;
+    // Dragging down moves object down with cursor (along camera view-plane up vector)
+    t[0] += up[0] * dy * s;
+    t[1] += up[1] * dy * s;
+    t[2] += up[2] * dy * s;
     this.requestRender();
   }
   zoom(factor) {
     this.anim = null;
     const size = this.sceneBox ? Math.max(this.sceneBox[4] - this.sceneBox[1], 0.1) : 2;
-    this.camera.dist = Math.max(size * 0.01, Math.min(size * 8, this.camera.dist * factor));
+    // Min zoom: 4cm (allows close detail inspection of vertebrae/acupoints without clipping)
+    const minDist = 0.04;
+    // Max zoom: full body framing
+    const maxDist = Math.max(5.5, size * 3.5);
+    this.camera.dist = Math.max(minDist, Math.min(maxDist, this.camera.dist * factor));
     this.requestRender();
+  }
+  setTarget(target, animate = true) {
+    if (!target) return;
+    const goal = { yaw: this.camera.yaw, pitch: this.camera.pitch, dist: this.camera.dist, target: target.slice() };
+    if (animate) this._animateTo(goal);
+    else { this.camera.target = target.slice(); this.requestRender(); }
+  }
+  framePoint(pos, radius = 0.08, animate = true) {
+    if (!pos) return;
+    const b = [pos[0] - radius, pos[1] - radius, pos[2] - radius, pos[0] + radius, pos[1] + radius, pos[2] + radius];
+    this.frame(b, animate);
   }
   view(name) {
     const yaw = { front: 0, back: Math.PI, left: Math.PI / 2, right: -Math.PI / 2 }[name];
@@ -192,7 +221,7 @@ class AtlasRenderer {
     const r = Math.max(0.01, Math.hypot(b[3] - b[0], b[4] - b[1], b[5] - b[2]) / 2);
     const aspect = Math.max(0.3, this.canvas.clientWidth / Math.max(1, this.canvas.clientHeight));
     const fit = Math.min(this.camera.fov, 2 * Math.atan(Math.tan(this.camera.fov / 2) * aspect));
-    const dist = (r / Math.sin(fit / 2)) * 1.02;
+    const dist = Math.max(0.12, Math.min(6.0, (r / Math.sin(fit / 2)) * 1.15));
     const goal = { yaw: this.camera.yaw, pitch: this.camera.pitch, dist, target: c };
     if (animate) this._animateTo(goal); else { Object.assign(this.camera, goal); this.requestRender(); }
   }

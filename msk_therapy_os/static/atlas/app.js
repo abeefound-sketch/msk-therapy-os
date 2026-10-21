@@ -246,6 +246,14 @@
         clearSelection();
       } else if (action === 'reset_view') {
         resetAll();
+      } else if (action === 'full_body_view' && renderer && atlas) {
+        renderer.frame(atlas.index.bbox);
+      } else if (action === 'focus_selection') {
+        focusSelection();
+      } else if (action === 'full_body_view' && renderer && atlas) {
+        renderer.frame(atlas.index.bbox);
+      } else if (action === 'focus_selection') {
+        focusSelection();
       } else if (action === 'set_view' && preset && renderer) {
         renderer.view(preset);
       } else if (action === 'set_xray' && renderer) {
@@ -398,9 +406,10 @@
 
   // ======================= selection & inspector =======================
 
-  function select(ci, { focus = false, reveal = true } = {}) {
+  function select(ci, { focus = false, reveal = true, updateTarget = true } = {}) {
     if (ci < 0 || ci == null) { clearSelection(); return; }
     selection = ci;
+    window.__selectedAcupoint = null; // Clear acupoint focus when anatomical structure is selected
     $('#hoverTip').hidden = true;
     const els = atlas.concepts[ci].el;
     if (els.some(e => !renderer.visible[e])) { ensureVisible(els); applyVisibility(); }
@@ -409,7 +418,16 @@
     renderer.requestRender();
     showInspector();
     if (reveal) revealInTree(ci); else markTree();
-    if (focus) focusSelection();
+    if (focus) {
+      focusSelection();
+    } else if (updateTarget) {
+      // Dynamic OrbitControls target update to structure centroid
+      const b = atlas.bbox(els.filter(e => renderer.visible[e]));
+      if (b) {
+        const c = [(b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2];
+        renderer.setTarget(c, true);
+      }
+    }
     if (window.parent && window.parent !== window && ci >= 0) {
       try {
         const c = atlas.concepts[ci];
@@ -438,9 +456,13 @@
   }
 
   function focusSelection() {
+    if (window.__selectedAcupoint && window.__selectedAcupoint.position) {
+      renderer.framePoint(window.__selectedAcupoint.position, 0.08);
+      return;
+    }
     const els = selection >= 0 ? atlas.concepts[selection].el.filter(e => renderer.visible[e]) : [];
     if (!els.length) { renderer.frame(atlas.index.bbox); return; }
-    frameWithContext(els, 1.4);
+    frameWithContext(els, 1.35);
   }
 
   function showInspector() {
@@ -855,24 +877,74 @@
     const canvas = $('#viewport');
     let drag = null;
     let hoverTimer = 0;
+    const activePointers = new Map();
+    let initialPinchDist = null;
+    let lastTouchCenter = null;
+
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
     canvas.addEventListener('pointerdown', (e) => {
       canvas.focus({ preventScroll: true });
-      drag = { x: e.clientX, y: e.clientY, btn: e.button, pan: e.button !== 0 || e.shiftKey, moved: false };
-      canvas.setPointerCapture(e.pointerId);
+      activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
       $('#hoverTip').hidden = true;
+
+      if (activePointers.size === 1) {
+        const isPan = e.button === 2 || e.button === 1 || (e.button === 0 && e.shiftKey);
+        drag = { x: e.clientX, y: e.clientY, btn: e.button, pan: isPan, moved: false };
+        initialPinchDist = null;
+        lastTouchCenter = null;
+      } else if (activePointers.size === 2) {
+        drag = null;
+        const pts = Array.from(activePointers.values());
+        initialPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        lastTouchCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      }
     });
+
     canvas.addEventListener('pointermove', (e) => {
+      if (activePointers.has(e.pointerId)) {
+        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      }
+
+      // Two-finger touch gesture: Pinch-to-zoom + Two-finger pan
+      if (activePointers.size === 2) {
+        const pts = Array.from(activePointers.values());
+        const currentDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        const currentCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+
+        if (initialPinchDist && initialPinchDist > 5 && currentDist > 5) {
+          const factor = Math.exp((initialPinchDist - currentDist) * 0.005);
+          renderer.zoom(factor);
+          initialPinchDist = currentDist;
+        }
+
+        if (lastTouchCenter) {
+          const dx = currentCenter.x - lastTouchCenter.x;
+          const dy = currentCenter.y - lastTouchCenter.y;
+          if (Math.hypot(dx, dy) > 1) {
+            renderer.pan(dx, dy);
+            lastTouchCenter = currentCenter;
+          }
+        } else {
+          lastTouchCenter = currentCenter;
+        }
+        return;
+      }
+
+      // Single pointer drag (Mouse or 1-finger touch)
       if (drag) {
         const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
         if (!drag.moved && Math.hypot(dx, dy) < 3) return;
         drag.moved = true;
         canvas.classList.add('dragging');
         drag.x = e.clientX; drag.y = e.clientY;
-        if (drag.pan) renderer.pan(dx, dy); else renderer.orbit(dx, dy);
+        const isPan = drag.pan || e.shiftKey || (e.buttons & 2) !== 0 || (e.buttons & 4) !== 0;
+        if (isPan) renderer.pan(dx, dy); else renderer.orbit(dx, dy);
         return;
       }
-      if (mode === 'quiz') return; // hovering would give answers away
+
+      if (mode === 'quiz') return;
       clearTimeout(hoverTimer);
       hoverTimer = setTimeout(() => {
         const i = renderer.pick(e.clientX, e.clientY);
@@ -885,22 +957,46 @@
         tip.hidden = false;
       }, atlas.index.counts.triangles > 4e6 ? 220 : 80);
     });
+
     canvas.addEventListener('pointerleave', () => { clearTimeout(hoverTimer); $('#hoverTip').hidden = true; });
+
     canvas.addEventListener('pointerup', (e) => {
-      canvas.classList.remove('dragging');
-      if (drag && !drag.moved && drag.btn === 0) {
-        const i = renderer.pick(e.clientX, e.clientY);
-        if (mode === 'quiz') quizPick(i);
-        else if (i < 0) clearSelection();
-        else select(atlas.conceptOf(i));
+      activePointers.delete(e.pointerId);
+      if (activePointers.size === 0) {
+        canvas.classList.remove('dragging');
+        if (drag && !drag.moved && drag.btn === 0) {
+          const i = renderer.pick(e.clientX, e.clientY);
+          if (mode === 'quiz') quizPick(i);
+          else if (i < 0) clearSelection();
+          else select(atlas.conceptOf(i));
+        }
+        drag = null;
+        initialPinchDist = null;
+        lastTouchCenter = null;
+      } else if (activePointers.size === 1) {
+        const remaining = Array.from(activePointers.values())[0];
+        drag = { x: remaining.x, y: remaining.y, btn: 0, pan: false, moved: true };
+        initialPinchDist = null;
+        lastTouchCenter = null;
       }
-      drag = null;
     });
+
+    canvas.addEventListener('pointercancel', (e) => {
+      activePointers.delete(e.pointerId);
+      if (activePointers.size === 0) {
+        canvas.classList.remove('dragging');
+        drag = null;
+        initialPinchDist = null;
+        lastTouchCenter = null;
+      }
+    });
+
     canvas.addEventListener('dblclick', (e) => {
       if (mode === 'quiz') return;
       const i = renderer.pick(e.clientX, e.clientY);
       if (i >= 0) select(atlas.conceptOf(i), { focus: true }); else renderer.frame(atlas.index.bbox);
     });
+
     canvas.addEventListener('wheel', (e) => { e.preventDefault(); renderer.zoom(Math.exp(e.deltaY * 0.0012)); }, { passive: false });
   }
 
@@ -931,6 +1027,10 @@
     $('#modeExplore').addEventListener('click', () => setMode('explore'));
     $('#modeQuiz').addEventListener('click', () => setMode('quiz'));
     $$('[data-view]').forEach(b => b.addEventListener('click', () => renderer.view(b.dataset.view)));
+    const btnFull = $('#btnFullBody');
+    if (btnFull) btnFull.addEventListener('click', () => { if (atlas) renderer.frame(atlas.index.bbox); });
+    const btnFoc = $('#btnFocusSelected');
+    if (btnFoc) btnFoc.addEventListener('click', focusSelection);
     $('#btnReset').addEventListener('click', resetAll);
     $('#btnXray').addEventListener('click', () => setXray(!renderer.xray));
     $('#btnShot').addEventListener('click', saveImage);
@@ -1001,6 +1101,8 @@
       else if ((k === 'i' || k === 'I') && mode === 'explore') isolateSelection();
       else if ((k === 'h' || k === 'H') && mode === 'explore') hideSelection();
       else if (k === 'a' || k === 'A') resetAll();
+      else if (k === 'Home') { if (atlas) renderer.frame(atlas.index.bbox); }
+      else if (k === 'Home') { if (atlas) renderer.frame(atlas.index.bbox); }
       else if (k === 'x' || k === 'X') setXray(!renderer.xray);
       else if (k >= '1' && k <= '4') renderer.view(['front', 'back', 'left', 'right'][+k - 1]);
       else if (k === 'Enter' && mode === 'quiz' && !$('#quizNext').hidden) quizNext();

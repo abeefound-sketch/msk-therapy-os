@@ -307,6 +307,7 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
     if (!acuData || !acuData.points[code]) return;
     selectedCode = code;
     const pt = acuData.points[code];
+    window.__selectedAcupoint = pt; // Store globally for Focus Selected
     const r = getRenderer();
 
     // Position pin
@@ -324,25 +325,37 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
           span.textContent = `${pt.name_en} (${pt.code} / ${pt.name_zh})${statusTag}`;
         }
       }
+
+      // Dynamic OrbitControls target update to the 3D acupoint!
+      // This centers rotation and zooming directly on the acupoint (e.g. C7 / GV14)
+      const targetPos = pt.position.slice();
+      const isBackPoint = pt.position[2] < -0.035;
+      const isFrontPoint = pt.position[2] > 0.035;
+      const yawNorm = Math.abs(r.camera.yaw % (Math.PI * 2));
+      const camFacingFront = yawNorm < 0.7 || yawNorm > 5.58;
+      const camFacingBack = Math.abs(yawNorm - Math.PI) < 0.7;
+
+      let targetYaw = r.camera.yaw;
+      if (isBackPoint && camFacingFront) {
+        targetYaw = Math.PI;
+      } else if (isFrontPoint && camFacingBack) {
+        targetYaw = 0;
+      }
+
+      // Ease distance closer for detailed acupoint inspection if currently too far
+      const targetDist = Math.min(r.camera.dist, 0.48);
+
+      r._animateTo({
+        yaw: targetYaw,
+        pitch: Math.max(-0.25, Math.min(0.35, r.camera.pitch)),
+        dist: Math.max(0.15, targetDist),
+        target: targetPos,
+      });
     }
 
     render();
 
     if (notifyParent) {
-      if (r) {
-        // Auto-align camera view if selected point is clearly on dorsal or anterior aspect
-        const isBackPoint = pt.position[2] < -0.035;
-        const isFrontPoint = pt.position[2] > 0.035;
-        const yawNorm = Math.abs(r.camera.yaw % (Math.PI * 2));
-        const camFacingFront = yawNorm < 0.7 || yawNorm > 5.58;
-        const camFacingBack = Math.abs(yawNorm - Math.PI) < 0.7;
-
-        if (isBackPoint && camFacingFront) {
-          r.view('back');
-        } else if (isFrontPoint && camFacingBack) {
-          r.view('front');
-        }
-      }
 
       window.parent.postMessage({
         type: 'msk_acupoint_selected',
@@ -630,4 +643,9 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
     loadData();
     hookFrame();
   }
+
+  window.__meridiansDebug = {
+    get acuData() { return acuData; },
+    selectPoint,
+  };
 })();
