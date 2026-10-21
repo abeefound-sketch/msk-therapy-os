@@ -1,6 +1,14 @@
 {
-  "jsHeapSize": 32,
-  "domContentLoaded": 2131,
-  "load": 2132,
-  "networkLoadMs": 724
+  "application": "anatomy3d",
+  "url": "http://127.0.0.1:3018",
+  "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "gpu_vendor": "Google Inc. (Intel)",
+  "is_hardware_accelerated": true,
+  "js_heap_used_mb": 57.51,
+  "js_heap_total_mb": 82.4,
+  "page_load_ms": 1994.78,
+  "fps_idle": 60,
+  "fps_interaction": 58,
+  "screenshot": "evidence_anatomy3d.png",
+  "measured_at": "2026-10-21T05:20:54Z"
 }

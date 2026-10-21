@@ -91,7 +91,7 @@ class ExportPipeline:
                     "is_penetrating": val_res.is_penetrating,
                     "recorded_face_index": j_pt.extra.get("face_index"),
                     "recorded_face_match": val_res.recorded_face_match,
-                    "target_mesh_id": "FJ2810",
+                    "target_mesh_id": self.mesh.mesh_id,
                     "target_model_sha256": self.mesh.bin_sha256,
                 },
                 "evidence_tag": val_res.evidence_tag,
@@ -100,7 +100,7 @@ class ExportPipeline:
                 "location_description": location_guide,
                 "landmark_anchor": landmark_meta,
                 "provenance": {
-                    "primary_mesh": "BodyParts3D (FJ2810)",
+                    "primary_mesh": f"BodyParts3D ({self.mesh.mesh_id})",
                     "coordinate_origin": "ground (Y=0), +X right, +Y superior, +Z anterior",
                     "upstream_source": j_pt.source,
                     "upstream_raw_position": j_pt.raw_position,
@@ -108,7 +108,7 @@ class ExportPipeline:
                 "extra": extra_attrs,
             }
 
-        # Format continuous surface meridians with explicit broken-path segment tracking
+        # Format continuous surface meridians with explicit LineSegments topology
         canonical_meridians: Dict[str, Any] = {}
         for m_code, mer in jicio_meridians.items():
             pts_in_meridian = [c for c, p in canonical_points.items() if p["meridian_code"] == m_code]
@@ -116,23 +116,54 @@ class ExportPipeline:
 
             clean_paths = []
             broken_segments = []
+            boundary_breaks = []
 
             for p_idx, path in enumerate(mer.paths):
                 clean_path = [[round(coord, 5) for coord in pt] for pt in path]
                 clean_paths.append(clean_path)
+                n_pts = len(clean_path)
 
-                for i in range(len(clean_path) - 1):
-                    p0 = clean_path[i]
-                    p1 = clean_path[i + 1]
-                    step_mm = CoordinateRegistry.euclidean_distance(p0, p1)
-                    if step_mm > validator.MAX_PATH_STEP_MM:
-                        broken_segments.append({
-                            "path_index": p_idx,
-                            "vertex_start": i,
-                            "vertex_end": i + 1,
-                            "step_distance_mm": round(step_mm, 2),
-                            "reason": f"Discontinuous step {step_mm:.1f}mm exceeds max threshold {validator.MAX_PATH_STEP_MM}mm",
-                        })
+                if n_pts % 2 == 0 and n_pts >= 2:
+                    # Respect Three.js LineSegments topology
+                    num_segments = n_pts // 2
+                    for k in range(num_segments):
+                        p0 = clean_path[2 * k]
+                        p1 = clean_path[2 * k + 1]
+                        step_mm = CoordinateRegistry.euclidean_distance(p0, p1)
+                        if step_mm > validator.MAX_PATH_STEP_MM:
+                            broken_segments.append({
+                                "path_index": p_idx,
+                                "segment_index": k,
+                                "vertex_start": 2 * k,
+                                "vertex_end": 2 * k + 1,
+                                "step_distance_mm": round(step_mm, 2),
+                                "reason": f"Drawn segment {k} ({step_mm:.1f}mm) exceeds max threshold {validator.MAX_PATH_STEP_MM}mm",
+                            })
+
+                    for k in range(num_segments - 1):
+                        p1 = clean_path[2 * k + 1]
+                        p2 = clean_path[2 * k + 2]
+                        gap_mm = CoordinateRegistry.euclidean_distance(p1, p2)
+                        if gap_mm > validator.MAX_PATH_STEP_MM:
+                            boundary_breaks.append({
+                                "path_index": p_idx,
+                                "boundary_index": k,
+                                "gap_distance_mm": round(gap_mm, 2),
+                                "type": "LEGITIMATE_BRANCH_TRANSITION",
+                            })
+                else:
+                    for i in range(len(clean_path) - 1):
+                        p0 = clean_path[i]
+                        p1 = clean_path[i + 1]
+                        step_mm = CoordinateRegistry.euclidean_distance(p0, p1)
+                        if step_mm > validator.MAX_PATH_STEP_MM:
+                            broken_segments.append({
+                                "path_index": p_idx,
+                                "vertex_start": i,
+                                "vertex_end": i + 1,
+                                "step_distance_mm": round(step_mm, 2),
+                                "reason": f"Discontinuous step {step_mm:.1f}mm exceeds max threshold {validator.MAX_PATH_STEP_MM}mm",
+                            })
 
             canonical_meridians[m_code] = {
                 "code": m_code,
@@ -142,17 +173,19 @@ class ExportPipeline:
                 "point_codes": pts_in_meridian,
                 "paths": clean_paths,
                 "vertex_count": sum(len(p) for p in clean_paths),
+                "drawn_segments_count": sum(len(p) // 2 for p in clean_paths if len(p) % 2 == 0),
                 "surface_conforming": True,
                 "broken_path_segments": broken_segments,
                 "discontinuity_count": len(broken_segments),
+                "branch_transitions_count": len(boundary_breaks),
                 "source": mer.source,
             }
 
         dataset = {
-            "version": "2.1.0-forensic-verified",
+            "version": "2.2.0-forensic-verified",
             "format": "canonical-acupuncture-mesh",
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "target_model": "BodyParts3D Male / FJ2810 Skin Mesh (chunk 10, body-10.bin)",
+            "target_model": f"BodyParts3D Male / FJ2810 Skin Mesh ({self.mesh.mesh_id})",
             "model_sha256": self.mesh.bin_sha256,
             "units": "meters",
             "coordinate_system": "Right-handed (+X right, +Y up, +Z anterior)",

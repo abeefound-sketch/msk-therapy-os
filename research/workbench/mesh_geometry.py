@@ -13,41 +13,60 @@ import numpy as np
 class BodyPartsSkinMesh:
     """Authentic BodyParts3D FJ2810 Skin Mesh Geometry with spatial index for sub-millisecond queries."""
 
-    EXPECTED_BIN_SHA256 = "4a959d998acd35cf88518a0f2f8ab99b42d9f69c7ce0d6a814df315eeac807ac"
+    EXPECTED_RAW_BIN_SHA256 = "4a959d998acd35cf88518a0f2f8ab99b42d9f69c7ce0d6a814df315eeac807ac"
+    EXPECTED_BIN_SHA256 = EXPECTED_RAW_BIN_SHA256
+    EXPECTED_SOFTENED_BIN_SHA256 = "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808"
 
-    def __init__(self, models_dir: Path | str | None = None):
+    def __init__(self, models_dir: Path | str | None = None, mesh_type: str = "softened"):
+        self.mesh_type = mesh_type.lower()
         if models_dir is None:
             self.models_dir = Path(__file__).resolve().parents[1] / "upstream" / "tcm-3d" / "public" / "models"
         else:
             self.models_dir = Path(models_dir)
 
-        atlas_path = self.models_dir / "atlas.json"
-        if not atlas_path.exists():
-            raise FileNotFoundError(f"atlas.json not found in {self.models_dir}")
+        self.artifacts_dir = Path(__file__).resolve().parents[1] / "artifacts"
 
-        atlas = json.loads(atlas_path.read_text(encoding="utf-8"))
-        self.part_meta = next((p for p in atlas.get("parts", []) if p.get("id") == "FJ2810"), None)
-        if not self.part_meta:
-            raise ValueError("Part FJ2810 (Skin) not found in atlas.json")
+        softened_path = self.artifacts_dir / "fj2810_softened.bin"
+        if self.mesh_type == "softened" and softened_path.exists():
+            # Load exact reconstructed softened skin mesh (softenPelvicSurface)
+            bin_bytes = softened_path.read_bytes()
+            self.bin_sha256 = hashlib.sha256(bin_bytes).hexdigest()
+            v_count, i_count = struct.unpack_from("<2I", bin_bytes, 0)
+            v_raw = struct.unpack_from(f"<{v_count * 3}f", bin_bytes, 8)
+            i_raw = struct.unpack_from(f"<{i_count}I", bin_bytes, 8 + v_count * 12)
+            self.vertices = np.array(v_raw, dtype=np.float32).reshape(-1, 3)
+            self.indices = np.array(i_raw, dtype=np.uint32).reshape(-1, 3)
+            self.mesh_id = "FJ2810_SOFTENED"
+        else:
+            # Fall back to raw unsoftened FJ2810
+            atlas_path = self.models_dir / "atlas.json"
+            if not atlas_path.exists():
+                raise FileNotFoundError(f"atlas.json not found in {self.models_dir}")
 
-        chunk_idx = self.part_meta["chunk"]
-        bin_path = self.models_dir / f"body-{chunk_idx}.bin"
-        if not bin_path.exists():
-            raise FileNotFoundError(f"body-{chunk_idx}.bin not found in {self.models_dir}")
+            atlas = json.loads(atlas_path.read_text(encoding="utf-8"))
+            self.part_meta = next((p for p in atlas.get("parts", []) if p.get("id") == "FJ2810"), None)
+            if not self.part_meta:
+                raise ValueError("Part FJ2810 (Skin) not found in atlas.json")
 
-        bin_bytes = bin_path.read_bytes()
-        self.bin_sha256 = hashlib.sha256(bin_bytes).hexdigest()
+            chunk_idx = self.part_meta["chunk"]
+            bin_path = self.models_dir / f"body-{chunk_idx}.bin"
+            if not bin_path.exists():
+                raise FileNotFoundError(f"body-{chunk_idx}.bin not found in {self.models_dir}")
 
-        # Unpack vertices and indices
-        v_offset = self.part_meta["positions"]
-        v_count = self.part_meta["vertexCount"]
-        v_raw = struct.unpack_from(f"<{v_count * 3}f", bin_bytes, v_offset)
-        self.vertices = np.array(v_raw, dtype=np.float32).reshape(-1, 3)
+            bin_bytes = bin_path.read_bytes()
+            self.bin_sha256 = hashlib.sha256(bin_bytes).hexdigest()
 
-        i_offset = self.part_meta["indices"]
-        i_count = self.part_meta["indexCount"]
-        i_raw = struct.unpack_from(f"<{i_count}I", bin_bytes, i_offset)
-        self.indices = np.array(i_raw, dtype=np.uint32).reshape(-1, 3)
+            v_offset = self.part_meta["positions"]
+            v_count = self.part_meta["vertexCount"]
+            v_raw = struct.unpack_from(f"<{v_count * 3}f", bin_bytes, v_offset)
+            self.vertices = np.array(v_raw, dtype=np.float32).reshape(-1, 3)
+
+            i_offset = self.part_meta["indices"]
+            i_count = self.part_meta["indexCount"]
+            i_raw = struct.unpack_from(f"<{i_count}I", bin_bytes, i_offset)
+            self.indices = np.array(i_raw, dtype=np.uint32).reshape(-1, 3)
+            self.mesh_id = "FJ2810_RAW"
+
         self.num_faces = len(self.indices)
 
         # Precompute triangle vertices
@@ -195,6 +214,6 @@ class BodyPartsSkinMesh:
             "recorded_face_index": recorded_face_index,
             "recorded_face_match": face_index_match,
             "recorded_face_dist_mm": round(face_index_dist_mm, 3) if face_index_dist_mm is not None else None,
-            "mesh_id": "FJ2810",
+            "mesh_id": self.mesh_id,
             "model_sha256": self.bin_sha256,
         }

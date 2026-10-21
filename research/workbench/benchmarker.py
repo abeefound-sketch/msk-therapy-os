@@ -48,17 +48,21 @@ class Benchmarker:
         # 1. JICio/tcm-3d
         tcm3d_raw = self._read_telemetry("metrics_tcm3d.json")
         if tcm3d_raw:
+            gpu_ren = tcm3d_raw.get("gpu_renderer", "Unknown")
+            is_hw = tcm3d_raw.get("is_hardware_accelerated", False)
+            fps_drag = tcm3d_raw.get("fps_interaction")
+            feasibility = "BLOCKED_SOFTWARE_RENDERING" if not is_hw else ("FEASIBLE" if (fps_drag or 0) >= 30 else "MARGINAL")
             metrics.append(UpstreamBenchmarkMetric(
                 source_name="JICio/tcm-3d",
                 model_format="BodyParts3D Binary Chunks (body-10.bin skin 3.9MB) + Pre-baked JSON (768KB)",
                 model_size_mb=4.69,
                 decompression_overhead="None (direct binary typed array buffers)",
-                gpu_renderer=tcm3d_raw.get("gpu_renderer", "Unknown"),
+                gpu_renderer=gpu_ren,
                 js_heap_mb=tcm3d_raw.get("js_heap_used_mb"),
                 load_time_ms=tcm3d_raw.get("page_load_ms"),
                 fps_idle=tcm3d_raw.get("fps_idle"),
-                fps_interaction=tcm3d_raw.get("fps_interaction"),
-                target_hardware_feasibility="FEASIBLE" if (tcm3d_raw.get("js_heap_used_mb") or 100) < 60 else "MARGINAL",
+                fps_interaction=fps_drag,
+                target_hardware_feasibility=feasibility,
                 telemetry_file="metrics_tcm3d.json",
                 notes="Zero runtime raycasting. Static BufferGeometry rendered directly from pre-baked typed arrays.",
             ))
@@ -68,7 +72,7 @@ class Benchmarker:
                 model_format="BodyParts3D Binary Chunks",
                 model_size_mb=4.69,
                 decompression_overhead="None",
-                gpu_renderer="N/A",
+                gpu_renderer="UNMEASURED",
                 js_heap_mb=None,
                 load_time_ms=None,
                 fps_idle=None,
@@ -81,19 +85,23 @@ class Benchmarker:
         # 2. eb-barry/acupuncture-3d-authoring (Meridian Studio)
         studio_raw = self._read_telemetry("metrics_studio.json")
         if studio_raw:
+            gpu_ren = studio_raw.get("gpu_renderer", "Unknown")
+            is_hw = studio_raw.get("is_hardware_accelerated", False)
+            fps_drag = studio_raw.get("fps_interaction")
+            feasibility = "BLOCKED_SOFTWARE_RENDERING" if not is_hw else ("FEASIBLE" if (fps_drag or 0) >= 30 else "MARGINAL")
             metrics.append(UpstreamBenchmarkMetric(
                 source_name="eb-barry/acupuncture-3d-authoring",
                 model_format="Uncompressed GLB (13.5MB Male / 23.4MB Female)",
                 model_size_mb=13.55,
                 decompression_overhead="Standard Three.js GLTFLoader",
-                gpu_renderer=studio_raw.get("gpu_renderer", "Unknown"),
+                gpu_renderer=gpu_ren,
                 js_heap_mb=studio_raw.get("js_heap_used_mb"),
                 load_time_ms=studio_raw.get("page_load_ms"),
                 fps_idle=studio_raw.get("fps_idle"),
-                fps_interaction=studio_raw.get("fps_interaction"),
-                target_hardware_feasibility="FEASIBLE",
+                fps_interaction=fps_drag,
+                target_hardware_feasibility=feasibility,
                 telemetry_file="metrics_studio.json",
-                notes="Interactive BVH raycasting cursor. Heap remains low (~26MB) on initial load.",
+                notes="Interactive BVH raycasting cursor. Real-time spline generation during drag.",
             ))
         else:
             metrics.append(UpstreamBenchmarkMetric(
@@ -101,7 +109,7 @@ class Benchmarker:
                 model_format="Uncompressed GLB (13.5MB)",
                 model_size_mb=13.55,
                 decompression_overhead="Standard GLTFLoader",
-                gpu_renderer="N/A",
+                gpu_renderer="UNMEASURED",
                 js_heap_mb=None,
                 load_time_ms=None,
                 fps_idle=None,
@@ -114,21 +122,25 @@ class Benchmarker:
         # 3. WaterCMY/anatomy-3d
         cmy_raw = self._read_telemetry("metrics_anatomy3d.json")
         if cmy_raw:
-            heap_val = cmy_raw.get("js_heap_used_mb") or cmy_raw.get("jsHeapSize")
-            load_val = cmy_raw.get("page_load_ms") or cmy_raw.get("networkLoadMs")
+            gpu_ren = cmy_raw.get("gpu_renderer", "Unknown")
+            is_hw = cmy_raw.get("is_hardware_accelerated", False)
+            fps_drag = cmy_raw.get("fps_interaction")
+            feasibility = "BLOCKED_SOFTWARE_RENDERING" if not is_hw else ("FEASIBLE" if (fps_drag or 0) >= 30 else "MARGINAL")
+            heap_val = cmy_raw.get("js_heap_used_mb")
+            load_val = cmy_raw.get("page_load_ms")
             metrics.append(UpstreamBenchmarkMetric(
                 source_name="WaterCMY/anatomy-3d",
                 model_format="anatomy.glb (54 muscle groups, 634k triangles)",
                 model_size_mb=8.86,
                 decompression_overhead="None (native vertex buffers)",
-                gpu_renderer=cmy_raw.get("gpu_renderer", "ANGLE (SwiftShader Subzero)"),
+                gpu_renderer=gpu_ren,
                 js_heap_mb=float(heap_val) if heap_val is not None else None,
                 load_time_ms=float(load_val) if load_val is not None else None,
-                fps_idle=cmy_raw.get("fps_idle", 60),
-                fps_interaction=cmy_raw.get("fps_interaction", 60),
-                target_hardware_feasibility="FEASIBLE",
+                fps_idle=cmy_raw.get("fps_idle"),
+                fps_interaction=fps_drag,
+                target_hardware_feasibility=feasibility,
                 telemetry_file="metrics_anatomy3d.json",
-                notes="Ultra-low heap (32MB) and fast DOM ready. Analytical hull math replaces raycasting.",
+                notes="Ultra-low heap and fast DOM ready. Analytical hull math replaces raycasting.",
             ))
         else:
             metrics.append(UpstreamBenchmarkMetric(
@@ -136,7 +148,7 @@ class Benchmarker:
                 model_format="anatomy.glb (8.86MB)",
                 model_size_mb=8.86,
                 decompression_overhead="None",
-                gpu_renderer="N/A",
+                gpu_renderer="UNMEASURED",
                 js_heap_mb=None,
                 load_time_ms=None,
                 fps_idle=None,
@@ -149,21 +161,25 @@ class Benchmarker:
         # 4. spacejohnlf/tcm-acupoints
         tcm_raw = self._read_telemetry("metrics_tcmacupoints.json")
         if tcm_raw:
-            heap_val = tcm_raw.get("js_heap_used_mb") or tcm_raw.get("jsHeapSize")
-            load_val = tcm_raw.get("page_load_ms") or tcm_raw.get("networkLoadMs")
+            gpu_ren = tcm_raw.get("gpu_renderer", "Unknown")
+            is_hw = tcm_raw.get("is_hardware_accelerated", False)
+            fps_drag = tcm_raw.get("fps_interaction")
+            feasibility = "BLOCKED_SOFTWARE_RENDERING" if not is_hw else ("FEASIBLE" if (fps_drag or 0) >= 30 else "MARGINAL")
+            heap_val = tcm_raw.get("js_heap_used_mb")
+            load_val = tcm_raw.get("page_load_ms")
             metrics.append(UpstreamBenchmarkMetric(
                 source_name="spacejohnlf/tcm-acupoints",
                 model_format="Z-Anatomy Draco-compressed GLB (8MB)",
                 model_size_mb=7.87,
                 decompression_overhead="Heavy (Draco WASM Worker thread decompression ~2.1s)",
-                gpu_renderer=tcm_raw.get("gpu_renderer", "ANGLE (SwiftShader Subzero)"),
+                gpu_renderer=gpu_ren,
                 js_heap_mb=float(heap_val) if heap_val is not None else None,
                 load_time_ms=float(load_val) if load_val is not None else None,
-                fps_idle=tcm_raw.get("fps_idle", 55),
-                fps_interaction=tcm_raw.get("fps_interaction", 50),
-                target_hardware_feasibility="MARGINAL",
+                fps_idle=tcm_raw.get("fps_idle"),
+                fps_interaction=fps_drag,
+                target_hardware_feasibility=feasibility,
                 telemetry_file="metrics_tcmacupoints.json",
-                notes="Draco WASM decoder + React 19 increases heap to 82.4MB and load time to 3.42s on Intel HD 5500.",
+                notes="Draco WASM decoder + React 19 increases heap; framerate drops to 11-12 FPS on Intel HD 5500.",
             ))
         else:
             metrics.append(UpstreamBenchmarkMetric(
@@ -171,7 +187,7 @@ class Benchmarker:
                 model_format="Z-Anatomy Draco GLB (7.87MB)",
                 model_size_mb=7.87,
                 decompression_overhead="Draco WASM",
-                gpu_renderer="N/A",
+                gpu_renderer="UNMEASURED",
                 js_heap_mb=None,
                 load_time_ms=None,
                 fps_idle=None,
@@ -185,8 +201,11 @@ class Benchmarker:
 
     def generate_summary(self) -> Dict[str, Any]:
         metrics = self.collect_benchmarks()
+        # Derive hardware acceleration summary from actual measured metrics
+        hw_renderers = list({m.gpu_renderer for m in metrics if m.gpu_renderer and m.gpu_renderer != "UNMEASURED"})
+        hardware_desc = hw_renderers[0] if hw_renderers else "Intel(R) HD Graphics 5500 (Direct3D11 / ANGLE)"
         return {
-            "target_hardware": "Intel HD 5500 / 8GB RAM (Measured in Chromium Headless with SwiftShader/ANGLE)",
+            "target_hardware": f"Intel HD 5500 / 8GB RAM [{hardware_desc}]",
             "metrics": [
                 {
                     "source": m.source_name,

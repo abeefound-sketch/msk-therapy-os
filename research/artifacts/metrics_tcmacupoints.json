@@ -1,6 +1,14 @@
 {
-  "jsHeapSize": 82,
-  "domContentLoaded": 3147,
-  "load": 3166,
-  "networkLoadMs": 3424
+  "application": "tcmacupoints",
+  "url": "http://127.0.0.1:5175",
+  "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "gpu_vendor": "Google Inc. (Intel)",
+  "is_hardware_accelerated": true,
+  "js_heap_used_mb": 61.04,
+  "js_heap_total_mb": 124.93,
+  "page_load_ms": 1744.45,
+  "fps_idle": 12,
+  "fps_interaction": 11,
+  "screenshot": "evidence_tcmacupoints.png",
+  "measured_at": "2026-10-21T05:22:15Z"
 }

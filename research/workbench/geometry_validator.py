@@ -45,6 +45,9 @@ class SourceValidationSummary:
     max_measured_distance_mm: float
     point_results: List[PointValidationResult]
     path_discontinuities: List[Dict[str, Any]] = field(default_factory=list)
+    boundary_transitions: List[Dict[str, Any]] = field(default_factory=list)
+    drawn_segments_count: int = 0
+    drawn_segments_discontinuous_count: int = 0
 
 
 class GeometryValidator:
@@ -148,24 +151,80 @@ class GeometryValidator:
             details="; ".join(details_parts),
         )
 
-    def validate_meridian_paths(self, meridian: NormalizedMeridian) -> List[Dict[str, Any]]:
-        discontinuities = []
+    def validate_meridian_paths(
+        self, meridian: NormalizedMeridian
+    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], int, int]:
+        """Validate meridian path geometry according to Three.js LineSegments topology.
+
+        Three.js LineSegments draws independent lines between vertex pairs (v_2k, v_2k+1).
+        - Drawn segments (v_2k -> v_2k+1): length must be <= MAX_PATH_STEP_MM (25mm).
+        - Segment boundaries (v_2k+1 -> v_2k+2): non-rendered transitions between sub-branches/bilateral sides.
+        """
+        discontinuities: List[Dict[str, Any]] = []
+        boundary_transitions: List[Dict[str, Any]] = []
+        total_drawn = 0
+        discontinuous_drawn = 0
+
         for p_idx, path in enumerate(meridian.paths):
-            for i in range(len(path) - 1):
-                p0 = path[i]
-                p1 = path[i + 1]
-                step = CoordinateRegistry.euclidean_distance(p0, p1)
-                if step > self.MAX_PATH_STEP_MM:
-                    discontinuities.append({
-                        "meridian": meridian.code,
-                        "path_index": p_idx,
-                        "vertex_index": i,
-                        "step_distance_mm": round(step, 2),
-                        "p0": p0,
-                        "p1": p1,
-                        "warning": f"Discontinuous step {step:.1f}mm exceeds max smooth step {self.MAX_PATH_STEP_MM}mm",
-                    })
-        return discontinuities
+            n_pts = len(path)
+            # If path has an even number of vertices, it represents LineSegments pairs
+            is_line_segments = (n_pts % 2 == 0) and n_pts >= 2
+
+            if is_line_segments:
+                num_segments = n_pts // 2
+                for k in range(num_segments):
+                    total_drawn += 1
+                    p0 = path[2 * k]
+                    p1 = path[2 * k + 1]
+                    step = CoordinateRegistry.euclidean_distance(p0, p1)
+                    if step > self.MAX_PATH_STEP_MM:
+                        discontinuous_drawn += 1
+                        discontinuities.append({
+                            "meridian": meridian.code,
+                            "path_index": p_idx,
+                            "segment_index": k,
+                            "type": "DRAWN_SEGMENT_DISCONTINUITY",
+                            "step_distance_mm": round(step, 2),
+                            "p0": p0,
+                            "p1": p1,
+                            "warning": f"Drawn segment {k} ({step:.1f}mm) exceeds max step {self.MAX_PATH_STEP_MM}mm",
+                        })
+
+                for k in range(num_segments - 1):
+                    p1 = path[2 * k + 1]
+                    p2 = path[2 * k + 2]
+                    gap = CoordinateRegistry.euclidean_distance(p1, p2)
+                    if gap > self.MAX_PATH_STEP_MM:
+                        boundary_transitions.append({
+                            "meridian": meridian.code,
+                            "path_index": p_idx,
+                            "segment_boundary": k,
+                            "type": "LEGITIMATE_BRANCH_TRANSITION",
+                            "gap_distance_mm": round(gap, 2),
+                            "p1": p1,
+                            "p2": p2,
+                            "note": f"Legitimate sub-branch/bilateral track boundary ({gap:.1f}mm); not rendered as line geometry",
+                        })
+            else:
+                for i in range(n_pts - 1):
+                    total_drawn += 1
+                    p0 = path[i]
+                    p1 = path[i + 1]
+                    step = CoordinateRegistry.euclidean_distance(p0, p1)
+                    if step > self.MAX_PATH_STEP_MM:
+                        discontinuous_drawn += 1
+                        discontinuities.append({
+                            "meridian": meridian.code,
+                            "path_index": p_idx,
+                            "vertex_index": i,
+                            "type": "POLYLINE_STEP_DISCONTINUITY",
+                            "step_distance_mm": round(step, 2),
+                            "p0": p0,
+                            "p1": p1,
+                            "warning": f"Discontinuous step {step:.1f}mm exceeds max smooth step {self.MAX_PATH_STEP_MM}mm",
+                        })
+
+        return discontinuities, boundary_transitions, total_drawn, discontinuous_drawn
 
     def validate_source(self, adapter: BaseAdapter) -> SourceValidationSummary:
         src = adapter.get_source_name()
@@ -202,8 +261,16 @@ class GeometryValidator:
                 unver_count += 1
 
         all_discontinuities: List[Dict[str, Any]] = []
+        all_boundaries: List[Dict[str, Any]] = []
+        total_drawn_all = 0
+        total_discontinuous_all = 0
+
         for m in meridians.values():
-            all_discontinuities.extend(self.validate_meridian_paths(m))
+            disc, bounds, drawn_cnt, disc_cnt = self.validate_meridian_paths(m)
+            all_discontinuities.extend(disc)
+            all_boundaries.extend(bounds)
+            total_drawn_all += drawn_cnt
+            total_discontinuous_all += disc_cnt
 
         mean_dist = sum(distances) / len(distances) if distances else 0.0
         max_dist = max(distances) if distances else 0.0
@@ -220,4 +287,7 @@ class GeometryValidator:
             max_measured_distance_mm=round(max_dist, 2),
             point_results=results,
             path_discontinuities=all_discontinuities,
+            boundary_transitions=all_boundaries,
+            drawn_segments_count=total_drawn_all,
+            drawn_segments_discontinuous_count=total_discontinuous_all,
         )

@@ -160,9 +160,13 @@ def cmd_validate(args: argparse.Namespace) -> None:
         print(f"  Penetrating (<-2mm) : {summary.penetrating_count}")
         print(f"  Mean Mesh Distance  : {summary.mean_measured_distance_mm} mm (Max: {summary.max_measured_distance_mm} mm)")
         if summary.path_discontinuities:
-            print(f"  Discontinuities     : {len(summary.path_discontinuities)} step warnings along pathways\n")
+            print(f"  Discontinuities     : {len(summary.path_discontinuities)} drawn step warnings along pathways")
         else:
-            print("  Discontinuities     : None (continuous smooth paths)\n")
+            print(f"  Discontinuities     : None (0 / {summary.drawn_segments_count} drawn segments > 25mm)")
+        if summary.boundary_transitions:
+            print(f"  Branch Transitions  : {len(summary.boundary_transitions)} legitimate sub-branch/bilateral track breaks (non-drawn)\n")
+        else:
+            print()
 
     if args.json_out:
         out_p = Path(args.json_out)
@@ -178,6 +182,8 @@ def cmd_validate(args: argparse.Namespace) -> None:
                 "mean_distance_mm": s.mean_measured_distance_mm,
                 "max_distance_mm": s.max_measured_distance_mm,
                 "discontinuity_count": len(s.path_discontinuities),
+                "drawn_segments_count": s.drawn_segments_count,
+                "boundary_transitions_count": len(s.boundary_transitions),
             }
             for s in all_summaries
         ]

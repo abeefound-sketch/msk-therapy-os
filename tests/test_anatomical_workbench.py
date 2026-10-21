@@ -40,13 +40,18 @@ class TestBootstrap:
 
 class TestMeshGeometry:
     def test_mesh_loading(self):
-        mesh = BodyPartsSkinMesh()
-        assert mesh.num_faces == 44744
-        assert len(mesh.vertices) == 22902
-        assert mesh.bin_sha256 == BodyPartsSkinMesh.EXPECTED_BIN_SHA256
+        mesh_raw = BodyPartsSkinMesh(mesh_type="raw")
+        assert mesh_raw.num_faces == 44744
+        assert len(mesh_raw.vertices) == 22902
+        assert mesh_raw.bin_sha256 == BodyPartsSkinMesh.EXPECTED_RAW_BIN_SHA256
+
+        mesh_soft = BodyPartsSkinMesh(mesh_type="softened")
+        assert mesh_soft.num_faces == 46174
+        assert len(mesh_soft.vertices) == 24958
+        assert mesh_soft.bin_sha256 == BodyPartsSkinMesh.EXPECTED_SOFTENED_BIN_SHA256
 
     def test_point_query(self):
-        mesh = BodyPartsSkinMesh()
+        mesh = BodyPartsSkinMesh(mesh_type="softened")
         # Query known surface point (LU1_R)
         res = mesh.query_point([0.129658, 1.347498, 0.068839], [0.60728, 0.41157, 0.67957])
         assert res["distance_mm"] < 1.0

@@ -3,13 +3,15 @@
     "source": "JICio/tcm-3d",
     "total": 670,
     "reviewed": 0,
-    "verified": 633,
-    "unverified": 37,
-    "floating": 16,
+    "verified": 663,
+    "unverified": 7,
+    "floating": 0,
     "penetrating": 0,
-    "mean_distance_mm": 0.31,
-    "max_distance_mm": 18.48,
-    "discontinuity_count": 44
+    "mean_distance_mm": 0.0,
+    "max_distance_mm": 0.0,
+    "discontinuity_count": 0,
+    "drawn_segments_count": 5381,
+    "boundary_transitions_count": 44
   },
   {
     "source": "eb-barry/acupuncture-3d-authoring",
@@ -21,19 +23,23 @@
     "penetrating": 0,
     "mean_distance_mm": 0.0,
     "max_distance_mm": 0.0,
-    "discontinuity_count": 0
+    "discontinuity_count": 0,
+    "drawn_segments_count": 0,
+    "boundary_transitions_count": 0
   },
   {
     "source": "WaterCMY/anatomy-3d",
     "total": 146,
     "reviewed": 0,
-    "verified": 33,
-    "unverified": 113,
-    "floating": 113,
-    "penetrating": 0,
-    "mean_distance_mm": 17.14,
+    "verified": 35,
+    "unverified": 111,
+    "floating": 111,
+    "penetrating": 1,
+    "mean_distance_mm": 16.95,
     "max_distance_mm": 73.15,
-    "discontinuity_count": 117
+    "discontinuity_count": 85,
+    "drawn_segments_count": 97,
+    "boundary_transitions_count": 32
   },
   {
     "source": "spacejohnlf/tcm-acupoints",
@@ -42,9 +48,11 @@
     "verified": 8,
     "unverified": 62,
     "floating": 60,
-    "penetrating": 0,
-    "mean_distance_mm": 69.65,
+    "penetrating": 23,
+    "mean_distance_mm": 71.84,
     "max_distance_mm": 300.65,
-    "discontinuity_count": 84
+    "discontinuity_count": 66,
+    "drawn_segments_count": 66,
+    "boundary_transitions_count": 18
   }
 ]
