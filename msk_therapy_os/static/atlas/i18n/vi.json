@@ -1,0 +1,96 @@
+{
+  "title": "Atlas Giải Phẫu Mở (Open Anatomy Atlas)",
+  "modes": {
+    "explore": "Khám Phá",
+    "quiz": "Trắc Nghiệm",
+    "surface": "🌐 Thể Biểu",
+    "surface_title": "Chế độ Thể biểu & Kinh lạc: Bề mặt da gắn hệ thống huyệt vị và kinh lạc",
+    "anatomy": "🦴 Cơ Xương",
+    "anatomy_title": "Chế độ Cơ xương khớp: Cấu trúc sâu gồm xương, cơ và khớp",
+    "compare": "⚖ Đối Chiếu",
+    "compare_title": "Chế độ Đối chiếu nghiên cứu: Màn hình chia đôi đồng bộ song song"
+  },
+  "camera": {
+    "front": "Mặt Trước",
+    "front_title": "Quan sát mặt trước (Phím 1)",
+    "back": "Mặt Sau",
+    "back_title": "Quan sát mặt sau (Phím 2)",
+    "left": "Bên Trái",
+    "left_title": "Quan sát phía bên trái người bệnh (Phím 3)",
+    "right": "Bên Phải",
+    "right_title": "Quan sát phía bên phải người bệnh (Phím 4)",
+    "full_body": "Toàn Thân",
+    "full_body_title": "Thu phóng quan sát toàn thân (Phím Home)",
+    "focus": "Tiêu Điểm",
+    "focus_title": "Tập trung vào cấu trúc hoặc huyệt vị đang chọn (Phím F)",
+    "reset": "Đặt Lại",
+    "reset_title": "Hiện toàn bộ và đặt lại góc nhìn mặc định (Phím A)",
+    "xray": "X-Quang",
+    "xray_title": "Chế độ trong suốt xuyên thấu X-quang (Phím X)",
+    "shot": "Lưu hình ảnh",
+    "shot_title": "Chụp lưu ảnh góc nhìn hiện tại",
+    "data": "Dữ liệu",
+    "data_title": "Xem nguồn dữ liệu atlas",
+    "about": "Giới thiệu",
+    "about_title": "Thông tin về atlas giải phẫu này",
+    "help": "?",
+    "help_title": "Phím tắt bàn phím (?)"
+  },
+  "tabs": {
+    "layers": "Lớp Giải Phẫu",
+    "structures": "Cấu Trúc",
+    "sections": "Mặt Cắt",
+    "meridians": "Kinh Lạc"
+  },
+  "layers": {
+    "show_hidden": "Hiện cấu trúc đã ẩn",
+    "by_region": "Theo vùng cơ thể",
+    "by_type": "Theo loại giải phẫu",
+    "skin_opacity": "Độ mờ của da:",
+    "opacity_slider_title": "Điều chỉnh độ trong suốt của da để quan sát cấu trúc bên trong"
+  },
+  "actions": {
+    "focus": "Tiêu Điểm",
+    "focus_title": "Thu phóng tập trung vào đối tượng (Phím F)",
+    "isolate": "Cô Lập",
+    "isolate_title": "Ẩn tất cả cấu trúc khác ngoài đối tượng đang chọn (Phím I)",
+    "hide": "Ẩn",
+    "hide_title": "Ẩn cấu trúc này (Phím H)",
+    "close": "Đóng"
+  },
+  "meridians": {
+    "title": "Hệ Thống Huyệt Vị & Lớp Phản Xạ Cổ Truyền",
+    "show_meridians": "14 Đường Kinh Lạc Cổ Điển",
+    "show_points": "362 Huyệt Vị Chuẩn WHO",
+    "show_thai": "Kinh Lạc Thái (Sen Sib)",
+    "show_dien_chan": "Diện Chẩn Mặt (Bùi Quốc Châu)",
+    "filter_channel": "Lọc kinh lạc:",
+    "filter_region": "Lọc vùng:",
+    "all_channels": "Tất cả đường kinh",
+    "all_regions": "Tất cả vùng",
+    "verified_only": "Chỉ hiện mốc chuẩn đã kiểm chứng"
+  },
+  "sections": {
+    "no_cut": "Không cắt",
+    "axial": "Mặt cắt ngang (Axial)",
+    "coronal": "Mặt cắt đứng ngang (Coronal)",
+    "sagittal": "Mặt cắt đứng dọc (Sagittal)",
+    "keep_other_side": "Giữ nửa đối diện",
+    "position": "Vị trí mặt cắt:"
+  },
+  "quiz": {
+    "find_it": "Tìm vị trí: Nhấp vào cấu trúc theo tên gọi",
+    "name_it": "Đặt tên: Chọn đúng tên của cấu trúc đang sáng",
+    "start": "Bắt đầu bài trắc nghiệm",
+    "next": "Câu tiếp theo",
+    "skip": "Bỏ qua",
+    "stop": "Kết thúc bài thi",
+    "again": "Làm lại",
+    "questions": "Số câu hỏi:"
+  },
+  "hints": {
+    "orbit_hint": "Kéo chuột trái để xoay | Chuột phải / Shift+trái để di chuyển | Cuộn để phóng to | Nhấp để nhận diện",
+    "click_identify": "Nhấp vào bất kỳ cấu trúc nào để xem tên gọi",
+    "loading": "Đang tải bản đồ giải phẫu..."
+  }
+}

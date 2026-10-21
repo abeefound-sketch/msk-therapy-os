@@ -148,8 +148,8 @@
               </div>
 
               <div style="display: flex; gap: 6px;">
-                <button id="btnStudioApplyCoords" style="flex: 1; background: #0284c7; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer;">Apply Coordinates to 3D View</button>
-                <button id="btnStudioResetPoint" style="background: #4b5563; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">Revert</button>
+                <button id="btnStudioApplyCoords" style="flex: 1; background: #0284c7; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer;">${(window.__msk_i18n ? window.__msk_i18n.t('studio.btn_apply', 'Apply Coordinates to 3D View') : 'Apply Coordinates to 3D View')}</button>
+                <button id="btnStudioResetPoint" style="background: #4b5563; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">${(window.__msk_i18n ? window.__msk_i18n.t('studio.btn_revert', 'Revert') : 'Revert')}</button>
               </div>
             </div>
           </div>
@@ -181,7 +181,7 @@
                 </div>
               </div>
 
-              <button id="btnStudioSaveMetadata" style="width: 100%; background: #059669; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer;">Save Metadata Changes</button>
+              <button id="btnStudioSaveMetadata" style="width: 100%; background: #059669; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer;">${(window.__msk_i18n ? window.__msk_i18n.t('studio.btn_save', 'Save Metadata Changes') : 'Save Metadata Changes')}</button>
             </div>
 
             <!-- Clinical Indications & Evidence Scope -->
@@ -211,7 +211,7 @@
               </div>
 
               <div style="display: flex; gap: 6px;">
-                <button id="btnStudioCopyPointJSON" style="flex: 1; background: #1f2937; color: #cbd5e1; border: 1px solid #4b5563; padding: 4px; border-radius: 3px; cursor: pointer; font-size: 10px;">📋 Copy Point JSON</button>
+                <button id="btnStudioCopyPointJSON" style="flex: 1; background: #1f2937; color: #cbd5e1; border: 1px solid #4b5563; padding: 4px; border-radius: 3px; cursor: pointer; font-size: 10px;">${(window.__msk_i18n ? window.__msk_i18n.t('studio.btn_copy_json', '📋 Copy Point JSON') : '📋 Copy Point JSON')}</button>
                 <button id="btnStudioResetAll" style="background: #1f2937; color: #ef4444; border: 1px solid #ef4444; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 10px;">Reset All to Upstream</button>
               </div>
             </div>

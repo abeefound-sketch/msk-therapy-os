@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MSK-Therapy-OS - Clinical Learning & Longitudinal Documentation</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MSK-Therapy-OS - Clinical Learning &amp; Longitudinal Documentation</title>
+<style>
     :root {
       --bg: #0f172a;
       --surface: #1e293b;
@@ -277,613 +278,690 @@
       font-size: 12px;
       line-height: 1.6;
     }
-  </style>
+  
+    /* Language Switcher Styling */
+    .lang-switcher {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2px;
+      gap: 2px;
+    }
+    .lang-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .lang-btn:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+    }
+    .lang-btn.active {
+      background: var(--primary);
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+</style>
+<script src="/i18n.js"></script>
 </head>
 <body>
-  <div class="disclaimer-banner">
+<div class="disclaimer-banner">
     ⚠️ SYNTHETIC EDUCATIONAL PROOF OF CONCEPT ONLY — DO NOT ENTER REAL PATIENT DATA — NOT FOR DIAGNOSIS OR DDS CONTROL ⚠️
   </div>
-
-  <header>
-    <div class="brand">
-      <h1>MSK-Therapy-OS</h1>
-      <span class="badge">Milestone M2 (Body-Map UI)</span>
-      <span class="badge">Windows x64 / Intel HD 5500</span>
-    </div>
-    <div class="header-controls">
-      <label for="caseSelect" style="color:var(--text-muted); font-size:12px;">Active Demo Case:</label>
-      <select id="caseSelect"></select>
-      
-      <label for="roleSelect" style="color:var(--text-muted); font-size:12px;">Operator Role:</label>
-      <select id="roleSelect">
-        <option value="student">Student (Drafting)</option>
-        <option value="reviewer">Clinical Supervisor (Reviewer)</option>
-      </select>
-
-      <button id="refreshBtn" class="btn-secondary">↻ Refresh</button>
-    </div>
-  </header>
-
-  <nav class="nav-tabs">
-    <button class="tab-btn active" data-tab="tab-bodymap">Interactive Body-Map & Anatomy</button>
-    <button class="tab-btn" data-tab="tab-safety">Safety & Red Flags Gating Drill</button>
-    <button class="tab-btn" data-tab="tab-case">Longitudinal Tracking & Timeline</button>
-    <button class="tab-btn" data-tab="tab-soap">Structured SOAP & Supervision</button>
-    <button class="tab-btn" data-tab="tab-evidence">Curated Evidence Catalog</button>
-    <button class="tab-btn" data-tab="tab-report">Offline Markdown Report</button>
-  </nav>
-
-  <main class="main-container">
-    <!-- TAB 1: BODY MAP & ANATOMY -->
-    <section id="tab-bodymap" class="tab-content">
-      <div class="grid-atlas">
-        <div class="card body-map-container" style="min-height:640px;">
-          <div class="card-title">
-            <span>3D Anatomy Atlas <small style="color:var(--primary); font-size:11px;">(Open Anatomy Atlas + BodyParts3D 4.0)</small></span>
-            <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
-              <!-- Three Visualization Modes Switcher -->
-              <div class="seg small" style="display:inline-flex; background:#0f172a; padding:2px; border-radius:4px; border:1px solid #334155; margin-right:4px;">
-                <button id="hostBtnModeSurface" class="btn-mode active" onclick="setHostRenderMode('surface')" style="font-size:11px; padding:3px 8px; background:#0f766e; color:#fff; border:none; border-radius:3px; cursor:pointer;" title="Surface Meridian Mode: Skin mesh with surface-anchored points">🌐 Surface</button>
-                <button id="hostBtnModeMusculo" class="btn-mode" onclick="setHostRenderMode('musculoskeletal')" style="font-size:11px; padding:3px 8px; background:transparent; color:#94a3b8; border:none; border-radius:3px; cursor:pointer;" title="Musculoskeletal Anatomy Mode: Deep bones, muscles, joints">🦴 Anatomy</button>
-                <button id="hostBtnModeComparative" class="btn-mode" onclick="setHostRenderMode('comparative')" style="font-size:11px; padding:3px 8px; background:transparent; color:#94a3b8; border:none; border-radius:3px; cursor:pointer;" title="Comparative Research Mode: Synchronized dual split-view">⚖ Compare</button>
-              </div>
-              <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'front'})" style="font-size:11px; padding:3px 7px;">Front</button>
-              <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'back'})" style="font-size:11px; padding:3px 7px;">Back</button>
-              <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'left'})" style="font-size:11px; padding:3px 7px;">Left</button>
-              <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'right'})" style="font-size:11px; padding:3px 7px;">Right</button>
-              <button class="btn-secondary" onclick="atlasCommand('full_body_view')" style="font-size:11px; padding:3px 7px;" title="Full body view (Home)">Full Body</button>
-              <button class="btn-secondary" onclick="atlasCommand('focus_selection')" style="font-size:11px; padding:3px 7px;" title="Focus camera on selected structure or acupoint (F)">Focus</button>
-              <button class="btn-secondary" onclick="atlasCommand('reset_view')" style="font-size:11px; padding:3px 7px;">Reset</button>
-              <button class="btn-secondary" onclick="atlasCommand('set_xray')" style="font-size:11px; padding:3px 7px;">X-Ray</button>
-              <button class="btn-secondary" onclick="atlasCommand('start_quiz')" style="font-size:11px; padding:3px 8px; background:#0284c7; color:#fff;">🎯 Quiz</button>
-              <button class="btn-secondary" onclick="window.open('/atlas/','_blank')" style="font-size:11px; padding:3px 7px;">⛶ Full</button>
-            </div>
-          </div>
-          <div id="atlasContainer" style="position:relative; width:100%; height:580px; background:#1a1a2e; border-radius:6px; overflow:hidden;">
-            <iframe id="atlasFrame" src="/atlas/?embedded=1" style="width:100%; height:100%; border:none; border-radius:6px;"></iframe>
-            <div id="atlasLoadingOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; transition:opacity 0.5s;">
-              <div style="color:var(--primary); font-size:14px; font-weight:600;">Loading 3D Anatomy Atlas...</div>
-              <div style="color:var(--text-muted); font-size:11px; margin-top:6px;">BodyParts3D 4.0 — 2,234 meshes, 3,434 structures</div>
-            </div>
-          </div>
-          <!-- Multimodal 3D Layer Toggles (Clean Anatomy Default / Verified Anchor Filter) -->
-          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; padding:8px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
-            <span style="font-size:11px; font-weight:600; color:var(--film);">3D Overlays:</span>
-            <button id="btnToggleVerified" class="btn-secondary active" onclick="toggleAtlasLayer('verified_only')" style="font-size:11px; padding:3px 8px; background:#065f46; color:#a7f3d0; border-color:#10b981;">✓ Verified MSK Anchors</button>
-            <button id="btnToggleAcupoints" class="btn-secondary" onclick="toggleAtlasLayer('points')" style="font-size:11px; padding:3px 8px;">📍 Acupoints (WHO)</button>
-            <button id="btnToggleMeridians" class="btn-secondary" onclick="toggleAtlasLayer('meridians')" style="font-size:11px; padding:3px 8px;">⚡ 14 Meridians</button>
-            <button id="btnToggleThai" class="btn-secondary" onclick="toggleAtlasLayer('thai')" style="font-size:11px; padding:3px 8px;" title="Thai Sen Sib: 3 lines loaded (Sen Ittha, Sen Pingkhla, Sen Sumana) — Incomplete educational dataset (3 of 10 lines)">🇹🇭 Thai Sen Sib <span style="font-size:9px; opacity:0.85; background:#78350f; color:#fde68a; padding:1px 4px; border-radius:3px; margin-left:2px;">3 lines</span></button>
-            <button id="btnToggleDienChan" class="btn-secondary" onclick="toggleAtlasLayer('dien_chan')" style="font-size:11px; padding:3px 8px;" title="Vietnamese Dien Chan: 4 facial reflex points — Incomplete educational dataset (Reflexology/Non-WHO)">🇻🇳 Dien Chan Reflex <span style="font-size:9px; opacity:0.85; background:#831843; color:#fbcfe8; padding:1px 4px; border-radius:3px; margin-left:2px;">4 pts</span></button>
-            <button id="btnOpenStudioEditor" class="btn-secondary" onclick="openStudioEditorModal()" style="font-size:11px; padding:3px 8px; background:#4338ca; color:#e0e7ff; border-color:#6366f1;">🛠️ Meridian Studio</button>
-            <span style="border-left:1px solid #475569; height:16px; margin:0 2px;"></span>
-            <!-- Meridian Channel Filter Dropdown -->
-            <select id="hostMeridianFilter" onchange="onHostMeridianFilterChange(this.value)" style="font-size:11px; padding:2px 6px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:4px; cursor:pointer;" title="Filter to a specific meridian channel">
-              <option value="all">⚡ All Meridians (14)</option>
-              <option value="GV">GV — Du Mai (Governing)</option>
-              <option value="CV">CV — Ren Mai (Conception)</option>
-              <option value="BL">BL — Bladder (Taiyang)</option>
-              <option value="GB">GB — Gallbladder (Shaoyang)</option>
-              <option value="SI">SI — Small Intestine</option>
-              <option value="TE">TE — Triple Energizer (Sanjiao)</option>
-              <option value="LI">LI — Large Intestine</option>
-              <option value="LU">LU — Lung (Taiyin)</option>
-              <option value="ST">ST — Stomach (Yangming)</option>
-              <option value="SP">SP — Spleen (Taiyin)</option>
-              <option value="HT">HT — Heart (Shaoyin)</option>
-              <option value="KI">KI — Kidney (Shaoyin)</option>
-              <option value="PC">PC — Pericardium (Jueyin)</option>
-              <option value="LR">LR — Liver (Jueyin)</option>
-            </select>
-            <!-- Skin Opacity Slider -->
-            <label id="hostSkinOpacityContainer" style="font-size:11px; color:#94a3b8; display:flex; align-items:center; gap:4px; margin-left:2px;" title="Adjust skin mesh transparency">
+<header>
+<div class="brand">
+<h1>MSK-Therapy-OS</h1>
+<span class="badge">Milestone M2 (Body-Map UI)</span>
+<span class="badge">Windows x64 / Intel HD 5500</span>
+</div>
+<div class="header-controls">
+<!-- Multilingual Language Selector (EN / 中文 / Tiếng Việt) -->
+<div aria-label="Language Selector" class="lang-switcher" role="group">
+<button class="lang-btn active" data-lang="en" type="button">EN</button>
+<button class="lang-btn" data-lang="zh" type="button">中文（简体）</button>
+<button class="lang-btn" data-lang="vi" type="button">Tiếng Việt</button>
+</div>
+<label data-i18n="app.active_case" for="caseSelect" style="color:var(--text-muted); font-size:12px;">Active Demo Case:</label>
+<select id="caseSelect"></select>
+<label data-i18n="app.operator_role" for="roleSelect" style="color:var(--text-muted); font-size:12px;">Operator Role:</label>
+<select id="roleSelect">
+<option data-i18n="app.role_student" value="student">Student (Drafting)</option>
+<option data-i18n="app.role_supervisor" value="reviewer">Clinical Supervisor (Reviewer)</option>
+</select>
+<button class="btn-secondary" data-i18n="app.btn_refresh" id="refreshBtn">↻ Refresh</button>
+</div>
+</header>
+<nav class="nav-tabs">
+<button class="tab-btn active" data-i18n="nav.bodymap" data-tab="tab-bodymap">Interactive Body-Map &amp; Anatomy</button>
+<button class="tab-btn" data-i18n="nav.safety" data-tab="tab-safety">Safety &amp; Red Flags Gating Drill</button>
+<button class="tab-btn" data-i18n="nav.case" data-tab="tab-case">Longitudinal Tracking &amp; Timeline</button>
+<button class="tab-btn" data-i18n="nav.soap" data-tab="tab-soap">Structured SOAP &amp; Supervision</button>
+<button class="tab-btn" data-i18n="nav.evidence" data-tab="tab-evidence">Curated Evidence Catalog</button>
+<button class="tab-btn" data-i18n="nav.report" data-tab="tab-report">Offline Markdown Report</button>
+</nav>
+<main class="main-container">
+<!-- TAB 1: BODY MAP & ANATOMY -->
+<section class="tab-content" id="tab-bodymap">
+<div class="grid-atlas">
+<div class="card body-map-container" style="min-height:640px;">
+<div class="card-title">
+<span>3D Anatomy Atlas <small style="color:var(--primary); font-size:11px;">(Open Anatomy Atlas + BodyParts3D 4.0)</small></span>
+<div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
+<!-- Three Visualization Modes Switcher -->
+<div class="seg small" style="display:inline-flex; background:#0f172a; padding:2px; border-radius:4px; border:1px solid #334155; margin-right:4px;">
+<button class="btn-mode active" data-i18n="modes.surface" data-i18n-title="modes.surface_title" id="hostBtnModeSurface" onclick="setHostRenderMode('surface')" style="font-size:11px; padding:3px 8px; background:#0f766e; color:#fff; border:none; border-radius:3px; cursor:pointer;" title="Surface Meridian Mode: Skin mesh with surface-anchored points">🌐 Surface</button>
+<button class="btn-mode" data-i18n="modes.musculoskeletal" data-i18n-title="modes.musculoskeletal_title" id="hostBtnModeMusculo" onclick="setHostRenderMode('musculoskeletal')" style="font-size:11px; padding:3px 8px; background:transparent; color:#94a3b8; border:none; border-radius:3px; cursor:pointer;" title="Musculoskeletal Anatomy Mode: Deep bones, muscles, joints">🦴 Anatomy</button>
+<button class="btn-mode" data-i18n="modes.comparative" data-i18n-title="modes.comparative_title" id="hostBtnModeComparative" onclick="setHostRenderMode('comparative')" style="font-size:11px; padding:3px 8px; background:transparent; color:#94a3b8; border:none; border-radius:3px; cursor:pointer;" title="Comparative Research Mode: Synchronized dual split-view">⚖ Compare</button>
+</div>
+<button class="btn-secondary" data-i18n="camera.front" data-i18n-title="camera.front_title" onclick="atlasCommand('set_view', {preset:'front'})" style="font-size:11px; padding:3px 7px;">Front</button>
+<button class="btn-secondary" data-i18n="camera.back" data-i18n-title="camera.back_title" onclick="atlasCommand('set_view', {preset:'back'})" style="font-size:11px; padding:3px 7px;">Back</button>
+<button class="btn-secondary" data-i18n="camera.left" data-i18n-title="camera.left_title" onclick="atlasCommand('set_view', {preset:'left'})" style="font-size:11px; padding:3px 7px;">Left</button>
+<button class="btn-secondary" data-i18n="camera.right" data-i18n-title="camera.right_title" onclick="atlasCommand('set_view', {preset:'right'})" style="font-size:11px; padding:3px 7px;">Right</button>
+<button class="btn-secondary" data-i18n="camera.full_body" data-i18n-title="camera.full_body_title" onclick="atlasCommand('full_body_view')" style="font-size:11px; padding:3px 7px;" title="Full body view (Home)">Full Body</button>
+<button class="btn-secondary" data-i18n="camera.focus" data-i18n-title="camera.focus_title" onclick="atlasCommand('focus_selection')" style="font-size:11px; padding:3px 7px;" title="Focus camera on selected structure or acupoint (F)">Focus</button>
+<button class="btn-secondary" data-i18n="camera.reset" data-i18n-title="camera.reset_title" onclick="atlasCommand('reset_view')" style="font-size:11px; padding:3px 7px;">Reset</button>
+<button class="btn-secondary" data-i18n="camera.xray" data-i18n-title="camera.xray_title" onclick="atlasCommand('set_xray')" style="font-size:11px; padding:3px 7px;">X-Ray</button>
+<button class="btn-secondary" onclick="atlasCommand('start_quiz')" style="font-size:11px; padding:3px 8px; background:#0284c7; color:#fff;">🎯 Quiz</button>
+<button class="btn-secondary" onclick="window.open('/atlas/','_blank')" style="font-size:11px; padding:3px 7px;">⛶ Full</button>
+</div>
+</div>
+<div id="atlasContainer" style="position:relative; width:100%; height:580px; background:#1a1a2e; border-radius:6px; overflow:hidden;">
+<iframe id="atlasFrame" src="/atlas/?embedded=1" style="width:100%; height:100%; border:none; border-radius:6px;"></iframe>
+<div id="atlasLoadingOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; transition:opacity 0.5s;">
+<div style="color:var(--primary); font-size:14px; font-weight:600;">Loading 3D Anatomy Atlas...</div>
+<div style="color:var(--text-muted); font-size:11px; margin-top:6px;">BodyParts3D 4.0 — 2,234 meshes, 3,434 structures</div>
+</div>
+</div>
+<!-- Multimodal 3D Layer Toggles (Clean Anatomy Default / Verified Anchor Filter) -->
+<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; padding:8px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
+<span style="font-size:11px; font-weight:600; color:var(--film);">3D Overlays:</span>
+<button class="btn-secondary active" data-i18n="common.verified" id="btnToggleVerified" onclick="toggleAtlasLayer('verified_only')" style="font-size:11px; padding:3px 8px; background:#065f46; color:#a7f3d0; border-color:#10b981;">✓ Verified MSK Anchors</button>
+<button class="btn-secondary" data-i18n="layers.points" id="btnToggleAcupoints" onclick="toggleAtlasLayer('points')" style="font-size:11px; padding:3px 8px;">📍 Acupoints (WHO)</button>
+<button class="btn-secondary" data-i18n="layers.meridians" id="btnToggleMeridians" onclick="toggleAtlasLayer('meridians')" style="font-size:11px; padding:3px 8px;">⚡ 14 Meridians</button>
+<button class="btn-secondary" data-i18n="layers.thai" id="btnToggleThai" onclick="toggleAtlasLayer('thai')" style="font-size:11px; padding:3px 8px;" title="Thai Sen Sib: 3 lines loaded (Sen Ittha, Sen Pingkhla, Sen Sumana) — Incomplete educational dataset (3 of 10 lines)">🇹🇭 Thai Sen Sib <span style="font-size:9px; opacity:0.85; background:#78350f; color:#fde68a; padding:1px 4px; border-radius:3px; margin-left:2px;">3 lines</span></button>
+<button class="btn-secondary" data-i18n="layers.dien_chan" id="btnToggleDienChan" onclick="toggleAtlasLayer('dien_chan')" style="font-size:11px; padding:3px 8px;" title="Vietnamese Dien Chan: 4 facial reflex points — Incomplete educational dataset (Reflexology/Non-WHO)">🇻🇳 Dien Chan Reflex <span style="font-size:9px; opacity:0.85; background:#831843; color:#fbcfe8; padding:1px 4px; border-radius:3px; margin-left:2px;">4 pts</span></button>
+<button class="btn-secondary" id="btnOpenStudioEditor" onclick="openStudioEditorModal()" style="font-size:11px; padding:3px 8px; background:#4338ca; color:#e0e7ff; border-color:#6366f1;">🛠️ Meridian Studio</button>
+<span style="border-left:1px solid #475569; height:16px; margin:0 2px;"></span>
+<!-- Meridian Channel Filter Dropdown -->
+<select id="hostMeridianFilter" onchange="onHostMeridianFilterChange(this.value)" style="font-size:11px; padding:2px 6px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:4px; cursor:pointer;" title="Filter to a specific meridian channel">
+<option value="all">⚡ All Meridians (14)</option>
+<option value="GV">GV — Du Mai (Governing)</option>
+<option value="CV">CV — Ren Mai (Conception)</option>
+<option value="BL">BL — Bladder (Taiyang)</option>
+<option value="GB">GB — Gallbladder (Shaoyang)</option>
+<option value="SI">SI — Small Intestine</option>
+<option value="TE">TE — Triple Energizer (Sanjiao)</option>
+<option value="LI">LI — Large Intestine</option>
+<option value="LU">LU — Lung (Taiyin)</option>
+<option value="ST">ST — Stomach (Yangming)</option>
+<option value="SP">SP — Spleen (Taiyin)</option>
+<option value="HT">HT — Heart (Shaoyin)</option>
+<option value="KI">KI — Kidney (Shaoyin)</option>
+<option value="PC">PC — Pericardium (Jueyin)</option>
+<option value="LR">LR — Liver (Jueyin)</option>
+</select>
+<!-- Skin Opacity Slider -->
+<label id="hostSkinOpacityContainer" style="font-size:11px; color:#94a3b8; display:flex; align-items:center; gap:4px; margin-left:2px;" title="Adjust skin mesh transparency">
               Skin:
-              <input type="range" id="hostSkinOpacity" min="0" max="100" value="78" style="width:65px; height:4px; cursor:pointer;" oninput="onHostSkinOpacityChange(this.value)" />
-              <span id="hostSkinOpacityVal" style="color:#e2e8f0; width:26px; font-variant-numeric:tabular-nums;">78%</span>
-            </label>
-            <!-- Surface Reference Guide toggle (Musculoskeletal mode) -->
-            <label id="hostSurfaceRefContainer" style="font-size:11px; color:#facc15; display:none; align-items:center; gap:4px; margin-left:4px;" title="Display surface reference guide over musculoskeletal anatomy">
-              <input type="checkbox" id="chkHostSurfaceRef" onchange="onHostSurfaceRefChange(this.checked)" />
-              <span>Reference Overlay</span>
-            </label>
-          </div>
-
-          <div style="font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-            <span>BodyParts3D © DBCLS, CC BY 4.0 • WHO 2008 & GB/T 12346-2021 (CC0 Data)</span>
-            <span>Region selector:</span>
-          </div>
-          <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
-            <button class="btn-secondary region-btn active" data-region="neck" style="font-size:11px; padding:3px 10px;">Neck</button>
-            <button class="btn-secondary region-btn" data-region="shoulder" style="font-size:11px; padding:3px 10px;">Shoulder</button>
-            <button class="btn-secondary region-btn" data-region="thoracic" style="font-size:11px; padding:3px 10px;">Thoracic</button>
-            <button class="btn-secondary region-btn" data-region="low_back" style="font-size:11px; padding:3px 10px;">Low Back</button>
-            <button class="btn-secondary region-btn" data-region="hip" style="font-size:11px; padding:3px 10px;">Hip / Pelvis</button>
-            <button class="btn-secondary region-btn" data-region="arm" style="font-size:11px; padding:3px 10px;">Arm / Hand</button>
-            <button class="btn-secondary region-btn" data-region="leg" style="font-size:11px; padding:3px 10px;">Leg / Foot</button>
-            <button class="btn-secondary region-btn" data-region="face" style="font-size:11px; padding:3px 10px;">Face</button>
-            <button class="btn-secondary region-btn" data-region="all" style="font-size:11px; padding:3px 10px;">Full Body</button>
-          </div>
-        </div>
-
-        <div>
-          <!-- No Selection Placeholder Hint -->
-          <div id="atlasNoSelectionHint" class="card" style="border-style:dashed; border-color:var(--border); background:rgba(30,41,59,0.25); margin-bottom:14px; text-align:center; padding:16px 12px;">
-            <div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;">
-              🔍 Interactive 3D Anatomy & Acupoint Inspector
+              <input id="hostSkinOpacity" max="100" min="0" oninput="onHostSkinOpacityChange(this.value)" style="width:65px; height:4px; cursor:pointer;" type="range" value="78"/>
+<span id="hostSkinOpacityVal" style="color:#e2e8f0; width:26px; font-variant-numeric:tabular-nums;">78%</span>
+</label>
+<!-- Surface Reference Guide toggle (Musculoskeletal mode) -->
+<label id="hostSurfaceRefContainer" style="font-size:11px; color:#facc15; display:none; align-items:center; gap:4px; margin-left:4px;" title="Display surface reference guide over musculoskeletal anatomy">
+<input id="chkHostSurfaceRef" onchange="onHostSurfaceRefChange(this.checked)" type="checkbox"/>
+<span>Reference Overlay</span>
+</label>
+</div>
+<div style="font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+<span>BodyParts3D © DBCLS, CC BY 4.0 • WHO 2008 &amp; GB/T 12346-2021 (CC0 Data)</span>
+<span>Region selector:</span>
+</div>
+<div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+<button class="btn-secondary region-btn active" data-i18n="regions.neck" data-region="neck" style="font-size:11px; padding:3px 10px;">Neck</button>
+<button class="btn-secondary region-btn" data-i18n="regions.shoulder" data-region="shoulder" style="font-size:11px; padding:3px 10px;">Shoulder</button>
+<button class="btn-secondary region-btn" data-i18n="regions.thoracic" data-region="thoracic" style="font-size:11px; padding:3px 10px;">Thoracic</button>
+<button class="btn-secondary region-btn" data-i18n="regions.low_back" data-region="low_back" style="font-size:11px; padding:3px 10px;">Low Back</button>
+<button class="btn-secondary region-btn" data-i18n="regions.hip" data-region="hip" style="font-size:11px; padding:3px 10px;">Hip / Pelvis</button>
+<button class="btn-secondary region-btn" data-i18n="regions.arm" data-region="arm" style="font-size:11px; padding:3px 10px;">Arm / Hand</button>
+<button class="btn-secondary region-btn" data-i18n="regions.leg" data-region="leg" style="font-size:11px; padding:3px 10px;">Leg / Foot</button>
+<button class="btn-secondary region-btn" data-i18n="regions.face" data-region="face" style="font-size:11px; padding:3px 10px;">Face</button>
+<button class="btn-secondary region-btn" data-i18n="regions.all" data-region="all" style="font-size:11px; padding:3px 10px;">Full Body</button>
+</div>
+</div>
+<div>
+<!-- No Selection Placeholder Hint -->
+<div class="card" id="atlasNoSelectionHint" style="border-style:dashed; border-color:var(--border); background:rgba(30,41,59,0.25); margin-bottom:14px; text-align:center; padding:16px 12px;">
+<div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;">
+              🔍 Interactive 3D Anatomy &amp; Acupoint Inspector
             </div>
-            <div style="font-size:11px; color:var(--text-muted); line-height:1.5;">
+<div style="font-size:11px; color:var(--text-muted); line-height:1.5;">
               Select any anatomical structure or acupuncture point in the 3D model, or click <strong>🔍 3D Focus</strong> below to inspect anatomical details and clinical evidence.
             </div>
-          </div>
-
-          <!-- Selected 3D Acupoint Interactive Banner (M2.1) -->
-          <div id="atlasAcupointCard" class="card" style="display:none; border-color:#38bdf8; background:rgba(15,23,42,0.95); margin-bottom:14px;">
-            <div class="card-title">
-              <span style="color:#38bdf8; font-weight:700;">Selected Acupuncture Point</span>
-              <span id="acuEvidenceBadge" class="badge" style="background:#0f766e; color:#fff;"></span>
+</div>
+<!-- Selected 3D Acupoint Interactive Banner (M2.1) -->
+<div class="card" id="atlasAcupointCard" style="display:none; border-color:#38bdf8; background:rgba(15,23,42,0.95); margin-bottom:14px;">
+<div class="card-title">
+<span style="color:#38bdf8; font-weight:700;">Selected Acupuncture Point</span>
+<span class="badge" id="acuEvidenceBadge" style="background:#0f766e; color:#fff;"></span>
+</div>
+<div id="acuPointTitle" style="font-size:16px; font-weight:700; color:#fff; margin-bottom:2px;"></div>
+<div id="acuMeridianInfo" style="font-size:12px; color:var(--text-muted); margin-bottom:6px;"></div>
+<div id="acuRegistrationBanner" style="margin-bottom:8px;"></div>
+<div id="acuAnchorBox" style="display:none; background:rgba(6,95,70,0.15); border-left:3px solid #10b981; padding:4px 8px; border-radius:2px; margin-bottom:6px; font-size:12px;">
+<strong style="color:#10b981;">Anatomical Anchor:</strong> <span id="acuAnchorText" style="color:var(--text);"></span>
+</div>
+<div style="display:grid; grid-template-columns: 1fr; gap:6px; font-size:12px; line-height:1.4; margin-bottom:8px;">
+<div><strong style="color:var(--text);">Location:</strong> <span id="acuLocationText" style="color:var(--text-muted);"></span></div>
+<div><strong style="color:var(--text);">Deep Anatomy:</strong> <span id="acuAnatomyText" style="color:var(--text-muted);"></span></div>
+<div><strong style="color:var(--text);">Indications:</strong> <span id="acuIndicationsText" style="color:#38bdf8;"></span></div>
+<div><strong style="color:var(--text);">Tuina Technique:</strong> <span id="acuTuinaText" style="color:var(--text-muted);"></span></div>
+<div id="acuTriggerBox" style="background:rgba(234,179,8,0.1); border-left:3px solid #eab308; padding:4px 8px; border-radius:2px;">
+<strong style="color:#eab308;">Trigger Point Correlation:</strong> <span id="acuTriggerText" style="color:var(--text);"></span>
+</div>
+<div id="acuCautionBox" style="background:rgba(239,68,68,0.1); border-left:3px solid #ef4444; padding:4px 8px; border-radius:2px;">
+<strong style="color:#ef4444;">Safety Caution:</strong> <span id="acuCautionText" style="color:var(--text);"></span>
+</div>
+</div>
+<div id="acuStandards" style="font-size:10px; color:var(--text-muted); margin-bottom:10px;">
+              Standards: WHO 2008 &amp; GB/T 12346-2021 • Traditional Meridian Construct (Not Physical Vessel)
             </div>
-            <div style="font-size:16px; font-weight:700; color:#fff; margin-bottom:2px;" id="acuPointTitle"></div>
-            <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;" id="acuMeridianInfo"></div>
-            <div id="acuRegistrationBanner" style="margin-bottom:8px;"></div>
-            <div id="acuAnchorBox" style="display:none; background:rgba(6,95,70,0.15); border-left:3px solid #10b981; padding:4px 8px; border-radius:2px; margin-bottom:6px; font-size:12px;">
-              <strong style="color:#10b981;">Anatomical Anchor:</strong> <span id="acuAnchorText" style="color:var(--text);"></span>
+<div style="display:flex; gap:8px;">
+<button onclick="addAcupointToObservation()" style="font-size:11px; padding:4px 10px; background:#0f766e; color:#fff;">+ Add to Observations</button>
+<button onclick="addAcupointToSOAP()" style="font-size:11px; padding:4px 10px; background:#0284c7; color:#fff;">+ Add to SOAP Note</button>
+<button onclick="openStudioEditorModal(lastSelectedAcupoint)" style="font-size:11px; padding:4px 10px; background:#4338ca; color:#e0e7ff; border:1px solid #6366f1;">🛠️ Calibrate in Studio</button>
+</div>
+</div>
+<!-- Selected Dien Chan Reflex Point Interactive Banner (Requirement C) -->
+<div class="card" id="atlasDienChanCard" style="display:none; border-color:#ec4899; background:rgba(30,27,75,0.95); margin-bottom:14px;">
+<div class="card-title">
+<span style="color:#f472b6; font-weight:700;">Selected Vietnamese Dien Chan Reflex</span>
+<span class="badge" style="background:#831843; color:#fbcfe8; border:1px solid #db2777;">Non-WHO Traditional Reflex</span>
+</div>
+<div id="dcPointTitle" style="font-size:16px; font-weight:700; color:#fff; margin-bottom:2px;"></div>
+<div style="font-size:11px; color:#cbd5e1; margin-bottom:6px;">
+<span style="color:#f472b6; font-weight:600;">Domain:</span> Bùi Quốc Châu Facial Reflexology (1980) • <span style="color:#fbbf24; font-weight:600;">Dataset Scope:</span> 4 available records — incomplete educational dataset
             </div>
-            
-            <div style="display:grid; grid-template-columns: 1fr; gap:6px; font-size:12px; line-height:1.4; margin-bottom:8px;">
-              <div><strong style="color:var(--text);">Location:</strong> <span id="acuLocationText" style="color:var(--text-muted);"></span></div>
-              <div><strong style="color:var(--text);">Deep Anatomy:</strong> <span id="acuAnatomyText" style="color:var(--text-muted);"></span></div>
-              <div><strong style="color:var(--text);">Indications:</strong> <span id="acuIndicationsText" style="color:#38bdf8;"></span></div>
-              <div><strong style="color:var(--text);">Tuina Technique:</strong> <span id="acuTuinaText" style="color:var(--text-muted);"></span></div>
-              <div id="acuTriggerBox" style="background:rgba(234,179,8,0.1); border-left:3px solid #eab308; padding:4px 8px; border-radius:2px;">
-                <strong style="color:#eab308;">Trigger Point Correlation:</strong> <span id="acuTriggerText" style="color:var(--text);"></span>
-              </div>
-              <div id="acuCautionBox" style="background:rgba(239,68,68,0.1); border-left:3px solid #ef4444; padding:4px 8px; border-radius:2px;">
-                <strong style="color:#ef4444;">Safety Caution:</strong> <span id="acuCautionText" style="color:var(--text);"></span>
-              </div>
+<div style="background:rgba(217,119,6,0.15); border-left:3px solid #f59e0b; padding:6px 10px; border-radius:3px; margin-bottom:8px; font-size:11px; color:#fde68a; line-height:1.4;">
+<strong>⚠️ Educational &amp; Traditional Scope Notice:</strong> Facial reflex points are traditional somatotopic projections. They are not peripheral acupuncture points and must not be classified under WHO standards. Coordinates are unverified approximations.
             </div>
-
-            <div style="font-size:10px; color:var(--text-muted); margin-bottom:10px;" id="acuStandards">
-              Standards: WHO 2008 & GB/T 12346-2021 • Traditional Meridian Construct (Not Physical Vessel)
-            </div>
-
-            <div style="display:flex; gap:8px;">
-              <button onclick="addAcupointToObservation()" style="font-size:11px; padding:4px 10px; background:#0f766e; color:#fff;">+ Add to Observations</button>
-              <button onclick="addAcupointToSOAP()" style="font-size:11px; padding:4px 10px; background:#0284c7; color:#fff;">+ Add to SOAP Note</button>
-              <button onclick="openStudioEditorModal(lastSelectedAcupoint)" style="font-size:11px; padding:4px 10px; background:#4338ca; color:#e0e7ff; border:1px solid #6366f1;">🛠️ Calibrate in Studio</button>
-            </div>
-          </div>
-
-          <!-- Selected Dien Chan Reflex Point Interactive Banner (Requirement C) -->
-          <div id="atlasDienChanCard" class="card" style="display:none; border-color:#ec4899; background:rgba(30,27,75,0.95); margin-bottom:14px;">
-            <div class="card-title">
-              <span style="color:#f472b6; font-weight:700;">Selected Vietnamese Dien Chan Reflex</span>
-              <span class="badge" style="background:#831843; color:#fbcfe8; border:1px solid #db2777;">Non-WHO Traditional Reflex</span>
-            </div>
-            <div style="font-size:16px; font-weight:700; color:#fff; margin-bottom:2px;" id="dcPointTitle"></div>
-            <div style="font-size:11px; color:#cbd5e1; margin-bottom:6px;">
-              <span style="color:#f472b6; font-weight:600;">Domain:</span> Bùi Quốc Châu Facial Reflexology (1980) • <span style="color:#fbbf24; font-weight:600;">Dataset Scope:</span> 4 available records — incomplete educational dataset
-            </div>
-            <div style="background:rgba(217,119,6,0.15); border-left:3px solid #f59e0b; padding:6px 10px; border-radius:3px; margin-bottom:8px; font-size:11px; color:#fde68a; line-height:1.4;">
-              <strong>⚠️ Educational & Traditional Scope Notice:</strong> Facial reflex points are traditional somatotopic projections. They are not peripheral acupuncture points and must not be classified under WHO standards. Coordinates are unverified approximations.
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr; gap:6px; font-size:12px; line-height:1.4; margin-bottom:8px;">
-              <div><strong style="color:var(--text);">Target MSK Region:</strong> <span id="dcTargetRegion" style="color:#38bdf8; font-weight:600;"></span></div>
-              <div><strong style="color:var(--text);">Clinical Indication:</strong> <span id="dcIndication" style="color:var(--text-muted);"></span></div>
-              <div><strong style="color:var(--text);">Geometry Status:</strong> <span class="badge" style="background:#0e7490; color:#cffafe; font-size:10px;">SURFACE_REGISTERED_FACIAL_FJ2810</span></div>
-              <div><strong style="color:var(--text);">Clinical Review Status:</strong> <span class="badge" style="background:#7f1d1d; color:#fca5a5; font-size:10px;">UNVERIFIED (Traditional Reflex)</span></div>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <button onclick="addDienChanToObservation()" style="font-size:11px; padding:4px 10px; background:#0f766e; color:#fff;">+ Add to Observations</button>
-              <button onclick="addDienChanToSOAP()" style="font-size:11px; padding:4px 10px; background:#0284c7; color:#fff;">+ Add to SOAP Note</button>
-              <button onclick="clearAtlasInspector()" class="btn-secondary" style="font-size:11px; padding:4px 10px;">Close</button>
-            </div>
-          </div>
-
-          <!-- Selected 3D Structure Interactive Banner -->
-          <div id="atlasSelectionCard" class="card" style="display:none; border-color:var(--primary); background:rgba(56,189,248,0.08); margin-bottom:14px;">
-            <div class="card-title">
-              <span>Selected 3D Structure</span>
-              <span id="selectedStructureCat" class="badge"></span>
-            </div>
-            <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:4px;" id="selectedStructureName"></div>
-            <div style="font-size:12px; color:var(--primary); margin-bottom:8px;" id="selectedStructureFMA"></div>
-            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
+<div style="display:grid; grid-template-columns: 1fr; gap:6px; font-size:12px; line-height:1.4; margin-bottom:8px;">
+<div><strong style="color:var(--text);">Target MSK Region:</strong> <span id="dcTargetRegion" style="color:#38bdf8; font-weight:600;"></span></div>
+<div><strong style="color:var(--text);">Clinical Indication:</strong> <span id="dcIndication" style="color:var(--text-muted);"></span></div>
+<div><strong style="color:var(--text);">Geometry Status:</strong> <span class="badge" style="background:#0e7490; color:#cffafe; font-size:10px;">SURFACE_REGISTERED_FACIAL_FJ2810</span></div>
+<div><strong style="color:var(--text);">Clinical Review Status:</strong> <span class="badge" style="background:#7f1d1d; color:#fca5a5; font-size:10px;">UNVERIFIED (Traditional Reflex)</span></div>
+</div>
+<div style="display:flex; gap:8px;">
+<button onclick="addDienChanToObservation()" style="font-size:11px; padding:4px 10px; background:#0f766e; color:#fff;">+ Add to Observations</button>
+<button onclick="addDienChanToSOAP()" style="font-size:11px; padding:4px 10px; background:#0284c7; color:#fff;">+ Add to SOAP Note</button>
+<button class="btn-secondary" onclick="clearAtlasInspector()" style="font-size:11px; padding:4px 10px;">Close</button>
+</div>
+</div>
+<!-- Selected 3D Structure Interactive Banner -->
+<div class="card" id="atlasSelectionCard" style="display:none; border-color:var(--primary); background:rgba(56,189,248,0.08); margin-bottom:14px;">
+<div class="card-title">
+<span>Selected 3D Structure</span>
+<span class="badge" id="selectedStructureCat"></span>
+</div>
+<div id="selectedStructureName" style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:4px;"></div>
+<div id="selectedStructureFMA" style="font-size:12px; color:var(--primary); margin-bottom:8px;"></div>
+<div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
               Source: BodyParts3D 4.0 / CC BY 4.0 International (DBCLS, Japan)
             </div>
-            <div style="display:flex; gap:8px;">
-              <button onclick="atlasCommand('isolate_selection')" class="btn-secondary" style="font-size:11px; padding:4px 10px;">⚡ Isolate</button>
-              <button onclick="addSelectedToSOAP()" style="font-size:11px; padding:4px 10px;">+ Add to SOAP Note</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">
-              <span>Region Structures: <strong id="selectedRegionTitle" style="color:var(--primary);">neck</strong></span>
-              <span id="structureCount" class="badge">0 structures</span>
-            </div>
-            <div id="structuresList">Loading structures...</div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">
-              <span>Scenario Questionnaires for Region</span>
-            </div>
-            <div id="questionnairesList">Loading questionnaires...</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 2: SAFETY DRILL -->
-    <section id="tab-safety" class="tab-content" style="display:none;">
-      <div class="card">
-        <div class="card-title">
-          <span>Rule-Based Clinical Safety Gate Simulator</span>
-          <span class="badge" style="background:#dc2626; color:#fff;">IFOMPT / NICE / FDA Validated</span>
-        </div>
-        <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
+<div style="display:flex; gap:8px;">
+<button class="btn-secondary" onclick="atlasCommand('isolate_selection')" style="font-size:11px; padding:4px 10px;">⚡ Isolate</button>
+<button onclick="addSelectedToSOAP()" style="font-size:11px; padding:4px 10px;">+ Add to SOAP Note</button>
+</div>
+</div>
+<div class="card">
+<div class="card-title">
+<span>Region Structures: <strong id="selectedRegionTitle" style="color:var(--primary);">neck</strong></span>
+<span class="badge" id="structureCount">0 structures</span>
+</div>
+<div id="structuresList">Loading structures...</div>
+</div>
+<div class="card">
+<div class="card-title">
+<span>Scenario Questionnaires for Region</span>
+</div>
+<div id="questionnairesList">Loading questionnaires...</div>
+</div>
+</div>
+</div>
+</section>
+<!-- TAB 2: SAFETY DRILL -->
+<section class="tab-content" id="tab-safety" style="display:none;">
+<div class="card">
+<div class="card-title">
+<span>Rule-Based Clinical Safety Gate Simulator</span>
+<span class="badge" style="background:#dc2626; color:#fff;">IFOMPT / NICE / FDA Validated</span>
+</div>
+<p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
           Deterministic rule engine screening red flags and modality contraindications. Positive red flags strictly trigger <code>STOP_AND_REFER</code>.
         </p>
-        
-        <div class="grid-2col">
-          <div>
-            <div class="form-group">
-              <label for="safetyFlag">Reported Red Flag:</label>
-              <select id="safetyFlag"></select>
-            </div>
-            <div class="form-group">
-              <label for="safetyModality">Planned Educational Modality:</label>
-              <select id="safetyModality">
-                <option value="none">Observation only</option>
-                <option value="manual_massage">Manual Massage / Effleurage</option>
-                <option value="dds_device">DDS / Electrical Stimulation Device</option>
-                <option value="passive_stretch">Passive Gentle Stretch</option>
-                <option value="spinal_manipulation">Spinal Manipulation (High-Velocity Thrust)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Potential Contraindications:</label>
-              <div id="contraindicationsList" style="display:grid; grid-template-columns:1fr; gap:6px;">
-                <label><input type="checkbox" value="cardiac_pacemaker"> Cardiac Pacemaker or Implanted Defibrillator</label>
-                <label><input type="checkbox" value="active_dvt"> Suspected / Active Deep Vein Thrombosis</label>
-                <label><input type="checkbox" value="systemic_infection"> Acute Febrile / Systemic Infection</label>
-                <label><input type="checkbox" value="pregnancy"> Pregnancy (for electrical stimulation)</label>
-                <label><input type="checkbox" value="missing_device_specs"> Unverified DDS Device Model / Waveform</label>
-              </div>
-            </div>
-            <div style="display:flex; gap:8px; margin-top:10px;">
-              <button id="runSafetyCheckBtn" style="flex:1;">Evaluate Safety Gate</button>
-              <button id="resetSafetyCheckBtn" class="btn-secondary" style="padding:6px 14px;">Reset Drill</button>
-            </div>
-          </div>
-
-          <div>
-            <div class="card-title">Safety Triage Evaluation Result</div>
-            <div id="safetyResultArea">
-              <div class="alert-box alert-info">
+<div class="grid-2col">
+<div>
+<div class="form-group">
+<label for="safetyFlag">Reported Red Flag:</label>
+<select id="safetyFlag"></select>
+</div>
+<div class="form-group">
+<label for="safetyModality">Planned Educational Modality:</label>
+<select id="safetyModality">
+<option value="none">Observation only</option>
+<option value="manual_massage">Manual Massage / Effleurage</option>
+<option value="dds_device">DDS / Electrical Stimulation Device</option>
+<option value="passive_stretch">Passive Gentle Stretch</option>
+<option value="spinal_manipulation">Spinal Manipulation (High-Velocity Thrust)</option>
+</select>
+</div>
+<div class="form-group">
+<label>Potential Contraindications:</label>
+<div id="contraindicationsList" style="display:grid; grid-template-columns:1fr; gap:6px;">
+<label><input type="checkbox" value="cardiac_pacemaker"/> Cardiac Pacemaker or Implanted Defibrillator</label>
+<label><input type="checkbox" value="active_dvt"/> Suspected / Active Deep Vein Thrombosis</label>
+<label><input type="checkbox" value="systemic_infection"/> Acute Febrile / Systemic Infection</label>
+<label><input type="checkbox" value="pregnancy"/> Pregnancy (for electrical stimulation)</label>
+<label><input type="checkbox" value="missing_device_specs"/> Unverified DDS Device Model / Waveform</label>
+</div>
+</div>
+<div style="display:flex; gap:8px; margin-top:10px;">
+<button id="runSafetyCheckBtn" style="flex:1;">Evaluate Safety Gate</button>
+<button class="btn-secondary" id="resetSafetyCheckBtn" style="padding:6px 14px;">Reset Drill</button>
+</div>
+</div>
+<div>
+<div class="card-title">Safety Triage Evaluation Result</div>
+<div id="safetyResultArea">
+<div class="alert-box alert-info">
                 Select safety parameters and click <strong>Evaluate Safety Gate</strong>.
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 3: LONGITUDINAL TRACKING, OBSERVATIONS & TIMELINE (M2.2) -->
-    <section id="tab-case" class="tab-content" style="display:none;">
-      <!-- Patient Profile Header -->
-      <div class="card">
-        <div class="card-title">
-          <span>Patient Profile & Clinical Baseline: <span id="intakeCaseId" style="color:var(--primary);"></span></span>
-          <div style="display:flex; gap:6px;">
-            <button onclick="exportFHIR()" class="btn-secondary" style="font-size:11px; padding:3px 9px; background:#0284c7; color:#fff;">📤 Export HL7 FHIR R4 Bundle</button>
-          </div>
-        </div>
-        <div id="intakeProfileArea">Loading intake...</div>
-      </div>
-
-      <!-- Longitudinal Progress & Day-by-Day Trajectory Dashboard -->
-      <div class="card" style="border-color:#38bdf8;">
-        <div class="card-title">
-          <span style="color:#38bdf8; font-weight:700;">Longitudinal Therapy Progress Dashboard (Day 1 ➔ Day 3 ➔ Day 7)</span>
-          <span id="trendSummaryBadge" class="badge" style="background:#16a34a; color:#fff;">Progressing</span>
-        </div>
-        
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:14px;">
-          <!-- Pain Trend Card -->
-          <div style="background:rgba(30,41,59,0.7); border:1px solid var(--border); border-radius:6px; padding:12px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-              <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Pain Severity (VAS 0–10)</span>
-              <span id="painDeltaBadge" style="font-size:11px; color:#4ade80; font-weight:700;">Δ -4 (-66.7%)</span>
-            </div>
-            <div style="display:flex; align-items:baseline; gap:8px;">
-              <span style="font-size:24px; font-weight:800; color:#ef4444;" id="painStartVal">6</span>
-              <span style="color:var(--text-muted);">➔</span>
-              <span style="font-size:24px; font-weight:800; color:#f59e0b;" id="painMidVal">4</span>
-              <span style="color:var(--text-muted);">➔</span>
-              <span style="font-size:24px; font-weight:800; color:#22c55e;" id="painEndVal">2</span>
-              <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">Target: &le; 2</span>
-            </div>
-            <div style="height:6px; width:100%; background:#334155; border-radius:3px; margin-top:8px; overflow:hidden;">
-              <div id="painProgressBar" style="height:100%; width:67%; background:linear-gradient(90deg, #ef4444, #22c55e); border-radius:3px;"></div>
-            </div>
-          </div>
-
-          <!-- ROM Trend Card -->
-          <div style="background:rgba(30,41,59,0.7); border:1px solid var(--border); border-radius:6px; padding:12px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-              <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Active Cervical Rotation (Deg)</span>
-              <span id="romDeltaBadge" style="font-size:11px; color:#4ade80; font-weight:700;">Δ +20° (+44.4%)</span>
-            </div>
-            <div style="display:flex; align-items:baseline; gap:8px;">
-              <span style="font-size:24px; font-weight:800; color:#ef4444;" id="romStartVal">45°</span>
-              <span style="color:var(--text-muted);">➔</span>
-              <span style="font-size:24px; font-weight:800; color:#f59e0b;" id="romMidVal">55°</span>
-              <span style="color:var(--text-muted);">➔</span>
-              <span style="font-size:24px; font-weight:800; color:#22c55e;" id="romEndVal">65°</span>
-              <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">Normal: 60°–80°</span>
-            </div>
-            <div style="height:6px; width:100%; background:#334155; border-radius:3px; margin-top:8px; overflow:hidden;">
-              <div id="romProgressBar" style="height:100%; width:81%; background:linear-gradient(90deg, #38bdf8, #22c55e); border-radius:3px;"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sequential Visit Cards -->
-        <div id="longitudinalCardsArea" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-      <!-- Structure-Linked Observations & Palpation Findings -->
-      <div class="card">
-        <div class="card-title">
-          <span>Structured Anatomical & Acupoint Observations</span>
-          <button onclick="toggleObservationForm()" class="btn-secondary" style="font-size:11px; padding:2px 8px;">+ Record New Observation</button>
-        </div>
-        <div id="observationsTableArea">Loading observations...</div>
-
-        <!-- New Observation Form (Collapsible) -->
-        <div id="newObservationFormBox" style="display:none; margin-top:14px; padding:12px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
-          <h4 style="margin:0 0 10px 0; font-size:13px; color:var(--primary);">Record Structured Clinical Observation</h4>
-          <form id="addObservationForm">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Target Visit:</label>
-                <select id="obsVisitSelect" required></select>
-              </div>
-              <div class="form-group">
-                <label>Structure / Acupoint ID:</label>
-                <input type="text" id="obsStructureId" placeholder="e.g. STR-CERV-002 or ACU-GB21" required>
-              </div>
-              <div class="form-group">
-                <label>Structure Type:</label>
-                <select id="obsStructureType">
-                  <option value="anatomy">Anatomical Muscle/Bone (FMA)</option>
-                  <option value="acupoint">Acupuncture Point (WHO)</option>
-                  <option value="traditional_sen">Traditional Sen Sib / Reflex</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Observation Type:</label>
-                <select id="obsType">
-                  <option value="palpation">Palpation Tenderness / Texture</option>
-                  <option value="trigger_point">Myofascial Trigger Point</option>
-                  <option value="pain_location">Somatic Pain Location</option>
-                  <option value="rom_restriction">ROM Restriction Endpoint</option>
-                  <option value="neurological">Neurological Symptom Screen</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Severity (0–10 VAS):</label>
-                <input type="number" id="obsSeverity" min="0" max="10" value="5" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Objective Finding (Observable physical signs):</label>
-              <input type="text" id="obsFinding" placeholder="Describe palpation, taut band, texture, or pain response" required>
-            </div>
-            <div class="form-group">
-              <label>Clinical Interpretation (Working hypothesis):</label>
-              <input type="text" id="obsInterpretation" placeholder="Postural myofascial tension; rule out radiculopathy">
-            </div>
-            <div style="display:flex; gap:8px;">
-              <button type="submit" style="font-size:12px; padding:6px 14px;">Save Observation</button>
-              <button type="button" onclick="toggleObservationForm()" class="btn-secondary" style="font-size:12px; padding:6px 14px;">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Therapy Sessions Documentation -->
-      <div class="card">
-        <div class="card-title">
-          <span>Documented Therapy Sessions (Massage, Thai Massage, Acupressure, DDS)</span>
-          <button onclick="toggleSessionForm()" class="btn-secondary" style="font-size:11px; padding:2px 8px;">+ Document Session</button>
-        </div>
-        <div id="sessionsTableArea">Loading sessions...</div>
-
-        <!-- New Session Form (Collapsible) -->
-        <div id="newSessionFormBox" style="display:none; margin-top:14px; padding:12px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
-          <h4 style="margin:0 0 10px 0; font-size:13px; color:var(--primary);">Document Therapy Intervention Session</h4>
-          <form id="addSessionForm">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Visit:</label>
-                <select id="sessVisitSelect" required></select>
-              </div>
-              <div class="form-group">
-                <label>Modality:</label>
-                <select id="sessModality">
-                  <option value="massage">Swedish / Clinical Massage</option>
-                  <option value="acupressure">Targeted Acupressure / Tuina</option>
-                  <option value="thai_massage">Traditional Thai Bodywork</option>
-                  <option value="dds">DDS / Electrical Stimulation Device</option>
-                  <option value="active_stretching">Active Mobilization & Ergonomics</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Duration (Minutes):</label>
-                <input type="number" id="sessDuration" min="5" max="120" value="20" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Target Structures (IDs):</label>
-              <input type="text" id="sessTargets" placeholder='["STR-CERV-002", "ACU-GB21"]' required>
-            </div>
-            <div class="form-group">
-              <label>Technique Parameters:</label>
-              <input type="text" id="sessParams" placeholder="e.g. Ischemic compression 30s x 3, gentle passive stretching" required>
-            </div>
-            <div class="form-group">
-              <label>Adverse Reactions:</label>
-              <input type="text" id="sessAdverse" value="none" required>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <button type="submit" style="font-size:12px; padding:6px 14px;">Save Session</button>
-              <button type="button" onclick="toggleSessionForm()" class="btn-secondary" style="font-size:12px; padding:6px 14px;">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- FHIR Bundle Modal / Display -->
-      <div id="fhirExportBox" class="card" style="display:none; border-color:#0284c7; background:rgba(15,23,42,0.98);">
-        <div class="card-title">
-          <span>HL7 FHIR R4 Bundle Export (Medplum Interoperability Spec)</span>
-          <button onclick="document.getElementById('fhirExportBox').style.display='none'" class="btn-secondary" style="font-size:11px;">Close</button>
-        </div>
-        <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px 0;">
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- TAB 3: LONGITUDINAL TRACKING, OBSERVATIONS & TIMELINE (M2.2) -->
+<section class="tab-content" id="tab-case" style="display:none;">
+<!-- Patient Profile Header -->
+<div class="card">
+<div class="card-title">
+<span>Patient Profile &amp; Clinical Baseline: <span id="intakeCaseId" style="color:var(--primary);"></span></span>
+<div style="display:flex; gap:6px;">
+<button class="btn-secondary" onclick="exportFHIR()" style="font-size:11px; padding:3px 9px; background:#0284c7; color:#fff;">📤 Export HL7 FHIR R4 Bundle</button>
+</div>
+</div>
+<div id="intakeProfileArea">Loading intake...</div>
+</div>
+<!-- Longitudinal Progress & Day-by-Day Trajectory Dashboard -->
+<div class="card" style="border-color:#38bdf8;">
+<div class="card-title">
+<span style="color:#38bdf8; font-weight:700;">Longitudinal Therapy Progress Dashboard (Day 1 ➔ Day 3 ➔ Day 7)</span>
+<span class="badge" id="trendSummaryBadge" style="background:#16a34a; color:#fff;">Progressing</span>
+</div>
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:14px;">
+<!-- Pain Trend Card -->
+<div style="background:rgba(30,41,59,0.7); border:1px solid var(--border); border-radius:6px; padding:12px;">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<span style="font-size:12px; color:var(--text-muted); font-weight:600;">Pain Severity (VAS 0–10)</span>
+<span id="painDeltaBadge" style="font-size:11px; color:#4ade80; font-weight:700;">Δ -4 (-66.7%)</span>
+</div>
+<div style="display:flex; align-items:baseline; gap:8px;">
+<span id="painStartVal" style="font-size:24px; font-weight:800; color:#ef4444;">6</span>
+<span style="color:var(--text-muted);">➔</span>
+<span id="painMidVal" style="font-size:24px; font-weight:800; color:#f59e0b;">4</span>
+<span style="color:var(--text-muted);">➔</span>
+<span id="painEndVal" style="font-size:24px; font-weight:800; color:#22c55e;">2</span>
+<span style="font-size:11px; color:var(--text-muted); margin-left:auto;">Target: ≤ 2</span>
+</div>
+<div style="height:6px; width:100%; background:#334155; border-radius:3px; margin-top:8px; overflow:hidden;">
+<div id="painProgressBar" style="height:100%; width:67%; background:linear-gradient(90deg, #ef4444, #22c55e); border-radius:3px;"></div>
+</div>
+</div>
+<!-- ROM Trend Card -->
+<div style="background:rgba(30,41,59,0.7); border:1px solid var(--border); border-radius:6px; padding:12px;">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<span style="font-size:12px; color:var(--text-muted); font-weight:600;">Active Cervical Rotation (Deg)</span>
+<span id="romDeltaBadge" style="font-size:11px; color:#4ade80; font-weight:700;">Δ +20° (+44.4%)</span>
+</div>
+<div style="display:flex; align-items:baseline; gap:8px;">
+<span id="romStartVal" style="font-size:24px; font-weight:800; color:#ef4444;">45°</span>
+<span style="color:var(--text-muted);">➔</span>
+<span id="romMidVal" style="font-size:24px; font-weight:800; color:#f59e0b;">55°</span>
+<span style="color:var(--text-muted);">➔</span>
+<span id="romEndVal" style="font-size:24px; font-weight:800; color:#22c55e;">65°</span>
+<span style="font-size:11px; color:var(--text-muted); margin-left:auto;">Normal: 60°–80°</span>
+</div>
+<div style="height:6px; width:100%; background:#334155; border-radius:3px; margin-top:8px; overflow:hidden;">
+<div id="romProgressBar" style="height:100%; width:81%; background:linear-gradient(90deg, #38bdf8, #22c55e); border-radius:3px;"></div>
+</div>
+</div>
+</div>
+<!-- Sequential Visit Cards -->
+<div id="longitudinalCardsArea" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+<!-- Dynamically populated -->
+</div>
+</div>
+<!-- Structure-Linked Observations & Palpation Findings -->
+<div class="card">
+<div class="card-title">
+<span>Structured Anatomical &amp; Acupoint Observations</span>
+<button class="btn-secondary" onclick="toggleObservationForm()" style="font-size:11px; padding:2px 8px;">+ Record New Observation</button>
+</div>
+<div id="observationsTableArea">Loading observations...</div>
+<!-- New Observation Form (Collapsible) -->
+<div id="newObservationFormBox" style="display:none; margin-top:14px; padding:12px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
+<h4 style="margin:0 0 10px 0; font-size:13px; color:var(--primary);">Record Structured Clinical Observation</h4>
+<form id="addObservationForm">
+<div class="form-row">
+<div class="form-group">
+<label>Target Visit:</label>
+<select id="obsVisitSelect" required=""></select>
+</div>
+<div class="form-group">
+<label>Structure / Acupoint ID:</label>
+<input id="obsStructureId" placeholder="e.g. STR-CERV-002 or ACU-GB21" required="" type="text"/>
+</div>
+<div class="form-group">
+<label>Structure Type:</label>
+<select id="obsStructureType">
+<option value="anatomy">Anatomical Muscle/Bone (FMA)</option>
+<option value="acupoint">Acupuncture Point (WHO)</option>
+<option value="traditional_sen">Traditional Sen Sib / Reflex</option>
+</select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>Observation Type:</label>
+<select id="obsType">
+<option value="palpation">Palpation Tenderness / Texture</option>
+<option value="trigger_point">Myofascial Trigger Point</option>
+<option value="pain_location">Somatic Pain Location</option>
+<option value="rom_restriction">ROM Restriction Endpoint</option>
+<option value="neurological">Neurological Symptom Screen</option>
+</select>
+</div>
+<div class="form-group">
+<label>Severity (0–10 VAS):</label>
+<input id="obsSeverity" max="10" min="0" required="" type="number" value="5"/>
+</div>
+</div>
+<div class="form-group">
+<label>Objective Finding (Observable physical signs):</label>
+<input id="obsFinding" placeholder="Describe palpation, taut band, texture, or pain response" required="" type="text"/>
+</div>
+<div class="form-group">
+<label>Clinical Interpretation (Working hypothesis):</label>
+<input id="obsInterpretation" placeholder="Postural myofascial tension; rule out radiculopathy" type="text"/>
+</div>
+<div style="display:flex; gap:8px;">
+<button style="font-size:12px; padding:6px 14px;" type="submit">Save Observation</button>
+<button class="btn-secondary" onclick="toggleObservationForm()" style="font-size:12px; padding:6px 14px;" type="button">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Therapy Sessions Documentation -->
+<div class="card">
+<div class="card-title">
+<span>Documented Therapy Sessions (Massage, Thai Massage, Acupressure, DDS)</span>
+<button class="btn-secondary" onclick="toggleSessionForm()" style="font-size:11px; padding:2px 8px;">+ Document Session</button>
+</div>
+<div id="sessionsTableArea">Loading sessions...</div>
+<!-- New Session Form (Collapsible) -->
+<div id="newSessionFormBox" style="display:none; margin-top:14px; padding:12px; background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:6px;">
+<h4 style="margin:0 0 10px 0; font-size:13px; color:var(--primary);">Document Therapy Intervention Session</h4>
+<form id="addSessionForm">
+<div class="form-row">
+<div class="form-group">
+<label>Visit:</label>
+<select id="sessVisitSelect" required=""></select>
+</div>
+<div class="form-group">
+<label>Modality:</label>
+<select id="sessModality">
+<option value="massage">Swedish / Clinical Massage</option>
+<option value="acupressure">Targeted Acupressure / Tuina</option>
+<option value="thai_massage">Traditional Thai Bodywork</option>
+<option value="dds">DDS / Electrical Stimulation Device</option>
+<option value="active_stretching">Active Mobilization &amp; Ergonomics</option>
+</select>
+</div>
+<div class="form-group">
+<label>Duration (Minutes):</label>
+<input id="sessDuration" max="120" min="5" required="" type="number" value="20"/>
+</div>
+</div>
+<div class="form-group">
+<label>Target Structures (IDs):</label>
+<input id="sessTargets" placeholder='["STR-CERV-002", "ACU-GB21"]' required="" type="text"/>
+</div>
+<div class="form-group">
+<label>Technique Parameters:</label>
+<input id="sessParams" placeholder="e.g. Ischemic compression 30s x 3, gentle passive stretching" required="" type="text"/>
+</div>
+<div class="form-group">
+<label>Adverse Reactions:</label>
+<input id="sessAdverse" required="" type="text" value="none"/>
+</div>
+<div style="display:flex; gap:8px;">
+<button style="font-size:12px; padding:6px 14px;" type="submit">Save Session</button>
+<button class="btn-secondary" onclick="toggleSessionForm()" style="font-size:12px; padding:6px 14px;" type="button">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+<!-- FHIR Bundle Modal / Display -->
+<div class="card" id="fhirExportBox" style="display:none; border-color:#0284c7; background:rgba(15,23,42,0.98);">
+<div class="card-title">
+<span>HL7 FHIR R4 Bundle Export (Medplum Interoperability Spec)</span>
+<button class="btn-secondary" onclick="document.getElementById('fhirExportBox').style.display='none'" style="font-size:11px;">Close</button>
+</div>
+<p style="font-size:12px; color:var(--text-muted); margin:0 0 10px 0;">
           Exported synthetic patient record conforming to HL7 FHIR R4 (Resources: Patient, Encounter, Observation for Pain/ROM/Anatomy).
         </p>
-        <pre id="fhirPreArea" style="max-height:360px; overflow:auto; background:#0a0f1d; padding:12px; border-radius:6px; font-size:11px; color:#38bdf8;"></pre>
-      </div>
+<pre id="fhirPreArea" style="max-height:360px; overflow:auto; background:#0a0f1d; padding:12px; border-radius:6px; font-size:11px; color:#38bdf8;"></pre>
+</div>
+<!-- Standard Visits Table -->
+<div class="card">
+<div class="card-title">
+<span>All Recorded Visits</span>
+</div>
+<div id="timelineTableArea">Loading visits...</div>
+</div>
+<div class="card">
+<div class="card-title">Add Synthetic Visit &amp; Objective ROM</div>
+<form id="addVisitForm">
+<div class="form-row">
+<div class="form-group">
+<label>Visit Date:</label>
+<input id="visDate" required="" type="date"/>
+</div>
+<div class="form-group">
+<label>Region:</label>
+<select id="visRegion">
+<option value="neck">Neck</option>
+<option value="low_back">Low Back</option>
+<option value="thoracic">Thoracic</option>
+<option value="shoulder">Shoulder</option>
+<option value="hip">Hip</option>
+</select>
+</div>
+<div class="form-group">
+<label>Pain Score (VAS 0–10):</label>
+<input id="visPain" max="10" min="0" required="" type="number" value="5"/>
+</div>
+<div class="form-group">
+<label>Gross ROM (deg):</label>
+<input id="visRom" max="360" min="0" required="" step="0.5" type="number" value="45"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>Safety Red Flag:</label>
+<select id="visFlag"></select>
+</div>
+<div class="form-group">
+<label>Fictional Simulation Note:</label>
+<input id="visNote" placeholder="Educational simulation notes only" required="" type="text"/>
+</div>
+</div>
+<button type="submit">Record Visit</button>
+</form>
+</div>
+</section>
+<!-- TAB 4: SOAP & SUPERVISION -->
+<section class="tab-content" id="tab-soap" style="display:none;">
+<div class="card">
+<div class="card-title">
+<span>Draft Structured SOAP Note</span>
+<span class="badge" id="soapRoleBadge">Role: student</span>
+</div>
+<form id="addSoapForm">
+<div class="form-group">
+<label for="soapVisitId">Select Target Visit:</label>
+<select id="soapVisitId"></select>
+</div>
+<div class="form-group">
+<label>S - Subjective (Reported symptoms &amp; functional limitation):</label>
+<textarea id="soapS" placeholder="Patient reports..." required="" rows="2"></textarea>
+</div>
+<div class="form-group">
+<label>O - Objective (Observable ROM &amp; clearly labeled palpation findings):</label>
+<textarea id="soapO" placeholder="Active motion restricted to..." required="" rows="2"></textarea>
+</div>
+<div class="form-group">
+<label>A - Assessment (Educational working hypothesis — NO MEDICAL DIAGNOSIS):</label>
+<textarea id="soapA" placeholder="Hypothesis for educational reasoning..." required="" rows="2"></textarea>
+</div>
+<div class="form-group">
+<label>P - Plan (Educational procedure OR medical referral if red flag):</label>
+<textarea id="soapP" placeholder="Gentle educational ROM OR referral..." required="" rows="2"></textarea>
+</div>
+<button type="submit">Save SOAP Note</button>
+</form>
+</div>
+<div class="card">
+<div class="card-title">Recorded SOAP Notes &amp; Supervision Status</div>
+<div id="soapListArea">Loading SOAP records...</div>
+</div>
+</section>
+<!-- TAB 5: EVIDENCE CATALOG -->
+<section class="tab-content" id="tab-evidence" style="display:none;">
+<div class="card">
+<div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+<span>Vetted Clinical &amp; Anatomical Evidence Catalog (Tiers 1–4)</span>
+<div style="display:flex; gap:8px; align-items:center;">
+<select id="evidenceTierFilter" style="font-size:11px; padding:3px 6px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:4px;">
+<option value="all">All Tiers (1–4)</option>
+<option value="1">Tier 1: Clinical Guidelines</option>
+<option value="2">Tier 2: Peer-Reviewed Anatomy</option>
+<option value="3">Tier 3: Manufacturer Manuals</option>
+<option value="4">Tier 4: Traditional Schemas</option>
+</select>
+<input id="evidenceSearchInput" placeholder="Filter evidence by keyword..." style="font-size:11px; padding:3px 6px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:4px; width:180px;" type="text"/>
+</div>
+</div>
+<div id="evidenceTableArea">Loading evidence...</div>
+</div>
+</section>
+<!-- TAB 6: OFFLINE REPORT -->
+<section class="tab-content" id="tab-report" style="display:none;">
+<div class="card">
+<div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+<span>Offline Clinical Learning Report</span>
+<div style="display:flex; gap:8px;">
+<button class="btn-secondary" id="downloadReportBtn" style="background:#0284c7; color:#fff; font-size:11px; padding:3px 10px;">📥 Download Markdown</button>
+<button class="btn-secondary" id="copyReportBtn" style="font-size:11px; padding:3px 10px;">📋 Copy Markdown</button>
+</div>
+</div>
+<pre id="reportPreArea">Generating report...</pre>
+</div>
+</section>
+</main>
+<script>
+    // --- Multilingual Terminology Resolution Helper ---
+    function resolveLocalizedStructureName(structId, defaultName) {
+      if (!window.__msk_i18n) return defaultName;
+      const lang = window.__msk_i18n.getLang();
+      const reg = window.__msk_i18n.getTerminology();
+      if (!reg) return defaultName;
 
-      <!-- Standard Visits Table -->
-      <div class="card">
-        <div class="card-title">
-          <span>All Recorded Visits</span>
-        </div>
-        <div id="timelineTableArea">Loading visits...</div>
-      </div>
+      // 1. Check anatomy_structures
+      if (reg.anatomy_structures) {
+        const match = reg.anatomy_structures.find(s => s.id === structId);
+        if (match && match['name_' + lang]) return match['name_' + lang];
+      }
 
-      <div class="card">
-        <div class="card-title">Add Synthetic Visit & Objective ROM</div>
-        <form id="addVisitForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Visit Date:</label>
-              <input type="date" id="visDate" required>
-            </div>
-            <div class="form-group">
-              <label>Region:</label>
-              <select id="visRegion">
-                <option value="neck">Neck</option>
-                <option value="low_back">Low Back</option>
-                <option value="thoracic">Thoracic</option>
-                <option value="shoulder">Shoulder</option>
-                <option value="hip">Hip</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Pain Score (VAS 0–10):</label>
-              <input type="number" id="visPain" min="0" max="10" value="5" required>
-            </div>
-            <div class="form-group">
-              <label>Gross ROM (deg):</label>
-              <input type="number" id="visRom" min="0" max="360" value="45" step="0.5" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Safety Red Flag:</label>
-              <select id="visFlag"></select>
-            </div>
-            <div class="form-group">
-              <label>Fictional Simulation Note:</label>
-              <input type="text" id="visNote" placeholder="Educational simulation notes only" required>
-            </div>
-          </div>
-          <button type="submit">Record Visit</button>
-        </form>
-      </div>
-    </section>
+      // 2. Check acupuncture points
+      if (structId && structId.startsWith('ACU-')) {
+        const code = structId.replace('ACU-', '');
+        if (reg.points && reg.points[code]) {
+          const pt = reg.points[code];
+          if (lang === 'zh') return `${pt.name_zh} (${pt.code} / ${pt.pinyin || pt.name_en})`;
+          if (lang === 'vi') return `${pt.name_vi || pt.name_en} (${pt.code} / ${pt.name_zh})`;
+          return `${pt.name_en} (${pt.code} / ${pt.name_zh})`;
+        }
+      }
 
-    <!-- TAB 4: SOAP & SUPERVISION -->
-    <section id="tab-soap" class="tab-content" style="display:none;">
-      <div class="card">
-        <div class="card-title">
-          <span>Draft Structured SOAP Note</span>
-          <span class="badge" id="soapRoleBadge">Role: student</span>
-        </div>
-        <form id="addSoapForm">
-          <div class="form-group">
-            <label for="soapVisitId">Select Target Visit:</label>
-            <select id="soapVisitId"></select>
-          </div>
-          <div class="form-group">
-            <label>S - Subjective (Reported symptoms & functional limitation):</label>
-            <textarea id="soapS" rows="2" required placeholder="Patient reports..."></textarea>
-          </div>
-          <div class="form-group">
-            <label>O - Objective (Observable ROM & clearly labeled palpation findings):</label>
-            <textarea id="soapO" rows="2" required placeholder="Active motion restricted to..."></textarea>
-          </div>
-          <div class="form-group">
-            <label>A - Assessment (Educational working hypothesis — NO MEDICAL DIAGNOSIS):</label>
-            <textarea id="soapA" rows="2" required placeholder="Hypothesis for educational reasoning..."></textarea>
-          </div>
-          <div class="form-group">
-            <label>P - Plan (Educational procedure OR medical referral if red flag):</label>
-            <textarea id="soapP" rows="2" required placeholder="Gentle educational ROM OR referral..."></textarea>
-          </div>
-          <button type="submit">Save SOAP Note</button>
-        </form>
-      </div>
+      // 3. Check Thai Sen Sib
+      if (structId && structId.includes('THAI') && reg.thai_sen_sib) {
+        const match = reg.thai_sen_sib.find(t => t.id === structId || structId.endsWith(t.code.split('-').pop()));
+        if (match && match['name_' + lang]) return match['name_' + lang];
+      }
 
-      <div class="card">
-        <div class="card-title">Recorded SOAP Notes & Supervision Status</div>
-        <div id="soapListArea">Loading SOAP records...</div>
-      </div>
-    </section>
+      // 4. Check Dien Chan
+      if (structId && structId.includes('DIEN') && reg.dien_chan) {
+        const match = reg.dien_chan.find(d => d.id === structId || structId.endsWith(d.code.split('-').pop()));
+        if (match && match['name_' + lang]) return match['name_' + lang];
+      }
 
-    <!-- TAB 5: EVIDENCE CATALOG -->
-    <section id="tab-evidence" class="tab-content" style="display:none;">
-      <div class="card">
-        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <span>Vetted Clinical & Anatomical Evidence Catalog (Tiers 1–4)</span>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <select id="evidenceTierFilter" style="font-size:11px; padding:3px 6px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:4px;">
-              <option value="all">All Tiers (1–4)</option>
-              <option value="1">Tier 1: Clinical Guidelines</option>
-              <option value="2">Tier 2: Peer-Reviewed Anatomy</option>
-              <option value="3">Tier 3: Manufacturer Manuals</option>
-              <option value="4">Tier 4: Traditional Schemas</option>
-            </select>
-            <input type="text" id="evidenceSearchInput" placeholder="Filter evidence by keyword..." style="font-size:11px; padding:3px 6px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:4px; width:180px;">
-          </div>
-        </div>
-        <div id="evidenceTableArea">Loading evidence...</div>
-      </div>
-    </section>
+      return defaultName;
+    }
 
-    <!-- TAB 6: OFFLINE REPORT -->
-    <section id="tab-report" class="tab-content" style="display:none;">
-      <div class="card">
-        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <span>Offline Clinical Learning Report</span>
-          <div style="display:flex; gap:8px;">
-            <button id="downloadReportBtn" class="btn-secondary" style="background:#0284c7; color:#fff; font-size:11px; padding:3px 10px;">📥 Download Markdown</button>
-            <button id="copyReportBtn" class="btn-secondary" style="font-size:11px; padding:3px 10px;">📋 Copy Markdown</button>
-          </div>
-        </div>
-        <pre id="reportPreArea">Generating report...</pre>
-      </div>
-    </section>
-  </main>
+    // Global listener for language change
+    window.addEventListener('msk:lang-changed', (ev) => {
+      const { lang, t } = ev.detail;
+      // Re-render active region structures
+      const activeRegionBtn = document.querySelector('.region-btn.active');
+      const activeRegion = activeRegionBtn ? activeRegionBtn.getAttribute('data-region') : 'neck';
+      if (typeof loadRegionAnatomy === 'function') {
+        loadRegionAnatomy(activeRegion);
+      }
+      if (typeof loadSafetyFlags === 'function') loadSafetyFlags();
+      // Re-render acupoint details if active
+      if (typeof showAtlasAcupoint === 'function' && window.lastSelectedAcupoint) {
+        showAtlasAcupoint(window.lastSelectedAcupoint);
+      }
+      // Re-render Dien Chan details if active
+      if (typeof showAtlasDienChan === 'function' && window.lastSelectedDienChan) {
+        showAtlasDienChan(window.lastSelectedDienChan);
+      }
+      // Re-render SOAP records if active
+      if (typeof renderSOAPRecords === 'function' && window.__lastSoaps) {
+        renderSOAPRecords(window.__lastSoaps);
+      }
+    });
 
-  <script>
+    // Language switcher click delegation
+    document.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.lang-btn');
+      if (btn) {
+        const lang = btn.getAttribute('data-lang');
+        if (window.__msk_i18n && lang) {
+          window.__msk_i18n.setLanguage(lang);
+        }
+      }
+    });
+
     // Modern non-blocking clinical toast notification
     function showToast(msg, type = 'info') {
       let toast = document.getElementById('mskToast');
@@ -980,9 +1058,28 @@
       const hint = document.getElementById("atlasNoSelectionHint");
       if (hint) hint.style.display = "none";
 
-      document.getElementById("dcPointTitle").textContent = `${pt.name} (${pt.code})`;
+      window.lastSelectedDienChan = pt;
+      const lang = window.__msk_i18n ? window.__msk_i18n.getLang() : 'en';
+      let dcName = pt.name;
+      let dcInd = pt.indication || 'Traditional somatotopic facial reflex projection';
+      if (window.__msk_i18n && window.__msk_i18n.getTerminology()) {
+        const reg = window.__msk_i18n.getTerminology();
+        if (reg.dien_chan) {
+          const match = reg.dien_chan.find(d => d.code === pt.code);
+          if (match) {
+            if (lang === 'zh') {
+              dcName = match.name_zh;
+              dcInd = match.indications ? match.indications.zh : pt.indication;
+            } else if (lang === 'vi') {
+              dcName = match.name_vi;
+              dcInd = match.indications ? match.indications.vi : pt.indication;
+            }
+          }
+        }
+      }
+      document.getElementById("dcPointTitle").textContent = `${dcName} (${pt.code})`;
       document.getElementById("dcTargetRegion").textContent = (pt.target_region || 'cervical').toUpperCase();
-      document.getElementById("dcIndication").textContent = pt.indication || 'Traditional somatotopic facial reflex projection';
+      document.getElementById("dcIndication").textContent = dcInd;
     }
 
     function addDienChanToSOAP() {
@@ -1144,7 +1241,15 @@
       const hint = document.getElementById("atlasNoSelectionHint");
       if (hint) hint.style.display = "none";
 
-      document.getElementById("acuPointTitle").textContent = `${pt.name_en} (${pt.code} / ${pt.name_zh} - ${pt.pinyin})`;
+      window.lastSelectedAcupoint = pt;
+      const lang = window.__msk_i18n ? window.__msk_i18n.getLang() : 'en';
+      let title = `${pt.name_en} (${pt.code} / ${pt.name_zh} - ${pt.pinyin})`;
+      if (lang === 'zh') {
+        title = `${pt.name_zh} (${pt.code} / ${pt.pinyin || pt.name_en})`;
+      } else if (lang === 'vi') {
+        title = `${pt.name_vi || pt.name_en} (${pt.code} / ${pt.name_zh})`;
+      }
+      document.getElementById("acuPointTitle").textContent = title;
       document.getElementById("acuMeridianInfo").textContent = `${pt.meridian_name} (${pt.meridian_code}) • Region: ${pt.region || 'Head/Neck'}`;
       document.getElementById("acuEvidenceBadge").textContent = `Tier 4: Grade ${pt.evidence_grade} Evidence`;
       document.getElementById("acuLocationText").textContent = `${pt.location_zh || ''} (${pt.location_method || ''})`;
@@ -1359,10 +1464,11 @@
                </div>`;
           }
 
+          const localizedName = resolveLocalizedStructureName(s.structure_id, s.name);
           return `
             <div class="item-card">
               <div class="item-card-header">
-                <strong>${s.name}</strong>
+                <strong>${localizedName}</strong>
                 <span class="tag ${tagClass}">${badgeText}</span>
               </div>
               <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">
@@ -1597,23 +1703,24 @@
 
     function renderSOAPRecords(soaps) {
       const container = document.getElementById("soapListArea");
+      const t = window.__msk_i18n ? window.__msk_i18n.t : ((k, fb) => fb);
       if (!soaps || soaps.length === 0) {
-        container.innerHTML = "<p style='color:var(--text-muted)'>No structured SOAP notes recorded for this case yet.</p>";
+        container.innerHTML = `<p style='color:var(--text-muted)'>${t('soap.no_records', 'No structured SOAP notes recorded for this case yet.')}</p>`;
         return;
       }
       container.innerHTML = soaps.map(s => {
-        let statusBadge = `<span class="tag tag-safe">[APPROVED]</span>`;
-        if (s.review_status === "DRAFT") statusBadge = `<span class="tag tag-trad">[DRAFT]</span>`;
-        if (s.review_status === "REJECTED") statusBadge = `<span class="tag tag-stop">[REJECTED]</span>`;
-        if (s.review_status === "SUPERVISED") statusBadge = `<span class="tag tag-evidence">[SUPERVISED]</span>`;
+        let statusBadge = `<span class="tag tag-safe">[${t('soap.status_approved', 'APPROVED')}]</span>`;
+        if (s.review_status === "DRAFT") statusBadge = `<span class="tag tag-trad">[${t('soap.status_draft', 'DRAFT')}]</span>`;
+        if (s.review_status === "REJECTED") statusBadge = `<span class="tag tag-stop">[${t('soap.status_revision', 'REJECTED')}]</span>`;
+        if (s.review_status === "SUPERVISED") statusBadge = `<span class="tag tag-evidence">[${t('soap.status_supervised', 'SUPERVISED')}]</span>`;
 
         let supervisorActions = "";
         if (activeRole === "reviewer" && s.review_status !== "APPROVED") {
           supervisorActions = `
             <div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); display:flex; gap:8px;">
-              <input type="text" id="feedback-${s.id}" placeholder="Supervisor review comments..." style="flex:1;">
-              <button onclick="approveSOAP(${s.id}, 'APPROVED')" style="background:var(--success); color:#000;">Approve</button>
-              <button onclick="approveSOAP(${s.id}, 'REJECTED')" style="background:var(--danger); color:#fff;">Reject</button>
+              <input type="text" id="feedback-${s.id}" placeholder="${t('soap.feedback_placeholder', 'Supervisor review comments...')}" style="flex:1;">
+              <button onclick="approveSOAP(${s.id}, 'APPROVED')" style="background:var(--success); color:#000;">${t('soap.btn_approve', 'Approve')}</button>
+              <button onclick="approveSOAP(${s.id}, 'REJECTED')" style="background:var(--danger); color:#fff;">${t('soap.btn_reject', 'Reject')}</button>
             </div>
           `;
         }
@@ -1782,15 +1889,17 @@
         "dvt_thrombosis_signs",
         "suspected_fracture"
       ];
+      const t = window.__msk_i18n ? window.__msk_i18n.t : ((k, fb) => fb);
       flags.forEach(f => {
+        const label = t('safety_flags.' + f, f);
         const opt1 = document.createElement("option");
         opt1.value = f;
-        opt1.textContent = f;
+        opt1.textContent = label;
         sel.appendChild(opt1);
 
         const opt2 = document.createElement("option");
         opt2.value = f;
-        opt2.textContent = f;
+        opt2.textContent = label;
         visSel.appendChild(opt2);
       });
     }
@@ -1986,6 +2095,6 @@
     loadRegionQuestionnaires(activeRegion);
     loadSafetyFlags();
   </script>
-  <script src="/meridianEditor.js"></script>
+<script src="/meridianEditor.js"></script>
 </body>
 </html>

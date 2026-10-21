@@ -1,0 +1,96 @@
+{
+  "title": "Open Anatomy Atlas",
+  "modes": {
+    "explore": "Explore",
+    "quiz": "Quiz",
+    "surface": "🌐 Surface",
+    "surface_title": "Surface Meridian Mode: Skin mesh with surface-anchored meridians",
+    "anatomy": "🦴 Anatomy",
+    "anatomy_title": "Musculoskeletal Anatomy Mode: Deep bones, muscles, joints",
+    "compare": "⚖ Compare",
+    "compare_title": "Comparative Research Mode: Synchronized dual split-view"
+  },
+  "camera": {
+    "front": "Front",
+    "front_title": "Front view (1)",
+    "back": "Back",
+    "back_title": "Back view (2)",
+    "left": "Left",
+    "left_title": "Patient's left side (3)",
+    "right": "Right",
+    "right_title": "Patient's right side (4)",
+    "full_body": "Full Body",
+    "full_body_title": "Full body framing (Home)",
+    "focus": "Focus",
+    "focus_title": "Focus on selected structure or acupoint (F)",
+    "reset": "Reset",
+    "reset_title": "Show everything and reset the view (A)",
+    "xray": "X-ray",
+    "xray_title": "X-ray: see through everything except the selection (X)",
+    "shot": "Save image",
+    "shot_title": "Save a picture of the current view",
+    "data": "Atlas data",
+    "data_title": "Atlas data",
+    "about": "About",
+    "about_title": "About this atlas and who made it",
+    "help": "?",
+    "help_title": "Keyboard shortcuts (?)"
+  },
+  "tabs": {
+    "layers": "Layers",
+    "structures": "Structures",
+    "sections": "Sections",
+    "meridians": "Meridians"
+  },
+  "layers": {
+    "show_hidden": "Show hidden structures",
+    "by_region": "By region",
+    "by_type": "By type",
+    "skin_opacity": "Skin Opacity:",
+    "opacity_slider_title": "Adjust skin transparency to see internal anatomy"
+  },
+  "actions": {
+    "focus": "Focus",
+    "focus_title": "Zoom to it (F)",
+    "isolate": "Isolate",
+    "isolate_title": "Hide everything else (I)",
+    "hide": "Hide",
+    "hide_title": "Hide it (H)",
+    "close": "Close"
+  },
+  "meridians": {
+    "title": "Acupuncture & Traditional Reflex Overlay",
+    "show_meridians": "Classical Meridians (14)",
+    "show_points": "WHO Standard Acupoints (362)",
+    "show_thai": "Thai Sen Sib (3)",
+    "show_dien_chan": "Vietnamese Dien Chan (4)",
+    "filter_channel": "Channel:",
+    "filter_region": "Region:",
+    "all_channels": "All Channels",
+    "all_regions": "All Regions",
+    "verified_only": "Verified Anchors Only"
+  },
+  "sections": {
+    "no_cut": "No cut",
+    "axial": "Axial (transverse)",
+    "coronal": "Coronal (front / back)",
+    "sagittal": "Sagittal (left / right)",
+    "keep_other_side": "Keep the other side",
+    "position": "Position:"
+  },
+  "quiz": {
+    "find_it": "Find it: click the named structure",
+    "name_it": "Name it: pick the name of the highlighted structure",
+    "start": "Start quiz",
+    "next": "Next question",
+    "skip": "Skip",
+    "stop": "End quiz",
+    "again": "Try again",
+    "questions": "Questions:"
+  },
+  "hints": {
+    "orbit_hint": "Left drag to orbit | Right / Shift+drag to pan | Scroll to zoom | Click to identify",
+    "click_identify": "Click any structure to identify it",
+    "loading": "Loading atlas..."
+  }
+}

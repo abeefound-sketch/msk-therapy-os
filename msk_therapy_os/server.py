@@ -435,6 +435,24 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     else:
                         self._send_json({"error": "Acupuncture 3D dataset not found"}, status=HTTPStatus.NOT_FOUND)
 
+                elif path == "/api/terminology":
+                    from msk_therapy_os.terminology import MedicalTerminologyRegistry
+                    reg = MedicalTerminologyRegistry.get_instance()
+                    category = query.get("category", [None])[0]
+                    lang = query.get("lang", ["en"])[0]
+                    if category == "meridians":
+                        self._send_json(list(reg.meridians.values()))
+                    elif category == "points":
+                        self._send_json(reg.points)
+                    elif category == "dien_chan":
+                        self._send_json(list(reg.dien_chan.values()))
+                    elif category == "thai":
+                        self._send_json(list(reg.thai_sen_sib.values()))
+                    elif category == "structures":
+                        self._send_json(list(reg.structures.values()))
+                    else:
+                        self._send_json(reg.data)
+
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
             except Exception as e:

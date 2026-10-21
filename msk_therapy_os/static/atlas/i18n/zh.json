@@ -1,0 +1,96 @@
+{
+  "title": "开放解剖图谱 (Open Anatomy Atlas)",
+  "modes": {
+    "explore": "探索",
+    "quiz": "测验",
+    "surface": "🌐 体表经络",
+    "surface_title": "体表经络模式：皮肤网格与体表针灸穴位经络",
+    "anatomy": "🦴 肌骨解剖",
+    "anatomy_title": "肌骨解剖模式：深层骨骼、肌肉与关节",
+    "compare": "⚖ 对比对照",
+    "compare_title": "对比研究模式：左右分屏双向同步视图"
+  },
+  "camera": {
+    "front": "正面",
+    "front_title": "正视观察 (快捷键 1)",
+    "back": "背面",
+    "back_title": "后视观察 (快捷键 2)",
+    "left": "左侧",
+    "left_title": "观察患者左侧 (快捷键 3)",
+    "right": "右侧",
+    "right_title": "观察患者右侧 (快捷键 4)",
+    "full_body": "全身",
+    "full_body_title": "全身视野取景 (Home 键)",
+    "focus": "聚焦",
+    "focus_title": "聚焦到选中的解剖结构或穴位 (F 键)",
+    "reset": "重置",
+    "reset_title": "显示全部并重置视角 (A 键)",
+    "xray": "透视",
+    "xray_title": "X射线半透明透视模式 (X 键)",
+    "shot": "保存图片",
+    "shot_title": "保存当前视图截图",
+    "data": "图谱数据",
+    "data_title": "查看图谱数据来源",
+    "about": "关于",
+    "about_title": "关于此解剖图谱与制作信息",
+    "help": "?",
+    "help_title": "键盘快捷键帮助 (?)"
+  },
+  "tabs": {
+    "layers": "解剖图层",
+    "structures": "结构目录",
+    "sections": "断层切片",
+    "meridians": "经络穴位"
+  },
+  "layers": {
+    "show_hidden": "显示隐藏结构",
+    "by_region": "按区域划分",
+    "by_type": "按类型划分",
+    "skin_opacity": "皮肤透明度：",
+    "opacity_slider_title": "调节皮肤透明度以观察深层内部解剖结构"
+  },
+  "actions": {
+    "focus": "聚焦",
+    "focus_title": "缩放对齐至该结构 (F 键)",
+    "isolate": "单独显示",
+    "isolate_title": "隐藏所有其他非选中结构 (I 键)",
+    "hide": "隐藏",
+    "hide_title": "隐藏该结构 (H 键)",
+    "close": "关闭"
+  },
+  "meridians": {
+    "title": "针灸穴位与传统反射覆盖层",
+    "show_meridians": "十四古典经络",
+    "show_points": "WHO 标准 362 腧穴",
+    "show_thai": "泰式十线 (Sen Sib)",
+    "show_dien_chan": "越南面针反射区 (Dien Chan)",
+    "filter_channel": "经脉筛选：",
+    "filter_region": "部位筛选：",
+    "all_channels": "全部经脉",
+    "all_regions": "全部区域",
+    "verified_only": "仅显示已验证基准穴位"
+  },
+  "sections": {
+    "no_cut": "不剖切",
+    "axial": "横断面 (轴位)",
+    "coronal": "冠状面 (前后向)",
+    "sagittal": "矢状面 (左右向)",
+    "keep_other_side": "保留另一侧",
+    "position": "剖切位置："
+  },
+  "quiz": {
+    "find_it": "寻找结构：点击被提问的结构名称",
+    "name_it": "辨认命名：选出高亮高亮结构的正确名称",
+    "start": "开始测验",
+    "next": "下一题",
+    "skip": "跳过",
+    "stop": "结束测验",
+    "again": "再试一次",
+    "questions": "题数："
+  },
+  "hints": {
+    "orbit_hint": "左键拖拽旋转 | 右键/Shift+左键平移 | 滚轮缩放 | 点击识别结构",
+    "click_identify": "点击任意结构查看其解剖命名",
+    "loading": "正在加载解剖图谱..."
+  }
+}

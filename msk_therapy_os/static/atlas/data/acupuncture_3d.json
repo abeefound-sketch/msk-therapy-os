@@ -65,7 +65,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Phủ"
     },
     "LU2": {
       "code": "LU2",
@@ -116,7 +117,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Vân Môn"
     },
     "LU3": {
       "code": "LU3",
@@ -167,7 +169,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Phủ"
     },
     "LU4": {
       "code": "LU4",
@@ -218,7 +221,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hiệp Bạch"
     },
     "LU5": {
       "code": "LU5",
@@ -269,7 +273,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Xích Trạch"
     },
     "LU6": {
       "code": "LU6",
@@ -322,7 +327,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khổng Tối"
     },
     "LU7": {
       "code": "LU7",
@@ -377,7 +383,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Liệt Khuyết"
     },
     "LU8": {
       "code": "LU8",
@@ -429,7 +436,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kinh Cừ"
     },
     "LU9": {
       "code": "LU9",
@@ -480,7 +488,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thái Uyên"
     },
     "LU10": {
       "code": "LU10",
@@ -531,7 +540,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngư Tế"
     },
     "LU11": {
       "code": "LU11",
@@ -581,7 +591,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiếu Thương"
     },
     "LI1": {
       "code": "LI1",
@@ -633,7 +644,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thương Dương"
     },
     "LI2": {
       "code": "LI2",
@@ -685,7 +697,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhị Gian"
     },
     "LI3": {
       "code": "LI3",
@@ -737,7 +750,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tam Gian"
     },
     "LI4": {
       "code": "LI4",
@@ -793,7 +807,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hợp Cốc"
     },
     "LI5": {
       "code": "LI5",
@@ -847,7 +862,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dương Khê"
     },
     "LI6": {
       "code": "LI6",
@@ -899,7 +915,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phần Lịch"
     },
     "LI7": {
       "code": "LI7",
@@ -953,7 +970,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ôn Lưu"
     },
     "LI8": {
       "code": "LI8",
@@ -1006,7 +1024,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hạ Liêm"
     },
     "LI9": {
       "code": "LI9",
@@ -1055,7 +1074,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thượng Liêm"
     },
     "LI10": {
       "code": "LI10",
@@ -1106,7 +1126,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thủ Tam Lý"
     },
     "LI11": {
       "code": "LI11",
@@ -1157,7 +1178,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khúc Trì"
     },
     "LI12": {
       "code": "LI12",
@@ -1204,7 +1226,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "肘 Liêu"
     },
     "LI13": {
       "code": "LI13",
@@ -1251,7 +1274,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thủ Ngũ Lý"
     },
     "LI14": {
       "code": "LI14",
@@ -1300,7 +1324,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tý Nhu"
     },
     "LI15": {
       "code": "LI15",
@@ -1348,7 +1373,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kiên Ngung"
     },
     "LI16": {
       "code": "LI16",
@@ -1396,7 +1422,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cự Cốt"
     },
     "LI17": {
       "code": "LI17",
@@ -1447,7 +1474,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Đỉnh"
     },
     "LI18": {
       "code": "LI18",
@@ -1499,7 +1527,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phù Đột"
     },
     "LI19": {
       "code": "LI19",
@@ -1550,7 +1579,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khẩu Hòa Liêu"
     },
     "LI20": {
       "code": "LI20",
@@ -1601,7 +1631,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nghênh Hương"
     },
     "ST1": {
       "code": "ST1",
@@ -1651,7 +1682,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thừa Khấp"
     },
     "ST2": {
       "code": "ST2",
@@ -1702,7 +1734,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tứ Bạch"
     },
     "ST3": {
       "code": "ST3",
@@ -1750,7 +1783,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cự Liêu"
     },
     "ST4": {
       "code": "ST4",
@@ -1799,7 +1833,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Địa Thương"
     },
     "ST5": {
       "code": "ST5",
@@ -1847,7 +1882,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Nghênh"
     },
     "ST6": {
       "code": "ST6",
@@ -1898,7 +1934,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Giáp Xa"
     },
     "ST7": {
       "code": "ST7",
@@ -1949,7 +1986,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hạ Quan"
     },
     "ST8": {
       "code": "ST8",
@@ -2002,7 +2040,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đầu Duy"
     },
     "ST9": {
       "code": "ST9",
@@ -2053,7 +2092,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhân Nghênh"
     },
     "ST10": {
       "code": "ST10",
@@ -2101,7 +2141,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thủy Đột"
     },
     "ST11": {
       "code": "ST11",
@@ -2149,7 +2190,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khí Xá"
     },
     "ST12": {
       "code": "ST12",
@@ -2197,7 +2239,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khuyết 盆"
     },
     "ST13": {
       "code": "ST13",
@@ -2245,7 +2288,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khí Hộ"
     },
     "ST14": {
       "code": "ST14",
@@ -2293,7 +2337,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "库 Phòng"
     },
     "ST15": {
       "code": "ST15",
@@ -2341,7 +2386,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ốc Ế"
     },
     "ST16": {
       "code": "ST16",
@@ -2389,7 +2435,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ưng Song"
     },
     "ST17": {
       "code": "ST17",
@@ -2437,7 +2484,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhũ Trung"
     },
     "ST18": {
       "code": "ST18",
@@ -2485,7 +2533,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhũ Căn"
     },
     "ST19": {
       "code": "ST19",
@@ -2533,7 +2582,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bất Dung"
     },
     "ST20": {
       "code": "ST20",
@@ -2581,7 +2631,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thừa Mãn"
     },
     "ST21": {
       "code": "ST21",
@@ -2629,7 +2680,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Lương Môn"
     },
     "ST22": {
       "code": "ST22",
@@ -2677,7 +2729,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Quan Môn"
     },
     "ST23": {
       "code": "ST23",
@@ -2725,7 +2778,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thái 乙"
     },
     "ST24": {
       "code": "ST24",
@@ -2773,7 +2827,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hoạt Nhục Môn"
     },
     "ST25": {
       "code": "ST25",
@@ -2825,7 +2880,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Xu"
     },
     "ST26": {
       "code": "ST26",
@@ -2873,7 +2929,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngoại Lăng"
     },
     "ST27": {
       "code": "ST27",
@@ -2921,7 +2978,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Cự"
     },
     "ST28": {
       "code": "ST28",
@@ -2969,7 +3027,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thủy Đạo"
     },
     "ST29": {
       "code": "ST29",
@@ -3017,7 +3076,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Quy Lai"
     },
     "ST30": {
       "code": "ST30",
@@ -3065,7 +3125,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khí Xung"
     },
     "ST31": {
       "code": "ST31",
@@ -3113,7 +3174,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bễ Quan"
     },
     "ST32": {
       "code": "ST32",
@@ -3161,7 +3223,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phục Thỏ"
     },
     "ST33": {
       "code": "ST33",
@@ -3209,7 +3272,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Âm Thị"
     },
     "ST34": {
       "code": "ST34",
@@ -3257,7 +3321,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Lương Khâu"
     },
     "ST35": {
       "code": "ST35",
@@ -3305,7 +3370,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Độc Tị"
     },
     "ST36": {
       "code": "ST36",
@@ -3360,7 +3426,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Túc Tam Lý"
     },
     "ST37": {
       "code": "ST37",
@@ -3409,7 +3476,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thượng Cự 虚"
     },
     "ST38": {
       "code": "ST38",
@@ -3456,7 +3524,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Điều Khẩu"
     },
     "ST39": {
       "code": "ST39",
@@ -3504,7 +3573,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hạ Cự 虚"
     },
     "ST40": {
       "code": "ST40",
@@ -3555,7 +3625,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phong Long"
     },
     "ST41": {
       "code": "ST41",
@@ -3608,7 +3679,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Giải Khê"
     },
     "ST42": {
       "code": "ST42",
@@ -3656,7 +3728,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Xung Dương"
     },
     "ST43": {
       "code": "ST43",
@@ -3704,7 +3777,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hãm Cốc"
     },
     "ST44": {
       "code": "ST44",
@@ -3756,7 +3830,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nội Đình"
     },
     "ST45": {
       "code": "ST45",
@@ -3804,7 +3879,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Lệ Đoái"
     },
     "SP1": {
       "code": "SP1",
@@ -3852,7 +3928,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ẩn Bạch"
     },
     "SP2": {
       "code": "SP2",
@@ -3900,7 +3977,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Đô"
     },
     "SP3": {
       "code": "SP3",
@@ -3950,7 +4028,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thái Bạch"
     },
     "SP4": {
       "code": "SP4",
@@ -3999,7 +4078,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Công Tôn"
     },
     "SP5": {
       "code": "SP5",
@@ -4047,7 +4127,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thương Khâu"
     },
     "SP6": {
       "code": "SP6",
@@ -4100,7 +4181,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tam Âm Giao"
     },
     "SP7": {
       "code": "SP7",
@@ -4148,7 +4230,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Lậu Cốc"
     },
     "SP8": {
       "code": "SP8",
@@ -4199,7 +4282,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Địa Cơ"
     },
     "SP9": {
       "code": "SP9",
@@ -4252,7 +4336,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Âm Lăng Tuyền"
     },
     "SP10": {
       "code": "SP10",
@@ -4303,7 +4388,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Huyết Hải"
     },
     "SP11": {
       "code": "SP11",
@@ -4351,7 +4437,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cơ Môn"
     },
     "SP12": {
       "code": "SP12",
@@ -4399,7 +4486,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Xung Môn"
     },
     "SP13": {
       "code": "SP13",
@@ -4447,7 +4535,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phủ Xá"
     },
     "SP14": {
       "code": "SP14",
@@ -4495,7 +4584,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phúc Kết"
     },
     "SP15": {
       "code": "SP15",
@@ -4544,7 +4634,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Hoành"
     },
     "SP16": {
       "code": "SP16",
@@ -4592,7 +4683,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phúc Ai"
     },
     "SP17": {
       "code": "SP17",
@@ -4640,7 +4732,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thực Đậu"
     },
     "SP18": {
       "code": "SP18",
@@ -4688,7 +4781,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Khê"
     },
     "SP19": {
       "code": "SP19",
@@ -4736,7 +4830,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hung Hương"
     },
     "SP20": {
       "code": "SP20",
@@ -4784,7 +4879,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chu Vinh"
     },
     "SP21": {
       "code": "SP21",
@@ -4832,7 +4928,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Bao"
     },
     "HT1": {
       "code": "HT1",
@@ -4884,7 +4981,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cực Tuyền"
     },
     "HT2": {
       "code": "HT2",
@@ -4936,7 +5034,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thanh Linh"
     },
     "HT3": {
       "code": "HT3",
@@ -4986,7 +5085,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiếu Hải"
     },
     "HT4": {
       "code": "HT4",
@@ -5035,7 +5135,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Linh Đạo"
     },
     "HT5": {
       "code": "HT5",
@@ -5086,7 +5187,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thông Lý"
     },
     "HT6": {
       "code": "HT6",
@@ -5137,7 +5239,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Âm Khích"
     },
     "HT7": {
       "code": "HT7",
@@ -5189,7 +5292,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thần Môn"
     },
     "HT8": {
       "code": "HT8",
@@ -5241,7 +5345,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiếu Phủ"
     },
     "HT9": {
       "code": "HT9",
@@ -5293,7 +5398,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiếu Xung"
     },
     "SI1": {
       "code": "SI1",
@@ -5341,7 +5447,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiếu Trạch"
     },
     "SI2": {
       "code": "SI2",
@@ -5389,7 +5496,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tiền Cốc"
     },
     "SI3": {
       "code": "SI3",
@@ -5442,7 +5550,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hậu Khê"
     },
     "SI4": {
       "code": "SI4",
@@ -5492,7 +5601,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Uyển Cốt"
     },
     "SI5": {
       "code": "SI5",
@@ -5540,7 +5650,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dương Cốc"
     },
     "SI6": {
       "code": "SI6",
@@ -5591,7 +5702,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "养 Lão"
     },
     "SI7": {
       "code": "SI7",
@@ -5639,7 +5751,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chi Chính"
     },
     "SI8": {
       "code": "SI8",
@@ -5687,7 +5800,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tiểu Hải"
     },
     "SI9": {
       "code": "SI9",
@@ -5735,7 +5849,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kiên Trinh"
     },
     "SI10": {
       "code": "SI10",
@@ -5783,7 +5898,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhu Du"
     },
     "SI11": {
       "code": "SI11",
@@ -5831,7 +5947,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Tông"
     },
     "SI12": {
       "code": "SI12",
@@ -5879,7 +5996,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bỉnh Phong"
     },
     "SI13": {
       "code": "SI13",
@@ -5927,7 +6045,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khúc Viên"
     },
     "SI14": {
       "code": "SI14",
@@ -5975,7 +6094,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kiên Ngoại Du"
     },
     "SI15": {
       "code": "SI15",
@@ -6023,7 +6143,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kiên Trung Du"
     },
     "SI16": {
       "code": "SI16",
@@ -6071,7 +6192,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Song"
     },
     "SI17": {
       "code": "SI17",
@@ -6119,7 +6241,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Dung"
     },
     "SI18": {
       "code": "SI18",
@@ -6170,7 +6293,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Quyền Liêu"
     },
     "SI19": {
       "code": "SI19",
@@ -6219,7 +6343,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thính Cung"
     },
     "BL1": {
       "code": "BL1",
@@ -6269,7 +6394,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tình Minh"
     },
     "BL2": {
       "code": "BL2",
@@ -6322,7 +6448,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Toản Trúc"
     },
     "BL3": {
       "code": "BL3",
@@ -6370,7 +6497,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Mi Xung"
     },
     "BL4": {
       "code": "BL4",
@@ -6418,7 +6546,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khúc Sai"
     },
     "BL5": {
       "code": "BL5",
@@ -6466,7 +6595,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngũ Xứ"
     },
     "BL6": {
       "code": "BL6",
@@ -6514,7 +6644,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thừa Quang"
     },
     "BL7": {
       "code": "BL7",
@@ -6562,7 +6693,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thông Thiên"
     },
     "BL8": {
       "code": "BL8",
@@ -6610,7 +6742,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Lạc Khước"
     },
     "BL9": {
       "code": "BL9",
@@ -6658,7 +6791,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngọc Chẩm"
     },
     "BL10": {
       "code": "BL10",
@@ -6713,7 +6847,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Trụ"
     },
     "BL11": {
       "code": "BL11",
@@ -6764,7 +6899,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Trữ"
     },
     "BL12": {
       "code": "BL12",
@@ -6815,7 +6951,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phong Môn"
     },
     "BL13": {
       "code": "BL13",
@@ -6866,7 +7003,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phế Du"
     },
     "BL14": {
       "code": "BL14",
@@ -6917,7 +7055,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "厥 Âm Du"
     },
     "BL15": {
       "code": "BL15",
@@ -6968,7 +7107,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "心 Du"
     },
     "BL16": {
       "code": "BL16",
@@ -7016,7 +7156,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đốc Du"
     },
     "BL17": {
       "code": "BL17",
@@ -7069,7 +7210,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cách Du"
     },
     "BL18": {
       "code": "BL18",
@@ -7120,7 +7262,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "肝 Du"
     },
     "BL19": {
       "code": "BL19",
@@ -7170,7 +7313,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "胆 Du"
     },
     "BL20": {
       "code": "BL20",
@@ -7221,7 +7365,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tỳ Du"
     },
     "BL21": {
       "code": "BL21",
@@ -7271,7 +7416,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Vị Du"
     },
     "BL22": {
       "code": "BL22",
@@ -7321,7 +7467,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tam Tiêu Du"
     },
     "BL23": {
       "code": "BL23",
@@ -7374,7 +7521,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thận Du"
     },
     "BL24": {
       "code": "BL24",
@@ -7422,7 +7570,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khí Hải Du"
     },
     "BL25": {
       "code": "BL25",
@@ -7474,7 +7623,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Trường Du"
     },
     "BL26": {
       "code": "BL26",
@@ -7522,7 +7672,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Quan Nguyên Du"
     },
     "BL27": {
       "code": "BL27",
@@ -7570,7 +7721,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tiểu Trường Du"
     },
     "BL28": {
       "code": "BL28",
@@ -7620,7 +7772,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bàng Quang Du"
     },
     "BL29": {
       "code": "BL29",
@@ -7668,7 +7821,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung 膂 Du"
     },
     "BL30": {
       "code": "BL30",
@@ -7716,7 +7870,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bạch Hoàn Du"
     },
     "BL31": {
       "code": "BL31",
@@ -7764,7 +7919,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thượng Liêu"
     },
     "BL32": {
       "code": "BL32",
@@ -7815,7 +7971,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thứ Liêu"
     },
     "BL33": {
       "code": "BL33",
@@ -7863,7 +8020,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Liêu"
     },
     "BL34": {
       "code": "BL34",
@@ -7911,7 +8069,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hạ Liêu"
     },
     "BL35": {
       "code": "BL35",
@@ -7959,7 +8118,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hội Dương"
     },
     "BL36": {
       "code": "BL36",
@@ -8007,7 +8167,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thừa Phù"
     },
     "BL37": {
       "code": "BL37",
@@ -8055,7 +8216,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ân Môn"
     },
     "BL38": {
       "code": "BL38",
@@ -8103,7 +8265,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phù Khích"
     },
     "BL39": {
       "code": "BL39",
@@ -8151,7 +8314,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ủy Dương"
     },
     "BL40": {
       "code": "BL40",
@@ -8204,7 +8368,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ủy Trung"
     },
     "BL41": {
       "code": "BL41",
@@ -8252,7 +8417,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phụ Phân"
     },
     "BL42": {
       "code": "BL42",
@@ -8300,7 +8466,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phách Hộ"
     },
     "BL43": {
       "code": "BL43",
@@ -8348,7 +8515,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cao Hoang"
     },
     "BL44": {
       "code": "BL44",
@@ -8396,7 +8564,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thần Đường"
     },
     "BL45": {
       "code": "BL45",
@@ -8444,7 +8613,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Y Hê"
     },
     "BL46": {
       "code": "BL46",
@@ -8492,7 +8662,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cách Quan"
     },
     "BL47": {
       "code": "BL47",
@@ -8540,7 +8711,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hồn Môn"
     },
     "BL48": {
       "code": "BL48",
@@ -8588,7 +8760,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dương 纲"
     },
     "BL49": {
       "code": "BL49",
@@ -8636,7 +8809,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ý Xá"
     },
     "BL50": {
       "code": "BL50",
@@ -8684,7 +8858,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Vị Thương"
     },
     "BL51": {
       "code": "BL51",
@@ -8732,7 +8907,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hoang Môn"
     },
     "BL52": {
       "code": "BL52",
@@ -8785,7 +8961,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chí Thất"
     },
     "BL53": {
       "code": "BL53",
@@ -8833,7 +9010,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bào Hoang"
     },
     "BL54": {
       "code": "BL54",
@@ -8881,7 +9059,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trật Biên"
     },
     "BL55": {
       "code": "BL55",
@@ -8929,7 +9108,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hợp Dương"
     },
     "BL56": {
       "code": "BL56",
@@ -8977,7 +9157,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thừa Cân"
     },
     "BL57": {
       "code": "BL57",
@@ -9026,7 +9207,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thừa Sơn"
     },
     "BL58": {
       "code": "BL58",
@@ -9074,7 +9256,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phi Dương"
     },
     "BL59": {
       "code": "BL59",
@@ -9122,7 +9305,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phụ Dương"
     },
     "BL60": {
       "code": "BL60",
@@ -9175,7 +9359,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Côn Lôn"
     },
     "BL61": {
       "code": "BL61",
@@ -9223,7 +9408,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bộc Tham"
     },
     "BL62": {
       "code": "BL62",
@@ -9277,7 +9463,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thân Mạch"
     },
     "BL63": {
       "code": "BL63",
@@ -9325,7 +9512,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kim Môn"
     },
     "BL64": {
       "code": "BL64",
@@ -9373,7 +9561,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kinh Cốt"
     },
     "BL65": {
       "code": "BL65",
@@ -9421,7 +9610,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thúc Cốt"
     },
     "BL66": {
       "code": "BL66",
@@ -9469,7 +9659,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Túc Thông Cốc"
     },
     "BL67": {
       "code": "BL67",
@@ -9524,7 +9715,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chí Âm"
     },
     "KI1": {
       "code": "KI1",
@@ -9576,7 +9768,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dũng Tuyền"
     },
     "KI2": {
       "code": "KI2",
@@ -9628,7 +9821,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhiên Cốc"
     },
     "KI3": {
       "code": "KI3",
@@ -9680,7 +9874,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thái Khê"
     },
     "KI4": {
       "code": "KI4",
@@ -9728,7 +9923,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Chung"
     },
     "KI5": {
       "code": "KI5",
@@ -9776,7 +9972,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thủy Tuyền"
     },
     "KI6": {
       "code": "KI6",
@@ -9827,7 +10024,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chiếu Hải"
     },
     "KI7": {
       "code": "KI7",
@@ -9877,7 +10075,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phục Lưu"
     },
     "KI8": {
       "code": "KI8",
@@ -9925,7 +10124,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Giao Tín"
     },
     "KI9": {
       "code": "KI9",
@@ -9973,7 +10173,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trúc Tân"
     },
     "KI10": {
       "code": "KI10",
@@ -10024,7 +10225,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Âm Cốc"
     },
     "KI11": {
       "code": "KI11",
@@ -10072,7 +10274,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hoành Cốt"
     },
     "KI12": {
       "code": "KI12",
@@ -10120,7 +10323,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Hách"
     },
     "KI13": {
       "code": "KI13",
@@ -10168,7 +10372,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khí Huyệt"
     },
     "KI14": {
       "code": "KI14",
@@ -10216,7 +10421,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tứ Mãn"
     },
     "KI15": {
       "code": "KI15",
@@ -10264,7 +10470,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung 注"
     },
     "KI16": {
       "code": "KI16",
@@ -10312,7 +10519,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hoang Du"
     },
     "KI17": {
       "code": "KI17",
@@ -10360,7 +10568,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thương Khúc"
     },
     "KI18": {
       "code": "KI18",
@@ -10408,7 +10617,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thạch Quan"
     },
     "KI19": {
       "code": "KI19",
@@ -10456,7 +10666,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Âm Đô"
     },
     "KI20": {
       "code": "KI20",
@@ -10504,7 +10715,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phúc Thông Cốc"
     },
     "KI21": {
       "code": "KI21",
@@ -10552,7 +10764,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "U Môn"
     },
     "KI22": {
       "code": "KI22",
@@ -10600,7 +10813,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bộ Lang"
     },
     "KI23": {
       "code": "KI23",
@@ -10648,7 +10862,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thần Phong"
     },
     "KI24": {
       "code": "KI24",
@@ -10696,7 +10911,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Linh Khư"
     },
     "KI25": {
       "code": "KI25",
@@ -10744,7 +10960,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thần Tàng"
     },
     "KI26": {
       "code": "KI26",
@@ -10792,7 +11009,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Húc Trung"
     },
     "KI27": {
       "code": "KI27",
@@ -10840,7 +11058,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Du Phủ"
     },
     "PC1": {
       "code": "PC1",
@@ -10892,7 +11111,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Trì"
     },
     "PC2": {
       "code": "PC2",
@@ -10943,7 +11163,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Tuyền"
     },
     "PC3": {
       "code": "PC3",
@@ -10994,7 +11215,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khúc Trạch"
     },
     "PC4": {
       "code": "PC4",
@@ -11046,7 +11268,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khích Môn"
     },
     "PC5": {
       "code": "PC5",
@@ -11100,7 +11323,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Gian Sử"
     },
     "PC6": {
       "code": "PC6",
@@ -11154,7 +11378,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nội Quan"
     },
     "PC7": {
       "code": "PC7",
@@ -11205,7 +11430,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Lăng"
     },
     "PC8": {
       "code": "PC8",
@@ -11256,7 +11482,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Lao Cung"
     },
     "PC9": {
       "code": "PC9",
@@ -11306,7 +11533,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Xung"
     },
     "TE1": {
       "code": "TE1",
@@ -11360,7 +11588,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Quan Xung"
     },
     "TE2": {
       "code": "TE2",
@@ -11408,7 +11637,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dịch Môn"
     },
     "TE3": {
       "code": "TE3",
@@ -11461,7 +11691,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Chử"
     },
     "TE4": {
       "code": "TE4",
@@ -11513,7 +11744,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dương Trì"
     },
     "TE5": {
       "code": "TE5",
@@ -11567,7 +11799,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngoại Quan"
     },
     "TE6": {
       "code": "TE6",
@@ -11620,7 +11853,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chi Câu"
     },
     "TE7": {
       "code": "TE7",
@@ -11668,7 +11902,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hội Tông"
     },
     "TE8": {
       "code": "TE8",
@@ -11716,7 +11951,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tam Dương Lạc"
     },
     "TE9": {
       "code": "TE9",
@@ -11764,7 +12000,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tứ Độc"
     },
     "TE10": {
       "code": "TE10",
@@ -11812,7 +12049,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Tỉnh"
     },
     "TE11": {
       "code": "TE11",
@@ -11860,7 +12098,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thanh Lãnh Uyên"
     },
     "TE12": {
       "code": "TE12",
@@ -11908,7 +12147,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tiêu Lạc"
     },
     "TE13": {
       "code": "TE13",
@@ -11956,7 +12196,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhu Hội"
     },
     "TE14": {
       "code": "TE14",
@@ -12004,7 +12245,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kiên Liêu"
     },
     "TE15": {
       "code": "TE15",
@@ -12052,7 +12294,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Liêu"
     },
     "TE16": {
       "code": "TE16",
@@ -12100,7 +12343,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Dũ"
     },
     "TE17": {
       "code": "TE17",
@@ -12152,7 +12396,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ế Phong"
     },
     "TE18": {
       "code": "TE18",
@@ -12200,7 +12445,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "瘛 Mạch"
     },
     "TE19": {
       "code": "TE19",
@@ -12248,7 +12494,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Lư Tức"
     },
     "TE20": {
       "code": "TE20",
@@ -12296,7 +12543,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Giác Tôn"
     },
     "TE21": {
       "code": "TE21",
@@ -12344,7 +12592,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhĩ Môn"
     },
     "TE22": {
       "code": "TE22",
@@ -12392,7 +12641,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhĩ Hòa Liêu"
     },
     "TE23": {
       "code": "TE23",
@@ -12445,7 +12695,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ty Trúc Không"
     },
     "GB1": {
       "code": "GB1",
@@ -12498,7 +12749,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đồng Tử Liêu"
     },
     "GB2": {
       "code": "GB2",
@@ -12547,7 +12799,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thính Hội"
     },
     "GB3": {
       "code": "GB3",
@@ -12595,7 +12848,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thượng Quan"
     },
     "GB4": {
       "code": "GB4",
@@ -12643,7 +12897,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hạm Yếm"
     },
     "GB5": {
       "code": "GB5",
@@ -12691,7 +12946,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Huyền Lư"
     },
     "GB6": {
       "code": "GB6",
@@ -12739,7 +12995,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Huyền Ly"
     },
     "GB7": {
       "code": "GB7",
@@ -12787,7 +13044,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khúc Mấn"
     },
     "GB8": {
       "code": "GB8",
@@ -12838,7 +13096,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Suất Cốc"
     },
     "GB9": {
       "code": "GB9",
@@ -12886,7 +13145,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Xung"
     },
     "GB10": {
       "code": "GB10",
@@ -12934,7 +13194,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phù Bạch"
     },
     "GB11": {
       "code": "GB11",
@@ -12982,7 +13243,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đầu Khiếu Âm"
     },
     "GB12": {
       "code": "GB12",
@@ -13030,7 +13292,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hoàn Cốt"
     },
     "GB13": {
       "code": "GB13",
@@ -13078,7 +13341,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bản Thần"
     },
     "GB14": {
       "code": "GB14",
@@ -13130,7 +13394,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dương Bạch"
     },
     "GB15": {
       "code": "GB15",
@@ -13178,7 +13443,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đầu Lâm Khấp"
     },
     "GB16": {
       "code": "GB16",
@@ -13226,7 +13492,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Mục Song"
     },
     "GB17": {
       "code": "GB17",
@@ -13274,7 +13541,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chính Dinh"
     },
     "GB18": {
       "code": "GB18",
@@ -13322,7 +13590,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thừa Linh"
     },
     "GB19": {
       "code": "GB19",
@@ -13370,7 +13639,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Não Không"
     },
     "GB20": {
       "code": "GB20",
@@ -13426,7 +13696,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phong Trì"
     },
     "GB21": {
       "code": "GB21",
@@ -13477,7 +13748,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kiên Tỉnh"
     },
     "GB22": {
       "code": "GB22",
@@ -13525,7 +13797,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Uyên Dịch"
     },
     "GB23": {
       "code": "GB23",
@@ -13573,7 +13846,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Triếp Cân"
     },
     "GB24": {
       "code": "GB24",
@@ -13621,7 +13895,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Nhật Nguyệt"
     },
     "GB25": {
       "code": "GB25",
@@ -13669,7 +13944,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kinh Môn"
     },
     "GB26": {
       "code": "GB26",
@@ -13717,7 +13993,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đới Mạch"
     },
     "GB27": {
       "code": "GB27",
@@ -13765,7 +14042,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngũ Xu"
     },
     "GB28": {
       "code": "GB28",
@@ -13813,7 +14091,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Duy Đạo"
     },
     "GB29": {
       "code": "GB29",
@@ -13861,7 +14140,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cư Liêu"
     },
     "GB30": {
       "code": "GB30",
@@ -13910,7 +14190,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hoàn Khiêu"
     },
     "GB31": {
       "code": "GB31",
@@ -13958,7 +14239,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phong Thị"
     },
     "GB32": {
       "code": "GB32",
@@ -14006,7 +14288,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Độc"
     },
     "GB33": {
       "code": "GB33",
@@ -14054,7 +14337,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tất Dương Quan"
     },
     "GB34": {
       "code": "GB34",
@@ -14106,7 +14390,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dương Lăng Tuyền"
     },
     "GB35": {
       "code": "GB35",
@@ -14154,7 +14439,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dương Giao"
     },
     "GB36": {
       "code": "GB36",
@@ -14202,7 +14488,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngoại Khâu"
     },
     "GB37": {
       "code": "GB37",
@@ -14250,7 +14537,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Quang Minh"
     },
     "GB38": {
       "code": "GB38",
@@ -14298,7 +14586,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Dương Phụ"
     },
     "GB39": {
       "code": "GB39",
@@ -14349,7 +14638,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Huyền Chung"
     },
     "GB40": {
       "code": "GB40",
@@ -14398,7 +14688,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khâu Khư"
     },
     "GB41": {
       "code": "GB41",
@@ -14451,7 +14742,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Túc Lâm Khấp"
     },
     "GB42": {
       "code": "GB42",
@@ -14499,7 +14791,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Địa Ngũ Hội"
     },
     "GB43": {
       "code": "GB43",
@@ -14553,7 +14846,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hiệp Khê"
     },
     "GB44": {
       "code": "GB44",
@@ -14601,7 +14895,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Túc Khiếu Âm"
     },
     "LR1": {
       "code": "LR1",
@@ -14649,7 +14944,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Đôn"
     },
     "LR2": {
       "code": "LR2",
@@ -14703,7 +14999,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hành Gian"
     },
     "LR3": {
       "code": "LR3",
@@ -14759,7 +15056,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thái Xung"
     },
     "LR4": {
       "code": "LR4",
@@ -14807,7 +15105,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Phong"
     },
     "LR5": {
       "code": "LR5",
@@ -14855,7 +15154,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Lễ Câu"
     },
     "LR6": {
       "code": "LR6",
@@ -14903,7 +15203,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Đô"
     },
     "LR7": {
       "code": "LR7",
@@ -14951,7 +15252,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tất Quan"
     },
     "LR8": {
       "code": "LR8",
@@ -15004,7 +15306,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khúc Tuyền"
     },
     "LR9": {
       "code": "LR9",
@@ -15052,7 +15355,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Âm Bao"
     },
     "LR10": {
       "code": "LR10",
@@ -15100,7 +15404,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Túc Ngũ Lý"
     },
     "LR11": {
       "code": "LR11",
@@ -15148,7 +15453,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Âm Liêm"
     },
     "LR12": {
       "code": "LR12",
@@ -15196,7 +15502,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cấp Mạch"
     },
     "LR13": {
       "code": "LR13",
@@ -15247,7 +15554,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chương Môn"
     },
     "LR14": {
       "code": "LR14",
@@ -15296,7 +15604,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kỳ Môn"
     },
     "GV1": {
       "code": "GV1",
@@ -15344,7 +15653,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trường Cường"
     },
     "GV2": {
       "code": "GV2",
@@ -15392,7 +15702,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Yêu Du"
     },
     "GV3": {
       "code": "GV3",
@@ -15444,7 +15755,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Yêu Dương Quan"
     },
     "GV4": {
       "code": "GV4",
@@ -15495,7 +15807,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Mệnh Môn"
     },
     "GV5": {
       "code": "GV5",
@@ -15543,7 +15856,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Huyền Xu"
     },
     "GV6": {
       "code": "GV6",
@@ -15591,7 +15905,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tích Trung"
     },
     "GV7": {
       "code": "GV7",
@@ -15639,7 +15954,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Xu"
     },
     "GV8": {
       "code": "GV8",
@@ -15687,7 +16003,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cân Súc"
     },
     "GV9": {
       "code": "GV9",
@@ -15735,7 +16052,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Chí Dương"
     },
     "GV10": {
       "code": "GV10",
@@ -15783,7 +16101,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Linh Đài"
     },
     "GV11": {
       "code": "GV11",
@@ -15831,7 +16150,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thần Đạo"
     },
     "GV12": {
       "code": "GV12",
@@ -15879,7 +16199,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thân Trụ"
     },
     "GV13": {
       "code": "GV13",
@@ -15927,7 +16248,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đào Đạo"
     },
     "GV14": {
       "code": "GV14",
@@ -15979,7 +16301,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đại Chùy"
     },
     "GV15": {
       "code": "GV15",
@@ -16033,7 +16356,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Á Môn"
     },
     "GV16": {
       "code": "GV16",
@@ -16087,7 +16411,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Phong Phủ"
     },
     "GV17": {
       "code": "GV17",
@@ -16135,7 +16460,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Não Hộ"
     },
     "GV18": {
       "code": "GV18",
@@ -16183,7 +16509,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cường Gian"
     },
     "GV19": {
       "code": "GV19",
@@ -16231,7 +16558,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hậu Đỉnh"
     },
     "GV20": {
       "code": "GV20",
@@ -16286,7 +16614,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Bách Hội"
     },
     "GV21": {
       "code": "GV21",
@@ -16334,7 +16663,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tiền Đỉnh"
     },
     "GV22": {
       "code": "GV22",
@@ -16382,7 +16712,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tín Hội"
     },
     "GV23": {
       "code": "GV23",
@@ -16432,7 +16763,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thượng Tinh"
     },
     "GV24": {
       "code": "GV24",
@@ -16486,7 +16818,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thần Đình"
     },
     "GV24+": {
       "code": "GV24+",
@@ -16534,7 +16867,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "印 Đường"
     },
     "GV25": {
       "code": "GV25",
@@ -16582,7 +16916,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tố Liêu"
     },
     "GV26": {
       "code": "GV26",
@@ -16630,7 +16965,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thủy Câu (Nhân Trung)"
     },
     "GV27": {
       "code": "GV27",
@@ -16678,7 +17014,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đoái Đoan"
     },
     "GV28": {
       "code": "GV28",
@@ -16726,7 +17063,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngân Giao"
     },
     "CV1": {
       "code": "CV1",
@@ -16774,7 +17112,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hội Âm"
     },
     "CV2": {
       "code": "CV2",
@@ -16826,7 +17165,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khúc Cốt"
     },
     "CV3": {
       "code": "CV3",
@@ -16877,7 +17217,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Cực"
     },
     "CV4": {
       "code": "CV4",
@@ -16929,7 +17270,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Quan Nguyên"
     },
     "CV5": {
       "code": "CV5",
@@ -16977,7 +17319,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thạch Môn"
     },
     "CV6": {
       "code": "CV6",
@@ -17028,7 +17371,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Khí Hải"
     },
     "CV7": {
       "code": "CV7",
@@ -17076,7 +17420,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Âm Giao"
     },
     "CV8": {
       "code": "CV8",
@@ -17125,7 +17470,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thần Khuyết"
     },
     "CV9": {
       "code": "CV9",
@@ -17173,7 +17519,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thủy Phân"
     },
     "CV10": {
       "code": "CV10",
@@ -17221,7 +17568,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hạ Quản"
     },
     "CV11": {
       "code": "CV11",
@@ -17269,7 +17617,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Kiến Lý"
     },
     "CV12": {
       "code": "CV12",
@@ -17321,7 +17670,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Quản"
     },
     "CV13": {
       "code": "CV13",
@@ -17369,7 +17719,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thượng Quản"
     },
     "CV14": {
       "code": "CV14",
@@ -17417,7 +17768,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cự Khuyết"
     },
     "CV15": {
       "code": "CV15",
@@ -17465,7 +17817,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Cưu Vĩ"
     },
     "CV16": {
       "code": "CV16",
@@ -17513,7 +17866,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Trung Đình"
     },
     "CV17": {
       "code": "CV17",
@@ -17565,7 +17919,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Đản Trung (Chiên Trung)"
     },
     "CV18": {
       "code": "CV18",
@@ -17613,7 +17968,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Ngọc Đường"
     },
     "CV19": {
       "code": "CV19",
@@ -17661,7 +18017,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tử Cung"
     },
     "CV20": {
       "code": "CV20",
@@ -17709,7 +18066,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Hoa Cái"
     },
     "CV21": {
       "code": "CV21",
@@ -17757,7 +18115,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Tuyền Cơ"
     },
     "CV22": {
       "code": "CV22",
@@ -17808,7 +18167,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thiên Đột"
     },
     "CV23": {
       "code": "CV23",
@@ -17860,7 +18220,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Liêm Tuyền"
     },
     "CV24": {
       "code": "CV24",
@@ -17908,7 +18269,8 @@
       "standards": [
         "WHO 2008",
         "GB/T 12346-2021"
-      ]
+      ],
+      "name_vi": "Thừa Tương"
     }
   },
   "meridians": {
@@ -72451,7 +72813,10 @@
             ]
           ]
         }
-      ]
+      ],
+      "name_vi": "Đường Kinh Sen Ittha (Đường kinh dọc cạnh cột sống bên trái)",
+      "name_zh": "左侧旁线 (Sen Ittha / 左脉督旁下肢循行)",
+      "name_en": "Sen Ittha (Left paramedian / ida spinal trajectory)"
     },
     {
       "id": "THAI-SEN-PINGKHLA",
@@ -72494,7 +72859,10 @@
             ]
           ]
         }
-      ]
+      ],
+      "name_vi": "Đường Kinh Sen Pingkhla (Đường kinh dọc cạnh cột sống bên phải)",
+      "name_zh": "右侧旁线 (Sen Pingkhla / 右脉督旁下肢循行)",
+      "name_en": "Sen Pingkhla (Right paramedian / pingala spinal trajectory)"
     },
     {
       "id": "THAI-SEN-SUMANA",
@@ -72532,7 +72900,10 @@
             ]
           ]
         }
-      ]
+      ],
+      "name_vi": "Đường Kinh Sen Sumana (Trục kinh trung tâm tủy sống)",
+      "name_zh": "中央中线 (Sen Sumana / 中脉脊椎中轴循行)",
+      "name_en": "Sen Sumana (Central midline / sushumna spinal axis)"
     }
   ],
   "dien_chan": [
@@ -72545,7 +72916,15 @@
         0.138
       ],
       "indication": "Parasympathetic regulation, cervical spine tension, glabella calmative reflex.",
-      "target_region": "neck"
+      "target_region": "neck",
+      "name_vi": "Huyệt 26 Diện Chẩn (Ấn đường / Phản chiếu cổ gáy - cột sống & an thần)",
+      "name_zh": "面针26号穴（印堂区 / 颈椎与副交感神经反射区）",
+      "name_en": "Point 26 (Glabella / Neck-Spine Reflex)",
+      "indications_i18n": {
+        "en": "Parasympathetic regulation, cervical spine tension, glabella calmative reflex.",
+        "zh": "调节副交感神经，缓解颈椎痉挛紧张，印堂镇静安神反射。",
+        "vi": "Điều hòa thần kinh phó giao cảm, giải tỏa căng cứng cột sống cổ, an thần định tâm."
+      }
     },
     {
       "code": "DIEN-19",
@@ -72556,7 +72935,15 @@
         0.13
       ],
       "indication": "Sympathetic tonification, postural respiratory regulation, spinal erectness.",
-      "target_region": "low_back"
+      "target_region": "low_back",
+      "name_vi": "Huyệt 19 Diện Chẩn (Đầu trên rãnh nhân trung / Thần kinh thực vật & phản chiếu cột sống)",
+      "name_zh": "面针19号穴（人中沟上端 / 自律神经与腰椎反射区）",
+      "name_en": "Point 19 (Subnasal Philtrum / Autonomic & Lumbar Reflex)",
+      "indications_i18n": {
+        "en": "Sympathetic tonification, postural respiratory regulation, spinal erectness.",
+        "zh": "交感神经兴奋性调节，呼吸姿态调控，腰脊伸展反射。",
+        "vi": "Hưng phấn thần kinh giao cảm, hỗ trợ hô hấp, tăng trương lực cơ dựng sống thắt lưng."
+      }
     },
     {
       "code": "DIEN-34",
@@ -72567,7 +72954,15 @@
         0.135
       ],
       "indication": "Shoulder tension release, trapezius spasm reflex projection.",
-      "target_region": "shoulder"
+      "target_region": "shoulder",
+      "name_vi": "Huyệt 34 Diện Chẩn (Gờ trên đầu mày / Phản chiếu khớp vai & giải tỏa cơ thang)",
+      "name_zh": "面针34号穴（眉头上缘 / 肩胛与斜方肌舒缓反射区）",
+      "name_en": "Point 34 (Above Medial Brow / Shoulder Relaxation Reflex)",
+      "indications_i18n": {
+        "en": "Shoulder tension release, trapezius spasm reflex projection.",
+        "zh": "肩胛肌张力释放，斜方肌痉挛面部投射舒缓区。",
+        "vi": "Giảm co cứng khớp vai, giải phóng điểm co thắt cơ thang qua phản xạ mặt."
+      }
     },
     {
       "code": "DIEN-61",
@@ -72578,7 +72973,15 @@
         0.125
       ],
       "indication": "Pain modulation, endorphinergic facial reflex for cervical-thoracic junction.",
-      "target_region": "neck"
+      "target_region": "neck",
+      "name_vi": "Huyệt 61 Diện Chẩn (Hốc cánh mũi / Điều hòa cơ hoành - giảm đau vùng cổ ngực)",
+      "name_zh": "面针61号穴（鼻翼软骨沟 / 膈神经与颈胸交界抗痛点）",
+      "name_en": "Point 61 (Nasal Flare / Diaphragm-Cervical Angle & Pain Modulation)",
+      "indications_i18n": {
+        "en": "Pain modulation, endorphinergic facial reflex for cervical-thoracic junction.",
+        "zh": "内源性镇痛调节，颈胸神经根交界区反射性松解。",
+        "vi": "Kích hoạt giảm đau nội sinh, giải tỏa chèn ép rễ thần kinh vùng cổ ngực."
+      }
     }
   ]
 }
