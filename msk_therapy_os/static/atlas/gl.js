@@ -308,8 +308,9 @@ class AtlasRenderer {
       gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
     }
 
-    // Pass 2: Skin mesh (Surface Mode or Musculoskeletal with Surface Reference Envelope)
-    const drawSkin = (mode === 'surface' && this.skinOpacity > 0) ||
+    // Pass 2: Skin mesh (Surface Mode, Comparative Mode, or Musculoskeletal with Surface Reference Envelope)
+    const drawSkin = (mode === 'surface' && this.skinOpacity > 0.005) ||
+                     (mode === 'comparative' && this.skinOpacity > 0.005) ||
                      (mode === 'musculoskeletal' && this.skinReferenceOn);
     const skinAlpha = mode === 'musculoskeletal' ? 0.14 : this.skinOpacity;
 

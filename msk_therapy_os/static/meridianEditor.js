@@ -19,7 +19,7 @@
         ensureModal();
         populatePointSelect();
         if (allPoints['LI4']) {
-          loadPointIntoEditor('LI4');
+          loadPointIntoEditor('LI4', false);
         }
       }
     } catch (err) {
@@ -302,7 +302,7 @@
     }
   }
 
-  function loadPointIntoEditor(code) {
+  function loadPointIntoEditor(code, notifyAtlas = true) {
     if (!allPoints[code]) return;
     currentPointCode = code;
     const pt = allPoints[code];
@@ -337,8 +337,10 @@
     document.getElementById('studioTuina').textContent = `Method: ${pt.tuina_method || 'N/A'}`;
     document.getElementById('studioCaution').textContent = `Caution: ${(pt.cautions || []).join(', ') || 'Standard precautions.'}`;
 
-    // Select in 3D Atlas
-    if (window.atlasCommand) {
+    // Select in 3D Atlas only if requested and modal is active
+    const modalEl = document.getElementById('meridianStudioModal');
+    const isModalActive = modalEl && modalEl.style.display === 'flex';
+    if (notifyAtlas && isModalActive && window.atlasCommand) {
       window.atlasCommand('select_acupoint', { code });
     }
   }

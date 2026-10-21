@@ -156,6 +156,13 @@
     renderer.selected.fill(0);
     $('#mirrorToggleRow').hidden = !atlas.elements.some(e => e.m);
 
+    // Activate skin layer when starting in surface mode (default)
+    if (renderer.renderMode === 'surface') {
+      catOn['skin'] = true;
+      renderer.setSkinOpacity(0.78);
+    }
+    applyVisibility();
+
     // MSK-Therapy-OS Integration Bridge
     window._msk_bridge_installed = true;
 
@@ -253,16 +260,37 @@
       } else if (action === 'set_render_mode') {
         setRenderMode(ev.data.mode);
       } else if (action === 'set_skin_opacity') {
-        if (renderer) renderer.setSkinOpacity(ev.data.opacity);
+        const alpha = Math.max(0.0, Math.min(1.0, parseFloat(ev.data.opacity)));
+        if (renderer) renderer.setSkinOpacity(alpha);
+        // Explicitly activate skin category in scene graph so mesh is submitted to WebGL
+        catOn['skin'] = alpha > 0.005;
+        applyVisibility();
         if (window.__meridiansDebug && window.__meridiansDebug.render) window.__meridiansDebug.render();
+        if (window.parent && window.parent !== window && ev.data.requestId) {
+          window.parent.postMessage({
+            type: 'msk_ack',
+            requestId: ev.data.requestId,
+            action: 'set_skin_opacity',
+            opacity: alpha,
+            skinVisible: catOn['skin']
+          }, '*');
+        }
       } else if (action === 'set_filter_meridian') {
         if (window.__meridiansDebug && window.__meridiansDebug.setFilterMeridian) {
-          window.__meridiansDebug.setFilterMeridian(ev.data.meridian);
+          window.__meridiansDebug.setFilterMeridian(ev.data.meridian, ev.data.requestId);
         }
       } else if (action === 'toggle_surface_reference') {
         if (renderer) renderer.setSkinReference(ev.data.enabled);
         if (window.__meridiansDebug && window.__meridiansDebug.setSurfaceReference) {
           window.__meridiansDebug.setSurfaceReference(ev.data.enabled);
+        }
+        if (window.parent && window.parent !== window && ev.data.requestId) {
+          window.parent.postMessage({
+            type: 'msk_ack',
+            requestId: ev.data.requestId,
+            action: 'toggle_surface_reference',
+            enabled: ev.data.enabled
+          }, '*');
         }
 
       } else if (action === 'set_view' && preset && renderer) {
