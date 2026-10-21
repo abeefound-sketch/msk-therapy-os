@@ -1,0 +1,13 @@
+{
+  "application": "tcm3d",
+  "url": "http://127.0.0.1:3002",
+  "gpu_renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "gpu_vendor": "Google Inc. (Google)",
+  "js_heap_used_mb": 35.57,
+  "js_heap_total_mb": 64.85,
+  "page_load_ms": 2179.45,
+  "fps_idle": 3,
+  "fps_interaction": 14,
+  "screenshot": "evidence_tcm3d.png",
+  "measured_at": "2026-10-21T04:43:15Z"
+}

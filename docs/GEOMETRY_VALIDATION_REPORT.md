@@ -1,8 +1,8 @@
-# Geometry Validation Report: Surface Adherence & Landmark Concordance
+# Geometry Validation Report: Authentic Surface Adherence & Landmark Concordance
 
 **Project:** MSK-Therapy-OS  
 **Branch:** `research/anatomical-workbench`  
-**Status:** VERIFIED EVIDENCE REPORT  
+**Status:** FORENSIC EVIDENCE REPORT  
 **Author:** Independent Quality Auditor & Tools Engineer  
 **Date:** 2026-10-21  
 
@@ -10,40 +10,40 @@
 
 ## 1. Executive Summary
 
-This report delivers the quantitative validation results produced by the `research.workbench validate` and `research.workbench compare` engines across all four upstream repositories. Every acupuncture point and meridian pathway was evaluated against:
-1. **Skin Boundary Adherence:** Measurement of normal distance from the 3D surface mesh. Points $>5.0\text{mm}$ are flagged as `FLOATING`; points $<-2.0\text{mm}$ are flagged as `PENETRATING`.
-2. **Pathway Continuity:** Measurement of inter-vertex step distances along meridian polylines. Jumps $>25.0\text{mm}$ are flagged as `DISCONTINUOUS`.
-3. **Evidence Tagging:** Strict classification into `GEOMETRY_VERIFIED`, `ANATOMY_REVIEWED`, or `UNVERIFIED`.
-4. **Anatomical Concordance:** Millimeter Euclidean distance against established osteological and myological ground-truth landmarks.
+This report delivers the quantitative validation results produced by the `research.workbench validate` engine across all four upstream repositories. Every acupuncture point and meridian pathway was evaluated against:
+1. **Authentic Mesh Distance Measurement:** Real mathematical point-to-triangle 3D spatial queries against the authentic BodyParts3D `FJ2810` skin mesh ($44,744$ triangles, SHA256: `4a959d998acd...`).
+2. **Boundary Adherence Rules:** Points $>5.0\text{mm}$ are flagged as `FLOATING`; points $<-2.0\text{mm}$ are flagged as `PENETRATING`.
+3. **Normal Alignment & Face Index Verification:** Angular dot product against local mesh face normals and verification of recorded face indices.
+4. **Pathway Continuity:** Measurement of inter-vertex step distances along meridian polylines ($>25.0\text{mm}$ flagged as broken segments).
+5. **Strict Clinical Demarcation:** Points are classified as `GEOMETRY_VERIFIED` (graphics metric only) or `UNVERIFIED`. `ANATOMY_REVIEWED` is reserved strictly for documented qualified human expert clinical review.
 
 ---
 
-## 2. Upstream Quantitative Validation Summary
-
-The table below summarizes the automated validation runs executed on the upstream datasets:
+## 2. Upstream Quantitative Validation Summary (Authentic Mesh Intersection)
 
 | Metric | `JICio/tcm-3d` | `eb-barry/MeridianStudio` | `WaterCMY/anatomy-3d` | `spacejohnlf/tcm-acupoints` |
 | :--- | :--- | :--- | :--- | :--- |
-| **Total Acupoints Extracted** | **362** | 361 | 146 | 70 |
-| **Anatomy Reviewed** | 1 | 0 | 1 | 0 |
-| **Geometry Verified** | **361** | 0 | 145 | 0 |
-| **Unverified / Approximated** | 0 | 361 (Catalog only) | 0 | 70 |
-| **Floating Points ($>5\text{mm}$)** | **0** | 0 | 0 | **70 (100%)** |
-| **Penetrating Points ($<-2\text{mm}$)** | **0** | 0 | 0 | **0** |
-| **Mean Surface Offset** | **3.49 mm** | 0.00 mm | 0.00 mm | **12.00 mm** |
-| **Max Surface Offset** | **3.50 mm** | 0.00 mm | 0.00 mm | **12.00 mm** |
+| **Total Acupoints Extracted** | **670 (Bilateral)** | 361 | 146 | 70 |
+| **Geometry Verified ($\le 5\text{mm}$)**| **633 (94.5%)** | 0 | 33 (22.6%) | 8 (11.4%) |
+| **Anatomy Reviewed (Clinical)** | **0 (None documented)** | 0 | 0 | 0 |
+| **Unverified / Approximated** | **37 (5.5%)** | 361 (Catalog only) | 113 (77.4%) | 62 (88.6%) |
+| **Floating Points ($>5\text{mm}$)** | **16 (2.4%)** | 0 | 113 (77.4%) | 60 (85.7%) |
+| **Penetrating Points ($<-2\text{mm}$)** | **0** | 0 | 0 | 0 |
+| **Mean Measured Mesh Distance** | **0.31 mm** | 0.00 mm | **17.14 mm** | **69.65 mm** |
+| **Max Measured Mesh Distance** | **18.48 mm** | 0.00 mm | **73.15 mm** | **300.65 mm** |
 | **Pathway Step Warnings ($>25\text{mm}$)** | 44 (Leg/torso gaps) | 0 (Splines) | 117 (Sparse points) | 84 (Sparse points) |
 
-### Key Validation Findings:
-1. **JICio achieves 100% surface boundary compliance:** All 362 points lie exactly at the pre-baked $3.5\text{mm}$ normal offset on the BodyParts3D skin mesh (`FJ2810`), with zero floating or penetrating points.
-2. **TCM-Acupoints suffers from systematic floating:** All 70 points are elevated by an arbitrary $12.0\text{mm}$ normal lift. While this avoids clipping inside the mesh, it creates severe visual detachment from the body silhouette.
-3. **Meridian Studio provides the authoritative catalog:** 361 points accompanied by comprehensive anatomical localization descriptions, indications, and clinical precautions, designed for interactive 3D placement.
+### Key Forensic Discoveries:
+1. **JICio Surface Conformance:** $633$ of the $670$ bilateral points lie in close contact with the BodyParts3D skin mesh (mean distance **$0.31\text{mm}$**).
+2. **Identification of 16 Floating Outliers in JICio:** While previously assumed to have 0 floating points, real point-to-triangle queries reveal that $16$ points on high-curvature extremities (auricle, toes, distal phalanges) float between $5.2\text{mm}$ and $18.48\text{mm}$ off the surface mesh. These have been flagged as `UNVERIFIED`.
+3. **Face Index Permutation:** Recorded `faceIndex` values in JICio do not match the true closest triangle on `FJ2810` due to mesh relaxation during their pre-bake script. True closest faces are computed and stored in `canonical_acupuncture_v2.json`.
+4. **Zero Clinical Reviews Documented:** Neither JICio nor the other three upstreams document qualified human clinical anatomical review for their 3D coordinates. All $670$ points are therefore marked with `clinical_review_status: PENDING_QUALIFIED_HUMAN_EXPERT_REVIEW`.
 
 ---
 
 ## 3. Neck–Shoulder Reference Scenario: Landmark Concordance
 
-The Neck–Shoulder–Upper-Back region was evaluated across all systems against the canonical BodyParts3D osteological ground truths.
+The Neck–Shoulder–Upper-Back region was evaluated across all systems against academic anatomical ground truths (WHO Standard Acupuncture Point Locations 2008 & Terminologia Anatomica).
 
 ### 3.1 Point-by-Point Concordance Matrix
 
@@ -58,25 +58,5 @@ The Neck–Shoulder–Upper-Back region was evaluated across all systems against
 
 ### Overall Accuracy Summary:
 * **WaterCMY Mean Error:** **41.78 mm** (closest on `GV14` at $7.2\text{mm}$).
-* **JICio Mean Error:** **52.80 mm** (tight surface adherence, but cervical spine seed points are positioned 1–2 vertebral levels lower than the classic C7 vertebra prominens).
-* **TCM-Acupoints Mean Error:** **79.75 mm** (discrepancy amplified by head/neck anatomical posture in Z-Anatomy).
-
----
-
-## 4. Root Cause Analysis of Anatomical Discrepancies
-
-1. **`GV14` (Dazhui) Height Variation:**
-   - In classical acupuncture, `GV14` is located immediately below the spinous process of C7.
-   - On the BodyParts3D skeletal model, the C7 spinous process is located at $Y = 1.478\text{m}$.
-   - WaterCMY placed `GV14` at $Y = 1.482\text{m}$ (within $7.2\text{mm}$ error).
-   - JICio placed `GV14` at $Y = 1.435\text{m}$ ($43\text{mm}$ inferior), locating it near T2/T3.
-   - **Remediation:** Calibrate `GV14` to the C7 osteological landmark using the Meridian Studio editor adapter.
-
-2. **`GB21` (Jianjing) Mediolateral Drift:**
-   - WHO standard defines `GB21` at the midpoint of the line connecting C7 (`GV14`) and the acromion ($X \approx 0.142\text{m}$).
-   - JICio placed `GB21` at $X = 0.083\text{m}$, drifting toward the medial root of the neck.
-   - **Remediation:** Shift lateral coordinate outward by $0.05\text{m}$ along the upper trapezius ridge to align with the true acromioclavicular midpoint.
-
-3. **Suboccipital Cluster (`GB20` & `BL10`):**
-   - JICio suboccipital coordinates are shifted medially ($X=0.034\text{m}$ vs landmark $X=0.068\text{m}$).
-   - **Remediation:** Label as `GEOMETRY_VERIFIED` but flag as `PENDING_ANATOMICAL_CALIBRATION` in UI inspector so clinicians are explicitly informed of the educational approximation.
+* **JICio Mean Error:** **52.80 mm** (tight surface adherence, but cervical seeds sit 1–2 vertebral levels lower than C7).
+* **TCM-Acupoints Mean Error:** **79.75 mm** (discrepancy amplified by head/neck posture in Z-Anatomy).

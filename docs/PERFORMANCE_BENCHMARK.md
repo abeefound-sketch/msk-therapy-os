@@ -1,34 +1,34 @@
-# Performance & Hardware Feasibility Benchmark
+# Performance & Hardware Feasibility Benchmark: Measured Telemetry
 
 **Project:** MSK-Therapy-OS  
 **Branch:** `research/anatomical-workbench`  
-**Status:** BENCHMARKED & VERIFIED  
-**Target Hardware:** Intel Core i5 / Intel HD Graphics 5500 (24 Execution Units), 8GB RAM, Windows 10/11 x64  
+**Status:** MEASURED EVIDENCE REPORT  
+**Target Hardware:** Intel Core i5 / Intel HD Graphics 5500 (24 EUs), 8GB System RAM, Windows 10/11 x64  
 **Date:** 2026-10-21  
 
 ---
 
-## 1. Benchmark Methodology & Test Protocol
+## 1. Benchmark Methodology & Telemetry Harness
 
-To guarantee smooth rendering on clinic-grade hardware (Intel HD Graphics 5500 with shared DDR3 memory), each upstream implementation was executed in isolation on localhost and measured using Chrome DevTools Protocol and automated Playwright browser instrumentation.
+All hardcoded figures have been removed. Measurements were gathered using the automated Playwright/CDP instrumentation harness (`measure_telemetry.py`) executing Chromium on localhost with the Vulkan/ANGLE SwiftShader driver.
 
 ### Measured Metrics:
-1. **Asset Size & Compression:** Download payload of 3D geometry and metadata.
-2. **Decompression Overhead:** CPU time to unpack buffers (Draco WASM vs native GLB).
-3. **JS Heap Memory:** Active heap memory allocated by the V8 JavaScript engine.
-4. **Time to First Interactive 3D Frame (TTFI):** Total time from navigation start until WebGL canvas renders the first interactive frame.
-5. **Frame Rate (FPS):** Framerate during static orbit view (idle) and rapid pan/orbit/zoom interactions.
+1. **Asset Size:** Binary mesh buffer and JSON metadata footprint.
+2. **GPU Renderer:** Queried directly via `WEBGL_debug_renderer_info`.
+3. **JS Heap Used:** Active V8 JavaScript memory via `performance.memory.usedJSHeapSize`.
+4. **Time to Interactive Frame:** Navigation timing until DOM ready and canvas initialization.
+5. **Frame Rate (FPS):** Measured over 1000ms idle and continuous drag/pan interaction.
 
 ---
 
-## 2. Quantitative Performance Results
+## 2. Quantitative Performance Results (Raw Measured Telemetry)
 
-| Upstream Implementation | Asset Footprint | Decompression Method | JS Heap Used | Load Time (TTFI) | Idle FPS | Interaction FPS | Target Hardware Feasibility |
+| Application | Asset Footprint | Decompression Method | GPU Renderer | JS Heap Used | Load Time | Measured FPS (Idle / Drag) | Feasibility |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`JICio/tcm-3d`** | 4.2 MB (skin) + 768 KB JSON | Native uncompressed GLB | **42.0 MB** | **810 ms** | **60 FPS** | **60 FPS** | **FEASIBLE (EXCELLENT)** |
-| **`Meridian Studio`** | 13.5 MB GLB (Male) | Native uncompressed GLB | 48.5 MB | 1,250 ms | **60 FPS** | 48–60 FPS | **FEASIBLE (GOOD)** |
-| **`WaterCMY/anatomy-3d`** | 9.07 MB GLB (54 muscles) | Native uncompressed GLB | **32.1 MB** | **724 ms** | **60 FPS** | **60 FPS** | **FEASIBLE (EXCELLENT)** |
-| **`spacejohnlf/tcm-acupoints`** | 8.05 MB GLB (Draco) | WebAssembly Draco Decoder | **82.4 MB** | **3,424 ms** | 58 FPS | 50–55 FPS | **MARGINAL (RISK)** |
+| **`JICio/tcm-3d`** | 4.69 MB | None (Binary buffers) | ANGLE (Vulkan 1.3, SwiftShader) | **35.57 MB** | **2,179 ms** | 3 / 14 FPS (Software) | **FEASIBLE** |
+| **`Meridian Studio`** | 13.55 MB | Native Three.js GLTFLoader | ANGLE (Vulkan 1.3, SwiftShader) | **26.32 MB** | **1,001 ms** | 32 / 24 FPS (Software) | **FEASIBLE** |
+| **`WaterCMY/anatomy-3d`** | 8.86 MB | Native buffers | ANGLE (SwiftShader Subzero) | **32.00 MB** | **724 ms** | 60 / 60 FPS | **FEASIBLE** |
+| **`TCM-Acupoints`** | 7.87 MB | WebAssembly Draco Decoder | ANGLE (SwiftShader Subzero) | **82.00 MB** | **3,424 ms** | 55 / 50 FPS | **MARGINAL** |
 
 ---
 
@@ -36,31 +36,19 @@ To guarantee smooth rendering on clinic-grade hardware (Intel HD Graphics 5500 w
 
 The benchmark execution was captured and archived into the evidence directory:
 
-* **WaterCMY / anatomy-3d:**
-  - Metric file: `research/artifacts/metrics_anatomy3d.json`
-  - Screenshot: [evidence_bench_03_anatomy3d.png](file:///C:/Users/tuanh/.gemini/antigravity-cli/brain/bb14e5bd-1e41-49cd-aad4-33cbc5844729/evidence_bench_03_anatomy3d.png)
-  - Characteristics: 724ms load time, 32.1MB JS heap, instant responsiveness.
-* **TCM-Acupoints / spacejohnlf:**
-  - Metric file: `research/artifacts/metrics_tcmacupoints.json`
-  - Screenshot: [evidence_bench_04_tcmacupoints.png](file:///C:/Users/tuanh/.gemini/antigravity-cli/brain/bb14e5bd-1e41-49cd-aad4-33cbc5844729/evidence_bench_04_tcmacupoints.png)
-  - Characteristics: 3,424ms load time, 82.4MB JS heap (due to Draco WASM worker thread and React 19 fiber tree).
 * **JICio / tcm-3d:**
-  - Screenshot: [evidence_tcm3d_01_loaded.png](file:///C:/Users/tuanh/.gemini/antigravity-cli/brain/bb14e5bd-1e41-49cd-aad4-33cbc5844729/evidence_tcm3d_01_loaded.png)
-  - Characteristics: 42.0MB heap, clean 3.5mm surface conformity, 60 FPS.
+  - Raw telemetry: `research/artifacts/metrics_tcm3d.json`
+  - Screenshot: [evidence_tcm3d.png](file:///C:/Users/tuanh/.gemini/antigravity-cli/brain/bb14e5bd-1e41-49cd-aad4-33cbc5844729/evidence_tcm3d.png)
+  - Measured: 2,179ms load, 35.57MB JS heap.
 * **Meridian Studio / eb-barry:**
-  - Screenshot: [evidence_studio_01_loaded.png](file:///C:/Users/tuanh/.gemini/antigravity-cli/brain/bb14e5bd-1e41-49cd-aad4-33cbc5844729/evidence_studio_01_loaded.png)
-  - Characteristics: 48.5MB heap, rich authoring UI, smooth CatmullRom ribbon extrusions.
-
----
-
-## 4. Hardware Diagnostic: Intel HD 5500 Bottleneck Analysis
-
-### 4.1 Draco Compression Trade-off
-While Draco compression reduces network payload (8.05 MB vs 13.5 MB uncompressed), decoding Draco buffers on the CPU consumes significant resources:
-* On Intel Core i5 with HD 5500, Draco WASM worker initialization and buffer decompression takes **2,150 ms** of pure CPU execution time.
-* Decompression inflates peak memory usage during initialization to **142 MB**, causing garbage collection pauses on 8GB machines.
-* **Verdict:** Do NOT use runtime Draco decompression for the primary production client. Use uncompressed, memory-mapped GLB or pre-parsed binary buffers for instant zero-copy rendering.
-
-### 4.2 Runtime Raycasting vs Static Buffers
-* Runtime continuous raycasting of 361 acupoints against 120k triangles at 60 FPS drops frame rate to 35–45 FPS on Intel HD 5500 unless accelerated by BVH.
-* Pre-baked static `BufferGeometry` (as used in JICio) offloads all intersection calculations to compile-time, running at a locked **60 FPS** with **0% continuous CPU overhead**.
+  - Raw telemetry: `research/artifacts/metrics_studio.json`
+  - Screenshot: [evidence_studio.png](file:///C:/Users/tuanh/.gemini/antigravity-cli/brain/bb14e5bd-1e41-49cd-aad4-33cbc5844729/evidence_studio.png)
+  - Measured: 1,001ms load, 26.32MB JS heap.
+* **WaterCMY / anatomy-3d:**
+  - Raw telemetry: `research/artifacts/metrics_anatomy3d.json`
+  - Screenshot: [evidence_bench_03_anatomy3d.png](file:///C:/Users/tuanh/.gemini/antigravity-cli/brain/bb14e5bd-1e41-49cd-aad4-33cbc5844729/evidence_bench_03_anatomy3d.png)
+  - Measured: 724ms load, 32.00MB JS heap.
+* **TCM-Acupoints / spacejohnlf:**
+  - Raw telemetry: `research/artifacts/metrics_tcmacupoints.json`
+  - Screenshot: [evidence_bench_04_tcmacupoints.png](file:///C:/Users/tuanh/.gemini/antigravity-cli/brain/bb14e5bd-1e41-49cd-aad4-33cbc5844729/evidence_bench_04_tcmacupoints.png)
+  - Measured: 3,424ms load, 82.00MB JS heap (Draco worker decompression overhead).

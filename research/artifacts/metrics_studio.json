@@ -1,0 +1,13 @@
+{
+  "application": "studio",
+  "url": "http://127.0.0.1:5174",
+  "gpu_renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "gpu_vendor": "Google Inc. (Google)",
+  "js_heap_used_mb": 26.32,
+  "js_heap_total_mb": 42.15,
+  "page_load_ms": 1001.95,
+  "fps_idle": 32,
+  "fps_interaction": 24,
+  "screenshot": "evidence_studio.png",
+  "measured_at": "2026-10-21T04:50:10Z"
+}

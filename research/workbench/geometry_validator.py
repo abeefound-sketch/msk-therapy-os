@@ -1,12 +1,14 @@
-"""Geometry Validator for evaluating mesh distance, surface adherence, and evidence tags."""
+"""Authentic Geometry Validator measuring point-to-triangle distance against BodyParts3D mesh."""
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from .adapters.base import BaseAdapter, NormalizedMeridian, NormalizedPoint
 from .coordinate_registry import CoordinateRegistry
+from .mesh_geometry import BodyPartsSkinMesh
 
 
 @dataclass
@@ -16,9 +18,15 @@ class PointValidationResult:
     source: str
     canonical_coords: List[float]
     normal: Optional[List[float]]
-    surface_distance_mm: float
-    is_floating: bool  # > 5.0 mm above surface
-    is_penetrating: bool  # < -2.0 mm below surface
+    measured_surface_distance_mm: float
+    signed_distance_mm: float
+    closest_face_index: int
+    mesh_normal: List[float]
+    normal_alignment_dot: Optional[float]
+    is_floating: bool  # > 5.0 mm
+    is_penetrating: bool  # < -2.0 mm
+    is_normal_inverted: bool  # dot < 0.0
+    recorded_face_match: Optional[bool]
     discontinuity_warning: Optional[str]
     evidence_tag: str  # GEOMETRY_VERIFIED | ANATOMY_REVIEWED | UNVERIFIED
     details: str
@@ -33,72 +41,92 @@ class SourceValidationSummary:
     unverified_count: int
     floating_count: int
     penetrating_count: int
-    mean_surface_offset_mm: float
-    max_surface_offset_mm: float
+    mean_measured_distance_mm: float
+    max_measured_distance_mm: float
     point_results: List[PointValidationResult]
     path_discontinuities: List[Dict[str, Any]] = field(default_factory=list)
 
 
 class GeometryValidator:
-    """Validator measuring skin clearance, ray intersection errors, and classifying evidence."""
+    """Validator performing real mathematical point-to-triangle distance queries against FJ2810 mesh."""
 
     MAX_SURFACE_TOLERANCE_MM = 5.0
     MIN_SURFACE_TOLERANCE_MM = -2.0
     MAX_PATH_STEP_MM = 25.0
 
-    def __init__(self):
-        pass
+    def __init__(self, mesh: Optional[BodyPartsSkinMesh] = None):
+        if mesh is None:
+            try:
+                self.mesh = BodyPartsSkinMesh()
+            except Exception:
+                self.mesh = None
+        else:
+            self.mesh = mesh
 
     def validate_point(self, point: NormalizedPoint, landmark: Optional[Any] = None) -> PointValidationResult:
         coords = point.canonical_position
         has_coords = any(abs(c) > 0.0001 for c in coords)
 
-        if not has_coords:
+        if not has_coords or self.mesh is None:
             return PointValidationResult(
                 code=point.code,
                 name_zh=point.name_zh,
                 source=point.source,
                 canonical_coords=coords,
                 normal=point.normal,
-                surface_distance_mm=0.0,
+                measured_surface_distance_mm=0.0,
+                signed_distance_mm=0.0,
+                closest_face_index=-1,
+                mesh_normal=[0.0, 0.0, 1.0],
+                normal_alignment_dot=None,
                 is_floating=False,
                 is_penetrating=False,
+                is_normal_inverted=False,
+                recorded_face_match=None,
                 discontinuity_warning=None,
                 evidence_tag="UNVERIFIED",
-                details="No 3D coordinates authored in catalog entry.",
+                details="No 3D coordinates authored or mesh unavailable.",
             )
 
-        offset = point.surface_distance_mm
-        is_floating = offset > self.MAX_SURFACE_TOLERANCE_MM
-        is_penetrating = offset < self.MIN_SURFACE_TOLERANCE_MM
+        recorded_face = point.extra.get("face_index")
+        query_res = self.mesh.query_point(coords, point.normal, recorded_face)
 
-        # Evidence classification
-        details_list = []
-        if landmark is not None:
-            dist_to_lm = CoordinateRegistry.euclidean_distance(coords, landmark.canonical_coords)
-            details_list.append(f"Landmark dist: {dist_to_lm:.1f}mm ({landmark.skeletal_anchor})")
-            if dist_to_lm <= 20.0 and not is_floating and not is_penetrating:
-                tag = "ANATOMY_REVIEWED"
-            elif not is_floating and not is_penetrating:
-                tag = "GEOMETRY_VERIFIED"
-            else:
-                tag = "UNVERIFIED"
-                if is_floating:
-                    details_list.append(f"Floating ({offset:.1f}mm > {self.MAX_SURFACE_TOLERANCE_MM}mm)")
-                if is_penetrating:
-                    details_list.append(f"Penetrating ({offset:.1f}mm < {self.MIN_SURFACE_TOLERANCE_MM}mm)")
-        else:
-            if not is_floating and not is_penetrating:
-                tag = "GEOMETRY_VERIFIED"
-            else:
-                tag = "UNVERIFIED"
-                if is_floating:
-                    details_list.append(f"Floating ({offset:.1f}mm)")
-                if is_penetrating:
-                    details_list.append(f"Penetrating ({offset:.1f}mm)")
+        dist_mm = query_res["distance_mm"]
+        signed_mm = query_res["signed_distance_mm"]
+        norm_dot = query_res["normal_alignment_dot"]
+        closest_face = query_res["closest_face_index"]
+        mesh_norm = query_res["mesh_face_normal"]
+        face_match = query_res["recorded_face_match"]
 
-        if point.status == "ANATOMY_REVIEWED":
+        is_floating = dist_mm > self.MAX_SURFACE_TOLERANCE_MM
+        is_penetrating = signed_mm < self.MIN_SURFACE_TOLERANCE_MM
+        is_inverted = (norm_dot is not None and norm_dot < 0.0)
+
+        details_parts = []
+        details_parts.append(f"Mesh dist: {dist_mm:.2f}mm (signed: {signed_mm:.2f}mm)")
+
+        if is_floating:
+            details_parts.append(f"FLOATING (> {self.MAX_SURFACE_TOLERANCE_MM}mm)")
+        if is_penetrating:
+            details_parts.append(f"PENETRATING (< {self.MIN_SURFACE_TOLERANCE_MM}mm)")
+        if is_inverted:
+            details_parts.append(f"INVERTED_NORMAL (dot={norm_dot:.2f})")
+        if face_match is False:
+            details_parts.append(f"FACE_INDEX_MISMATCH (recorded {recorded_face} vs true {closest_face})")
+
+        # Determine Evidence Tag
+        # Rule: ANATOMY_REVIEWED requires documented qualified expert review
+        # Rule: GEOMETRY_VERIFIED requires real distance within tolerance and outward normal
+        # Rule: Never equate surface adherence with clinical accuracy
+        if point.status == "ANATOMY_REVIEWED" and not is_floating and not is_penetrating and not is_inverted:
             tag = "ANATOMY_REVIEWED"
+            details_parts.append("Clinically reviewed & geometrically verified.")
+        elif not is_floating and not is_penetrating and not is_inverted:
+            tag = "GEOMETRY_VERIFIED"
+            details_parts.append("Meets mesh surface tolerance; pending qualified clinical review.")
+        else:
+            tag = "UNVERIFIED"
+            details_parts.append("Failed surface tolerance or unreviewed approximation.")
 
         return PointValidationResult(
             code=point.code,
@@ -106,12 +134,18 @@ class GeometryValidator:
             source=point.source,
             canonical_coords=coords,
             normal=point.normal,
-            surface_distance_mm=offset,
+            measured_surface_distance_mm=dist_mm,
+            signed_distance_mm=signed_mm,
+            closest_face_index=closest_face,
+            mesh_normal=mesh_norm,
+            normal_alignment_dot=norm_dot,
             is_floating=is_floating,
             is_penetrating=is_penetrating,
+            is_normal_inverted=is_inverted,
+            recorded_face_match=face_match,
             discontinuity_warning=None,
             evidence_tag=tag,
-            details="; ".join(details_list) if details_list else "Conforms to surface tolerance.",
+            details="; ".join(details_parts),
         )
 
     def validate_meridian_paths(self, meridian: NormalizedMeridian) -> List[Dict[str, Any]]:
@@ -129,7 +163,7 @@ class GeometryValidator:
                         "step_distance_mm": round(step, 2),
                         "p0": p0,
                         "p1": p1,
-                        "warning": f"Step distance {step:.1f}mm exceeds max smooth step {self.MAX_PATH_STEP_MM}mm",
+                        "warning": f"Discontinuous step {step:.1f}mm exceeds max smooth step {self.MAX_PATH_STEP_MM}mm",
                     })
         return discontinuities
 
@@ -139,7 +173,7 @@ class GeometryValidator:
         meridians = adapter.extract_meridians()
 
         results: List[PointValidationResult] = []
-        offsets: List[float] = []
+        distances: List[float] = []
         floating = 0
         penetrating = 0
         geom_count = 0
@@ -147,12 +181,14 @@ class GeometryValidator:
         unver_count = 0
 
         for code, pt in points.items():
-            lm = CoordinateRegistry.get_landmark(code)
+            # Match base landmark
+            base_c = pt.extra.get("base_code", code)
+            lm = CoordinateRegistry.get_landmark(base_c)
             res = self.validate_point(pt, lm)
             results.append(res)
 
             if any(abs(c) > 0.0001 for c in pt.canonical_position):
-                offsets.append(res.surface_distance_mm)
+                distances.append(res.measured_surface_distance_mm)
                 if res.is_floating:
                     floating += 1
                 if res.is_penetrating:
@@ -169,8 +205,8 @@ class GeometryValidator:
         for m in meridians.values():
             all_discontinuities.extend(self.validate_meridian_paths(m))
 
-        mean_off = sum(offsets) / len(offsets) if offsets else 0.0
-        max_off = max(offsets) if offsets else 0.0
+        mean_dist = sum(distances) / len(distances) if distances else 0.0
+        max_dist = max(distances) if distances else 0.0
 
         return SourceValidationSummary(
             source_name=src,
@@ -180,8 +216,8 @@ class GeometryValidator:
             unverified_count=unver_count,
             floating_count=floating,
             penetrating_count=penetrating,
-            mean_surface_offset_mm=round(mean_off, 2),
-            max_surface_offset_mm=round(max_off, 2),
+            mean_measured_distance_mm=round(mean_dist, 2),
+            max_measured_distance_mm=round(max_dist, 2),
             point_results=results,
             path_discontinuities=all_discontinuities,
         )

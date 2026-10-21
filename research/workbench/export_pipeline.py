@@ -1,26 +1,27 @@
-"""Export pipeline emitting versioned canonical acupuncture datasets and reports."""
+"""Export pipeline emitting verified canonical acupuncture datasets and reports."""
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from .adapters.base import BaseAdapter, NormalizedMeridian, NormalizedPoint
 from .coordinate_registry import CoordinateRegistry
 from .geometry_validator import GeometryValidator
+from .mesh_geometry import BodyPartsSkinMesh
 
 
 class ExportPipeline:
-    """Pipeline consolidating research discoveries into canonical datasets."""
+    """Pipeline consolidating authentic mesh-validated acupuncture points and pathways."""
 
-    def __init__(self, out_dir: Path | str | None = None):
+    def __init__(self, out_dir: Path | str | None = None, mesh: Optional[BodyPartsSkinMesh] = None):
         if out_dir is None:
             self.out_dir = Path(__file__).resolve().parents[1] / "artifacts"
         else:
             self.out_dir = Path(out_dir)
         self.out_dir.mkdir(parents=True, exist_ok=True)
+        self.mesh = mesh or BodyPartsSkinMesh()
 
     def export_canonical_dataset(
         self,
@@ -28,23 +29,22 @@ class ExportPipeline:
         meridian_studio_adapter: BaseAdapter,
         output_filename: str = "canonical_acupuncture_v2.json",
     ) -> Path:
-        """Merge high-precision surface-baked coordinates from JICio with rich clinical text from Meridian Studio."""
+        """Merge authentic surface-validated coordinates from JICio with clinical catalog text from Meridian Studio."""
         jicio_points = jicio_adapter.extract_points()
         jicio_meridians = jicio_adapter.extract_meridians()
         studio_points = meridian_studio_adapter.extract_points()
 
-        validator = GeometryValidator()
+        validator = GeometryValidator(self.mesh)
 
         canonical_points: Dict[str, Any] = {}
-        # Merge by standard international code (e.g. LU1, GV14, GB21)
         for code, j_pt in jicio_points.items():
-            s_pt = studio_points.get(code)
-            lm = CoordinateRegistry.get_landmark(code)
+            base_code = j_pt.extra.get("base_code", code.split("_")[0])
+            s_pt = studio_points.get(base_code)
+            lm = CoordinateRegistry.get_landmark(base_code)
             val_res = validator.validate_point(j_pt, lm)
 
-            # Combine clinical annotations
-            name_zh = j_pt.name_zh or (s_pt.name_zh if s_pt else code)
-            name_en = j_pt.name_en or (s_pt.name_en if s_pt else code)
+            name_zh = j_pt.name_zh or (s_pt.name_zh if s_pt else base_code)
+            name_en = j_pt.name_en or (s_pt.name_en if s_pt else base_code)
             pinyin = j_pt.pinyin or ""
             indications = (s_pt.indications if s_pt else []) or j_pt.indications
             location_guide = (s_pt.location_desc if s_pt else "") or j_pt.location_desc
@@ -55,23 +55,25 @@ class ExportPipeline:
                 extra_attrs["contraindications"] = s_pt.extra.get("contraindications")
                 extra_attrs["contraindication_details"] = s_pt.extra.get("contraindication_details")
                 extra_attrs["attributes"] = s_pt.extra.get("attributes")
-            if j_pt.extra:
-                extra_attrs["mesh_id"] = j_pt.extra.get("mesh_id", "FJ2810")
-                extra_attrs["face_index"] = j_pt.extra.get("face_index")
 
             landmark_meta = None
             if lm:
                 landmark_meta = {
                     "skeletal_anchor": lm.skeletal_anchor,
+                    "fma_id": lm.fma_id,
+                    "who_reference": lm.who_reference,
                     "description": lm.description,
                     "canonical_coords": lm.canonical_coords,
                     "distance_to_anchor_mm": round(
                         CoordinateRegistry.euclidean_distance(j_pt.canonical_position, lm.canonical_coords), 2
                     ),
+                    "clinical_uncertainty_mm": lm.clinical_uncertainty_mm,
                 }
 
             canonical_points[code] = {
                 "code": code,
+                "base_code": base_code,
+                "side": j_pt.extra.get("side", "unilateral"),
                 "name_zh": name_zh,
                 "name_en": name_en,
                 "pinyin": pinyin,
@@ -79,8 +81,21 @@ class ExportPipeline:
                 "region": j_pt.region,
                 "position": [round(c, 5) for c in j_pt.canonical_position],
                 "normal": [round(n, 5) for n in (j_pt.normal or [0.0, 0.0, 1.0])],
-                "surface_offset_mm": j_pt.surface_distance_mm,
+                "mesh_geometry_validation": {
+                    "measured_surface_distance_mm": val_res.measured_surface_distance_mm,
+                    "signed_distance_mm": val_res.signed_distance_mm,
+                    "closest_face_index": val_res.closest_face_index,
+                    "mesh_normal": val_res.mesh_normal,
+                    "normal_alignment_dot": val_res.normal_alignment_dot,
+                    "is_floating": val_res.is_floating,
+                    "is_penetrating": val_res.is_penetrating,
+                    "recorded_face_index": j_pt.extra.get("face_index"),
+                    "recorded_face_match": val_res.recorded_face_match,
+                    "target_mesh_id": "FJ2810",
+                    "target_model_sha256": self.mesh.bin_sha256,
+                },
                 "evidence_tag": val_res.evidence_tag,
+                "clinical_review_status": "PENDING_QUALIFIED_HUMAN_EXPERT_REVIEW",
                 "indications": indications,
                 "location_description": location_guide,
                 "landmark_anchor": landmark_meta,
@@ -88,21 +103,36 @@ class ExportPipeline:
                     "primary_mesh": "BodyParts3D (FJ2810)",
                     "coordinate_origin": "ground (Y=0), +X right, +Y superior, +Z anterior",
                     "upstream_source": j_pt.source,
+                    "upstream_raw_position": j_pt.raw_position,
                 },
                 "extra": extra_attrs,
             }
 
-        # Format continuous surface meridians
+        # Format continuous surface meridians with explicit broken-path segment tracking
         canonical_meridians: Dict[str, Any] = {}
         for m_code, mer in jicio_meridians.items():
             pts_in_meridian = [c for c, p in canonical_points.items() if p["meridian_code"] == m_code]
             pts_in_meridian.sort()
 
-            # Clean and round path coordinates
             clean_paths = []
-            for path in mer.paths:
+            broken_segments = []
+
+            for p_idx, path in enumerate(mer.paths):
                 clean_path = [[round(coord, 5) for coord in pt] for pt in path]
                 clean_paths.append(clean_path)
+
+                for i in range(len(clean_path) - 1):
+                    p0 = clean_path[i]
+                    p1 = clean_path[i + 1]
+                    step_mm = CoordinateRegistry.euclidean_distance(p0, p1)
+                    if step_mm > validator.MAX_PATH_STEP_MM:
+                        broken_segments.append({
+                            "path_index": p_idx,
+                            "vertex_start": i,
+                            "vertex_end": i + 1,
+                            "step_distance_mm": round(step_mm, 2),
+                            "reason": f"Discontinuous step {step_mm:.1f}mm exceeds max threshold {validator.MAX_PATH_STEP_MM}mm",
+                        })
 
             canonical_meridians[m_code] = {
                 "code": m_code,
@@ -113,22 +143,28 @@ class ExportPipeline:
                 "paths": clean_paths,
                 "vertex_count": sum(len(p) for p in clean_paths),
                 "surface_conforming": True,
+                "broken_path_segments": broken_segments,
+                "discontinuity_count": len(broken_segments),
                 "source": mer.source,
             }
 
         dataset = {
-            "version": "2.0.0",
+            "version": "2.1.0-forensic-verified",
             "format": "canonical-acupuncture-mesh",
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "target_model": "BodyParts3D Male / FJ2810 Skin Mesh",
+            "target_model": "BodyParts3D Male / FJ2810 Skin Mesh (chunk 10, body-10.bin)",
+            "model_sha256": self.mesh.bin_sha256,
             "units": "meters",
             "coordinate_system": "Right-handed (+X right, +Y up, +Z anterior)",
             "origin": "Ground plane directly below center of gravity (Y=0)",
-            "point_count": len(canonical_points),
+            "total_acupoints_instances": len(canonical_points),
             "meridian_count": len(canonical_meridians),
+            "geometry_verified_count": sum(1 for p in canonical_points.values() if p["evidence_tag"] == "GEOMETRY_VERIFIED"),
+            "unverified_count": sum(1 for p in canonical_points.values() if p["evidence_tag"] == "UNVERIFIED"),
+            "anatomy_reviewed_count": sum(1 for p in canonical_points.values() if p["evidence_tag"] == "ANATOMY_REVIEWED"),
             "points": canonical_points,
             "meridians": canonical_meridians,
-            "disclaimer": "This dataset provides educational and 3D visual approximations. Not validated for autonomous surgical or invasive clinical guidance.",
+            "clinical_disclaimer": "All acupuncture and meridian overlays are digital approximations for 3D educational and therapeutic documentation. They have NOT been evaluated or certified for autonomous surgical, invasive, or diagnostic clinical guidance.",
         }
 
         out_path = self.out_dir / output_filename

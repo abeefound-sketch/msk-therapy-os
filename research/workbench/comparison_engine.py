@@ -28,7 +28,7 @@ class ScenarioComparisonReport:
     target_codes: List[str]
     point_results: List[PointComparisonResult]
     overall_mean_error_mm: float
-    source_rankings: List[Tuple[str, float]]  # [(source_name, mean_distance_to_landmark_mm)]
+    source_rankings: List[Tuple[str, float]]
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -47,6 +47,19 @@ class ComparisonEngine:
             self.points_by_source[src] = ad.extract_points()
             self.meridians_by_source[src] = ad.extract_meridians()
 
+    def _find_point_in_source(self, code: str, pts: Dict[str, NormalizedPoint]) -> Optional[NormalizedPoint]:
+        """Find a point by exact code, or right-side code (_R), or base code."""
+        if code in pts:
+            return pts[code]
+        if f"{code}_R" in pts:
+            return pts[f"{code}_R"]
+        if f"{code}_L" in pts:
+            return pts[f"{code}_L"]
+        for p in pts.values():
+            if p.extra.get("base_code") == code:
+                return p
+        return None
+
     def compare_point(self, code: str) -> PointComparisonResult:
         """Compare a single acupuncture point across all available sources and landmarks."""
         landmark = CoordinateRegistry.get_landmark(code)
@@ -57,10 +70,9 @@ class ComparisonEngine:
         dist_to_landmark: Dict[str, float] = {}
 
         for src, pts in self.points_by_source.items():
-            if code in pts:
-                pt = pts[code]
+            pt = self._find_point_in_source(code, pts)
+            if pt is not None:
                 pos = pt.canonical_position
-                # Only record if non-zero
                 if any(abs(c) > 0.0001 for c in pos):
                     positions[src] = pos
                     if not name_zh or name_zh == code:
@@ -77,7 +89,6 @@ class ComparisonEngine:
                 d = CoordinateRegistry.euclidean_distance(positions[s1], positions[s2])
                 pairwise[f"{s1} vs {s2}"] = round(d, 2)
 
-        # Statistical summary
         errors = list(dist_to_landmark.values())
         mean_err = sum(errors) / len(errors) if errors else 0.0
         max_err = max(errors) if errors else 0.0
@@ -105,7 +116,6 @@ class ComparisonEngine:
         )
 
     def compare_scenario(self, codes: Optional[List[str]] = None, name: str = "Neck-Shoulder Reference Scenario") -> ScenarioComparisonReport:
-        """Run comparison on a set of acupuncture points."""
         if codes is None:
             codes = CoordinateRegistry.get_neck_shoulder_scenario_codes()
 
@@ -140,15 +150,3 @@ class ComparisonEngine:
                 "active_sources": list(self.points_by_source.keys()),
             },
         )
-
-    def compare_all_points(self) -> List[PointComparisonResult]:
-        """Compare all common acupuncture points across registered sources."""
-        all_codes = set()
-        for pts in self.points_by_source.values():
-            all_codes.update(pts.keys())
-        sorted_codes = sorted(list(all_codes))
-
-        results = []
-        for code in sorted_codes:
-            results.append(self.compare_point(code))
-        return results

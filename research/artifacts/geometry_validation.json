@@ -1,14 +1,14 @@
 [
   {
     "source": "JICio/tcm-3d",
-    "total": 362,
-    "reviewed": 1,
-    "verified": 361,
-    "unverified": 0,
-    "floating": 0,
+    "total": 670,
+    "reviewed": 0,
+    "verified": 633,
+    "unverified": 37,
+    "floating": 16,
     "penetrating": 0,
-    "mean_offset_mm": 3.49,
-    "max_offset_mm": 3.5,
+    "mean_distance_mm": 0.31,
+    "max_distance_mm": 18.48,
     "discontinuity_count": 44
   },
   {
@@ -19,32 +19,32 @@
     "unverified": 361,
     "floating": 0,
     "penetrating": 0,
-    "mean_offset_mm": 0.0,
-    "max_offset_mm": 0.0,
+    "mean_distance_mm": 0.0,
+    "max_distance_mm": 0.0,
     "discontinuity_count": 0
   },
   {
     "source": "WaterCMY/anatomy-3d",
     "total": 146,
-    "reviewed": 1,
-    "verified": 145,
-    "unverified": 0,
-    "floating": 0,
+    "reviewed": 0,
+    "verified": 33,
+    "unverified": 113,
+    "floating": 113,
     "penetrating": 0,
-    "mean_offset_mm": 0.0,
-    "max_offset_mm": 0.0,
+    "mean_distance_mm": 17.14,
+    "max_distance_mm": 73.15,
     "discontinuity_count": 117
   },
   {
     "source": "spacejohnlf/tcm-acupoints",
     "total": 70,
     "reviewed": 0,
-    "verified": 0,
-    "unverified": 70,
-    "floating": 70,
+    "verified": 8,
+    "unverified": 62,
+    "floating": 60,
     "penetrating": 0,
-    "mean_offset_mm": 12.0,
-    "max_offset_mm": 12.0,
+    "mean_distance_mm": 69.65,
+    "max_distance_mm": 300.65,
     "discontinuity_count": 84
   }
 ]
