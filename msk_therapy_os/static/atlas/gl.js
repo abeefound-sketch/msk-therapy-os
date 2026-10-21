@@ -1,572 +1,828 @@
-// WebGL2 renderer for the packed atlas: one vertex/index buffer for the
-// whole body, one draw call per structure, colour-ID picking, X-ray mode and
-// a clipping plane for sectional views.
-/* global mat4 */
-
-const VS = `#version 300 es
-layout(location=0) in vec3 aPos;
-layout(location=1) in vec3 aNor;
-uniform mat4 uVP;
-out vec3 vN;
-out vec3 vW;
-void main() {
-  vN = aNor;
-  vW = aPos;
-  gl_Position = uVP * vec4(aPos, 1.0);
-}`;
-
-const FS = `#version 300 es
-precision highp float;
-in vec3 vN;
-in vec3 vW;
-uniform vec3 uColor;
-uniform float uAlpha;
-uniform float uSel;
-uniform vec3 uSelColor;
-uniform vec3 uEye;
-uniform vec4 uClip;
-uniform bool uClipOn;
-out vec4 o;
-void main() {
-  if (uClipOn && dot(vec4(vW, 1.0), uClip) > 0.0) discard;
-  vec3 N = normalize(vN);
-  vec3 V = normalize(uEye - vW);
-  if (dot(N, V) < 0.0) N = -N;               // tolerate inconsistent winding
-  vec3 L1 = normalize(V + vec3(0.35, 0.65, 0.15));
-  vec3 L2 = normalize(vec3(-0.5, 0.35, -0.7));
-  float d = max(dot(N, L1), 0.0) * 0.72 + max(dot(N, L2), 0.0) * 0.22;
-  float hemi = 0.5 + 0.5 * N.y;
-  vec3 amb = mix(vec3(0.15, 0.17, 0.20), vec3(0.30, 0.30, 0.29), hemi);
-  vec3 H = normalize(L1 + V);
-  float s = pow(max(dot(N, H), 0.0), 40.0) * 0.16;
-  vec3 c = uColor * (amb + d) + s;
-  if (uClipOn && !gl_FrontFacing) c *= 0.72;  // cut faces read darker
-  float rim = pow(1.0 - max(dot(N, V), 0.0), 2.2);
-  c = mix(c, uSelColor, uSel * 0.30) + uSel * rim * uSelColor * 0.85;
-  o = vec4(c, uAlpha);
-}`;
-
-const PICK_FS = `#version 300 es
-precision highp float;
-in vec3 vN;
-in vec3 vW;
-uniform vec3 uColor;
-uniform vec4 uClip;
-uniform bool uClipOn;
-out vec4 o;
-void main() {
-  if (uClipOn && dot(vec4(vW, 1.0), uClip) > 0.0) discard;
-  o = vec4(uColor, 1.0);
-}`;
-
-function compile(gl, type, src) {
-  const s = gl.createShader(type);
-  gl.shaderSource(s, src);
-  gl.compileShader(s);
-  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
-  return s;
-}
-function program(gl, vs, fs) {
-  const p = gl.createProgram();
-  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, vs));
-  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fs));
-  gl.linkProgram(p);
-  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
-  const u = {};
-  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
-  for (let i = 0; i < n; i++) { const info = gl.getActiveUniform(p, i); u[info.name] = gl.getUniformLocation(p, info.name); }
-  return { p, u };
-}
-
-const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-class AtlasRenderer {
-  constructor(canvas) {
-    this.canvas = canvas;
-    const gl = canvas.getContext('webgl2', { antialias: true, alpha: false, preserveDrawingBuffer: true });
-    if (!gl) throw new Error('This computer’s graphics driver does not support WebGL2.');
-    this.gl = gl;
-    this.main = program(gl, VS, FS);
-    this.pickProg = program(gl, VS, PICK_FS);
-    this.camera = { yaw: 0, pitch: 0.05, dist: 3, target: [0, 0.9, 0], fov: 40 * Math.PI / 180 };
-    this.clip = { on: false, plane: [0, -1, 0, 1] };
-    this.xray = false;
-    this.selColor = [0.56, 0.86, 0.80];
-    this.background = [0.118, 0.145, 0.180];
-    this.renderMode = 'surface'; // 'surface' | 'musculoskeletal' | 'comparative'
-    this.skinOpacity = 0.78;
-    this.skinReferenceOn = false;
-    this.skinColor = [0.86, 0.77, 0.70];
-    this.n = 0;
-    this.dirty = true;
-    this.anim = null;
-    this.onFrame = null;
-    this._fbo = null;
-    new ResizeObserver(() => this.requestRender()).observe(canvas);
-    const loop = (t) => {
-      if (this.anim) this._stepAnim(t);
-      if (this.dirty) { this.dirty = false; this._draw(); if (this.onFrame) this.onFrame(); }
-      requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
-  }
-
-  requestRender() { this.dirty = true; }
-
-  setAtlas(index, bin) {
-    const gl = this.gl;
-    if (this.vao) { gl.deleteVertexArray(this.vao); this.buffers.forEach(b => gl.deleteBuffer(b)); }
-    const [po, pl] = index.buffers.positions, [no, nl] = index.buffers.normals, [io, il] = index.buffers.indices;
-    this.vao = gl.createVertexArray();
-    gl.bindVertexArray(this.vao);
-    const pb = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, pb);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bin, po, pl / 4), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
-    const nb = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, nb);
-    gl.bufferData(gl.ARRAY_BUFFER, new Int16Array(bin, no, nl / 2), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(1);
-    gl.vertexAttribPointer(1, 3, gl.SHORT, true, 0, 0);
-    const ib = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(bin, io, il / 4), gl.STATIC_DRAW);
-    gl.bindVertexArray(null);
-    this.buffers = [pb, nb, ib];
-
-    this.elements = index.elements;
-    this.n = index.elements.length;
-    this.visible = new Uint8Array(this.n).fill(1);
-    this.selected = new Uint8Array(this.n);
-    this.colors = new Float32Array(this.n * 3);
-    this.sceneBox = index.bbox;
-    this.frame(index.bbox, false);
-  }
-
-  setColor(i, rgb) { this.colors.set(rgb, i * 3); }
-
-  // ---- camera ----
-  _eye(cam = this.camera) {
-    const { yaw, pitch, dist, target } = cam;
-    return [
-      target[0] + dist * Math.cos(pitch) * Math.sin(yaw),
-      target[1] + dist * Math.sin(pitch),
-      target[2] + dist * Math.cos(pitch) * Math.cos(yaw),
-    ];
-  }
-  setRenderMode(mode) {
-    if (this.renderMode === mode) return;
-    this.renderMode = mode;
-    this.requestRender();
-  }
-  setSkinOpacity(alpha) {
-    this.skinOpacity = Math.max(0.0, Math.min(1.0, alpha));
-    this.requestRender();
-  }
-  setSkinReference(on) {
-    this.skinReferenceOn = Boolean(on);
-    this.requestRender();
-  }
-  _matricesForAspect(aspect) {
-    const eye = this._eye();
-    const d = this.camera.dist;
-    const near = Math.min(0.015, Math.max(0.001, d * 0.015));
-    const far = Math.max(25.0, d * 15 + 20);
-    const proj = mat4.perspective(mat4.create(), this.camera.fov, aspect, near, far);
-    const view = mat4.lookAt(mat4.create(), eye, this.camera.target, [0, 1, 0]);
-    return { vp: mat4.multiply(mat4.create(), proj, view), eye };
-  }
-  _matrices() {
-    const aspect = Math.max(1e-3, this.canvas.width / Math.max(1, this.canvas.height));
-    return this._matricesForAspect(aspect);
-  }
-
-  // Formal Viewport & Projection Descriptor Contract
-  getViewportDescriptor(target = 'overlay') {
-    const cw = this.canvas.clientWidth;
-    const ch = this.canvas.clientHeight;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const isComp = this.renderMode === 'comparative';
-
-    if (isComp) {
-      const halfW = Math.floor(cw * 0.5);
-      if (target === 'left' || target === 'musculoskeletal') {
-        const aspect = Math.max(1e-3, halfW / Math.max(1, ch));
-        const mats = this._matricesForAspect(aspect);
-        return {
-          x: 0,
-          y: 0,
-          width: halfW,
-          height: ch,
-          devicePixelRatio: dpr,
-          aspect,
-          viewProjectionMatrix: mats.vp,
-          eye: mats.eye,
-          mode: 'musculoskeletal',
-          clippingBounds: [0, 0, halfW, ch]
-        };
-      } else {
-        // 'right', 'surface', 'overlay'
-        const rightW = cw - halfW;
-        const aspect = Math.max(1e-3, rightW / Math.max(1, ch));
-        const mats = this._matricesForAspect(aspect);
-        return {
-          x: halfW,
-          y: 0,
-          width: rightW,
-          height: ch,
-          devicePixelRatio: dpr,
-          aspect,
-          viewProjectionMatrix: mats.vp,
-          eye: mats.eye,
-          mode: 'surface',
-          clippingBounds: [halfW, 0, cw, ch]
-        };
-      }
-    } else {
-      const aspect = Math.max(1e-3, cw / Math.max(1, ch));
-      const mats = this._matricesForAspect(aspect);
-      return {
-        x: 0,
-        y: 0,
-        width: cw,
-        height: ch,
-        devicePixelRatio: dpr,
-        aspect,
-        viewProjectionMatrix: mats.vp,
-        eye: mats.eye,
-        mode: this.renderMode,
-        clippingBounds: [0, 0, cw, ch]
-      };
-    }
-  }
-  orbit(dx, dy) {
-    this.anim = null;
-    this.camera.yaw -= dx * 0.006;
-    this.camera.pitch = Math.max(-1.45, Math.min(1.45, this.camera.pitch + dy * 0.006));
-    this.requestRender();
-  }
-  pan(dx, dy) {
-    this.anim = null;
-    const { yaw, pitch, dist, fov } = this.camera;
-    const s = (2 * dist * Math.tan(fov / 2)) / Math.max(1, this.canvas.clientHeight);
-    const right = [Math.cos(yaw), 0, -Math.sin(yaw)];
-    // True Up unit vector in world space accounting for camera pitch
-    const up = [
-      -Math.sin(pitch) * Math.sin(yaw),
-      Math.cos(pitch),
-      -Math.sin(pitch) * Math.cos(yaw),
-    ];
-    const t = this.camera.target;
-    // Dragging right moves object right with cursor
-    t[0] -= right[0] * dx * s;
-    t[2] -= right[2] * dx * s;
-    // Dragging down moves object down with cursor (along camera view-plane up vector)
-    t[0] += up[0] * dy * s;
-    t[1] += up[1] * dy * s;
-    t[2] += up[2] * dy * s;
-    this.requestRender();
-  }
-  zoom(factor) {
-    this.anim = null;
-    const size = this.sceneBox ? Math.max(this.sceneBox[4] - this.sceneBox[1], 0.1) : 2;
-    // Min zoom: 4cm (allows close detail inspection of vertebrae/acupoints without clipping)
-    const minDist = 0.04;
-    // Max zoom: full body framing
-    const maxDist = Math.max(5.5, size * 3.5);
-    this.camera.dist = Math.max(minDist, Math.min(maxDist, this.camera.dist * factor));
-    this.requestRender();
-  }
-  setTarget(target, animate = true) {
-    if (!target) return;
-    const goal = { yaw: this.camera.yaw, pitch: this.camera.pitch, dist: this.camera.dist, target: target.slice() };
-    if (animate) this._animateTo(goal);
-    else { this.camera.target = target.slice(); this.requestRender(); }
-  }
-  framePoint(pos, radius = 0.08, animate = true) {
-    if (!pos) return;
-    const b = [pos[0] - radius, pos[1] - radius, pos[2] - radius, pos[0] + radius, pos[1] + radius, pos[2] + radius];
-    this.frame(b, animate);
-  }
-  view(name) {
-    const yaw = { front: 0, back: Math.PI, left: Math.PI / 2, right: -Math.PI / 2 }[name];
-    if (yaw === undefined) return;
-    this._animateTo({ yaw, pitch: 0.02, dist: this.camera.dist, target: this.camera.target.slice() });
-  }
-  frame(b, animate = true) {
-    if (!b) return;
-    const c = [(b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2];
-    const r = Math.max(0.01, Math.hypot(b[3] - b[0], b[4] - b[1], b[5] - b[2]) / 2);
-    const aspect = Math.max(0.3, this.canvas.clientWidth / Math.max(1, this.canvas.clientHeight));
-    const fit = Math.min(this.camera.fov, 2 * Math.atan(Math.tan(this.camera.fov / 2) * aspect));
-    const dist = Math.max(0.12, Math.min(6.0, (r / Math.sin(fit / 2)) * 1.15));
-    const goal = { yaw: this.camera.yaw, pitch: this.camera.pitch, dist, target: c };
-    if (animate) this._animateTo(goal); else { Object.assign(this.camera, goal); this.requestRender(); }
-  }
-  _animateTo(goal) {
-    if (reduceMotion()) { Object.assign(this.camera, goal); this.anim = null; this.requestRender(); return; }
-    let dyaw = goal.yaw - this.camera.yaw;
-    dyaw = Math.atan2(Math.sin(dyaw), Math.cos(dyaw));
-    this.anim = { from: { ...this.camera, target: this.camera.target.slice() }, to: { ...goal, yaw: this.camera.yaw + dyaw }, t0: null, dur: 420 };
-    this.requestRender();
-  }
-  _stepAnim(t) {
-    const a = this.anim;
-    if (a.t0 === null) a.t0 = t;
-    const k = Math.min(1, (t - a.t0) / a.dur);
-    const e = 1 - Math.pow(1 - k, 3);
-    const L = (x, y) => x + (y - x) * e;
-    this.camera.yaw = L(a.from.yaw, a.to.yaw);
-    this.camera.pitch = L(a.from.pitch, a.to.pitch);
-    this.camera.dist = L(a.from.dist, a.to.dist);
-    this.camera.target = a.from.target.map((v, i) => L(v, a.to.target[i]));
-    if (k >= 1) this.anim = null;
-    this.dirty = true;
-  }
-
-  // ---- drawing ----
-  _resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(this.canvas.clientWidth * dpr));
-    const h = Math.max(1, Math.round(this.canvas.clientHeight * dpr));
-    if (this.canvas.width !== w || this.canvas.height !== h) { this.canvas.width = w; this.canvas.height = h; this._fboSize = null; }
-  }
-
-  _setCommon(prog, vp, eye) {
-    const gl = this.gl;
-    gl.useProgram(prog.p);
-    gl.uniformMatrix4fv(prog.u.uVP, false, vp);
-    gl.uniform4fv(prog.u.uClip, this.clip.plane);
-    gl.uniform1i(prog.u.uClipOn, this.clip.on ? 1 : 0);
-    if (prog.u.uEye) gl.uniform3fv(prog.u.uEye, eye);
-    if (prog.u.uSelColor) gl.uniform3fv(prog.u.uSelColor, this.selColor);
-  }
-
-  _drawScene(vp, eye, mode) {
-    const gl = this.gl;
-    const u = this.main.u;
-    this._setCommon(this.main, vp, eye);
-    gl.bindVertexArray(this.vao);
-    gl.enable(gl.DEPTH_TEST);
-    gl.disable(gl.BLEND);
-    gl.disable(gl.CULL_FACE);
-    gl.depthMask(true);
-
-    const anySel = this.selected.some(Boolean);
-    const ghostOthers = this.xray && anySel;
-    const els = this.elements;
-
-    // Pass 1: Opaque geometry (bones, muscles, organs, etc. - skin excluded)
-    gl.uniform1f(u.uAlpha, 1.0);
-    for (let i = 0; i < this.n; i++) {
-      if (!this.visible[i]) continue;
-      if (els[i].t === 'skin') continue; // skin rendered in dedicated pass
-      if (this.xray && !(ghostOthers && this.selected[i])) continue;
-      gl.uniform3fv(u.uColor, this.colors.subarray(i * 3, i * 3 + 3));
-      gl.uniform1f(u.uSel, this.selected[i] ? 1 : 0);
-      gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
-    }
-
-    // Pass 2: Skin mesh (Surface Mode, Comparative Mode, or Musculoskeletal with Surface Reference Envelope)
-    const drawSkin = (mode === 'surface' && this.skinOpacity > 0.005) ||
-                     (mode === 'comparative' && this.skinOpacity > 0.005) ||
-                     (mode === 'musculoskeletal' && this.skinReferenceOn);
-    const skinAlpha = mode === 'musculoskeletal' ? 0.14 : this.skinOpacity;
-
-    if (drawSkin && !this.xray) {
-      if (skinAlpha >= 0.98) {
-        gl.depthMask(true);
-        gl.disable(gl.BLEND);
-        gl.uniform1f(u.uAlpha, 1.0);
-        gl.uniform1f(u.uSel, 0);
-        for (let i = 0; i < this.n; i++) {
-          if (!this.visible[i] || els[i].t !== 'skin') continue;
-          gl.uniform3fv(u.uColor, this.skinColor || this.colors.subarray(i * 3, i * 3 + 3));
-          gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
-        }
-      } else {
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        gl.depthMask(false);
-        gl.uniform1f(u.uAlpha, skinAlpha);
-        gl.uniform1f(u.uSel, 0);
-        for (let i = 0; i < this.n; i++) {
-          if (!this.visible[i] || els[i].t !== 'skin') continue;
-          gl.uniform3fv(u.uColor, this.skinColor || this.colors.subarray(i * 3, i * 3 + 3));
-          gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
-        }
-        gl.depthMask(true);
-        gl.disable(gl.BLEND);
-      }
-    }
-
-    // Pass 3: Selection Highlight (faint through occluding structures)
-    if (anySel && !this.xray) {
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      gl.depthMask(false);
-      gl.depthFunc(gl.GREATER);
-      gl.uniform1f(u.uAlpha, 0.38);
-      gl.uniform1f(u.uSel, 1);
-      for (let i = 0; i < this.n; i++) {
-        if (!this.visible[i] || !this.selected[i]) continue;
-        gl.uniform3fv(u.uColor, this.selColor);
-        gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
-      }
-      gl.depthFunc(gl.LESS);
-      gl.depthMask(true);
-      gl.disable(gl.BLEND);
-    }
-
-    // Pass 4: X-ray mode ghosting
-    if (this.xray) {
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      gl.depthMask(false);
-      gl.enable(gl.CULL_FACE);
-      gl.uniform1f(u.uAlpha, ghostOthers ? 0.10 : 0.22);
-      gl.uniform1f(u.uSel, 0);
-      for (let i = 0; i < this.n; i++) {
-        if (!this.visible[i] || (ghostOthers && this.selected[i])) continue;
-        gl.uniform3fv(u.uColor, this.colors.subarray(i * 3, i * 3 + 3));
-        gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
-      }
-      gl.depthMask(true);
-      gl.disable(gl.BLEND);
-      gl.disable(gl.CULL_FACE);
-    }
-    gl.bindVertexArray(null);
-  }
-
-  _draw() {
-    const gl = this.gl;
-    this._resize();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.clearColor(...this.background, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    if (!this.n) return;
-
-    const W = this.canvas.width;
-    const H = this.canvas.height;
-
-    if (this.renderMode === 'comparative') {
-      const W2 = Math.floor(W / 2);
-      const leftMats = this._matricesForAspect(Math.max(1e-3, W2 / Math.max(1, H)));
-      const rightMats = this._matricesForAspect(Math.max(1e-3, (W - W2) / Math.max(1, H)));
-
-      gl.enable(gl.SCISSOR_TEST);
-
-      // Left Viewport: Musculoskeletal Anatomy (Western)
-      gl.viewport(0, 0, W2, H);
-      gl.scissor(0, 0, W2, H);
-      this._drawScene(leftMats.vp, leftMats.eye, 'musculoskeletal');
-
-      // Right Viewport: Surface & Meridians (TCM)
-      gl.viewport(W2, 0, W - W2, H);
-      gl.scissor(W2, 0, W - W2, H);
-      this._drawScene(rightMats.vp, rightMats.eye, 'surface');
-
-      gl.disable(gl.SCISSOR_TEST);
-    } else {
-      gl.viewport(0, 0, W, H);
-      const mats = this._matrices();
-      this._drawScene(mats.vp, mats.eye, this.renderMode);
-    }
-  }
-
-  // Returns the element index under the given client coordinates, or -1.
-  pick(clientX, clientY) {
-    const gl = this.gl;
-    if (!this.n) return -1;
-    this._resize();
-    const W = this.canvas.width, H = this.canvas.height;
-    if (!this._fbo || this._fboSize !== W + 'x' + H) {
-      if (this._fbo) { gl.deleteFramebuffer(this._fbo); gl.deleteRenderbuffer(this._rbC); gl.deleteRenderbuffer(this._rbD); }
-      this._fbo = gl.createFramebuffer();
-      this._rbC = gl.createRenderbuffer();
-      gl.bindRenderbuffer(gl.RENDERBUFFER, this._rbC);
-      gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA8, W, H);
-      this._rbD = gl.createRenderbuffer();
-      gl.bindRenderbuffer(gl.RENDERBUFFER, this._rbD);
-      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, W, H);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, this._fbo);
-      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, this._rbC);
-      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this._rbD);
-      this._fboSize = W + 'x' + H;
-    }
-    const rect = this.canvas.getBoundingClientRect();
-    const x = Math.floor((clientX - rect.left) * (W / rect.width));
-    const y = Math.floor((rect.bottom - clientY) * (H / rect.height));
-    if (x < 0 || y < 0 || x >= W || y >= H) return -1;
-
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this._fbo);
-    gl.viewport(0, 0, W, H);
-    gl.enable(gl.SCISSOR_TEST);
-    gl.scissor(x, y, 1, 1);
-    gl.clearColor(0, 0, 0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.enable(gl.DEPTH_TEST);
-    gl.disable(gl.BLEND);
-    let vp, eye;
-    if (this.renderMode === 'comparative') {
-      const W2 = Math.floor(W / 2);
-      if (x < W2) {
-        gl.viewport(0, 0, W2, H);
-        const mats = this._matricesForAspect(Math.max(1e-3, W2 / Math.max(1, H)));
-        vp = mats.vp; eye = mats.eye;
-      } else {
-        gl.viewport(W2, 0, W - W2, H);
-        const mats = this._matricesForAspect(Math.max(1e-3, (W - W2) / Math.max(1, H)));
-        vp = mats.vp; eye = mats.eye;
-      }
-    } else {
-      gl.viewport(0, 0, W, H);
-      const mats = this._matrices();
-      vp = mats.vp; eye = mats.eye;
-    }
-
-    this._setCommon(this.pickProg, vp, eye);
-    gl.bindVertexArray(this.vao);
-    const anySel = this.selected.some(Boolean);
-    const id = new Float32Array(3);
-    for (let i = 0; i < this.n; i++) {
-      if (!this.visible[i]) continue;
-      // When skin is translucent, allow single-clicking structures directly beneath the skin
-      if (this.elements[i].t === 'skin' && this.skinOpacity < 0.95 && this.renderMode !== 'surface_strict') continue;
-      if (this.xray && anySel && !this.selected[i]) continue;
-      const k = i + 1;
-      id[0] = (k & 255) / 255; id[1] = ((k >> 8) & 255) / 255; id[2] = ((k >> 16) & 255) / 255;
-      gl.uniform3fv(this.pickProg.u.uColor, id);
-      gl.drawElements(gl.TRIANGLES, this.elements[i].n, gl.UNSIGNED_INT, this.elements[i].o * 4);
-    }
-    const px = new Uint8Array(4);
-    gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
-    gl.disable(gl.SCISSOR_TEST);
-    gl.bindVertexArray(null);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    const k = px[0] | (px[1] << 8) | (px[2] << 16);
-    return k ? k - 1 : -1;
-  }
-
-  // World point -> CSS pixel position inside the canvas.
-  project(p, target = 'overlay') {
-    const vpDesc = this.getViewportDescriptor(target);
-    const vp = vpDesc.viewProjectionMatrix;
-    const x = vp[0] * p[0] + vp[4] * p[1] + vp[8] * p[2] + vp[12];
-    const y = vp[1] * p[0] + vp[5] * p[1] + vp[9] * p[2] + vp[13];
-    const w = vp[3] * p[0] + vp[7] * p[1] + vp[11] * p[2] + vp[15];
-    if (w <= 0.005) return null;
-    const ndcX = x / w;
-    const ndcY = y / w;
-    if (!isFinite(ndcX) || !isFinite(ndcY)) return null;
-    const sx = vpDesc.x + (ndcX * 0.5 + 0.5) * vpDesc.width;
-    const sy = vpDesc.y + (1.0 - (ndcY * 0.5 + 0.5)) * vpDesc.height;
-    return [sx, sy];
-  }
-
-  snapshot() {
-    this._draw();
-    return this.canvas.toDataURL('image/png');
-  }
-}
+// WebGL2 renderer for the packed atlas: one vertex/index buffer for the
+// whole body, one draw call per structure, colour-ID picking, X-ray mode and
+// a clipping plane for sectional views.
+/* global mat4 */
+
+const VS = `#version 300 es
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNor;
+uniform mat4 uVP;
+out vec3 vN;
+out vec3 vW;
+void main() {
+  vN = aNor;
+  vW = aPos;
+  gl_Position = uVP * vec4(aPos, 1.0);
+}`;
+
+const FS = `#version 300 es
+precision highp float;
+in vec3 vN;
+in vec3 vW;
+uniform vec3 uColor;
+uniform float uAlpha;
+uniform float uSel;
+uniform vec3 uSelColor;
+uniform vec3 uEye;
+uniform vec4 uClip;
+uniform bool uClipOn;
+out vec4 o;
+void main() {
+  if (uClipOn && dot(vec4(vW, 1.0), uClip) > 0.0) discard;
+  vec3 N = normalize(vN);
+  vec3 V = normalize(uEye - vW);
+  if (dot(N, V) < 0.0) N = -N;               // tolerate inconsistent winding
+  vec3 L1 = normalize(V + vec3(0.35, 0.65, 0.15));
+  vec3 L2 = normalize(vec3(-0.5, 0.35, -0.7));
+  float d = max(dot(N, L1), 0.0) * 0.72 + max(dot(N, L2), 0.0) * 0.22;
+  float hemi = 0.5 + 0.5 * N.y;
+  vec3 amb = mix(vec3(0.15, 0.17, 0.20), vec3(0.30, 0.30, 0.29), hemi);
+  vec3 H = normalize(L1 + V);
+  float s = pow(max(dot(N, H), 0.0), 40.0) * 0.16;
+  vec3 c = uColor * (amb + d) + s;
+  if (uClipOn && !gl_FrontFacing) c *= 0.72;  // cut faces read darker
+  float rim = pow(1.0 - max(dot(N, V), 0.0), 2.2);
+  c = mix(c, uSelColor, uSel * 0.30) + uSel * rim * uSelColor * 0.85;
+  o = vec4(c, uAlpha);
+}`;
+
+const PICK_FS = `#version 300 es
+precision highp float;
+in vec3 vN;
+in vec3 vW;
+uniform vec3 uColor;
+uniform vec4 uClip;
+uniform bool uClipOn;
+out vec4 o;
+void main() {
+  if (uClipOn && dot(vec4(vW, 1.0), uClip) > 0.0) discard;
+  o = vec4(uColor, 1.0);
+}`;
+
+function compile(gl, type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function program(gl, vs, fs) {
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {};
+  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) { const info = gl.getActiveUniform(p, i); u[info.name] = gl.getUniformLocation(p, info.name); }
+  return { p, u };
+}
+
+const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+class AtlasRenderer {
+  constructor(canvas) {
+    this.canvas = canvas;
+    const gl = canvas.getContext('webgl2', { antialias: true, alpha: false, preserveDrawingBuffer: true });
+    if (!gl) throw new Error('This computer’s graphics driver does not support WebGL2.');
+    this.gl = gl;
+    this.main = program(gl, VS, FS);
+    this.pickProg = program(gl, VS, PICK_FS);
+    this.camera = { yaw: 0, pitch: 0.05, dist: 3, target: [0, 0.9, 0], fov: 40 * Math.PI / 180 };
+    this.clip = { on: false, plane: [0, -1, 0, 1] };
+    this.xray = false;
+    this.selColor = [0.56, 0.86, 0.80];
+    this.background = [0.118, 0.145, 0.180];
+    this.renderMode = 'surface'; // 'surface' | 'musculoskeletal' | 'comparative'
+    this.skinOpacity = 0.78;
+    this.skinReferenceOn = false;
+    this.skinColor = [0.86, 0.77, 0.70];
+    this.n = 0;
+    this.dirty = true;
+    this.anim = null;
+    this.onFrame = null;
+    this._fbo = null;
+    new ResizeObserver(() => this.requestRender()).observe(canvas);
+    const loop = (t) => {
+      if (this.anim) this._stepAnim(t);
+      if (this.dirty) { this.dirty = false; this._draw(); if (this.onFrame) this.onFrame(); }
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }
+
+  requestRender() { this.dirty = true; }
+
+  setAtlas(index, bin) {
+    const gl = this.gl;
+    if (this.vao) { gl.deleteVertexArray(this.vao); this.buffers.forEach(b => gl.deleteBuffer(b)); }
+    const [po, pl] = index.buffers.positions, [no, nl] = index.buffers.normals, [io, il] = index.buffers.indices;
+    this.vao = gl.createVertexArray();
+    gl.bindVertexArray(this.vao);
+    const pb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bin, po, pl / 4), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    const nb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, nb);
+    gl.bufferData(gl.ARRAY_BUFFER, new Int16Array(bin, no, nl / 2), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 3, gl.SHORT, true, 0, 0);
+    const ib = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(bin, io, il / 4), gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
+    this.buffers = [pb, nb, ib];
+
+    this.positions = new Float32Array(bin, po, pl / 4);
+    this.normals = new Int16Array(bin, no, nl / 2);
+    this.indices = new Uint32Array(bin, io, il / 4);
+    this.atlasIndex = index;
+
+    this.elements = index.elements;
+    this.n = index.elements.length;
+    this.visible = new Uint8Array(this.n).fill(1);
+    this.selected = new Uint8Array(this.n);
+    this.colors = new Float32Array(this.n * 3);
+    this.sceneBox = index.bbox;
+    this._buildSkinSpatialIndex();
+    this.frame(index.bbox, false);
+  }
+
+  setColor(i, rgb) { this.colors.set(rgb, i * 3); }
+
+  // ---- camera ----
+  _eye(cam = this.camera) {
+    const { yaw, pitch, dist, target } = cam;
+    return [
+      target[0] + dist * Math.cos(pitch) * Math.sin(yaw),
+      target[1] + dist * Math.sin(pitch),
+      target[2] + dist * Math.cos(pitch) * Math.cos(yaw),
+    ];
+  }
+  setRenderMode(mode) {
+    if (this.renderMode === mode) return;
+    this.renderMode = mode;
+    this.requestRender();
+  }
+  setSkinOpacity(alpha) {
+    this.skinOpacity = Math.max(0.0, Math.min(1.0, alpha));
+    this.requestRender();
+  }
+  setSkinReference(on) {
+    this.skinReferenceOn = Boolean(on);
+    this.requestRender();
+  }
+  _matricesForAspect(aspect) {
+    const eye = this._eye();
+    const d = this.camera.dist;
+    const near = Math.min(0.015, Math.max(0.001, d * 0.015));
+    const far = Math.max(25.0, d * 15 + 20);
+    const proj = mat4.perspective(mat4.create(), this.camera.fov, aspect, near, far);
+    const view = mat4.lookAt(mat4.create(), eye, this.camera.target, [0, 1, 0]);
+    return { vp: mat4.multiply(mat4.create(), proj, view), eye };
+  }
+  _matrices() {
+    const aspect = Math.max(1e-3, this.canvas.width / Math.max(1, this.canvas.height));
+    return this._matricesForAspect(aspect);
+  }
+
+  // Formal Viewport & Projection Descriptor Contract
+  getViewportDescriptor(target = 'overlay') {
+    const cw = this.canvas.clientWidth;
+    const ch = this.canvas.clientHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const isComp = this.renderMode === 'comparative';
+
+    if (isComp) {
+      const halfW = Math.floor(cw * 0.5);
+      if (target === 'left' || target === 'musculoskeletal') {
+        const aspect = Math.max(1e-3, halfW / Math.max(1, ch));
+        const mats = this._matricesForAspect(aspect);
+        return {
+          x: 0,
+          y: 0,
+          width: halfW,
+          height: ch,
+          devicePixelRatio: dpr,
+          aspect,
+          viewProjectionMatrix: mats.vp,
+          eye: mats.eye,
+          mode: 'musculoskeletal',
+          clippingBounds: [0, 0, halfW, ch]
+        };
+      } else {
+        // 'right', 'surface', 'overlay'
+        const rightW = cw - halfW;
+        const aspect = Math.max(1e-3, rightW / Math.max(1, ch));
+        const mats = this._matricesForAspect(aspect);
+        return {
+          x: halfW,
+          y: 0,
+          width: rightW,
+          height: ch,
+          devicePixelRatio: dpr,
+          aspect,
+          viewProjectionMatrix: mats.vp,
+          eye: mats.eye,
+          mode: 'surface',
+          clippingBounds: [halfW, 0, cw, ch]
+        };
+      }
+    } else {
+      const aspect = Math.max(1e-3, cw / Math.max(1, ch));
+      const mats = this._matricesForAspect(aspect);
+      return {
+        x: 0,
+        y: 0,
+        width: cw,
+        height: ch,
+        devicePixelRatio: dpr,
+        aspect,
+        viewProjectionMatrix: mats.vp,
+        eye: mats.eye,
+        mode: this.renderMode,
+        clippingBounds: [0, 0, cw, ch]
+      };
+    }
+  }
+  orbit(dx, dy) {
+    this.anim = null;
+    this.camera.yaw -= dx * 0.006;
+    this.camera.pitch = Math.max(-1.45, Math.min(1.45, this.camera.pitch + dy * 0.006));
+    this.requestRender();
+  }
+  pan(dx, dy) {
+    this.anim = null;
+    const { yaw, pitch, dist, fov } = this.camera;
+    const s = (2 * dist * Math.tan(fov / 2)) / Math.max(1, this.canvas.clientHeight);
+    const right = [Math.cos(yaw), 0, -Math.sin(yaw)];
+    // True Up unit vector in world space accounting for camera pitch
+    const up = [
+      -Math.sin(pitch) * Math.sin(yaw),
+      Math.cos(pitch),
+      -Math.sin(pitch) * Math.cos(yaw),
+    ];
+    const t = this.camera.target;
+    // Dragging right moves object right with cursor
+    t[0] -= right[0] * dx * s;
+    t[2] -= right[2] * dx * s;
+    // Dragging down moves object down with cursor (along camera view-plane up vector)
+    t[0] += up[0] * dy * s;
+    t[1] += up[1] * dy * s;
+    t[2] += up[2] * dy * s;
+    this.requestRender();
+  }
+  zoom(factor) {
+    this.anim = null;
+    const size = this.sceneBox ? Math.max(this.sceneBox[4] - this.sceneBox[1], 0.1) : 2;
+    // Min zoom: 4cm (allows close detail inspection of vertebrae/acupoints without clipping)
+    const minDist = 0.04;
+    // Max zoom: full body framing
+    const maxDist = Math.max(5.5, size * 3.5);
+    this.camera.dist = Math.max(minDist, Math.min(maxDist, this.camera.dist * factor));
+    this.requestRender();
+  }
+  setTarget(target, animate = true) {
+    if (!target) return;
+    const goal = { yaw: this.camera.yaw, pitch: this.camera.pitch, dist: this.camera.dist, target: target.slice() };
+    if (animate) this._animateTo(goal);
+    else { this.camera.target = target.slice(); this.requestRender(); }
+  }
+  framePoint(pos, radius = 0.08, animate = true) {
+    if (!pos) return;
+    const b = [pos[0] - radius, pos[1] - radius, pos[2] - radius, pos[0] + radius, pos[1] + radius, pos[2] + radius];
+    this.frame(b, animate);
+  }
+  view(name) {
+    const yaw = { front: 0, back: Math.PI, left: Math.PI / 2, right: -Math.PI / 2 }[name];
+    if (yaw === undefined) return;
+    this._animateTo({ yaw, pitch: 0.02, dist: this.camera.dist, target: this.camera.target.slice() });
+  }
+  frame(b, animate = true) {
+    if (!b) return;
+    const c = [(b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2];
+    const r = Math.max(0.01, Math.hypot(b[3] - b[0], b[4] - b[1], b[5] - b[2]) / 2);
+    const aspect = Math.max(0.3, this.canvas.clientWidth / Math.max(1, this.canvas.clientHeight));
+    const fit = Math.min(this.camera.fov, 2 * Math.atan(Math.tan(this.camera.fov / 2) * aspect));
+    const dist = Math.max(0.12, Math.min(6.0, (r / Math.sin(fit / 2)) * 1.15));
+    const goal = { yaw: this.camera.yaw, pitch: this.camera.pitch, dist, target: c };
+    if (animate) this._animateTo(goal); else { Object.assign(this.camera, goal); this.requestRender(); }
+  }
+  _animateTo(goal) {
+    if (reduceMotion()) { Object.assign(this.camera, goal); this.anim = null; this.requestRender(); return; }
+    let dyaw = goal.yaw - this.camera.yaw;
+    dyaw = Math.atan2(Math.sin(dyaw), Math.cos(dyaw));
+    this.anim = { from: { ...this.camera, target: this.camera.target.slice() }, to: { ...goal, yaw: this.camera.yaw + dyaw }, t0: null, dur: 420 };
+    this.requestRender();
+  }
+  _stepAnim(t) {
+    const a = this.anim;
+    if (a.t0 === null) a.t0 = t;
+    const k = Math.min(1, (t - a.t0) / a.dur);
+    const e = 1 - Math.pow(1 - k, 3);
+    const L = (x, y) => x + (y - x) * e;
+    this.camera.yaw = L(a.from.yaw, a.to.yaw);
+    this.camera.pitch = L(a.from.pitch, a.to.pitch);
+    this.camera.dist = L(a.from.dist, a.to.dist);
+    this.camera.target = a.from.target.map((v, i) => L(v, a.to.target[i]));
+    if (k >= 1) this.anim = null;
+    this.dirty = true;
+  }
+
+  // ---- drawing ----
+  _resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(1, Math.round(this.canvas.clientWidth * dpr));
+    const h = Math.max(1, Math.round(this.canvas.clientHeight * dpr));
+    if (this.canvas.width !== w || this.canvas.height !== h) { this.canvas.width = w; this.canvas.height = h; this._fboSize = null; }
+  }
+
+  _setCommon(prog, vp, eye) {
+    const gl = this.gl;
+    gl.useProgram(prog.p);
+    gl.uniformMatrix4fv(prog.u.uVP, false, vp);
+    gl.uniform4fv(prog.u.uClip, this.clip.plane);
+    gl.uniform1i(prog.u.uClipOn, this.clip.on ? 1 : 0);
+    if (prog.u.uEye) gl.uniform3fv(prog.u.uEye, eye);
+    if (prog.u.uSelColor) gl.uniform3fv(prog.u.uSelColor, this.selColor);
+  }
+
+  _drawScene(vp, eye, mode) {
+    const gl = this.gl;
+    const u = this.main.u;
+    this._setCommon(this.main, vp, eye);
+    gl.bindVertexArray(this.vao);
+    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.BLEND);
+    gl.disable(gl.CULL_FACE);
+    gl.depthMask(true);
+
+    const anySel = this.selected.some(Boolean);
+    const ghostOthers = this.xray && anySel;
+    const els = this.elements;
+
+    // Pass 1: Opaque geometry (bones, muscles, organs, etc. - skin excluded)
+    gl.uniform1f(u.uAlpha, 1.0);
+    for (let i = 0; i < this.n; i++) {
+      if (!this.visible[i]) continue;
+      if (els[i].t === 'skin') continue; // skin rendered in dedicated pass
+      if (this.xray && !(ghostOthers && this.selected[i])) continue;
+      gl.uniform3fv(u.uColor, this.colors.subarray(i * 3, i * 3 + 3));
+      gl.uniform1f(u.uSel, this.selected[i] ? 1 : 0);
+      gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
+    }
+
+    // Pass 2: Skin mesh (Surface Mode, Comparative Mode, or Musculoskeletal with Surface Reference Envelope)
+    const drawSkin = (mode === 'surface' && this.skinOpacity > 0.005) ||
+                     (mode === 'comparative' && this.skinOpacity > 0.005) ||
+                     (mode === 'musculoskeletal' && this.skinReferenceOn);
+    const skinAlpha = mode === 'musculoskeletal' ? 0.14 : this.skinOpacity;
+
+    if (drawSkin && !this.xray) {
+      if (skinAlpha >= 0.98) {
+        gl.depthMask(true);
+        gl.disable(gl.BLEND);
+        gl.uniform1f(u.uAlpha, 1.0);
+        gl.uniform1f(u.uSel, 0);
+        for (let i = 0; i < this.n; i++) {
+          if (!this.visible[i] || els[i].t !== 'skin') continue;
+          gl.uniform3fv(u.uColor, this.skinColor || this.colors.subarray(i * 3, i * 3 + 3));
+          gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
+        }
+      } else {
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.depthMask(false);
+        gl.uniform1f(u.uAlpha, skinAlpha);
+        gl.uniform1f(u.uSel, 0);
+        for (let i = 0; i < this.n; i++) {
+          if (!this.visible[i] || els[i].t !== 'skin') continue;
+          gl.uniform3fv(u.uColor, this.skinColor || this.colors.subarray(i * 3, i * 3 + 3));
+          gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
+        }
+        gl.depthMask(true);
+        gl.disable(gl.BLEND);
+      }
+    }
+
+    // Pass 3: Selection Highlight (faint through occluding structures)
+    if (anySel && !this.xray) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.depthMask(false);
+      gl.depthFunc(gl.GREATER);
+      gl.uniform1f(u.uAlpha, 0.38);
+      gl.uniform1f(u.uSel, 1);
+      for (let i = 0; i < this.n; i++) {
+        if (!this.visible[i] || !this.selected[i]) continue;
+        gl.uniform3fv(u.uColor, this.selColor);
+        gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
+      }
+      gl.depthFunc(gl.LESS);
+      gl.depthMask(true);
+      gl.disable(gl.BLEND);
+    }
+
+    // Pass 4: X-ray mode ghosting
+    if (this.xray) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.depthMask(false);
+      gl.enable(gl.CULL_FACE);
+      gl.uniform1f(u.uAlpha, ghostOthers ? 0.10 : 0.22);
+      gl.uniform1f(u.uSel, 0);
+      for (let i = 0; i < this.n; i++) {
+        if (!this.visible[i] || (ghostOthers && this.selected[i])) continue;
+        gl.uniform3fv(u.uColor, this.colors.subarray(i * 3, i * 3 + 3));
+        gl.drawElements(gl.TRIANGLES, els[i].n, gl.UNSIGNED_INT, els[i].o * 4);
+      }
+      gl.depthMask(true);
+      gl.disable(gl.BLEND);
+      gl.disable(gl.CULL_FACE);
+    }
+    gl.bindVertexArray(null);
+  }
+
+  _draw() {
+    const gl = this.gl;
+    this._resize();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.clearColor(...this.background, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    if (!this.n) return;
+
+    const W = this.canvas.width;
+    const H = this.canvas.height;
+
+    if (this.renderMode === 'comparative') {
+      const W2 = Math.floor(W / 2);
+      const leftMats = this._matricesForAspect(Math.max(1e-3, W2 / Math.max(1, H)));
+      const rightMats = this._matricesForAspect(Math.max(1e-3, (W - W2) / Math.max(1, H)));
+
+      gl.enable(gl.SCISSOR_TEST);
+
+      // Left Viewport: Musculoskeletal Anatomy (Western)
+      gl.viewport(0, 0, W2, H);
+      gl.scissor(0, 0, W2, H);
+      this._drawScene(leftMats.vp, leftMats.eye, 'musculoskeletal');
+
+      // Right Viewport: Surface & Meridians (TCM)
+      gl.viewport(W2, 0, W - W2, H);
+      gl.scissor(W2, 0, W - W2, H);
+      this._drawScene(rightMats.vp, rightMats.eye, 'surface');
+
+      gl.disable(gl.SCISSOR_TEST);
+    } else {
+      gl.viewport(0, 0, W, H);
+      const mats = this._matrices();
+      this._drawScene(mats.vp, mats.eye, this.renderMode);
+    }
+  }
+
+  // Returns the element index under the given client coordinates, or -1.
+  pick(clientX, clientY) {
+    const gl = this.gl;
+    if (!this.n) return -1;
+    this._resize();
+    const W = this.canvas.width, H = this.canvas.height;
+    if (!this._fbo || this._fboSize !== W + 'x' + H) {
+      if (this._fbo) { gl.deleteFramebuffer(this._fbo); gl.deleteRenderbuffer(this._rbC); gl.deleteRenderbuffer(this._rbD); }
+      this._fbo = gl.createFramebuffer();
+      this._rbC = gl.createRenderbuffer();
+      gl.bindRenderbuffer(gl.RENDERBUFFER, this._rbC);
+      gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA8, W, H);
+      this._rbD = gl.createRenderbuffer();
+      gl.bindRenderbuffer(gl.RENDERBUFFER, this._rbD);
+      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, W, H);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this._fbo);
+      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, this._rbC);
+      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this._rbD);
+      this._fboSize = W + 'x' + H;
+    }
+    const rect = this.canvas.getBoundingClientRect();
+    const x = Math.floor((clientX - rect.left) * (W / rect.width));
+    const y = Math.floor((rect.bottom - clientY) * (H / rect.height));
+    if (x < 0 || y < 0 || x >= W || y >= H) return -1;
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this._fbo);
+    gl.viewport(0, 0, W, H);
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(x, y, 1, 1);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.BLEND);
+    let vp, eye;
+    if (this.renderMode === 'comparative') {
+      const W2 = Math.floor(W / 2);
+      if (x < W2) {
+        gl.viewport(0, 0, W2, H);
+        const mats = this._matricesForAspect(Math.max(1e-3, W2 / Math.max(1, H)));
+        vp = mats.vp; eye = mats.eye;
+      } else {
+        gl.viewport(W2, 0, W - W2, H);
+        const mats = this._matricesForAspect(Math.max(1e-3, (W - W2) / Math.max(1, H)));
+        vp = mats.vp; eye = mats.eye;
+      }
+    } else {
+      gl.viewport(0, 0, W, H);
+      const mats = this._matrices();
+      vp = mats.vp; eye = mats.eye;
+    }
+
+    this._setCommon(this.pickProg, vp, eye);
+    gl.bindVertexArray(this.vao);
+    const anySel = this.selected.some(Boolean);
+    const id = new Float32Array(3);
+    for (let i = 0; i < this.n; i++) {
+      if (!this.visible[i]) continue;
+      // When skin is translucent, allow single-clicking structures directly beneath the skin
+      if (this.elements[i].t === 'skin' && this.skinOpacity < 0.95 && this.renderMode !== 'surface_strict') continue;
+      if (this.xray && anySel && !this.selected[i]) continue;
+      const k = i + 1;
+      id[0] = (k & 255) / 255; id[1] = ((k >> 8) & 255) / 255; id[2] = ((k >> 16) & 255) / 255;
+      gl.uniform3fv(this.pickProg.u.uColor, id);
+      gl.drawElements(gl.TRIANGLES, this.elements[i].n, gl.UNSIGNED_INT, this.elements[i].o * 4);
+    }
+    const px = new Uint8Array(4);
+    gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    gl.disable(gl.SCISSOR_TEST);
+    gl.bindVertexArray(null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    const k = px[0] | (px[1] << 8) | (px[2] << 16);
+    return k ? k - 1 : -1;
+  }
+
+  _buildSkinSpatialIndex() {
+    if (!this.positions || !this.indices || !this.elements) return;
+    const skinElements = this.elements.filter(e => e.t === 'skin');
+    if (!skinElements.length) return;
+
+    const P = this.positions;
+    const I = this.indices;
+
+    const SLABS = 64;
+    const yMin = -0.05, yMax = 1.76;
+    const slabSize = (yMax - yMin) / SLABS;
+    const slabs = Array.from({ length: SLABS }, () => []);
+
+    for (const el of skinElements) {
+      const start = el.o;
+      const end = el.o + el.n;
+      const meshId = el.k || 'FJ2810';
+      for (let i = start; i < end; i += 3) {
+        const i0 = I[i] * 3, i1 = I[i + 1] * 3, i2 = I[i + 2] * 3;
+        const y0 = P[i0 + 1], y1 = P[i1 + 1], y2 = P[i2 + 1];
+        const triYMin = Math.min(y0, y1, y2);
+        const triYMax = Math.max(y0, y1, y2);
+
+        let sMin = Math.max(0, Math.min(SLABS - 1, Math.floor((triYMin - yMin) / slabSize)));
+        let sMax = Math.max(0, Math.min(SLABS - 1, Math.floor((triYMax - yMin) / slabSize)));
+
+        for (let s = sMin; s <= sMax; s++) {
+          slabs[s].push(i, meshId);
+        }
+      }
+    }
+
+    this._skinSpatial = { yMin, yMax, slabSize, slabs, SLABS };
+  }
+
+  // Unproject canvas screen coordinates (clientX, clientY) to a 3D ray in world space
+  unprojectRay(clientX, clientY, target = 'overlay') {
+    const vpDesc = this.getViewportDescriptor(target);
+    const rect = this.canvas.getBoundingClientRect();
+    const xRel = clientX - rect.left - vpDesc.x;
+    const yRel = clientY - rect.top - vpDesc.y;
+    if (xRel < 0 || xRel > vpDesc.width || yRel < 0 || yRel > vpDesc.height) return null;
+
+    const xNdc = (xRel / vpDesc.width) * 2.0 - 1.0;
+    const yNdc = 1.0 - (yRel / vpDesc.height) * 2.0;
+
+    const invVp = mat4.create();
+    if (!mat4.invert(invVp, vpDesc.viewProjectionMatrix)) return null;
+
+    function transformVec4(m, x, y, z, w) {
+      const ox = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
+      const oy = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
+      const oz = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
+      const ow = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
+      return [ox / ow, oy / ow, oz / ow];
+    }
+
+    const pNear = transformVec4(invVp, xNdc, yNdc, -1.0, 1.0);
+    const pFar = transformVec4(invVp, xNdc, yNdc, 1.0, 1.0);
+
+    const dx = pFar[0] - pNear[0];
+    const dy = pFar[1] - pNear[1];
+    const dz = pFar[2] - pNear[2];
+    const len = Math.hypot(dx, dy, dz);
+    if (len < 1e-6) return null;
+
+    return {
+      origin: pNear,
+      direction: [dx / len, dy / len, dz / len],
+      eye: vpDesc.eye,
+      viewport: vpDesc
+    };
+  }
+
+  // Exact Möller-Trumbore ray-triangle picking directly on the authentic skin mesh (FJ2810)
+  pickSkinSurface(clientX, clientY, target = 'overlay') {
+    const ray = this.unprojectRay(clientX, clientY, target);
+    if (!ray) return null;
+    if (!this._skinSpatial || !this.positions || !this.indices) return null;
+
+    const P = this.positions;
+    const N = this.normals;
+    const I = this.indices;
+    const { yMin, yMax, slabSize, slabs, SLABS } = this._skinSpatial;
+
+    const Ox = ray.origin[0], Oy = ray.origin[1], Oz = ray.origin[2];
+    const Dx = ray.direction[0], Dy = ray.direction[1], Dz = ray.direction[2];
+
+    const testedTriangles = new Set();
+    let bestT = Infinity;
+    let hitPosition = null;
+    let hitNormal = null;
+    let hitMeshId = 'FJ2810';
+    let hitFaceIndex = -1;
+    let hitBarycentric = null;
+
+    function testTriangle(iStart, meshId) {
+      if (testedTriangles.has(iStart)) return;
+      testedTriangles.add(iStart);
+
+      const idx0 = I[iStart] * 3, idx1 = I[iStart + 1] * 3, idx2 = I[iStart + 2] * 3;
+
+      const v0x = P[idx0], v0y = P[idx0 + 1], v0z = P[idx0 + 2];
+      const v1x = P[idx1], v1y = P[idx1 + 1], v1z = P[idx1 + 2];
+      const v2x = P[idx2], v2y = P[idx2 + 1], v2z = P[idx2 + 2];
+
+      const e1x = v1x - v0x, e1y = v1y - v0y, e1z = v1z - v0z;
+      const e2x = v2x - v0x, e2y = v2y - v0y, e2z = v2z - v0z;
+
+      const px = Dy * e2z - Dz * e2y;
+      const py = Dz * e2x - Dx * e2z;
+      const pz = Dx * e2y - Dy * e2x;
+
+      const det = e1x * px + e1y * py + e1z * pz;
+      if (Math.abs(det) < 1e-7) return;
+      const invDet = 1.0 / det;
+
+      const tx = Ox - v0x, ty = Oy - v0y, tz = Oz - v0z;
+      const u = (tx * px + ty * py + tz * pz) * invDet;
+      if (u < 0.0 || u > 1.0) return;
+
+      const qx = ty * e1z - tz * e1y;
+      const qy = tz * e1x - tx * e1z;
+      const qz = tx * e1y - ty * e1x;
+
+      const v = (Dx * qx + Dy * qy + Dz * qz) * invDet;
+      if (v < 0.0 || u + v > 1.0) return;
+
+      const t = (e2x * qx + e2y * qy + e2z * qz) * invDet;
+      if (t > 1e-4 && t < bestT) {
+        bestT = t;
+        const w = 1.0 - u - v;
+        const hx = Ox + t * Dx;
+        const hy = Oy + t * Dy;
+        const hz = Oz + t * Dz;
+
+        const n0x = N[idx0] / 32767, n0y = N[idx0 + 1] / 32767, n0z = N[idx0 + 2] / 32767;
+        const n1x = N[idx1] / 32767, n1y = N[idx1 + 1] / 32767, n1z = N[idx1 + 2] / 32767;
+        const n2x = N[idx2] / 32767, n2y = N[idx2 + 1] / 32767, n2z = N[idx2 + 2] / 32767;
+
+        let nx = w * n0x + u * n1x + v * n2x;
+        let ny = w * n0y + u * n1x + v * n2x;
+        let nz = w * n0z + u * n1x + v * n2x;
+        const nLen = Math.hypot(nx, ny, nz) || 1.0;
+        nx /= nLen; ny /= nLen; nz /= nLen;
+
+        if (nx * Dx + ny * Dy + nz * Dz > 0) {
+          nx = -nx; ny = -ny; nz = -nz;
+        }
+
+        hitPosition = [hx, hy, hz];
+        hitNormal = [nx, ny, nz];
+        hitMeshId = meshId;
+        hitFaceIndex = Math.floor(iStart / 3);
+        hitBarycentric = [w, u, v];
+      }
+    }
+
+    for (let s = 0; s < SLABS; s++) {
+      const slabList = slabs[s];
+      for (let k = 0; k < slabList.length; k += 2) {
+        testTriangle(slabList[k], slabList[k + 1]);
+      }
+    }
+
+    if (bestT < Infinity && hitPosition) {
+      return {
+        hit: true,
+        position: [
+          parseFloat(hitPosition[0].toFixed(5)),
+          parseFloat(hitPosition[1].toFixed(5)),
+          parseFloat(hitPosition[2].toFixed(5))
+        ],
+        normal: [
+          parseFloat(hitNormal[0].toFixed(5)),
+          parseFloat(hitNormal[1].toFixed(5)),
+          parseFloat(hitNormal[2].toFixed(5))
+        ],
+        distance: parseFloat(bestT.toFixed(4)),
+        face_index: hitFaceIndex,
+        barycentric: [
+          parseFloat(hitBarycentric[0].toFixed(4)),
+          parseFloat(hitBarycentric[1].toFixed(4)),
+          parseFloat(hitBarycentric[2].toFixed(4))
+        ],
+        mesh_id: hitMeshId,
+        mesh_hash: 'FJ2810_V4.0_CCBYSA',
+        registration_status: 'SURFACE_REGISTERED_FJ2810'
+      };
+    }
+    return null;
+  }
+
+  // Snaps an arbitrary 3D position onto the closest surface vertex of the skin mesh
+  snapToSkinSurface(targetPos, maxDist = 0.08) {
+    if (!this.positions || !this.indices || !this.elements) return null;
+    const skinElements = this.elements.filter(e => e.t === 'skin');
+    if (!skinElements.length) return null;
+
+    const P = this.positions;
+    const N = this.normals;
+    const I = this.indices;
+
+    const tx = targetPos[0], ty = targetPos[1], tz = targetPos[2];
+    let bestDistSq = maxDist * maxDist;
+    let closestPoint = null;
+    let closestNormal = null;
+    let closestFace = -1;
+
+    for (const el of skinElements) {
+      const start = el.o;
+      const end = el.o + el.n;
+      for (let i = start; i < end; i += 3) {
+        const i0 = I[i] * 3;
+        const v0x = P[i0], v0y = P[i0 + 1], v0z = P[i0 + 2];
+        const dSq = (v0x - tx) * (v0x - tx) + (v0y - ty) * (v0y - ty) + (v0z - tz) * (v0z - tz);
+        if (dSq < bestDistSq) {
+          bestDistSq = dSq;
+          closestPoint = [v0x, v0y, v0z];
+          const nx = N[i0] / 32767, ny = N[i0 + 1] / 32767, nz = N[i0 + 2] / 32767;
+          closestNormal = [nx, ny, nz];
+          closestFace = Math.floor(i / 3);
+        }
+      }
+    }
+
+    if (closestPoint) {
+      const d = Math.sqrt(bestDistSq);
+      return {
+        snapped: true,
+        position: [
+          parseFloat(closestPoint[0].toFixed(5)),
+          parseFloat(closestPoint[1].toFixed(5)),
+          parseFloat(closestPoint[2].toFixed(5))
+        ],
+        normal: [
+          parseFloat(closestNormal[0].toFixed(5)),
+          parseFloat(closestNormal[1].toFixed(5)),
+          parseFloat(closestNormal[2].toFixed(5))
+        ],
+        face_index: closestFace,
+        distance: parseFloat(d.toFixed(5)),
+        mesh_id: 'FJ2810',
+        mesh_hash: 'FJ2810_V4.0_CCBYSA',
+        registration_status: 'SURFACE_REGISTERED_FJ2810'
+      };
+    }
+    return null;
+  }
+
+  // World point -> CSS pixel position inside the canvas.
+  project(p, target = 'overlay') {
+    const vpDesc = this.getViewportDescriptor(target);
+    const vp = vpDesc.viewProjectionMatrix;
+    const x = vp[0] * p[0] + vp[4] * p[1] + vp[8] * p[2] + vp[12];
+    const y = vp[1] * p[0] + vp[5] * p[1] + vp[9] * p[2] + vp[13];
+    const w = vp[3] * p[0] + vp[7] * p[1] + vp[11] * p[2] + vp[15];
+    if (w <= 0.005) return null;
+    const ndcX = x / w;
+    const ndcY = y / w;
+    if (!isFinite(ndcX) || !isFinite(ndcY)) return null;
+    const sx = vpDesc.x + (ndcX * 0.5 + 0.5) * vpDesc.width;
+    const sy = vpDesc.y + (1.0 - (ndcY * 0.5 + 0.5)) * vpDesc.height;
+    return [sx, sy];
+  }
+
+  snapshot() {
+    this._draw();
+    return this.canvas.toDataURL('image/png');
+  }
+}

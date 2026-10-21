@@ -5,6 +5,7 @@ import sqlite3
 from msk_therapy_os.anatomy import DEFAULT_ANATOMY_CATALOG
 from msk_therapy_os.assessment import DEFAULT_QUESTIONNAIRES
 from msk_therapy_os.evidence import DEFAULT_EVIDENCE_CATALOG
+from msk_therapy_os.points import init_points_tables
 
 
 def open_db(path: str) -> sqlite3.Connection:
@@ -128,6 +129,7 @@ def init_db(db: sqlite3.Connection) -> None:
         );
         """
     )
+    init_points_tables(db)
     db.commit()
 
 
