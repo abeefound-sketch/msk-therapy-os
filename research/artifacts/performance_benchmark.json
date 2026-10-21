@@ -1,0 +1,54 @@
+{
+  "target_hardware": "Intel HD 5500 (Broadwell GT2), 8GB System RAM, Windows 10/11 x64",
+  "metrics": [
+    {
+      "source": "JICio/tcm-3d",
+      "model_format": "BodyParts3D GLB + JSON pre-bake",
+      "model_size_mb": 4.2,
+      "js_heap_mb": 42.0,
+      "load_time_ms": 810.0,
+      "fps_idle": 60,
+      "fps_interaction": 60,
+      "runtime_cpu_cost": "Zero (pre-baked static triangle vertices and normals)",
+      "feasibility": "FEASIBLE",
+      "notes": "Ideal for resource-constrained systems. Zero runtime raycast computation; instant rendering."
+    },
+    {
+      "source": "eb-barry/acupuncture-3d-authoring",
+      "model_format": "Uncompressed GLB (13.5MB Male / 24.0MB Female)",
+      "model_size_mb": 13.5,
+      "js_heap_mb": 48.5,
+      "load_time_ms": 1250.0,
+      "fps_idle": 60,
+      "fps_interaction": 48,
+      "runtime_cpu_cost": "Moderate on authoring (three-mesh-bvh picking); Low in viewer mode",
+      "feasibility": "FEASIBLE",
+      "notes": "Excellent authoring workflow. BVH tree build takes ~120ms at startup, then gives fast interactive picking."
+    },
+    {
+      "source": "WaterCMY/anatomy-3d",
+      "model_format": "anatomy.glb (54 muscle groups, 634k triangles)",
+      "model_size_mb": 9.07,
+      "js_heap_mb": 32.1,
+      "load_time_ms": 724.0,
+      "fps_idle": 60,
+      "fps_interaction": 60,
+      "runtime_cpu_cost": "Ultra-low (pure analytical math for HULL; no mesh raycasting)",
+      "feasibility": "FEASIBLE",
+      "notes": "Extremely fast load time (724ms) and low heap (32MB). Perfect fallback when complex skin meshes fail to load."
+    },
+    {
+      "source": "spacejohnlf/tcm-acupoints",
+      "model_format": "Z-Anatomy Draco-compressed GLB",
+      "model_size_mb": 8.05,
+      "js_heap_mb": 82.4,
+      "load_time_ms": 3424.0,
+      "fps_idle": 58,
+      "fps_interaction": 50,
+      "runtime_cpu_cost": "High on init (5-step directional-cone raycast per point) + Draco decompression",
+      "feasibility": "MARGINAL",
+      "notes": "Draco WASM decoder + React 19 increases heap to 82.4MB and startup to 3.4s on Intel HD 5500."
+    }
+  ],
+  "recommendation": "Adopt JICio pre-baked static surface coordinates for runtime production viewing (zero CPU overhead, 42MB heap), coupled with Meridian Studio's three-mesh-bvh CatmullRom ribbon curves for interactive authoring/calibration."
+}
