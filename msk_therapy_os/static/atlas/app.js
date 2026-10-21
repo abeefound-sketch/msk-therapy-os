@@ -93,7 +93,7 @@
   let siteAtlas = null;
   async function loadSiteManifest() {
     if (host || !location.protocol.startsWith('http')) return null;
-    try { const r = await fetch('data/atlases.json', { cache: 'no-cache' }); if (r.ok) return r.json(); } catch (_) { /* not a static build */ }
+    try { const r = await fetch('data/atlases.json', { cache: 'no-cache' }); if (r.ok) { const d = await r.json(); if (d && Array.isArray(d.atlases) && d.atlases.length > 0) return d; } } catch (_) { /* not a static build */ }
     return null;
   }
   function pickSiteAtlas() {

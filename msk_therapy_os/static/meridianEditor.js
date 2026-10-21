@@ -16,6 +16,7 @@
         const data = await res.json();
         allPoints = data.points || {};
         baselinePoints = JSON.parse(JSON.stringify(allPoints));
+        ensureModal();
         populatePointSelect();
         if (allPoints['LI4']) {
           loadPointIntoEditor('LI4');
@@ -533,13 +534,16 @@
   // Public API
   window.openStudioEditorModal = function(point) {
     ensureModal();
+    populatePointSelect();
     const modal = document.getElementById('meridianStudioModal');
     if (modal) {
       modal.style.display = 'flex';
-      if (point && point.code) {
-        loadPointIntoEditor(point.code);
+      const targetCode = (point && point.code) ? point.code : currentPointCode || 'LI4';
+      if (allPoints[targetCode]) {
+        currentPointCode = targetCode;
+        loadPointIntoEditor(targetCode);
         const sel = document.getElementById('studioPointSelect');
-        if (sel) sel.value = point.code;
+        if (sel) sel.value = targetCode;
       }
     }
   };

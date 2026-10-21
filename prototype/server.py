@@ -27,20 +27,23 @@ POC_ACU_FILE = POC_DATA_DIR / "neck_shoulder_poc.json"
 
 
 class PrototypeNeckShoulderHandler(MSKRequestHandler):
-    """Handler routing acupuncture 3D requests to the isolated neck-shoulder POC dataset."""
+    """Handler routing acupuncture 3D requests with full dataset support and optional POC scoping."""
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         path = parsed.path
 
         if path == "/api/acupuncture-3d":
-            if POC_ACU_FILE.exists():
-                self._send_text(
-                    POC_ACU_FILE.read_text(encoding="utf-8"),
-                    content_type="application/json; charset=utf-8",
-                )
-                return
-            self._send_json({"error": "POC dataset not found"}, status=HTTPStatus.NOT_FOUND)
+            # If query param poc=true is explicitly requested, return the 6-point POC dataset
+            if "poc=true" in parsed.query:
+                if POC_ACU_FILE.exists():
+                    self._send_text(
+                        POC_ACU_FILE.read_text(encoding="utf-8"),
+                        content_type="application/json; charset=utf-8",
+                    )
+                    return
+            # Otherwise delegate to base handler to serve complete 362 WHO points dataset
+            super().do_GET()
             return
 
         # Delegate all other requests (atlas viewer, cases, SOAP, FHIR, ROM) to base handler

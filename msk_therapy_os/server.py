@@ -158,7 +158,13 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         return result
 
     def _resolve_atlas_data_file(self, rel_path: str) -> Optional[Path]:
-        """Resolve a data/ path to an actual file inside the active atlas build directory."""
+        """Resolve a data/ path to an actual file inside the active atlas build directory, with static fallback."""
+        static_data_dir = ATLAS_UI_DIR / "data"
+        static_target = (static_data_dir / rel_path).resolve()
+        if str(static_target).startswith(str(static_data_dir.resolve())):
+            if static_target.exists() and static_target.is_file():
+                return static_target
+
         if not ATLAS_DATA_DIR:
             return None
         status = self._atlas_status()
