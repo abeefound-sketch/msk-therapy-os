@@ -1,0 +1,17 @@
+{
+  "mode_a_surface": "PASS",
+  "mode_b_musculoskeletal": "PASS",
+  "mode_b_surface_reference_overlay": "PASS",
+  "mode_c_comparative": "PASS",
+  "surface_normal_occlusion": "PASS",
+  "meridian_channel_filter": "PASS",
+  "main_host_mode_synchronization": "PASS",
+  "responsive_layouts": "PASS",
+  "telemetry": {
+    "loadTimeMs": 520,
+    "memory": {
+      "usedJSHeapSizeMB": "159.3",
+      "totalJSHeapSizeMB": "168.8"
+    }
+  }
+}

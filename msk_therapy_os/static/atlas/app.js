@@ -250,10 +250,21 @@
         renderer.frame(atlas.index.bbox);
       } else if (action === 'focus_selection') {
         focusSelection();
-      } else if (action === 'full_body_view' && renderer && atlas) {
-        renderer.frame(atlas.index.bbox);
-      } else if (action === 'focus_selection') {
-        focusSelection();
+      } else if (action === 'set_render_mode') {
+        setRenderMode(ev.data.mode);
+      } else if (action === 'set_skin_opacity') {
+        if (renderer) renderer.setSkinOpacity(ev.data.opacity);
+        if (window.__meridiansDebug && window.__meridiansDebug.render) window.__meridiansDebug.render();
+      } else if (action === 'set_filter_meridian') {
+        if (window.__meridiansDebug && window.__meridiansDebug.setFilterMeridian) {
+          window.__meridiansDebug.setFilterMeridian(ev.data.meridian);
+        }
+      } else if (action === 'toggle_surface_reference') {
+        if (renderer) renderer.setSkinReference(ev.data.enabled);
+        if (window.__meridiansDebug && window.__meridiansDebug.setSurfaceReference) {
+          window.__meridiansDebug.setSurfaceReference(ev.data.enabled);
+        }
+
       } else if (action === 'set_view' && preset && renderer) {
         renderer.view(preset);
       } else if (action === 'set_xray' && renderer) {
@@ -1011,6 +1022,33 @@
     renderer.frame(atlas.index.bbox);
   }
 
+  function setRenderMode(mode) {
+    if (!renderer) return;
+    renderer.setRenderMode(mode);
+    if (mode === 'surface') {
+      catOn['skin'] = true;
+      renderer.setSkinOpacity(0.78);
+      applyVisibility();
+    } else if (mode === 'musculoskeletal') {
+      catOn['skin'] = false;
+      renderer.setSkinOpacity(0.0);
+      applyVisibility();
+    } else if (mode === 'comparative') {
+      catOn['skin'] = true;
+      renderer.setSkinOpacity(0.85);
+      applyVisibility();
+    }
+    $$('#visModeSelector button').forEach(b => {
+      b.classList.toggle('on', b.dataset.mode === mode);
+    });
+    if (window.__meridiansDebug && window.__meridiansDebug.setRenderMode) {
+      window.__meridiansDebug.setRenderMode(mode);
+    } else if (window.__meridiansDebug && window.__meridiansDebug.render) {
+      window.__meridiansDebug.render();
+    }
+    renderer.requestRender();
+  }
+
   function setXray(on) {
     renderer.xray = on;
     quiz.userXray = on;
@@ -1027,6 +1065,9 @@
     $('#modeExplore').addEventListener('click', () => setMode('explore'));
     $('#modeQuiz').addEventListener('click', () => setMode('quiz'));
     $$('[data-view]').forEach(b => b.addEventListener('click', () => renderer.view(b.dataset.view)));
+    $$('#visModeSelector button').forEach(b => {
+      b.addEventListener('click', () => setRenderMode(b.dataset.mode));
+    });
     const btnFull = $('#btnFullBody');
     if (btnFull) btnFull.addEventListener('click', () => { if (atlas) renderer.frame(atlas.index.bbox); });
     const btnFoc = $('#btnFocusSelected');
@@ -1157,7 +1198,8 @@
     bindUI();
     useAtlas(await loadBest());
     if (host && atlas.isDemo) openDataDialog();
-    window.__atlasDebug = { get atlas() { return atlas; }, get renderer() { return renderer; }, select };
+    window.__atlasDebug = { get atlas() { return atlas; }, get renderer() { return renderer; }, select, setRenderMode };
+    window.setRenderMode = setRenderMode;
   }
 
   boot();

@@ -12,8 +12,10 @@
   let showDienChan = false;
   let verifiedOnly = true; // Default to verified anatomical anchors only
   let filterRegion = 'neck_shoulder'; // Focus scenario
+  let filterMeridian = 'all'; // 'all' or specific meridian code (e.g. 'GV', 'BL', 'GB')
   let selectedCode = null;
   let searchQuery = '';
+  let showSurfaceReference = false; // Optional reference in Musculoskeletal mode
 
   const overlaySvg = document.getElementById('acupunctureOverlay');
   if (!overlaySvg) return;
@@ -59,28 +61,40 @@
     return window.__atlasDebug ? window.__atlasDebug.renderer : null;
   }
 
-  // Camera facing / occlusion test in horizontal plane
-  function isFacingCamera(pos, r) {
+  // Camera facing / occlusion test using 3D surface normal whenever available
+  function isFacingCamera(pos, r, normal = null) {
     if (!r) return true;
     const eye = r._eye();
+    if (normal && normal.length === 3) {
+      // 3D vector from surface point to camera eye
+      const vx = eye[0] - pos[0];
+      const vy = eye[1] - pos[1];
+      const vz = eye[2] - pos[2];
+      const dot = normal[0] * vx + normal[1] * vy + normal[2] * vz;
+      return dot > -0.04;
+    }
     const target = r.camera.target || [0, 0.9, 0];
     const h = pos[0] * (eye[0] - target[0]) + pos[2] * (eye[2] - target[2]);
-    // If camera has steep pitch looking down from above, top shoulder/head points stay visible
     if (r.camera.pitch > 0.45 && pos[1] > 1.40) return true;
     return h >= -0.012;
   }
 
-  // Fast inline projection using cached matrix to prevent GC churn on Intel HD 5500
+  // Fast inline projection supporting both single viewport and comparative dual-split
   function createProjector(r) {
-    const { vp } = r._matrices();
+    const isComp = r && r.renderMode === 'comparative';
     const cw = r.canvas.clientWidth;
     const ch = r.canvas.clientHeight;
+    const aspect = isComp ? Math.max(1e-3, (cw * 0.5) / Math.max(1, ch)) : Math.max(1e-3, cw / Math.max(1, ch));
+    const { vp } = isComp ? r._matricesForAspect(aspect) : r._matrices();
+    const xOffset = isComp ? cw * 0.5 : 0;
+    const xSpan = isComp ? cw * 0.5 : cw;
+
     return function fastProject(pos) {
       const x = vp[0] * pos[0] + vp[4] * pos[1] + vp[8] * pos[2] + vp[12];
       const y = vp[1] * pos[0] + vp[5] * pos[1] + vp[9] * pos[2] + vp[13];
       const w = vp[3] * pos[0] + vp[7] * pos[1] + vp[11] * pos[2] + vp[15];
       if (w <= 0.001) return null;
-      return [(x / w * 0.5 + 0.5) * cw, (1 - (y / w * 0.5 + 0.5)) * ch];
+      return [xOffset + (x / w * 0.5 + 0.5) * xSpan, (1 - (y / w * 0.5 + 0.5)) * ch];
     };
   }
 
@@ -107,6 +121,19 @@
     const sh = stage.clientHeight;
     const fastProject = createProjector(r);
 
+    const isMusculo = r.renderMode === 'musculoskeletal';
+    const isComp = r.renderMode === 'comparative';
+
+    // In pure Musculoskeletal mode, hide meridians and points unless surface reference guide is enabled
+    if (isMusculo && !showSurfaceReference) {
+      groupMeridians.innerHTML = '';
+      groupThai.innerHTML = '';
+      groupPoints.innerHTML = '';
+      const pin = document.getElementById('pin');
+      if (pin) pin.hidden = true;
+      return;
+    }
+
     // 1. Render Continuous Surface-Conforming Meridians (10,762 Vertices)
     if (!showMeridians) {
       groupMeridians.innerHTML = '';
@@ -115,6 +142,8 @@
       const verifiedMeridianCodes = ['GV', 'BL', 'GB', 'SI', 'TE', 'LI'];
 
       for (const mCode in acuData.meridians) {
+        // Filter: individual meridian channel
+        if (filterMeridian !== 'all' && mCode !== filterMeridian) continue;
         // If verified only, only render verified pathways unless full body view is selected
         if (verifiedOnly && filterRegion !== 'all' && !verifiedMeridianCodes.includes(mCode)) continue;
 
@@ -203,17 +232,21 @@
     }
 
     // 3. Render Acupuncture Points (362 WHO Standard Points)
-    if (!showPoints) {
+    if (!showPoints && !showSurfaceReference && !isComp) {
       groupPoints.innerHTML = '';
     } else {
       let ptsHtml = '';
-      for (const code in acuData.points) {
+      if (showPoints) {
+        for (const code in acuData.points) {
         const pt = acuData.points[code];
         const isVerified = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
         const isSurface = pt.registration_status === 'SURFACE_REGISTERED_FJ2810';
 
         // Filter: verified anchors only toggle (unless full body view is selected)
         if (verifiedOnly && filterRegion !== 'all' && !isVerified) continue;
+
+        // Filter: individual meridian channel
+        if (filterMeridian !== 'all' && pt.meridian_code !== filterMeridian) continue;
 
         // Filter: region
         if (!matchesRegion(pt.region, filterRegion)) continue;
@@ -239,7 +272,8 @@
           if (!s || s[0] < -20 || s[1] < -20 || s[0] > sw + 20 || s[1] > sh + 20) continue;
 
           const isSel = selectedCode === code;
-          const facing = isFacingCamera(inst.pos, r);
+          const norm = inst.side === 'left' && pt.normal ? [-pt.normal[0], pt.normal[1], pt.normal[2]] : pt.normal;
+          const facing = isFacingCamera(inst.pos, r, norm);
 
           // Occlusion culling: hide points facing away unless X-ray is active or point is selected
           if (!r.xray && !facing && !isSel) {
@@ -275,6 +309,29 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
           }
         }
       }
+      }
+    // Comparative split badges and divider
+    if (isComp) {
+      ptsHtml += `
+        <line x1="${(sw / 2).toFixed(1)}" y1="0" x2="${(sw / 2).toFixed(1)}" y2="${sh}" stroke="#475569" stroke-width="2" stroke-dasharray="6,4" opacity="0.8"/>
+        <g transform="translate(16, 26)">
+          <rect x="-6" y="-16" width="225" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#38bdf8" stroke-width="1"/>
+          <text fill="#38bdf8" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">🦴 MUSCULOSKELETAL ANATOMY</text>
+        </g>
+        <g transform="translate(${(sw / 2 + 16).toFixed(1)}, 26)">
+          <rect x="-6" y="-16" width="195" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#10b981" stroke-width="1"/>
+          <text fill="#34d399" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">🌐 SURFACE & MERIDIANS</text>
+        </g>
+      `;
+    } else if (isMusculo && showSurfaceReference) {
+      ptsHtml += `
+        <g transform="translate(16, 26)">
+          <rect x="-6" y="-16" width="285" height="24" rx="4" fill="rgba(15,23,42,0.88)" stroke="#eab308" stroke-width="1"/>
+          <text fill="#facc15" font-size="11" font-weight="700" font-family="system-ui, sans-serif" y="-1">📍 SURFACE REFERENCE (Non-physical)</text>
+        </g>
+      `;
+    }
+
       groupPoints.innerHTML = ptsHtml;
     }
 
@@ -468,6 +525,35 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:4px;">
+          <label style="font-size:11px; color:var(--muted);">Meridian Channel:</label>
+          <select id="selMeridianChannel" style="background:var(--panel-2); color:var(--bone); border:1px solid var(--line); padding:4px 6px; border-radius:var(--r-s); font-size:11px;">
+            <option value="all">⚡ All 14 Meridians</option>
+            <option value="GV">GV — Du Mai (Governing)</option>
+            <option value="CV">CV — Ren Mai (Conception)</option>
+            <option value="BL">BL — Bladder (Taiyang)</option>
+            <option value="GB">GB — Gallbladder (Shaoyang)</option>
+            <option value="SI">SI — Small Intestine</option>
+            <option value="TE">TE — Triple Energizer (Sanjiao)</option>
+            <option value="LI">LI — Large Intestine</option>
+            <option value="LU">LU — Lung (Taiyin)</option>
+            <option value="ST">ST — Stomach (Yangming)</option>
+            <option value="SP">SP — Spleen (Taiyin)</option>
+            <option value="HT">HT — Heart (Shaoyin)</option>
+            <option value="KI">KI — Kidney (Shaoyin)</option>
+            <option value="PC">PC — Pericardium (Jueyin)</option>
+            <option value="LR">LR — Liver (Jueyin)</option>
+          </select>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted);">
+            <span>Skin Transparency:</span>
+            <span id="lblAtlasSkinOpacity">78%</span>
+          </div>
+          <input type="range" id="rngAtlasSkinOpacity" min="0" max="100" value="78" style="cursor:pointer;" />
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:4px;">
           <input type="text" id="txtAcuSearch" placeholder="Search (e.g. LI4, ST36, Hegu, 合谷)..." style="background:var(--panel-2); color:var(--bone); border:1px solid var(--line); padding:4px 6px; border-radius:var(--r-s); font-size:11px;" />
         </div>
 
@@ -521,6 +607,22 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
       renderPointsList();
       render();
     });
+    const selChan = document.getElementById('selMeridianChannel');
+    if (selChan) selChan.addEventListener('change', (e) => {
+      filterMeridian = e.target.value;
+      renderPointsList();
+      render();
+    });
+    const rngSkin = document.getElementById('rngAtlasSkinOpacity');
+    if (rngSkin) rngSkin.addEventListener('input', (e) => {
+      const alpha = parseInt(e.target.value, 10) / 100;
+      const lbl = document.getElementById('lblAtlasSkinOpacity');
+      if (lbl) lbl.textContent = e.target.value + '%';
+      const r = getRenderer();
+      if (r) r.setSkinOpacity(alpha);
+      render();
+    });
+
     document.getElementById('txtAcuSearch').addEventListener('input', (e) => {
       searchQuery = e.target.value.trim();
       renderPointsList();
@@ -568,6 +670,22 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
       const chk = document.getElementById('chkShowPoints');
       if (chk) chk.checked = true;
       selectPoint(ev.data.code, true);
+    } else if (ev.data.action === 'set_render_mode') {
+      const r = getRenderer();
+      if (r) r.setRenderMode(ev.data.mode);
+      render();
+    } else if (ev.data.action === 'set_skin_opacity') {
+      const r = getRenderer();
+      if (r) r.setSkinOpacity(ev.data.opacity);
+      render();
+    } else if (ev.data.action === 'set_filter_meridian') {
+      filterMeridian = ev.data.meridian || 'all';
+      render();
+    } else if (ev.data.action === 'toggle_surface_reference') {
+      showSurfaceReference = Boolean(ev.data.enabled);
+      const r = getRenderer();
+      if (r) r.setSkinReference(showSurfaceReference);
+      render();
     } else if (ev.data.action === 'toggle_layer' || ev.data.action === 'toggle_meridian_layer') {
       const layer = ev.data.layer;
       const val = ev.data.enabled;
@@ -647,5 +765,21 @@ ${!facing ? ' (Dorsal/Occluded)' : ''}</title>
   window.__meridiansDebug = {
     get acuData() { return acuData; },
     selectPoint,
+    render,
+    setSurfaceReference: (on) => {
+      showSurfaceReference = Boolean(on);
+      const r = getRenderer();
+      if (r) r.setSkinReference(showSurfaceReference);
+      render();
+    },
+    setFilterMeridian: (code) => {
+      filterMeridian = code || 'all';
+      render();
+    },
+    setRenderMode: (mode) => {
+      const r = getRenderer();
+      if (r) r.setRenderMode(mode);
+      render();
+    }
   };
 })();

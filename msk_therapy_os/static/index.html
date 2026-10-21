@@ -321,6 +321,12 @@
           <div class="card-title">
             <span>3D Anatomy Atlas <small style="color:var(--primary); font-size:11px;">(Open Anatomy Atlas + BodyParts3D 4.0)</small></span>
             <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
+              <!-- Three Visualization Modes Switcher -->
+              <div class="seg small" style="display:inline-flex; background:#0f172a; padding:2px; border-radius:4px; border:1px solid #334155; margin-right:4px;">
+                <button id="hostBtnModeSurface" class="btn-mode active" onclick="setHostRenderMode('surface')" style="font-size:11px; padding:3px 8px; background:#0f766e; color:#fff; border:none; border-radius:3px; cursor:pointer;" title="Surface Meridian Mode: Skin mesh with surface-anchored points">🌐 Surface</button>
+                <button id="hostBtnModeMusculo" class="btn-mode" onclick="setHostRenderMode('musculoskeletal')" style="font-size:11px; padding:3px 8px; background:transparent; color:#94a3b8; border:none; border-radius:3px; cursor:pointer;" title="Musculoskeletal Anatomy Mode: Deep bones, muscles, joints">🦴 Anatomy</button>
+                <button id="hostBtnModeComparative" class="btn-mode" onclick="setHostRenderMode('comparative')" style="font-size:11px; padding:3px 8px; background:transparent; color:#94a3b8; border:none; border-radius:3px; cursor:pointer;" title="Comparative Research Mode: Synchronized dual split-view">⚖ Compare</button>
+              </div>
               <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'front'})" style="font-size:11px; padding:3px 7px;">Front</button>
               <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'back'})" style="font-size:11px; padding:3px 7px;">Back</button>
               <button class="btn-secondary" onclick="atlasCommand('set_view', {preset:'left'})" style="font-size:11px; padding:3px 7px;">Left</button>
@@ -349,6 +355,36 @@
             <button id="btnToggleThai" class="btn-secondary" onclick="toggleAtlasLayer('thai')" style="font-size:11px; padding:3px 8px;">🇹🇭 Thai Sen Sib</button>
             <button id="btnToggleDienChan" class="btn-secondary" onclick="toggleAtlasLayer('dien_chan')" style="font-size:11px; padding:3px 8px;">🇻🇳 Dien Chan Reflex</button>
             <button id="btnOpenStudioEditor" class="btn-secondary" onclick="openStudioEditorModal()" style="font-size:11px; padding:3px 8px; background:#4338ca; color:#e0e7ff; border-color:#6366f1;">🛠️ Meridian Studio</button>
+            <span style="border-left:1px solid #475569; height:16px; margin:0 2px;"></span>
+            <!-- Meridian Channel Filter Dropdown -->
+            <select id="hostMeridianFilter" onchange="onHostMeridianFilterChange(this.value)" style="font-size:11px; padding:2px 6px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:4px; cursor:pointer;" title="Filter to a specific meridian channel">
+              <option value="all">⚡ All Meridians (14)</option>
+              <option value="GV">GV — Du Mai (Governing)</option>
+              <option value="CV">CV — Ren Mai (Conception)</option>
+              <option value="BL">BL — Bladder (Taiyang)</option>
+              <option value="GB">GB — Gallbladder (Shaoyang)</option>
+              <option value="SI">SI — Small Intestine</option>
+              <option value="TE">TE — Triple Energizer (Sanjiao)</option>
+              <option value="LI">LI — Large Intestine</option>
+              <option value="LU">LU — Lung (Taiyin)</option>
+              <option value="ST">ST — Stomach (Yangming)</option>
+              <option value="SP">SP — Spleen (Taiyin)</option>
+              <option value="HT">HT — Heart (Shaoyin)</option>
+              <option value="KI">KI — Kidney (Shaoyin)</option>
+              <option value="PC">PC — Pericardium (Jueyin)</option>
+              <option value="LR">LR — Liver (Jueyin)</option>
+            </select>
+            <!-- Skin Opacity Slider -->
+            <label id="hostSkinOpacityContainer" style="font-size:11px; color:#94a3b8; display:flex; align-items:center; gap:4px; margin-left:2px;" title="Adjust skin mesh transparency">
+              Skin:
+              <input type="range" id="hostSkinOpacity" min="0" max="100" value="78" style="width:65px; height:4px; cursor:pointer;" oninput="onHostSkinOpacityChange(this.value)" />
+              <span id="hostSkinOpacityVal" style="color:#e2e8f0; width:26px; font-variant-numeric:tabular-nums;">78%</span>
+            </label>
+            <!-- Surface Reference Guide toggle (Musculoskeletal mode) -->
+            <label id="hostSurfaceRefContainer" style="font-size:11px; color:#facc15; display:none; align-items:center; gap:4px; margin-left:4px;" title="Display surface reference guide over musculoskeletal anatomy">
+              <input type="checkbox" id="chkHostSurfaceRef" onchange="onHostSurfaceRefChange(this.checked)" />
+              <span>Reference Overlay</span>
+            </label>
           </div>
 
           <div style="font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
@@ -855,6 +891,49 @@
       if (f && f.contentWindow) {
         f.contentWindow.postMessage({ action: "search_select", query, isolate }, "*");
       }
+    }
+
+    let currentHostRenderMode = 'surface';
+
+    function setHostRenderMode(mode) {
+      currentHostRenderMode = mode;
+      atlasCommand('set_render_mode', { mode });
+      // Update button styling
+      const btnMap = {
+        'surface': document.getElementById('hostBtnModeSurface'),
+        'musculoskeletal': document.getElementById('hostBtnModeMusculo'),
+        'comparative': document.getElementById('hostBtnModeComparative')
+      };
+      for (const m in btnMap) {
+        if (!btnMap[m]) continue;
+        if (m === mode) {
+          btnMap[m].style.background = m === 'musculoskeletal' ? '#0369a1' : (m === 'comparative' ? '#7c3aed' : '#0f766e');
+          btnMap[m].style.color = '#fff';
+        } else {
+          btnMap[m].style.background = 'transparent';
+          btnMap[m].style.color = '#94a3b8';
+        }
+      }
+      // Toggle controls visibility based on mode
+      const opacityCtrl = document.getElementById('hostSkinOpacityContainer');
+      const refCtrl = document.getElementById('hostSurfaceRefContainer');
+      if (opacityCtrl) opacityCtrl.style.display = mode === 'musculoskeletal' ? 'none' : 'flex';
+      if (refCtrl) refCtrl.style.display = mode === 'musculoskeletal' ? 'flex' : 'none';
+    }
+
+    function onHostSkinOpacityChange(val) {
+      const alpha = parseInt(val, 10) / 100;
+      const lbl = document.getElementById('hostSkinOpacityVal');
+      if (lbl) lbl.textContent = val + '%';
+      atlasCommand('set_skin_opacity', { opacity: alpha });
+    }
+
+    function onHostMeridianFilterChange(meridian) {
+      atlasCommand('set_filter_meridian', { meridian });
+    }
+
+    function onHostSurfaceRefChange(enabled) {
+      atlasCommand('toggle_surface_reference', { enabled });
     }
 
     function atlasCommand(action, params = {}) {
