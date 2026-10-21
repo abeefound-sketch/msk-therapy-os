@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "atlas_url": "http://127.0.0.1:8085/atlas/",
+  "main_url": "http://127.0.0.1:8085/",
+  "verified_points": [
+    "GV14",
+    "GB21",
+    "GB20",
+    "BL10",
+    "SI15",
+    "TE15"
+  ],
+  "circle_instances_rendered": 11,
+  "main_ui_card_active": true,
+  "screenshots": [
+    "evidence_poc_posterior.png",
+    "evidence_poc_shoulder_top.png",
+    "evidence_poc_lateral.png",
+    "evidence_poc_zoomed.png",
+    "evidence_poc_main_ui.png"
+  ],
+  "verified_at": "2026-10-21T05:41:30Z"
+}
