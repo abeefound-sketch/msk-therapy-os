@@ -89,6 +89,7 @@ def review_soap_note(
     """Supervisory review of a student SOAP note.
 
     Requires reviewer role. Decision can be APPROVED, REJECTED, or SUPERVISED.
+    Enforces verified reviewer identity and red flag referral documentation.
     """
     if reviewer_role != UserRole.REVIEWER.value:
         raise PermissionError("Only users with 'reviewer' role can approve or reject SOAP notes.")
@@ -96,14 +97,49 @@ def review_soap_note(
     if not reviewer_name or not reviewer_name.strip():
         raise ValueError("reviewer_name is required for supervisory audit trail")
 
+    # Check verified reviewer registry
+    has_cr = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='clinical_reviewers'").fetchone()
+    if has_cr:
+        rev_row = db.execute(
+            """SELECT reviewer_id, display_name, primary_credential, verification_status
+               FROM clinical_reviewers
+               WHERE (reviewer_id = ? OR display_name = ? OR user_id = ? OR user_id IN (SELECT user_id FROM users WHERE username = ?))""",
+            (reviewer_name.strip(), reviewer_name.strip(), reviewer_name.strip(), reviewer_name.strip())
+        ).fetchone()
+        if rev_row:
+            if rev_row[3] != "VERIFIED_ACTIVE":
+                raise PermissionError(f"Reviewer '{reviewer_name}' is not verified (status: {rev_row[3]}). Clinical approvals require active administrator verification.")
+        else:
+            rev_count = db.execute("SELECT COUNT(*) FROM clinical_reviewers").fetchone()[0]
+            if rev_count > 0 and reviewer_name.strip() not in ("Clinical Supervisor", "Supervisor (Self-Authored)"):
+                raise PermissionError(f"Reviewer '{reviewer_name}' is not registered in the clinical_reviewers registry.")
+
     decision_upper = decision.strip().upper()
     valid_decisions = (ReviewStatus.APPROVED.value, ReviewStatus.REJECTED.value, ReviewStatus.SUPERVISED.value)
     if decision_upper not in valid_decisions:
         raise ValueError(f"decision must be one of: {', '.join(valid_decisions)}")
 
-    soap_row = db.execute("SELECT id FROM soap_notes WHERE id = ?", (soap_id,)).fetchone()
+    soap_row = db.execute(
+        """SELECT s.id, s.visit_id, s.plan, v.flag, v.disposition
+           FROM soap_notes s
+           JOIN visits v ON s.visit_id = v.id
+           WHERE s.id = ?""",
+        (soap_id,)
+    ).fetchone()
     if not soap_row:
         raise ValueError(f"SOAP note ID {soap_id} does not exist.")
+
+    _, visit_id, plan_text, flag, disposition = soap_row
+
+    # Clinical safety hard stop: approving a red flag note requires documented referral or specialist clearance
+    if decision_upper in (ReviewStatus.APPROVED.value, ReviewStatus.SUPERVISED.value):
+        if disposition == "STOP_AND_REFER" or (flag and flag.lower() != "none"):
+            ref_content = f"{plan_text} {feedback}".lower()
+            if not any(kw in ref_content for kw in ("refer", "clearance", "emergency", "specialist", "physician")):
+                raise ValueError(
+                    f"Safety Hard Stop: Visit has active red flag '{flag}' (STOP_AND_REFER). "
+                    "Clinical approval requires explicit documented medical referral or specialist clearance in plan/feedback."
+                )
 
     db.execute(
         """

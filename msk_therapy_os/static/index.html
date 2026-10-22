@@ -1046,6 +1046,52 @@
     let activeCaseId = "DEMO-NECK-001";
     let activeRegion = "neck";
     let activeRole = "student";
+    let authSessionToken = null;
+    let authCsrfToken = null;
+    let authCurrentUser = null;
+
+    async function apiFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      if (authSessionToken) {
+        options.headers["Authorization"] = `Bearer ${authSessionToken}`;
+      }
+      if (authCsrfToken && options.method && ["POST", "PUT", "DELETE"].includes(options.method.toUpperCase())) {
+        options.headers["X-CSRF-Token"] = authCsrfToken;
+      }
+      return fetch(url, options);
+    }
+
+    async function loginAsRole(role) {
+      let username = "student";
+      let password = "student123";
+      if (role === "reviewer") {
+        username = "dr_chen";
+        password = "reviewer123";
+      } else if (role === "admin") {
+        username = "admin";
+        password = "admin123";
+      }
+      try {
+        const res = await apiFetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          authSessionToken = data.session_token;
+          authCsrfToken = data.csrf_token;
+          authCurrentUser = data.user;
+          activeRole = data.user.role;
+          const badge = document.getElementById("soapRoleBadge");
+          if (badge) {
+            badge.textContent = `Authenticated: ${data.user.display_name} (${data.user.role.toUpperCase()})`;
+          }
+        }
+      } catch (err) {
+        console.warn("Auto-login error:", err);
+      }
+    }
     let availableRedFlags = [];
     let lastSelectedStructure = null;
     let lastSelectedAcupoint = null;
@@ -1447,9 +1493,8 @@
     });
 
     // Role switcher
-    document.getElementById("roleSelect").addEventListener("change", (e) => {
-      activeRole = e.target.value;
-      document.getElementById("soapRoleBadge").textContent = `Role: ${activeRole}`;
+    document.getElementById("roleSelect").addEventListener("change", async (e) => {
+      await loginAsRole(e.target.value);
       loadCaseData(activeCaseId);
     });
 
@@ -1460,7 +1505,8 @@
     });
 
     document.getElementById("refreshBtn").addEventListener("click", () => {
-      loadCases();
+      loginAsRole(activeRole);
+    loadCases();
       loadCaseData(activeCaseId);
       loadRegionAnatomy(activeRegion);
     });
@@ -1468,7 +1514,7 @@
     // Data Loaders
     async function loadCases() {
       try {
-        const res = await fetch("/api/cases");
+        const res = await apiFetch("/api/cases");
         const cases = await res.json();
         const sel = document.getElementById("caseSelect");
         sel.innerHTML = "";
@@ -1488,7 +1534,7 @@
       const container = document.getElementById("structuresList");
       container.innerHTML = "Loading structures...";
       try {
-        const res = await fetch(`/api/anatomy?region=${encodeURIComponent(region)}`);
+        const res = await apiFetch(`/api/anatomy?region=${encodeURIComponent(region)}`);
         const structures = await res.json();
         document.getElementById("structureCount").textContent = `${structures.length} structures`;
         if (structures.length === 0) {
@@ -1549,7 +1595,7 @@
       const container = document.getElementById("questionnairesList");
       container.innerHTML = "Loading questionnaires...";
       try {
-        const res = await fetch(`/api/questionnaires?region=${encodeURIComponent(region)}`);
+        const res = await apiFetch(`/api/questionnaires?region=${encodeURIComponent(region)}`);
         const qs = await res.json();
         if (qs.length === 0) {
           container.innerHTML = `<p style="color:var(--text-muted)">No specific scenario questionnaires for '${region}'.</p>`;
@@ -1575,7 +1621,7 @@
     async function loadCaseData(caseId) {
       document.getElementById("intakeCaseId").textContent = caseId;
       try {
-        const res = await fetch(`/api/timeline?case_id=${encodeURIComponent(caseId)}`);
+        const res = await apiFetch(`/api/timeline?case_id=${encodeURIComponent(caseId)}`);
         const timeline = await res.json();
 
         // 1. Intake profile
@@ -1818,7 +1864,7 @@
       const interpretation = document.getElementById("obsInterpretation").value.trim();
 
       try {
-        const res = await fetch("/api/observation", {
+        const res = await apiFetch("/api/observation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ visit_id, structure_id, structure_type, observation_type, severity, finding, interpretation })
@@ -1846,7 +1892,7 @@
       const adverse_reactions = document.getElementById("sessAdverse").value.trim();
 
       try {
-        const res = await fetch("/api/session", {
+        const res = await apiFetch("/api/session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ visit_id, modality, duration_min, target_structures, parameters, adverse_reactions, role: activeRole })
@@ -1870,7 +1916,7 @@
       box.style.display = "block";
       pre.textContent = "Generating HL7 FHIR R4 Bundle...";
       try {
-        const res = await fetch(`/api/export-fhir?case_id=${encodeURIComponent(activeCaseId)}`);
+        const res = await apiFetch(`/api/export-fhir?case_id=${encodeURIComponent(activeCaseId)}`);
         const bundle = await res.json();
         pre.textContent = JSON.stringify(bundle, null, 2);
       } catch (err) {
@@ -1889,7 +1935,7 @@
       const plan = document.getElementById("soapP").value;
 
       try {
-        const res = await fetch("/api/soap", {
+        const res = await apiFetch("/api/soap", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ visit_id, subjective, objective, assessment, plan, role: activeRole })
@@ -1912,7 +1958,7 @@
     async function approveSOAP(soapId, decision) {
       const feedback = document.getElementById(`feedback-${soapId}`).value;
       try {
-        const res = await fetch("/api/review-soap", {
+        const res = await apiFetch("/api/review-soap", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1986,7 +2032,7 @@
       area.innerHTML = "Evaluating...";
 
       try {
-        const res = await fetch("/api/screen-safety", {
+        const res = await apiFetch("/api/screen-safety", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ flag, modality, contraindications: contras })
@@ -2027,7 +2073,7 @@
       const note = document.getElementById("visNote").value;
 
       try {
-        const res = await fetch("/api/visit", {
+        const res = await apiFetch("/api/visit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ case: activeCaseId, when, region, pain, rom, flag, note })
@@ -2048,7 +2094,7 @@
       const pre = document.getElementById("reportPreArea");
       pre.textContent = "Generating...";
       try {
-        const res = await fetch(`/api/report?case_id=${encodeURIComponent(activeCaseId)}`);
+        const res = await apiFetch(`/api/report?case_id=${encodeURIComponent(activeCaseId)}`);
         const text = await res.text();
         pre.textContent = text;
       } catch (err) {
@@ -2085,7 +2131,7 @@
       const area = document.getElementById("evidenceTableArea");
       area.innerHTML = "Loading evidence catalog...";
       try {
-        const res = await fetch("/api/evidence");
+        const res = await apiFetch("/api/evidence");
         cachedEvidenceList = await res.json();
         renderEvidenceTable();
       } catch (err) {

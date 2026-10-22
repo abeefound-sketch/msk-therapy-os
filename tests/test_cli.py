@@ -17,7 +17,12 @@ class TestCLI(unittest.TestCase):
         self.db_path = str(Path(self.temp_dir.name) / "test_cli.sqlite3")
 
     def tearDown(self):
-        self.temp_dir.cleanup()
+        import gc
+        gc.collect()
+        try:
+            self.temp_dir.cleanup()
+        except Exception:
+            pass
 
     def run_cli(self, args: list[str]) -> tuple[int, str]:
         old_stdout = sys.stdout

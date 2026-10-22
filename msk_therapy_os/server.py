@@ -24,9 +24,17 @@ from msk_therapy_os.assessment import (
     list_questionnaires,
     record_rom,
 )
-from msk_therapy_os.db import open_db
+from msk_therapy_os.db import open_db, init_db, seed_db
 from msk_therapy_os.evidence import get_evidence_by_id, list_evidence
 from msk_therapy_os.reporting import generate_case_report
+from msk_therapy_os.auth import (
+    authenticate_user,
+    create_session,
+    get_user_from_session,
+    invalidate_session,
+    list_clinical_reviewers,
+    verify_reviewer,
+)
 from msk_therapy_os.safety import evaluate_safety
 from msk_therapy_os.points import (
     list_libraries,
@@ -48,6 +56,7 @@ from msk_therapy_os.points import (
     run_database_integrity_check,
     verify_reference_dataset_integrity,
     backup_database,
+    restore_database_safely,
     rollback_database,
     get_evidence_ledger,
     sanitize_backup_filename,
@@ -95,13 +104,37 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         """Suppress default HTTP request logging to keep console clean unless debugging."""
         pass
 
+    def _check_maintenance_mode(self) -> bool:
+        """Return True and send HTTP 503 if system is in maintenance mode for backup/restore."""
+        from msk_therapy_os.points import IS_MAINTENANCE_ACTIVE
+        if IS_MAINTENANCE_ACTIVE:
+            payload = json.dumps({
+                "error": "Service Unavailable: Database restore or maintenance operation in progress. Please retry shortly.",
+                "status": 503
+            }).encode("utf-8")
+            self.send_response(HTTPStatus.SERVICE_UNAVAILABLE)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(payload)))
+            self.send_header("Retry-After", "5")
+            cors_origin = self._get_cors_origin()
+            if cors_origin:
+                self.send_header("Access-Control-Allow-Origin", cors_origin)
+            self.end_headers()
+            self.wfile.write(payload)
+            return True
+        return False
+
     def _is_origin_allowed(self) -> bool:
-        """Verify Origin header to prevent cross-origin abuse from unauthorized web domains."""
+        """Verify Origin header to prevent cross-origin abuse from unauthorized web domains.
+        
+        Strictly rejects external web domains and null origins for state-mutating requests.
+        Direct CLI, test clients, and same-origin local connections are permitted.
+        """
         origin = self.headers.get("Origin")
         if not origin:
-            return True  # Direct API calls, Python urllib, cURL, CLI tools
+            return True  # Direct API calls, Python urllib, cURL, CLI tools without browser Origin header
         if origin == "null":
-            return True  # Local sandboxed iframes, file:// protocol
+            return False  # Reject null origins on state-mutating requests
         try:
             parsed = urlparse(origin)
             hostname = parsed.hostname or ""
@@ -115,7 +148,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         """Return permitted CORS origin or empty string to deny foreign access."""
         origin = self.headers.get("Origin")
         if not origin or origin == "null":
-            return "*"
+            return ""
         try:
             parsed = urlparse(origin)
             if parsed.hostname in ALLOWED_ORIGIN_HOSTS:
@@ -124,7 +157,39 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
             pass
         return ""
 
-    def _send_json(self, data: Any, status: int = HTTPStatus.OK) -> None:
+    def _get_session_token(self) -> Optional[str]:
+        """Extract session token from Authorization: Bearer, X-Session-Token, or cookie."""
+        auth_header = self.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            return auth_header[7:].strip()
+        x_tok = self.headers.get("X-Session-Token", "")
+        if x_tok:
+            return x_tok.strip()
+        cookie = self.headers.get("Cookie", "")
+        for part in cookie.split(";"):
+            part = part.strip()
+            if part.startswith("session_token="):
+                return part[len("session_token="):].strip()
+        return None
+
+    def _get_authenticated_user(self, db: sqlite3.Connection) -> Optional[Dict[str, Any]]:
+        """Retrieve authenticated user record from current session token, if valid."""
+        token = self._get_session_token()
+        if not token:
+            return None
+        return get_user_from_session(db, token)
+
+    def _validate_csrf_if_session(self, user: Optional[Dict[str, Any]], body: Dict[str, Any]) -> bool:
+        """Validate CSRF token against session when an authenticated user session is active."""
+        if not user:
+            return True  # Direct unauthenticated or CLI requests do not carry a web session
+        expected_csrf = user.get("csrf_token")
+        if not expected_csrf:
+            return True
+        received_csrf = self.headers.get("X-CSRF-Token", "") or body.get("csrf_token", "")
+        return bool(received_csrf and received_csrf == expected_csrf)
+
+    def _send_json(self, data: Any, status: int = HTTPStatus.OK, set_cookie: Optional[str] = None) -> None:
         payload = json.dumps(data).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -132,6 +197,8 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         cors_origin = self._get_cors_origin()
         if cors_origin:
             self.send_header("Access-Control-Allow-Origin", cors_origin)
+        if set_cookie:
+            self.send_header("Set-Cookie", set_cookie)
         self.end_headers()
         self.wfile.write(payload)
 
@@ -264,6 +331,8 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         return None
 
     def do_GET(self) -> None:
+        if self._check_maintenance_mode():
+            return
         parsed = urlparse(self.path)
         path = parsed.path
         query = parse_qs(parsed.query)
@@ -330,7 +399,17 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
         with open_db(self.db_path) as db:
             try:
-                if path == "/api/cases":
+                if path == "/api/auth/me":
+                    user = self._get_authenticated_user(db)
+                    if user:
+                        self._send_json({"authenticated": True, "user": user})
+                    else:
+                        self._send_json({"authenticated": False, "user": None})
+
+                elif path == "/api/auth/reviewers":
+                    self._send_json(list_clinical_reviewers(db))
+
+                elif path == "/api/cases":
                     rows = db.execute("SELECT case_id, label FROM cases ORDER BY case_id").fetchall()
                     self._send_json([{"case_id": r[0], "label": r[1]} for r in rows])
 
@@ -620,8 +699,10 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_POST(self) -> None:
+        if self._check_maintenance_mode():
+            return
         if not self._is_origin_allowed():
-            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins are rejected."}, status=HTTPStatus.FORBIDDEN)
+            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins or untrusted null origins are rejected."}, status=HTTPStatus.FORBIDDEN)
             return
 
         parsed = urlparse(self.path)
@@ -631,6 +712,36 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
             body = self._read_json_body()
         except Exception as e:
             self._send_json({"error": f"Invalid JSON payload: {e}"}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/auth/login":
+            uname = body.get("username", "")
+            pwd = body.get("password", "")
+            with open_db(self.db_path) as db:
+                u = authenticate_user(db, uname, pwd)
+                if not u:
+                    self._send_json({"error": "Invalid username or password"}, status=HTTPStatus.UNAUTHORIZED)
+                    return
+                sess = create_session(db, u["user_id"])
+                u["session_token"] = sess["session_token"]
+                u["csrf_token"] = sess["csrf_token"]
+                cookie = f"session_token={sess['session_token']}; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800"
+                self._send_json({
+                    "status": "authenticated",
+                    "user": u,
+                    "session_token": sess["session_token"],
+                    "csrf_token": sess["csrf_token"],
+                    "expires_utc": sess["expires_utc"],
+                }, set_cookie=cookie)
+            return
+
+        if path == "/api/auth/logout":
+            token = self._get_session_token()
+            if token:
+                with open_db(self.db_path) as db:
+                    invalidate_session(db, token)
+            cookie = "session_token=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"
+            self._send_json({"status": "logged_out"}, set_cookie=cookie)
             return
 
         if path == "/api/screen-safety":
@@ -656,7 +767,26 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
         with open_db(self.db_path) as db:
             try:
-                if path == "/api/visit":
+                user = self._get_authenticated_user(db)
+                if user and not self._validate_csrf_if_session(user, body):
+                    self._send_json({"error": "Forbidden: Invalid or missing CSRF token."}, status=HTTPStatus.FORBIDDEN)
+                    return
+
+                if path == "/api/auth/verify-reviewer":
+                    if not user:
+                        self._send_json({"error": "Authentication required. Admin privileges required."}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    if user.get("role") != "admin":
+                        self._send_json({"error": "Forbidden: Administrator role required to verify reviewer credentials."}, status=HTTPStatus.FORBIDDEN)
+                        return
+                    rev_id = body.get("reviewer_id")
+                    st = body.get("status", "VERIFIED_ACTIVE")
+                    nts = body.get("notes", "")
+                    res = verify_reviewer(db, rev_id, user["user_id"], status=st, notes=nts)
+                    self._send_json({"status": "verified", "reviewer": res})
+                    return
+
+                elif path == "/api/visit":
                     disposition = add_visit(
                         db,
                         case=body["case"],
@@ -681,6 +811,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "created", "rom_id": rom_id})
 
                 elif path == "/api/soap":
+                    author_role = user.get("role") if user else body.get("role", "student")
                     soap_id = create_soap_note(
                         db,
                         visit_id=int(body["visit_id"]),
@@ -688,20 +819,31 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         objective=body["objective"],
                         assessment=body["assessment"],
                         plan=body["plan"],
-                        author_role=body.get("role", "student"),
+                        author_role=author_role,
                     )
                     self._send_json({"status": "created", "soap_id": soap_id})
 
                 elif path == "/api/review-soap":
+                    if user:
+                        reviewer_role = user.get("role", "")
+                        reviewer_name = user.get("display_name", "")
+                    else:
+                        reviewer_role = body.get("role", "reviewer")
+                        reviewer_name = body.get("reviewer", "Clinical Supervisor")
+
+                    if reviewer_role != "reviewer":
+                        self._send_json({"error": "Forbidden: Only users with 'reviewer' role can approve or reject SOAP notes."}, status=HTTPStatus.FORBIDDEN)
+                        return
+
                     review_soap_note(
                         db,
                         soap_id=int(body["soap_id"]),
-                        reviewer_name=body.get("reviewer", "Clinical Supervisor"),
-                        reviewer_role=body.get("role", "reviewer"),
+                        reviewer_name=reviewer_name,
+                        reviewer_role=reviewer_role,
                         decision=body["decision"],
                         feedback=body.get("feedback", ""),
                     )
-                    self._send_json({"status": "reviewed", "decision": body["decision"]})
+                    self._send_json({"status": "reviewed", "decision": body["decision"], "reviewer": reviewer_name})
 
                 elif path == "/api/observation":
                     obs_id = record_observation(
@@ -717,6 +859,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "created", "observation_id": obs_id})
 
                 elif path == "/api/session":
+                    p_role = user.get("role") if user else body.get("role", "student")
                     sess_id = record_session(
                         db,
                         visit_id=int(body["visit_id"]),
@@ -725,7 +868,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         target_structures=body.get("target_structures", "[]"),
                         parameters=body.get("parameters", ""),
                         adverse_reactions=body.get("adverse_reactions", "none"),
-                        practitioner_role=body.get("role", "student"),
+                        practitioner_role=p_role,
                     )
                     self._send_json({"status": "created", "session_id": sess_id})
 
@@ -759,6 +902,12 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "saved", "override": ov})
 
                 elif path == "/api/governance/backup":
+                    if not user:
+                        self._send_json({"error": "Authentication required. Admin privileges required for database backup."}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    if user.get("role") != "admin":
+                        self._send_json({"error": "Forbidden: Administrator role required for database backup."}, status=HTTPStatus.FORBIDDEN)
+                        return
                     name = body.get("name")
                     try:
                         bp = get_safe_backup_path(name)
@@ -768,6 +917,12 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json(backup_database(db, str(bp)))
 
                 elif path == "/api/governance/restore":
+                    if not user:
+                        self._send_json({"error": "Authentication required. Admin privileges required for database restore."}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    if user.get("role") != "admin":
+                        self._send_json({"error": "Forbidden: Administrator role required for database restore."}, status=HTTPStatus.FORBIDDEN)
+                        return
                     name = body.get("name") or body.get("backup_name")
                     if not name:
                         self._send_json({"error": "Missing backup name to restore"}, status=HTTPStatus.BAD_REQUEST)
@@ -778,7 +933,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         self._send_json({"error": str(pe)}, status=HTTPStatus.BAD_REQUEST)
                         return
                     try:
-                        res = rollback_database(self.db_path, str(bp))
+                        res = restore_database_safely(self.db_path, str(bp))
                         self._send_json(res)
                     except Exception as e:
                         self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
@@ -812,8 +967,10 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_PUT(self) -> None:
+        if self._check_maintenance_mode():
+            return
         if not self._is_origin_allowed():
-            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins are rejected."}, status=HTTPStatus.FORBIDDEN)
+            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins or untrusted null origins are rejected."}, status=HTTPStatus.FORBIDDEN)
             return
 
         parsed = urlparse(self.path)
@@ -826,6 +983,11 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
         with open_db(self.db_path) as db:
             try:
+                user = self._get_authenticated_user(db)
+                if user and not self._validate_csrf_if_session(user, body):
+                    self._send_json({"error": "Forbidden: Invalid or missing CSRF token."}, status=HTTPStatus.FORBIDDEN)
+                    return
+
                 if path.startswith("/api/points/"):
                     pt_id = path.split("/")[3]
                     ch_type = body.get("change_type", "UPDATE_COORDS")
@@ -842,8 +1004,10 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_DELETE(self) -> None:
+        if self._check_maintenance_mode():
+            return
         if not self._is_origin_allowed():
-            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins are rejected."}, status=HTTPStatus.FORBIDDEN)
+            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins or untrusted null origins are rejected."}, status=HTTPStatus.FORBIDDEN)
             return
 
         parsed = urlparse(self.path)
@@ -851,6 +1015,11 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
         with open_db(self.db_path) as db:
             try:
+                user = self._get_authenticated_user(db)
+                if user and not self._validate_csrf_if_session(user, {}):
+                    self._send_json({"error": "Forbidden: Invalid or missing CSRF token."}, status=HTTPStatus.FORBIDDEN)
+                    return
+
                 if path.startswith("/api/points/overrides/"):
                     ref_code = path.split("/")[4]
                     success = delete_reference_override(db, ref_code, author="Clinical Educator")
@@ -874,6 +1043,10 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
 def create_server(db_path: str, host: str = "127.0.0.1", port: int = 8080) -> HTTPServer:
     """Create configured HTTPServer instance."""
+    with open_db(db_path) as db:
+        init_db(db)
+        seed_db(db)
+
     class ConfiguredHandler(MSKRequestHandler):
         pass
 

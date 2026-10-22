@@ -9,6 +9,7 @@ from typing import Optional
 class UserRole(str, Enum):
     STUDENT = "student"
     REVIEWER = "reviewer"
+    ADMIN = "admin"
 
 
 class ReviewStatus(str, Enum):

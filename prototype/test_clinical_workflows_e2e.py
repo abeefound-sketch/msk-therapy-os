@@ -292,7 +292,7 @@ def run_clinical_workflow_audit():
         }
 
         created_pt = page.evaluate("""async (payload) => {
-            const res = await fetch('/api/points', {
+            const res = await apiFetch('/api/points', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -321,7 +321,7 @@ def run_clinical_workflow_audit():
 
         # Soft-delete the point
         del_res = page.evaluate("""async (id) => {
-            const res = await fetch(`/api/points/${id}/delete`, {
+            const res = await apiFetch(`/api/points/${id}/delete`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: '{}'
@@ -341,7 +341,7 @@ def run_clinical_workflow_audit():
 
         # Restore the point
         restore_res = page.evaluate("""async (id) => {
-            const res = await fetch(`/api/points/${id}/restore`, {
+            const res = await apiFetch(`/api/points/${id}/restore`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: '{}'
@@ -384,7 +384,7 @@ def run_clinical_workflow_audit():
         # Override reference point GV14 with nudged coordinate
         nudged_pos = [0.0, 1.4885, -0.0782]
         ov_res = page.evaluate("""async (pos) => {
-            const res = await fetch('/api/points/overrides/GV14', {
+            const res = await apiFetch('/api/points/overrides/GV14', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -420,7 +420,7 @@ def run_clinical_workflow_audit():
 
         # Delete the override
         del_ov = page.evaluate("""async () => {
-            const res = await fetch('/api/points/overrides/GV14/delete', {
+            const res = await apiFetch('/api/points/overrides/GV14/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: '{}'

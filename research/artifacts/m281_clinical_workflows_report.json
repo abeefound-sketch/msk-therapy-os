@@ -1,22 +1,22 @@
 {
   "milestone": "M2.8.1 Acceptance Hardening",
-  "timestamp_utc": "2026-10-22T14:12:02Z",
+  "timestamp_utc": "2026-10-22T15:13:16Z",
   "target_url": "http://127.0.0.1:8085",
   "workflows": {
     "soap_lifecycle": {
       "status": "PASS",
-      "soap_id": 18,
-      "marker": "V281-RUN-1792678327",
+      "soap_id": 21,
+      "marker": "V281-RUN-1792682000",
       "persisted_status": "APPROVED",
-      "reviewer": "Clinical Supervisor"
+      "reviewer": "Dr. Sarah Chen, MD"
     },
     "fhir_r4_bundle": {
       "status": "PASS",
       "resource_count": 27,
       "resource_types": [
+        "Observation",
         "Patient",
-        "Encounter",
-        "Observation"
+        "Encounter"
       ],
       "loinc_codes": [
         "72514-3",
@@ -31,8 +31,8 @@
     },
     "custom_point_persistence": {
       "status": "PASS",
-      "code": "MYO-NX-8335",
-      "point_id": "PT-MYO-NX-8335-1792678335",
+      "code": "MYO-NX-2010",
+      "point_id": "PT-MYO-NX-2010-1792682010",
       "bilateral_verified": true,
       "soft_delete_verified": true,
       "restore_verified": true

@@ -117,10 +117,35 @@ def record_session(
     if practitioner_role not in ("student", "reviewer"):
         raise ValueError(f"Invalid practitioner role: {practitioner_role}")
 
-    # Verify visit exists
-    visit = db.execute("SELECT id FROM visits WHERE id = ?", (visit_id,)).fetchone()
+    mod_clean = modality.strip().lower()
+    if mod_clean == "spinal_manipulation":
+        raise ValueError("Safety Hard Stop: High-velocity spinal manipulation is strictly prohibited in MSK-Therapy-OS.")
+
+    # Verify visit exists and check safety flags
+    visit = db.execute("SELECT id, case_id, flag, disposition FROM visits WHERE id = ?", (visit_id,)).fetchone()
     if not visit:
         raise ValueError(f"Visit ID {visit_id} does not exist")
+
+    v_id, case_id, flag, disposition = visit
+    if disposition == "STOP_AND_REFER" or (flag and flag.lower() != "none"):
+        # Check if specialist referral clearance has been recorded and approved
+        cursor = db.cursor()
+        has_clearance = False
+        cursor.execute(
+            """SELECT plan, assessment, review_status, review_notes FROM soap_notes
+               WHERE visit_id = ? AND review_status IN ('APPROVED', 'SUPERVISED')""",
+            (visit_id,)
+        )
+        for s_plan, s_assess, s_status, s_notes in cursor.fetchall():
+            content = f"{s_plan} {s_assess} {s_notes}".lower()
+            if any(term in content for term in ("specialist clearance", "referral clearance", "medical clearance", "cleared by physician", "cleared by specialist")):
+                has_clearance = True
+                break
+        if not has_clearance:
+            raise ValueError(
+                f"Safety Hard Stop: Visit {visit_id} has active red flag '{flag}' (disposition: {disposition}). "
+                "Downstream manual therapy and treatment sessions are strictly prohibited without documented and approved specialist referral clearance."
+            )
 
     cur = db.execute(
         """
@@ -303,7 +328,7 @@ def get_patient_timeline(db: sqlite3.Connection, case_id: str) -> Dict[str, Any]
     }
 
 
-def export_case_fhir(db: sqlite3.Connection, case_id: str) -> Dict[str, Any]:
+def export_case_fhir(db: sqlite3.Connection, case_id: str, require_approved_soap: bool = False) -> Dict[str, Any]:
     """Export synthetic case data as an HL7 FHIR R4 Bundle compliant with Medplum/FHIR specifications."""
     timeline = get_patient_timeline(db, case_id)
 
@@ -337,13 +362,21 @@ def export_case_fhir(db: sqlite3.Connection, case_id: str) -> Dict[str, Any]:
 
     # 2. Encounters and Observations per Visit
     for v in timeline["visits"]:
+        soap_statuses = [sp.get("review_status") for sp in v.get("soaps", [])]
+        if "REJECTED" in soap_statuses:
+            enc_status = "entered-in-error"
+        elif require_approved_soap and not any(st in ("APPROVED", "SUPERVISED") for st in soap_statuses):
+            enc_status = "cancelled"
+        else:
+            enc_status = "finished"
+
         enc_id = f"encounter-v{v['visit_id']}"
         enc_res = {
             "fullUrl": f"urn:uuid:{enc_id}",
             "resource": {
                 "resourceType": "Encounter",
                 "id": enc_id,
-                "status": "finished",
+                "status": enc_status,
                 "class": {
                     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
                     "code": "AMB",

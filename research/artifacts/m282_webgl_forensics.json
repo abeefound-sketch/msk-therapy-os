@@ -1,0 +1,110 @@
+{
+  "milestone": "M2.8.2 WebGL Pipeline & Draw Forensics",
+  "timestamp_utc": "2026-10-22T15:04:22Z",
+  "target_url": "http://127.0.0.1:8085",
+  "environment": {
+    "os_name": "Windows",
+    "os_release": "10",
+    "os_version": "10.0.19045",
+    "architecture": "AMD64",
+    "python_version": "3.11.9",
+    "processor": "Intel64 Family 6 Model 61 Stepping 4, GenuineIntel",
+    "cpu_physical_cores": 2,
+    "cpu_logical_cores": 4,
+    "total_ram_gb": 7.89
+  },
+  "target_hardware_specs": {
+    "cpu": "Intel Core i7-5600U @ 2.60GHz",
+    "gpu": "Intel HD Graphics 5500",
+    "graphics_driver_api": "Direct3D11 / ANGLE",
+    "ram_spec": "8 GB DDR3L"
+  },
+  "modes_benchmarked": {
+    "surface": {
+      "sample_frames": 60,
+      "mean_frame_time_ms": 38.89,
+      "p95_frame_time_ms": 50,
+      "average_fps": 25.7,
+      "mean_draw_calls_per_frame": 2230,
+      "min_draw_calls": 2230,
+      "max_draw_calls": 2230,
+      "mean_triangles_per_frame": 6674674,
+      "mean_vertices_per_frame": 20024022,
+      "pixel_change_verified": true,
+      "camera_transform_buffer_update": true
+    },
+    "anatomy": {
+      "sample_frames": 60,
+      "mean_frame_time_ms": 31.95,
+      "p95_frame_time_ms": 50,
+      "average_fps": 31.3,
+      "mean_draw_calls_per_frame": 2228,
+      "min_draw_calls": 2228,
+      "max_draw_calls": 2228,
+      "mean_triangles_per_frame": 6453286,
+      "mean_vertices_per_frame": 19359858,
+      "pixel_change_verified": true,
+      "camera_transform_buffer_update": true
+    },
+    "comparative": {
+      "sample_frames": 60,
+      "mean_frame_time_ms": 65.28,
+      "p95_frame_time_ms": 83.3,
+      "average_fps": 15.3,
+      "mean_draw_calls_per_frame": 4458,
+      "min_draw_calls": 4458,
+      "max_draw_calls": 4458,
+      "mean_triangles_per_frame": 13127960,
+      "mean_vertices_per_frame": 39383880,
+      "pixel_change_verified": true,
+      "camera_transform_buffer_update": true
+    }
+  },
+  "memory_forensics": {
+    "v8_isolate_accounting": {
+      "architecture_note": "In Chromium, same-origin iframes share the V8 isolate with the host page. window.performance.memory in the host and window.performance.memory in the iframe both query the exact same V8 isolate heap. Summing them (e.g. 159 MB + 159 MB = 318 MB) is a methodological double-counting error. The true allocated V8 heap is ~159 MB.",
+      "host_page_reported_used_mb": 168.8,
+      "iframe_reported_used_mb": 168.8,
+      "shared_isolate_confirmed": true,
+      "true_v8_isolate_allocated_heap_mb": 168.8
+    },
+    "cdp_live_heap_metrics": {
+      "js_heap_used_mb": 9.63,
+      "js_heap_total_mb": 26.11,
+      "cdp_description": "Live reachable JS objects currently traced by V8 garbage collector."
+    },
+    "os_process_working_set": {
+      "benchmark_harness_rss_mb": 30.78,
+      "os_description": "Physical operating system resident memory allocated to the node/process."
+    }
+  },
+  "unmeasured_sensors": [
+    {
+      "sensor": "GPU Die Temperature",
+      "status": "UNMEASURED",
+      "rationale": "Hardware thermal sensor requires ring-0 kernel driver or Intel DPTF privileged interface, inaccessible from browser sandbox."
+    },
+    {
+      "sensor": "Package Wattage / Package TDP",
+      "status": "UNMEASURED",
+      "rationale": "Intel RAPL energy status MSRs require kernel-mode driver privileges."
+    },
+    {
+      "sensor": "Cooling Fan RPM",
+      "status": "UNMEASURED",
+      "rationale": "Embedded controller fan tachometer not exposed through user-space APIs."
+    }
+  ],
+  "webgl_hardware": {
+    "context_type": "WebGL2RenderingContext",
+    "renderer": "WebKit WebGL",
+    "vendor": "WebKit",
+    "unmasked_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "unmasked_vendor": "Google Inc. (Intel)",
+    "max_texture_size": 16384,
+    "viewport": [
+      434,
+      498
+    ]
+  }
+}

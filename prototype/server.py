@@ -20,6 +20,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from msk_therapy_os.db import open_db, init_db, seed_db
 from msk_therapy_os.server import MSKRequestHandler
 
 POC_DATA_DIR = Path(__file__).resolve().parent / "data"
@@ -54,6 +55,10 @@ def create_poc_server(
     db_path: str = "demo.sqlite3", host: str = "127.0.0.1", port: int = 8085
 ) -> HTTPServer:
     """Create configured HTTPServer instance for the Neck-Shoulder POC."""
+    with open_db(db_path) as db:
+        init_db(db)
+        seed_db(db)
+
     class ConfiguredPOCHandler(PrototypeNeckShoulderHandler):
         pass
 

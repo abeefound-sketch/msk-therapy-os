@@ -10,10 +10,13 @@ import json
 import math
 from pathlib import Path
 import re
-import shutil
 import sqlite3
+import threading
 import time
 from typing import Any, Dict, List, Optional, Tuple
+
+MAINTENANCE_LOCK = threading.RLock()
+IS_MAINTENANCE_ACTIVE = False
 
 VALID_MESH_ID = "FJ2810"
 VALID_MESH_HASH = "FJ2810_V4.0_CCBYSA"
@@ -240,6 +243,12 @@ def init_points_tables(db: sqlite3.Connection) -> None:
         )
 
     migrate_governance_schema(db)
+    try:
+        from msk_therapy_os.auth import init_auth_tables, seed_default_users
+        init_auth_tables(db)
+        seed_default_users(db)
+    except Exception:
+        pass
     db.commit()
 
 
@@ -1114,10 +1123,25 @@ def validate_governance_tier(
         if rev_words & invalid_tokens or rev.lower() in invalid_tokens:
             raise ValueError(f"Reviewer '{rev}' is invalid. Human clinical governance requires qualified practitioner review, not automated systems.")
         
-        # Clinical credential enforcement
+        # Clinical credential and identity verification
         tokens = {tok.strip('.,()').upper() for tok in re.findall(r'[A-Za-z\.]+', rev)}
         if not (tokens & ALLOWED_CLINICAL_CREDENTIALS):
             raise ValueError(f"Reviewer '{rev}' lacks verifiable clinical credentials. Allowed credentials include: {', '.join(sorted(ALLOWED_CLINICAL_CREDENTIALS))}")
+
+        if db is not None:
+            # Check verified reviewer registry in clinical_reviewers
+            has_cr_table = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='clinical_reviewers'").fetchone()
+            if has_cr_table:
+                cr_row = db.execute(
+                    """SELECT reviewer_id, display_name, primary_credential, verification_status
+                       FROM clinical_reviewers
+                       WHERE (reviewer_id = ? OR display_name = ? OR user_id = ? OR user_id IN (SELECT user_id FROM users WHERE username = ?))""",
+                    (rev, rev, rev, rev)
+                ).fetchone()
+                if not cr_row:
+                    raise ValueError(f"Reviewer '{rev}' is not registered in the clinical_reviewers registry. Clinical governance requires an administrator-verified reviewer identity.")
+                if cr_row[3] != 'VERIFIED_ACTIVE':
+                    raise ValueError(f"Reviewer '{rev}' is registered but verification status is '{cr_row[3]}'. Only 'VERIFIED_ACTIVE' reviewers may approve anatomical review claims.")
 
         ev = (evidence_id or "").strip()
         if not ev:
@@ -1291,45 +1315,37 @@ def run_database_integrity_check(db: sqlite3.Connection) -> Dict[str, Any]:
 
 def backup_database(db: sqlite3.Connection, backup_path: str) -> Dict[str, Any]:
     """Perform atomic online SQLite backup with cryptographic SHA-256 verification."""
-    bp = Path(backup_path).resolve()
-    bp.parent.mkdir(parents=True, exist_ok=True)
-    dest_db = sqlite3.connect(str(bp))
-    with dest_db:
-        db.backup(dest_db, pages=100)
-    dest_db.close()
+    with MAINTENANCE_LOCK:
+        bp = Path(backup_path).resolve()
+        bp.parent.mkdir(parents=True, exist_ok=True)
+        dest_db = sqlite3.connect(str(bp))
+        with dest_db:
+            db.backup(dest_db, pages=100)
+        dest_db.close()
 
-    raw_bytes = bp.read_bytes()
-    checksum = hashlib.sha256(raw_bytes).hexdigest()
-    sha_file = bp.with_suffix(bp.suffix + ".sha256")
-    sha_file.write_text(f"{checksum}  {bp.name}\n", encoding="utf-8")
+        raw_bytes = bp.read_bytes()
+        checksum = hashlib.sha256(raw_bytes).hexdigest()
+        sha_file = bp.with_suffix(bp.suffix + ".sha256")
+        sha_file.write_text(f"{checksum}  {bp.name}\n", encoding="utf-8")
 
-    return {
-        "status": "SUCCESS",
-        "backup_path": str(bp),
-        "sha256_checksum": checksum,
-        "size_bytes": len(raw_bytes),
-        "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    }
+        return {
+            "status": "SUCCESS",
+            "backup_path": str(bp),
+            "sha256_checksum": checksum,
+            "size_bytes": len(raw_bytes),
+            "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        }
 
 
-def rollback_database(target_db_path: str, backup_source_path: str) -> Dict[str, Any]:
-    """Restore database from an atomic backup snapshot after verifying SQLite integrity and SHA-256."""
+def restore_database_safely(target_db_path: str, backup_source_path: str) -> Dict[str, Any]:
+    """Safely restore SQLite database using native backup API with exclusive server maintenance lock and verification."""
+    global IS_MAINTENANCE_ACTIVE
     src = Path(backup_source_path).resolve()
     tgt = Path(target_db_path).resolve()
     if not src.exists():
         raise FileNotFoundError(f"Backup file not found at '{src}'.")
 
-    # Verify SQLite database integrity before restoring
-    try:
-        test_conn = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
-        res = test_conn.execute("PRAGMA integrity_check").fetchall()
-        test_conn.close()
-        if len(res) != 1 or res[0][0] != "ok":
-            raise ValueError(f"Corrupted backup file: SQLite integrity check failed ({res})")
-    except Exception as e:
-        raise ValueError(f"Invalid or corrupted SQLite backup database: {e}")
-
-    # Verify SHA-256 digest if available
+    # 1. Verify SHA-256 digest if .sha256 file exists
     sha_file = src.with_suffix(src.suffix + ".sha256")
     if sha_file.exists():
         expected_sha = sha_file.read_text(encoding="utf-8").split()[0].strip().lower()
@@ -1337,14 +1353,104 @@ def rollback_database(target_db_path: str, backup_source_path: str) -> Dict[str,
         if expected_sha != actual_sha:
             raise ValueError(f"Backup SHA-256 checksum mismatch (expected {expected_sha}, got {actual_sha}).")
 
-    shutil.copy2(src, tgt)
+    # 2. Verify SQLite database integrity & schema compatibility before restoring
+    try:
+        test_conn = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
+        res = test_conn.execute("PRAGMA integrity_check").fetchall()
+        if len(res) != 1 or res[0][0] != "ok":
+            test_conn.close()
+            raise ValueError(f"Corrupted backup file: SQLite integrity check failed ({res})")
+
+        fk_res = test_conn.execute("PRAGMA foreign_key_check").fetchall()
+        if len(fk_res) > 0:
+            test_conn.close()
+            raise ValueError(f"Backup foreign key violations detected: {fk_res}")
+
+        # Check required schema tables
+        tables = {r[0] for r in test_conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+        required_tables = {"point_libraries", "custom_points"}
+        if not required_tables.issubset(tables):
+            test_conn.close()
+            raise ValueError(f"Incompatible backup schema: missing required tables {required_tables - tables}")
+        test_conn.close()
+    except Exception as e:
+        if isinstance(e, ValueError):
+            raise
+        raise ValueError(f"Invalid or corrupted SQLite backup database: {e}")
+
+    # 3. Restore within exclusive server-wide maintenance lock
+    with MAINTENANCE_LOCK:
+        IS_MAINTENANCE_ACTIVE = True
+        temp_rollback = None
+        try:
+            # Create safety snapshot of current target if it exists
+            if tgt.exists():
+                temp_rollback = tgt.with_suffix(".rollback_snapshot_tmp")
+                try:
+                    curr_conn = sqlite3.connect(str(tgt), timeout=10.0)
+                    snap_conn = sqlite3.connect(str(temp_rollback))
+                    with snap_conn:
+                        curr_conn.backup(snap_conn, pages=100)
+                    snap_conn.close()
+                    curr_conn.close()
+                except Exception:
+                    temp_rollback = None
+
+            # Execute online SQLite backup API restore (NO shutil.copy2 on live database)
+            tgt.parent.mkdir(parents=True, exist_ok=True)
+            target_conn = sqlite3.connect(str(tgt), timeout=30.0)
+            backup_conn = sqlite3.connect(str(src))
+            with target_conn:
+                backup_conn.backup(target_conn, pages=100)
+            backup_conn.close()
+
+            # Verify restored target DB
+            res = target_conn.execute("PRAGMA integrity_check").fetchall()
+            fk_res = target_conn.execute("PRAGMA foreign_key_check").fetchall()
+            target_conn.close()
+
+            if len(res) != 1 or res[0][0] != "ok":
+                raise ValueError(f"Post-restore integrity check failed on target: {res}")
+            if len(fk_res) > 0:
+                raise ValueError(f"Post-restore foreign key check failed on target: {fk_res}")
+
+            # Successful restore: remove temp rollback snapshot
+            if temp_rollback and temp_rollback.exists():
+                try:
+                    temp_rollback.unlink()
+                except Exception:
+                    pass
+
+        except Exception as restore_err:
+            # Atomic rollback to last known good state
+            if temp_rollback and temp_rollback.exists():
+                try:
+                    snap_conn = sqlite3.connect(str(temp_rollback))
+                    rb_tgt = sqlite3.connect(str(tgt), timeout=30.0)
+                    with rb_tgt:
+                        snap_conn.backup(rb_tgt, pages=100)
+                    snap_conn.close()
+                    rb_tgt.close()
+                    temp_rollback.unlink()
+                except Exception:
+                    pass
+            raise restore_err
+        finally:
+            IS_MAINTENANCE_ACTIVE = False
+
     return {
         "status": "SUCCESS",
         "restored_target": str(tgt),
         "restored_from": str(src),
         "size_bytes": tgt.stat().st_size,
-        "restored_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        "restored_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "method": "sqlite3_online_backup_api"
     }
+
+
+def rollback_database(target_db_path: str, backup_source_path: str) -> Dict[str, Any]:
+    """Restore database from an atomic backup snapshot after verifying SQLite integrity and SHA-256."""
+    return restore_database_safely(target_db_path, backup_source_path)
 
 
 def get_evidence_ledger(db: sqlite3.Connection) -> List[Dict[str, Any]]:

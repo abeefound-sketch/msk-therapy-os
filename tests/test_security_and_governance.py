@@ -252,11 +252,39 @@ class TestSecurityAndGovernanceIntegration(unittest.TestCase):
 
     def test_backup_path_traversal_via_api(self):
         """Verify API prevents directory traversal in backup name parameter."""
-        payload = json.dumps({"name": "../../traversal_attack.sqlite3"}).encode("utf-8")
+        # 1. First verify that unauthenticated backup request is rejected with 401
+        raw_payload = json.dumps({"name": "../../traversal_attack.sqlite3"}).encode("utf-8")
+        req_unauth = urllib.request.Request(
+            f"{self.base_url}/api/governance/backup",
+            data=raw_payload,
+            headers={"Content-Type": "application/json"}
+        )
+        try:
+            with urllib.request.urlopen(req_unauth) as resp:
+                self.fail("Unauthenticated backup must be rejected")
+        except urllib.error.HTTPError as e:
+            self.assertEqual(e.code, 401)
+
+        # 2. Authenticate as admin to verify path traversal rejection with 400
+        login_req = urllib.request.Request(
+            f"{self.base_url}/api/auth/login",
+            data=json.dumps({"username": "admin", "password": "admin123"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(login_req) as resp:
+            auth_data = json.loads(resp.read().decode("utf-8"))
+            token = auth_data["session_token"]
+            csrf = auth_data["csrf_token"]
+
+        payload = json.dumps({"name": "../../traversal_attack.sqlite3", "csrf_token": csrf}).encode("utf-8")
         req = urllib.request.Request(
             f"{self.base_url}/api/governance/backup",
             data=payload,
-            headers={"Content-Type": "application/json"}
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {token}",
+                "X-CSRF-Token": csrf,
+            }
         )
         try:
             with urllib.request.urlopen(req) as resp:
@@ -319,6 +347,23 @@ class TestSecurityAndGovernanceIntegration(unittest.TestCase):
         try:
             with urllib.request.urlopen(req_foreign) as resp:
                 self.fail("Should reject external web origin")
+        except urllib.error.HTTPError as e:
+            self.assertEqual(e.code, 403)
+            err = json.loads(e.read().decode("utf-8"))
+            self.assertIn("Forbidden", err["error"])
+
+        # Null origin (sandboxed or local file) on write operations must be rejected with 403 Forbidden
+        req_null = urllib.request.Request(
+            f"{self.base_url}/api/points",
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "Origin": "null"
+            }
+        )
+        try:
+            with urllib.request.urlopen(req_null) as resp:
+                self.fail("Should reject null origin on write requests")
         except urllib.error.HTTPError as e:
             self.assertEqual(e.code, 403)
             err = json.loads(e.read().decode("utf-8"))
