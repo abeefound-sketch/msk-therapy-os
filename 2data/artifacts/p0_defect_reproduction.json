@@ -1,0 +1,135 @@
+{
+  "standalone_leakage": {
+    "stageRect": {
+      "left": 320,
+      "top": 52,
+      "width": 620,
+      "height": 768
+    },
+    "sidebarRect": {
+      "left": 0,
+      "top": 52,
+      "width": 320,
+      "height": 768
+    },
+    "pathsCount": 23,
+    "leakingCount": 6,
+    "leakingSample": [
+      {
+        "left": 248.8000030517578,
+        "right": 393.20001220703125,
+        "sidebarRight": 320,
+        "d_preview": "M 73.2 -484.2 L 72.1 -487.5 L 72.1 -487."
+      },
+      {
+        "left": 232.3000030517578,
+        "right": 595.3000030517578,
+        "sidebarRight": 320,
+        "d_preview": "M -87.7 -62.0 L -87.7 -62.0 L -85.5 -71."
+      },
+      {
+        "left": 261.5,
+        "right": 316.29998779296875,
+        "sidebarRight": 320,
+        "d_preview": "M -3.7 -508.5 L -8.4 -502.0 L -8.4 -502."
+      },
+      {
+        "left": 262.6000061035156,
+        "right": 575,
+        "sidebarRight": 320,
+        "d_preview": "M -57.4 -36.9 L -57.4 -36.9 L -55.8 -46."
+      },
+      {
+        "left": 261.3999938964844,
+        "right": 417.70001220703125,
+        "sidebarRight": 320,
+        "d_preview": "M 97.7 -319.6 L 88.4 -318.0 L 88.4 -318."
+      }
+    ],
+    "negativeXCount": 414,
+    "negativeXSample": [
+      {
+        "x": -6.4,
+        "y": -477.4,
+        "path": "M 73.2 -484.2 L 72.1 -487.5 L "
+      },
+      {
+        "x": -6.4,
+        "y": -477.4,
+        "path": "M 73.2 -484.2 L 72.1 -487.5 L "
+      },
+      {
+        "x": -13.1,
+        "y": -464.6,
+        "path": "M 73.2 -484.2 L 72.1 -487.5 L "
+      },
+      {
+        "x": -13.1,
+        "y": -464.6,
+        "path": "M 73.2 -484.2 L 72.1 -487.5 L "
+      },
+      {
+        "x": -19.3,
+        "y": -450.8,
+        "path": "M 73.2 -484.2 L 72.1 -487.5 L "
+      }
+    ],
+    "extremeCoordsCount": 3309
+  },
+  "comparative_leakage": {
+    "halfW": 310,
+    "crossingDividerCount": 1561,
+    "crossingDividerSample": [
+      {
+        "x": -705.1,
+        "y": -3906.5,
+        "halfW": 310
+      },
+      {
+        "x": -678.2,
+        "y": -3804.8,
+        "halfW": 310
+      },
+      {
+        "x": -678.2,
+        "y": -3804.8,
+        "halfW": 310
+      },
+      {
+        "x": -652.9,
+        "y": -3709,
+        "halfW": 310
+      },
+      {
+        "x": -652.9,
+        "y": -3709,
+        "halfW": 310
+      }
+    ],
+    "negativeXCount": 1029,
+    "negativeXSample": [
+      {
+        "x": -705.1,
+        "y": -3906.5
+      },
+      {
+        "x": -678.2,
+        "y": -3804.8
+      },
+      {
+        "x": -678.2,
+        "y": -3804.8
+      },
+      {
+        "x": -652.9,
+        "y": -3709
+      },
+      {
+        "x": -652.9,
+        "y": -3709
+      }
+    ]
+  },
+  "timestamp": 1792591041.5370386,
+  "status": "REPRODUCED_CONFIRMED"
+}

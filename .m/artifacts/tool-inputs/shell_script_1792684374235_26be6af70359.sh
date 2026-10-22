@@ -1,0 +1,1 @@
+python3 -m unittest tests.test_assessment_soap.TestAssessmentAndSOAP.test_record_and_get_intake

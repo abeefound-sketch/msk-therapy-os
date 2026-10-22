@@ -1,0 +1,15 @@
+{
+  "before_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "created_at": "2026-10-22T15:54:39+00:00",
+  "finalized_at": "2026-10-22T15:54:43+00:00",
+  "git_head": "97012a9c137ff06c4393f7c2073a7f77c297b938",
+  "id": "20261022T225439-4aeaabd3",
+  "kind": "shell",
+  "output_sha256": "c66a04a0939049807f6b1abfd62a86c30834ce5ce0fb57d35ed5018ae821502d",
+  "paths": [],
+  "payload_hash": "306de013acdc8383d79f094ceedb0831f634e8cdf2aac3550d809fa1b3600c3b",
+  "post_fingerprint": "667281cb781caae66fe0da968c48d13bb3909b446f5df8b39c5cec3482c6db94",
+  "pre_fingerprint": "667281cb781caae66fe0da968c48d13bb3909b446f5df8b39c5cec3482c6db94",
+  "rollback_capable": false,
+  "schema": 1
+}

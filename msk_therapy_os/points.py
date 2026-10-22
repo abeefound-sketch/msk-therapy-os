@@ -1079,7 +1079,10 @@ def get_safe_backup_path(filename: Optional[str], base_dir: Optional[Path] = Non
     """Resolve and enforce approved directory isolation for database backups."""
     clean_name = sanitize_backup_filename(filename)
     if base_dir is None:
-        base_dir = (Path("data") / "backups").resolve()
+        if (Path("2data") / "backups").exists():
+            base_dir = (Path("2data") / "backups").resolve()
+        else:
+            base_dir = (Path("data") / "backups").resolve()
     else:
         base_dir = base_dir.resolve()
     base_dir.mkdir(parents=True, exist_ok=True)

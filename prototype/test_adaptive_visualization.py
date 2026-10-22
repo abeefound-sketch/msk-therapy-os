@@ -9,7 +9,7 @@ import urllib.request
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-ARTIFACTS_DIR = Path("D:/5Projects/msk-therapy-os/research/artifacts")
+ARTIFACTS_DIR = Path("D:/5Projects/msk-therapy-os/2data/artifacts")
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
 BASE_URL = "http://127.0.0.1:8085/"

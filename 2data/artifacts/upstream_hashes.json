@@ -1,0 +1,56 @@
+[
+  {
+    "upstream": "tcm-3d",
+    "asset": "public/models/atlas.json",
+    "sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+    "size_bytes": 1335285
+  },
+  {
+    "upstream": "tcm-3d",
+    "asset": "public/models/body-10.bin",
+    "sha256": "4a959d998acd35cf88518a0f2f8ab99b42d9f69c7ce0d6a814df315eeac807ac",
+    "size_bytes": 4046108
+  },
+  {
+    "upstream": "tcm-3d",
+    "asset": "app/meridian-surface.json",
+    "sha256": "b172e3eb3ab1c018c77c8ac557b03b67a2a569294cce3b17a9c509d9a33284f6",
+    "size_bytes": 787134
+  },
+  {
+    "upstream": "acupuncture-3d-authoring",
+    "asset": "models/male_character.glb",
+    "sha256": "1d52c883c830ff9bc53d146fe8fd199569735a6921569a401b0e05ded4825018",
+    "size_bytes": 13876488
+  },
+  {
+    "upstream": "acupuncture-3d-authoring",
+    "asset": "src/data/acupuncture-data.json",
+    "sha256": "a6afdb28f3d42221250d075f623fc0b193ceb8049639bb743579283b67281d0b",
+    "size_bytes": 200276
+  },
+  {
+    "upstream": "anatomy-3d",
+    "asset": "models/anatomy.glb",
+    "sha256": "318347f91e4989da0c271e9662df536943df1149b413fef01cf21586073ea73e",
+    "size_bytes": 9291204
+  },
+  {
+    "upstream": "anatomy-3d",
+    "asset": "index.html",
+    "sha256": "b67369650b915b8ffb750aa5f750f772f81c5fa17a71463b4fadb3861de3c93e",
+    "size_bytes": 211418
+  },
+  {
+    "upstream": "tcm-acupoints",
+    "asset": "public/models/body.glb",
+    "sha256": "0886b6a068e655b284903664e2178d7964f80b1c0ce798461909ac806bcef2e3",
+    "size_bytes": 8249484
+  },
+  {
+    "upstream": "tcm-acupoints",
+    "asset": "src/lib/acupoint-data.ts",
+    "sha256": "140169b2f360bf661bbf0adf60869a171e22289bef3e158ddca65e9fccb93ed1",
+    "size_bytes": 18946
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "initial_target": [
+    -0.0006500000000000117,
+    0.86485,
+    0
+  ],
+  "right_drag_pan": "PASS",
+  "shift_left_drag_pan": "PASS",
+  "gv14_dynamic_target": "PASS",
+  "zoom_to_detail_no_clipping": "PASS",
+  "orbit_around_acupoint_pivot": "PASS",
+  "full_body_button": "PASS",
+  "focus_selected_button": "PASS",
+  "structure_centroid_focus": "PASS",
+  "touch_pointer_handling": "PASS",
+  "main_host_integration": "PASS"
+}

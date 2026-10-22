@@ -1,0 +1,78 @@
+{
+  "suite": "MSK-Therapy-OS M2.7 & M2.8 Integration and Data Governance",
+  "timestamp_utc": "2026-10-22T13:03:15Z",
+  "target_hardware": {
+    "os": "Windows 64-bit",
+    "cpu": "Intel Core i7-5600U @ 2.60GHz",
+    "gpu": "Intel HD Graphics 5500",
+    "ram": "8 GB"
+  },
+  "scenarios": {
+    "surface_mode_adaptive": "PASS",
+    "musculoskeletal_mode": "PASS",
+    "comparative_mode_split": "PASS",
+    "multilingual_i18n_switching": "PASS",
+    "custom_point_studio_governance": "PASS",
+    "soap_and_fhir_workflows": "PASS",
+    "safety_red_flags_drill": "PASS",
+    "responsive_layouts": "PASS",
+    "atlas_data_governance_apis": "PASS",
+    "acupoint_reconciliation_math": "PASS"
+  },
+  "telemetry": {
+    "surface": {
+      "glRenderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "mode": "surface",
+      "cameraDist": 3.5692936907442707,
+      "renderedMarkersCount": 2,
+      "minHitTargetRadius": 10,
+      "densityCounters": {
+        "available": 368,
+        "visible": 1,
+        "clustered": 0,
+        "filtered": 367
+      },
+      "jsHeapSizeMB": "168.80"
+    }
+  },
+  "overall_status": "PASS",
+  "reconciliation_audit": {
+    "who_standard_count": 361,
+    "who_standard_notes": "14 classical channels (12 organ meridians + 28 GV + 24 CV). Yintang classified as Extra Point EX-HN3.",
+    "national_standard_count": 362,
+    "national_standard_citation": "GB/T 12346-2006 / GB/T 12346-2021",
+    "national_standard_notes": "Yintang officially incorporated into Du Mai (Governing Vessel) as GV24+ / GV29.",
+    "dien_chan_count": 4,
+    "dien_chan_notes": "Vietnamese facial reflex points (DC_0, DC_1, DC_26, DC_126) isolated in lib_dien_chan namespace.",
+    "active_custom_count": 2,
+    "runtime_total_points": 368,
+    "conservation_formula": "Available = Visible + Clustered + Filtered",
+    "provenance_policy": "Strict namespace isolation: WHO, DIEN_CHAN, THAI_SEN_SIB, MSK_LANDMARK, USER_CUSTOM.",
+    "status": "RECONCILED"
+  },
+  "governance_status": {
+    "status": "PASS",
+    "integrity_check": "ok",
+    "foreign_key_violations_count": 0,
+    "reference_dataset_integrity": {
+      "status": "VALID",
+      "file": "D:\\5Projects\\msk-therapy-os\\msk_therapy_os\\static\\atlas\\data\\acupuncture_3d.json",
+      "expected_sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+      "actual_sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+      "is_valid": true
+    },
+    "governance_compliance": {
+      "is_compliant": true,
+      "unqualified_reviewed_points_count": 0,
+      "unqualified_points": []
+    },
+    "counts_by_status": {
+      "custom_points": {
+        "GEOMETRY_VERIFIED": 1,
+        "SURFACE_REGISTERED_FJ2810": 1
+      },
+      "reference_overrides": {}
+    }
+  },
+  "console_errors_count": 0
+}

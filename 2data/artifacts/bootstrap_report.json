@@ -1,0 +1,133 @@
+{
+  "verified_at": null,
+  "upstreams": {
+    "tcm-3d": {
+      "name": "tcm-3d",
+      "url": "https://github.com/JICio/tcm-3d",
+      "target_commit": "e8b9ad1c17e67a25e94406100e3fb5c296c24f7a",
+      "installed": true,
+      "commit_match": true,
+      "actual_commit": "e8b9ad1c17e67a25e94406100e3fb5c296c24f7a",
+      "licenses_present": [
+        "LICENSE",
+        "NOTICE"
+      ],
+      "missing_licenses": [],
+      "asset_checks": {
+        "public/models/atlas.json": {
+          "exists": true,
+          "actual_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+          "expected_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+          "match": true,
+          "status": "PASS"
+        },
+        "public/models/body-10.bin": {
+          "exists": true,
+          "actual_sha256": "4a959d998acd35cf88518a0f2f8ab99b42d9f69c7ce0d6a814df315eeac807ac",
+          "expected_sha256": "4a959d998acd35cf88518a0f2f8ab99b42d9f69c7ce0d6a814df315eeac807ac",
+          "match": true,
+          "status": "PASS"
+        },
+        "app/meridian-surface.json": {
+          "exists": true,
+          "actual_sha256": "b172e3eb3ab1c018c77c8ac557b03b67a2a569294cce3b17a9c509d9a33284f6",
+          "expected_sha256": "b172e3eb3ab1c018c77c8ac557b03b67a2a569294cce3b17a9c509d9a33284f6",
+          "match": true,
+          "status": "PASS"
+        }
+      },
+      "status": "PASS"
+    },
+    "acupuncture-3d-authoring": {
+      "name": "acupuncture-3d-authoring",
+      "url": "https://github.com/eb-barry/acupuncture-3d-authoring",
+      "target_commit": "cb7a41692276adcbf696538d30f2e3d8ecb4bbc6",
+      "installed": true,
+      "commit_match": true,
+      "actual_commit": "cb7a41692276adcbf696538d30f2e3d8ecb4bbc6",
+      "licenses_present": [
+        "README.md",
+        "THIRD_PARTY_NOTICES.md"
+      ],
+      "missing_licenses": [],
+      "asset_checks": {
+        "models/male_character.glb": {
+          "exists": true,
+          "actual_sha256": "1d52c883c830ff9bc53d146fe8fd199569735a6921569a401b0e05ded4825018",
+          "expected_sha256": "1d52c883c830ff9bc53d146fe8fd199569735a6921569a401b0e05ded4825018",
+          "match": true,
+          "status": "PASS"
+        },
+        "src/data/acupuncture-data.json": {
+          "exists": true,
+          "actual_sha256": "a6afdb28f3d42221250d075f623fc0b193ceb8049639bb743579283b67281d0b",
+          "expected_sha256": "a6afdb28f3d42221250d075f623fc0b193ceb8049639bb743579283b67281d0b",
+          "match": true,
+          "status": "PASS"
+        }
+      },
+      "status": "PASS"
+    },
+    "anatomy-3d": {
+      "name": "anatomy-3d",
+      "url": "https://github.com/WaterCMY/anatomy-3d",
+      "target_commit": "e8d40dca7b1f63f54567395df21d8b1b38a7e840",
+      "installed": true,
+      "commit_match": true,
+      "actual_commit": "e8d40dca7b1f63f54567395df21d8b1b38a7e840",
+      "licenses_present": [
+        "LICENSE",
+        "LICENSE-MODEL"
+      ],
+      "missing_licenses": [],
+      "asset_checks": {
+        "models/anatomy.glb": {
+          "exists": true,
+          "actual_sha256": "318347f91e4989da0c271e9662df536943df1149b413fef01cf21586073ea73e",
+          "expected_sha256": "318347f91e4989da0c271e9662df536943df1149b413fef01cf21586073ea73e",
+          "match": true,
+          "status": "PASS"
+        },
+        "index.html": {
+          "exists": true,
+          "actual_sha256": "b67369650b915b8ffb750aa5f750f772f81c5fa17a71463b4fadb3861de3c93e",
+          "expected_sha256": null,
+          "match": true,
+          "status": "PASS"
+        }
+      },
+      "status": "PASS"
+    },
+    "tcm-acupoints": {
+      "name": "tcm-acupoints",
+      "url": "https://github.com/spacejohnlf/tcm-acupoints",
+      "target_commit": "04e35abb66585eb29c7250ea8ab5243c8c744f64",
+      "installed": true,
+      "commit_match": true,
+      "actual_commit": "04e35abb66585eb29c7250ea8ab5243c8c744f64",
+      "licenses_present": [
+        "LICENSE",
+        "ATTRIBUTION.md"
+      ],
+      "missing_licenses": [],
+      "asset_checks": {
+        "public/models/body.glb": {
+          "exists": true,
+          "actual_sha256": "0886b6a068e655b284903664e2178d7964f80b1c0ce798461909ac806bcef2e3",
+          "expected_sha256": "0886b6a068e655b284903664e2178d7964f80b1c0ce798461909ac806bcef2e3",
+          "match": true,
+          "status": "PASS"
+        },
+        "src/lib/acupoint-data.ts": {
+          "exists": true,
+          "actual_sha256": "140169b2f360bf661bbf0adf60869a171e22289bef3e158ddca65e9fccb93ed1",
+          "expected_sha256": "140169b2f360bf661bbf0adf60869a171e22289bef3e158ddca65e9fccb93ed1",
+          "match": true,
+          "status": "PASS"
+        }
+      },
+      "status": "PASS"
+    }
+  },
+  "all_passed": true
+}

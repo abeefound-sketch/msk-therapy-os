@@ -1,0 +1,6 @@
+{
+  "vertexCount": 24958,
+  "indexCount": 138522,
+  "triangleCount": 46174,
+  "description": "Reconstructed BodyParts3D FJ2810 with softenPelvicSurface() applied"
+}

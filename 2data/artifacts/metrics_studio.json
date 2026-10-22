@@ -1,0 +1,14 @@
+{
+  "application": "studio",
+  "url": "http://127.0.0.1:5174",
+  "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "gpu_vendor": "Google Inc. (Intel)",
+  "is_hardware_accelerated": true,
+  "js_heap_used_mb": 272.75,
+  "js_heap_total_mb": 326.16,
+  "page_load_ms": 5353.11,
+  "fps_idle": 60,
+  "fps_interaction": 39,
+  "screenshot": "evidence_studio.png",
+  "measured_at": "2026-10-21T05:20:19Z"
+}

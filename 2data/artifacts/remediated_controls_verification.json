@@ -1,0 +1,13 @@
+{
+  "skin_100_opaque": "PASS",
+  "skin_50_translucent": "PASS",
+  "skin_00_hidden": "PASS",
+  "meridian_channel_cv": "PASS",
+  "meridian_channel_gv": "PASS",
+  "meridian_channel_bl": "PASS",
+  "dien_chan_markers_rendered": "PASS",
+  "dien_chan_point_selection": "PASS",
+  "dien_chan_add_to_soap": "PASS",
+  "dien_chan_soap_entry_verified": "PASS",
+  "thai_sen_sib_3_lines": "PASS"
+}

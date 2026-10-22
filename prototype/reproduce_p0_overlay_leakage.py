@@ -3,7 +3,7 @@ import time
 import json
 from playwright.sync_api import sync_playwright
 
-ARTIFACT_DIR = "research/artifacts"
+ARTIFACT_DIR = "2data/artifacts"
 os.makedirs(ARTIFACT_DIR, exist_ok=True)
 
 def run_reproduction():

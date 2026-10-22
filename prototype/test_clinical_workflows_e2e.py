@@ -24,7 +24,7 @@ import time
 from playwright.sync_api import sync_playwright
 
 BASE_URL = "http://127.0.0.1:8085"
-ARTIFACTS_DIR = Path("research/artifacts")
+ARTIFACTS_DIR = Path("2data/artifacts")
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
 

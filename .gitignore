@@ -1,17 +1,42 @@
+# OS / editor metadata
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+*~
+
+# Python cache & virtual environments
 __pycache__/
 *.py[cod]
-*.sqlite3
-*.db
-.env
 .pytest_cache/
-data/
-*.sha256
+.ruff_cache/
+.venv/
+venv/
 
-# Agent session directories
-.m/
-.mag/
+# Node / web dependencies
+node_modules/
+dist/
+build/
+
+# Secrets & credentials (TUYỆT ĐỐI không commit secrets)
+.env
+.env.*
+*.key
+*.pem
+*secret*
+*token*
 
 # Upstream research workspaces
 research/upstream/
 research/upstream/*
 !research/upstream/.gitkeep
+3refs/upstream/
+3refs/upstream/*
+!3refs/upstream/.gitkeep
+
+# Lưu ý theo PROJECT_STRUCTURE_CANON & GIT_REPO_CANON:
+# Những thành phần sau BẮT BUỘC backup, KHÔNG đưa vào .gitignore:
+# - .m/ (build journal lịch sử của coding agent)
+# - *.db, *.sqlite (database local)
+# - *.log (log files)
+# - *.csv, *.xlsx (dữ liệu số)

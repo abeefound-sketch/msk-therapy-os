@@ -1,0 +1,192 @@
+{
+  "scenario": "Neck-Shoulder Reference Scenario",
+  "overall_mean_error_mm": 57.35,
+  "source_rankings": [
+    [
+      "WaterCMY/anatomy-3d",
+      41.78
+    ],
+    [
+      "JICio/tcm-3d",
+      52.8
+    ],
+    [
+      "spacejohnlf/tcm-acupoints",
+      79.75
+    ]
+  ],
+  "points": [
+    {
+      "code": "GB21",
+      "name_zh": "肩井",
+      "mean_error_mm": 76.29,
+      "max_error_mm": 84.15,
+      "status": "DISCREPANT",
+      "distances_to_landmark": {
+        "JICio/tcm-3d": 84.15,
+        "WaterCMY/anatomy-3d": 67.74,
+        "spacejohnlf/tcm-acupoints": 76.97
+      },
+      "pairwise_distances": {
+        "JICio/tcm-3d vs WaterCMY/anatomy-3d": 34.64,
+        "JICio/tcm-3d vs spacejohnlf/tcm-acupoints": 138.59,
+        "WaterCMY/anatomy-3d vs spacejohnlf/tcm-acupoints": 136.4
+      },
+      "positions": {
+        "JICio/tcm-3d": [
+          0.08299983607572366,
+          1.4706236894293578,
+          -0.06099991638468829
+        ],
+        "WaterCMY/anatomy-3d": [
+          0.113,
+          1.484,
+          -0.05
+        ],
+        "spacejohnlf/tcm-acupoints": [
+          0.14,
+          1.3599999999999999,
+          0.0
+        ]
+      }
+    },
+    {
+      "code": "GV14",
+      "name_zh": "大椎",
+      "mean_error_mm": 26.52,
+      "max_error_mm": 46.9,
+      "status": "DISCREPANT",
+      "distances_to_landmark": {
+        "JICio/tcm-3d": 46.9,
+        "WaterCMY/anatomy-3d": 7.21,
+        "spacejohnlf/tcm-acupoints": 25.46
+      },
+      "pairwise_distances": {
+        "JICio/tcm-3d vs WaterCMY/anatomy-3d": 53.11,
+        "JICio/tcm-3d vs spacejohnlf/tcm-acupoints": 24.98,
+        "WaterCMY/anatomy-3d vs spacejohnlf/tcm-acupoints": 32.56
+      },
+      "positions": {
+        "JICio/tcm-3d": [
+          0,
+          1.43503,
+          -0.11078501802674676
+        ],
+        "WaterCMY/anatomy-3d": [
+          0.0,
+          1.482,
+          -0.086
+        ],
+        "spacejohnlf/tcm-acupoints": [
+          0.0,
+          1.46,
+          -0.11
+        ]
+      }
+    },
+    {
+      "code": "GB20",
+      "name_zh": "风池",
+      "mean_error_mm": 66.45,
+      "max_error_mm": 102.78,
+      "status": "DISCREPANT",
+      "distances_to_landmark": {
+        "JICio/tcm-3d": 53.52,
+        "WaterCMY/anatomy-3d": 43.05,
+        "spacejohnlf/tcm-acupoints": 102.78
+      },
+      "pairwise_distances": {
+        "JICio/tcm-3d vs WaterCMY/anatomy-3d": 69.99,
+        "JICio/tcm-3d vs spacejohnlf/tcm-acupoints": 76.81,
+        "WaterCMY/anatomy-3d vs spacejohnlf/tcm-acupoints": 137.67
+      },
+      "positions": {
+        "JICio/tcm-3d": [
+          0.033709,
+          1.540972,
+          -0.07372602775380421
+        ],
+        "WaterCMY/anatomy-3d": [
+          0.038,
+          1.61,
+          -0.063
+        ],
+        "spacejohnlf/tcm-acupoints": [
+          0.08,
+          1.48,
+          -0.08
+        ]
+      }
+    },
+    {
+      "code": "BL10",
+      "name_zh": "天柱",
+      "mean_error_mm": 72.35,
+      "max_error_mm": 113.77,
+      "status": "DISCREPANT",
+      "distances_to_landmark": {
+        "JICio/tcm-3d": 54.14,
+        "WaterCMY/anatomy-3d": 49.13,
+        "spacejohnlf/tcm-acupoints": 113.77
+      },
+      "pairwise_distances": {
+        "JICio/tcm-3d vs WaterCMY/anatomy-3d": 98.54,
+        "JICio/tcm-3d vs spacejohnlf/tcm-acupoints": 71.66,
+        "WaterCMY/anatomy-3d vs spacejohnlf/tcm-acupoints": 162.1
+      },
+      "positions": {
+        "JICio/tcm-3d": [
+          0.019822466950277215,
+          1.5213095942794563,
+          -0.07842665698967957
+        ],
+        "WaterCMY/anatomy-3d": [
+          0.035,
+          1.618,
+          -0.067
+        ],
+        "spacejohnlf/tcm-acupoints": [
+          0.05,
+          1.46,
+          -0.1
+        ]
+      }
+    },
+    {
+      "code": "SI15",
+      "name_zh": "肩中俞",
+      "mean_error_mm": 37.8,
+      "max_error_mm": 37.8,
+      "status": "DISCREPANT",
+      "distances_to_landmark": {
+        "JICio/tcm-3d": 37.8
+      },
+      "pairwise_distances": {},
+      "positions": {
+        "JICio/tcm-3d": [
+          0.04468205472530841,
+          1.4426484279742622,
+          -0.11390205248567417
+        ]
+      }
+    },
+    {
+      "code": "TE15",
+      "name_zh": "天髎",
+      "mean_error_mm": 40.29,
+      "max_error_mm": 40.29,
+      "status": "DISCREPANT",
+      "distances_to_landmark": {
+        "JICio/tcm-3d": 40.29
+      },
+      "pairwise_distances": {},
+      "positions": {
+        "JICio/tcm-3d": [
+          0.10046413119576977,
+          1.459705785592059,
+          -0.06848463260189785
+        ]
+      }
+    }
+  ]
+}

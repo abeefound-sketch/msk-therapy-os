@@ -1,0 +1,58 @@
+{
+  "target_hardware": "Intel HD 5500 / 8GB RAM [ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)]",
+  "metrics": [
+    {
+      "source": "JICio/tcm-3d",
+      "model_format": "BodyParts3D Binary Chunks (body-10.bin skin 3.9MB) + Pre-baked JSON (768KB)",
+      "model_size_mb": 4.69,
+      "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "js_heap_mb": 202.18,
+      "load_time_ms": 3842.2,
+      "fps_idle": 61,
+      "fps_interaction": 59,
+      "feasibility": "FEASIBLE",
+      "telemetry_file": "metrics_tcm3d.json",
+      "notes": "Zero runtime raycasting. Static BufferGeometry rendered directly from pre-baked typed arrays."
+    },
+    {
+      "source": "eb-barry/acupuncture-3d-authoring",
+      "model_format": "Uncompressed GLB (13.5MB Male / 23.4MB Female)",
+      "model_size_mb": 13.55,
+      "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "js_heap_mb": 272.75,
+      "load_time_ms": 5353.11,
+      "fps_idle": 60,
+      "fps_interaction": 39,
+      "feasibility": "FEASIBLE",
+      "telemetry_file": "metrics_studio.json",
+      "notes": "Interactive BVH raycasting cursor. Real-time spline generation during drag."
+    },
+    {
+      "source": "WaterCMY/anatomy-3d",
+      "model_format": "anatomy.glb (54 muscle groups, 634k triangles)",
+      "model_size_mb": 8.86,
+      "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "js_heap_mb": 57.51,
+      "load_time_ms": 1994.78,
+      "fps_idle": 60,
+      "fps_interaction": 58,
+      "feasibility": "FEASIBLE",
+      "telemetry_file": "metrics_anatomy3d.json",
+      "notes": "Ultra-low heap and fast DOM ready. Analytical hull math replaces raycasting."
+    },
+    {
+      "source": "spacejohnlf/tcm-acupoints",
+      "model_format": "Z-Anatomy Draco-compressed GLB (8MB)",
+      "model_size_mb": 7.87,
+      "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "js_heap_mb": 61.04,
+      "load_time_ms": 1744.45,
+      "fps_idle": 12,
+      "fps_interaction": 11,
+      "feasibility": "MARGINAL",
+      "telemetry_file": "metrics_tcmacupoints.json",
+      "notes": "Draco WASM decoder + React 19 increases heap; framerate drops to 11-12 FPS on Intel HD 5500."
+    }
+  ],
+  "recommendation": "Adopt JICio pre-baked static surface coordinates for production client (zero CPU overhead, low heap ~35MB), paired with Meridian Studio BVH spline authoring for calibration mode."
+}

@@ -1,0 +1,11 @@
+{
+  "scenario_a_full_body_adaptive": "PASS",
+  "scenario_b_progressive_zoom": "PASS",
+  "scenario_c_manual_overrides_persistence": "PASS",
+  "scenario_d_smart_density_clustering": "PASS",
+  "scenario_e_point_interaction_halos": "PASS",
+  "scenario_f_comparative_mode_isolation": "PASS",
+  "scenario_g_responsive_layouts": "PASS",
+  "scenario_h_visual_regression_protection": "PASS",
+  "console_errors_count": 0
+}

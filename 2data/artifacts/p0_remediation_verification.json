@@ -1,0 +1,171 @@
+{
+  "timestamp": 1792591787.7920003,
+  "standalone_initial": {
+    "stageRect": {
+      "left": 320,
+      "top": 52,
+      "width": 620,
+      "height": 768
+    },
+    "sidebarRect": {
+      "left": 0,
+      "top": 52,
+      "width": 320,
+      "height": 768
+    },
+    "stageOverflow": "hidden",
+    "stageContain": "paint",
+    "overlayOverflow": "hidden",
+    "overlayContain": "paint",
+    "clipRectBounds": {
+      "x": 0,
+      "y": 0,
+      "width": 620,
+      "height": 768
+    },
+    "totalPaths": 21,
+    "totalCircles": 2,
+    "leakingIntoSidebarCount": 0,
+    "leakingSample": [],
+    "negativeCoordsCount": 0,
+    "negativeSample": [],
+    "outOfBoundsCount": 0,
+    "outOfBoundsSample": [],
+    "nanCoordsCount": 0,
+    "outOfBoundsCirclesCount": 0
+  },
+  "standalone_zoomed": {
+    "stageRect": {
+      "left": 320,
+      "top": 52,
+      "width": 620,
+      "height": 768
+    },
+    "sidebarRect": {
+      "left": 0,
+      "top": 52,
+      "width": 320,
+      "height": 768
+    },
+    "stageOverflow": "hidden",
+    "stageContain": "paint",
+    "overlayOverflow": "hidden",
+    "overlayContain": "paint",
+    "clipRectBounds": {
+      "x": 0,
+      "y": 0,
+      "width": 620,
+      "height": 768
+    },
+    "totalPaths": 0,
+    "totalCircles": 0,
+    "leakingIntoSidebarCount": 0,
+    "leakingSample": [],
+    "negativeCoordsCount": 0,
+    "negativeSample": [],
+    "outOfBoundsCount": 0,
+    "outOfBoundsSample": [],
+    "nanCoordsCount": 0,
+    "outOfBoundsCirclesCount": 0
+  },
+  "comparative_initial": {
+    "stageRect": {
+      "left": 320,
+      "top": 52,
+      "width": 620,
+      "height": 768
+    },
+    "sidebarRect": {
+      "left": 0,
+      "top": 52,
+      "width": 320,
+      "height": 768
+    },
+    "stageOverflow": "hidden",
+    "stageContain": "paint",
+    "overlayOverflow": "hidden",
+    "overlayContain": "paint",
+    "clipRectBounds": {
+      "x": 310,
+      "y": 0,
+      "width": 310,
+      "height": 768
+    },
+    "totalPaths": 0,
+    "totalCircles": 0,
+    "leakingIntoSidebarCount": 0,
+    "leakingSample": [],
+    "negativeCoordsCount": 0,
+    "negativeSample": [],
+    "outOfBoundsCount": 0,
+    "outOfBoundsSample": [],
+    "nanCoordsCount": 0,
+    "outOfBoundsCirclesCount": 0
+  },
+  "comparative_zoomed": {
+    "stageRect": {
+      "left": 320,
+      "top": 52,
+      "width": 620,
+      "height": 768
+    },
+    "sidebarRect": {
+      "left": 0,
+      "top": 52,
+      "width": 320,
+      "height": 768
+    },
+    "stageOverflow": "hidden",
+    "stageContain": "paint",
+    "overlayOverflow": "hidden",
+    "overlayContain": "paint",
+    "clipRectBounds": {
+      "x": 310,
+      "y": 0,
+      "width": 310,
+      "height": 768
+    },
+    "totalPaths": 0,
+    "totalCircles": 0,
+    "leakingIntoSidebarCount": 0,
+    "leakingSample": [],
+    "negativeCoordsCount": 0,
+    "negativeSample": [],
+    "outOfBoundsCount": 0,
+    "outOfBoundsSample": [],
+    "nanCoordsCount": 0,
+    "outOfBoundsCirclesCount": 0
+  },
+  "host_zoomed": {
+    "ok": true,
+    "pathsCount": 0,
+    "negative": 0,
+    "outOfBounds": 0,
+    "stageWidth": 434,
+    "stageHeight": 498
+  },
+  "responsive_checks": {
+    "Desktop 1280x850": {
+      "stageWidth": 620,
+      "stageHeight": 768,
+      "pathsCount": 21,
+      "oob": 0,
+      "neg": 0
+    },
+    "Tablet 768x1024": {
+      "stageWidth": 238,
+      "stageHeight": 942,
+      "pathsCount": 19,
+      "oob": 0,
+      "neg": 0
+    },
+    "Mobile 375x667": {
+      "stageWidth": 0,
+      "stageHeight": 585,
+      "pathsCount": 21,
+      "oob": 0,
+      "neg": 0
+    }
+  },
+  "failures": []
+}
