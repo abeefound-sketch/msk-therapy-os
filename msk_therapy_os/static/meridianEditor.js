@@ -297,6 +297,7 @@
                       <option value="VERIFIED_ANATOMICAL_ANCHOR">VERIFIED_ANATOMICAL_ANCHOR</option>
                       <option value="SURFACE_REGISTERED_FJ2810">SURFACE_REGISTERED_FJ2810</option>
                       <option value="GEOMETRY_VERIFIED">GEOMETRY_VERIFIED</option>
+                      <option value="ANATOMY_REVIEWED">ANATOMY_REVIEWED (Human Review)</option>
                       <option value="UNCERTAIN_POSTURE_OFFSET">UNCERTAIN_POSTURE_OFFSET</option>
                       <option value="UNVERIFIED">UNVERIFIED</option>
                     </select>
@@ -320,6 +321,17 @@
                 <div>
                   <label style="font-size: 10px; color: #9ca3af; display: block; margin-bottom: 1px;">Verification / Clinical Notes:</label>
                   <textarea id="studioNotes" rows="2" style="width: 100%; background: #111827; color: #f3f4f6; border: 1px solid #4b5563; padding: 4px 6px; border-radius: 4px; font-size: 11px; resize: vertical;"></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                  <div>
+                    <label style="font-size: 10px; color: #9ca3af; display: block; margin-bottom: 1px;">Reviewer (Human):</label>
+                    <input type="text" id="studioReviewer" placeholder="e.g. Dr. Jane Smith, MD / LAc" style="width: 100%; background: #111827; color: #f3f4f6; border: 1px solid #4b5563; padding: 4px 6px; border-radius: 4px; font-size: 10px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 10px; color: #9ca3af; display: block; margin-bottom: 1px;">Evidence Reference:</label>
+                    <input type="text" id="studioEvidenceId" placeholder="e.g. EVID-A-002" style="width: 100%; background: #111827; color: #f3f4f6; border: 1px solid #4b5563; padding: 4px 6px; border-radius: 4px; font-size: 10px;" />
+                  </div>
                 </div>
               </div>
 
@@ -506,6 +518,8 @@
     // 1. Geometric Badge
     if (pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR') {
       badgeContainer.innerHTML += '<span style="background:#065f46; color:#a7f3d0; padding:2px 6px; border-radius:4px; font-weight:600; font-size:10px;">✓ ANCHOR</span>';
+    } else if (pt.registration_status === 'ANATOMY_REVIEWED') {
+      badgeContainer.innerHTML += '<span style="background:#047857; color:#d1fae5; padding:2px 6px; border-radius:4px; font-weight:600; font-size:10px;">✓ ANATOMY REVIEWED</span>';
     } else if (pt.registration_status === 'GEOMETRY_VERIFIED') {
       badgeContainer.innerHTML += '<span style="background:#0284c7; color:#e0f2fe; padding:2px 6px; border-radius:4px; font-weight:600; font-size:10px;">✓ GEOM VERIFIED</span>';
     } else if (pt.registration_status === 'SURFACE_REGISTERED_FJ2810') {
@@ -539,6 +553,10 @@
     document.getElementById('studioReviewStatus').value = pt.review_status || 'PENDING_EXPERT_REVIEW';
     document.getElementById('studioProvenance').value = pt.source_provenance || (isCustom ? 'User Created Custom Landmark' : 'JICio / BodyParts3D 4.0 FJ2810 Surface Registration');
     document.getElementById('studioNotes').value = pt.verification_notes || pt.notes || '';
+    const elRev = document.getElementById('studioReviewer');
+    if (elRev) elRev.value = pt.reviewer || '';
+    const elEvid = document.getElementById('studioEvidenceId');
+    if (elEvid) elEvid.value = pt.evidence_id || '';
 
     // Clinical
     document.getElementById('studioIndications').textContent = `Indications: ${(pt.indications || []).join(', ') || 'N/A'}`;
@@ -833,6 +851,10 @@
             registration_status: pt.registration_status,
             review_status: pt.review_status,
             notes: pt.verification_notes,
+            reviewer: (document.getElementById('studioReviewer') ? document.getElementById('studioReviewer').value.trim() : null),
+            evidence_id: (document.getElementById('studioEvidenceId') ? document.getElementById('studioEvidenceId').value.trim() : null),
+            reviewer: (document.getElementById('studioReviewer') ? document.getElementById('studioReviewer').value.trim() : null),
+            evidence_id: (document.getElementById('studioEvidenceId') ? document.getElementById('studioEvidenceId').value.trim() : null),
             change_type: 'UPDATE_COORDS'
           })
         });
