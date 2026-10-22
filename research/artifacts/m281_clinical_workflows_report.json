@@ -1,0 +1,61 @@
+{
+  "milestone": "M2.8.1 Acceptance Hardening",
+  "timestamp_utc": "2026-10-22T14:12:02Z",
+  "target_url": "http://127.0.0.1:8085",
+  "workflows": {
+    "soap_lifecycle": {
+      "status": "PASS",
+      "soap_id": 18,
+      "marker": "V281-RUN-1792678327",
+      "persisted_status": "APPROVED",
+      "reviewer": "Clinical Supervisor"
+    },
+    "fhir_r4_bundle": {
+      "status": "PASS",
+      "resource_count": 27,
+      "resource_types": [
+        "Patient",
+        "Encounter",
+        "Observation"
+      ],
+      "loinc_codes": [
+        "72514-3",
+        "80255-3"
+      ]
+    },
+    "safety_red_flags_drill": {
+      "status": "PASS",
+      "flag_tested": "acute_cervical_myelopathy",
+      "disposition": "STOP_AND_REFER",
+      "safe_to_proceed": false
+    },
+    "custom_point_persistence": {
+      "status": "PASS",
+      "code": "MYO-NX-8335",
+      "point_id": "PT-MYO-NX-8335-1792678335",
+      "bilateral_verified": true,
+      "soft_delete_verified": true,
+      "restore_verified": true
+    },
+    "reference_overrides_isolation": {
+      "status": "PASS",
+      "target_point": "GV14",
+      "canonical_file_sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+      "zero_mutation_verified": true,
+      "reversion_verified": true
+    },
+    "responsive_viewports": {
+      "status": "PASS",
+      "viewports_tested": [
+        "375x812",
+        "768x1024",
+        "1280x800",
+        "1920x1080"
+      ]
+    }
+  },
+  "evidence_artifacts": {},
+  "console_errors": [],
+  "overall_status": "PASS",
+  "console_errors_count": 0
+}

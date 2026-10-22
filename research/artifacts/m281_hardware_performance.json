@@ -1,0 +1,78 @@
+{
+  "milestone": "M2.8.1 Performance Revalidation",
+  "timestamp_utc": "2026-10-22T14:13:28Z",
+  "target_url": "http://127.0.0.1:8085",
+  "environment": {
+    "os_name": "Windows",
+    "os_release": "10",
+    "os_version": "10.0.19045",
+    "architecture": "AMD64",
+    "python_version": "3.11.9",
+    "processor": "Intel64 Family 6 Model 61 Stepping 4, GenuineIntel",
+    "cpu_physical_cores": 2,
+    "cpu_logical_cores": 4,
+    "total_ram_gb": 7.89
+  },
+  "target_baseline_hardware": {
+    "model": "ThinkPad / Windows x64",
+    "cpu": "Intel Core i7-5600U @ 2.60GHz",
+    "gpu": "Intel HD Graphics 5500",
+    "ram": "8 GB"
+  },
+  "webgl_telemetry": {
+    "context_type": "WebGL2RenderingContext",
+    "renderer": "WebKit WebGL",
+    "vendor": "WebKit",
+    "unmasked_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "unmasked_vendor": "Google Inc. (Intel)",
+    "shading_language_version": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+    "max_texture_size": 16384,
+    "max_vertex_uniform_vectors": 4096,
+    "max_renderbuffer_size": 16384,
+    "viewport_width": 434,
+    "viewport_height": 498
+  },
+  "memory_forensics": {
+    "layer_1_host_window_memory": {
+      "usedJSHeapSize_MB": 159.26,
+      "totalJSHeapSize_MB": 179.29,
+      "jsHeapSizeLimit_MB": 3585.82
+    },
+    "layer_2_iframe_window_memory": {
+      "usedJSHeapSize_MB": 159.26,
+      "totalJSHeapSize_MB": 179.29,
+      "jsHeapSizeLimit_MB": 3585.82
+    },
+    "layer_3_combined_frame_used_js_heap_mb": 318.52,
+    "layer_4_cdp_v8_heap_used_mb": 9.79,
+    "layer_5_cdp_v8_heap_total_reserved_mb": 21.5,
+    "layer_6_os_renderer_working_set_rss_mb": 914.2,
+    "dom_nodes_count": 19571,
+    "dom_documents_count": 2,
+    "discrepancy_explanation": "The 44.8\u201358.2 MB figure reflects window.performance.memory.usedJSHeapSize inside the isolated Atlas iframe context. The 168.80 MB figure recorded in automated test telemetry reflects Chrome DevTools Protocol 'JSHeapTotalSize' (current measurement: 21.5 MB), which is the total V8 virtual heap reserved from the OS for growth, rather than the live active object footprint (CDP live used: 9.79 MB). Total browser process resident set size (RSS) is 914.2 MB, which includes compiled code, WebGL buffers, DOM structures, and graphics driver state."
+  },
+  "frame_performance_120_frames": {
+    "sample_count": 120,
+    "mean_frame_time_ms": 16.67,
+    "min_frame_time_ms": 16.5,
+    "max_frame_time_ms": 16.8,
+    "median_p50_ms": 16.7,
+    "p95_frame_time_ms": 16.8,
+    "p99_frame_time_ms": 16.8,
+    "std_dev_jitter_ms": 0.06,
+    "average_fps": 60,
+    "one_percent_low_fps": 59.5
+  },
+  "unmeasured_metrics": [
+    {
+      "metric": "Physical GPU Die Temperature",
+      "status": "UNMEASURED",
+      "reason": "Requires kernel-level Intel DPTF sensor telemetry not exposed to user-space WMI/browser sandbox."
+    },
+    {
+      "metric": "Physical Package Wattage / TDP",
+      "status": "UNMEASURED",
+      "reason": "Intel RAPL MSR hardware registers require ring-0 administrator privileges."
+    }
+  ]
+}

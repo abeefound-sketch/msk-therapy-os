@@ -50,6 +50,8 @@ from msk_therapy_os.points import (
     backup_database,
     rollback_database,
     get_evidence_ledger,
+    sanitize_backup_filename,
+    get_safe_backup_path,
 )
 from msk_therapy_os.soap import (
     create_soap_note,
@@ -72,6 +74,9 @@ ATLAS_UI_DIR = STATIC_DIR / "atlas"
 _APPDATA = os.environ.get("APPDATA", "")
 ATLAS_DATA_DIR = Path(_APPDATA) / "open-anatomy-atlas" / "dataset" if _APPDATA else None
 
+MAX_JSON_PAYLOAD_SIZE = 5 * 1024 * 1024  # 5 MB payload limit to prevent DoS
+ALLOWED_ORIGIN_HOSTS = {"localhost", "127.0.0.1", "[::1]"}
+
 MIME_TYPES = {
     ".html": "text/html; charset=utf-8",
     ".js": "text/javascript; charset=utf-8",
@@ -90,12 +95,43 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         """Suppress default HTTP request logging to keep console clean unless debugging."""
         pass
 
+    def _is_origin_allowed(self) -> bool:
+        """Verify Origin header to prevent cross-origin abuse from unauthorized web domains."""
+        origin = self.headers.get("Origin")
+        if not origin:
+            return True  # Direct API calls, Python urllib, cURL, CLI tools
+        if origin == "null":
+            return True  # Local sandboxed iframes, file:// protocol
+        try:
+            parsed = urlparse(origin)
+            hostname = parsed.hostname or ""
+            if hostname in ALLOWED_ORIGIN_HOSTS:
+                return True
+        except Exception:
+            pass
+        return False
+
+    def _get_cors_origin(self) -> str:
+        """Return permitted CORS origin or empty string to deny foreign access."""
+        origin = self.headers.get("Origin")
+        if not origin or origin == "null":
+            return "*"
+        try:
+            parsed = urlparse(origin)
+            if parsed.hostname in ALLOWED_ORIGIN_HOSTS:
+                return origin
+        except Exception:
+            pass
+        return ""
+
     def _send_json(self, data: Any, status: int = HTTPStatus.OK) -> None:
         payload = json.dumps(data).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(payload)))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        cors_origin = self._get_cors_origin()
+        if cors_origin:
+            self.send_header("Access-Control-Allow-Origin", cors_origin)
         self.end_headers()
         self.wfile.write(payload)
 
@@ -104,16 +140,38 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(payload)))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        cors_origin = self._get_cors_origin()
+        if cors_origin:
+            self.send_header("Access-Control-Allow-Origin", cors_origin)
         self.end_headers()
         self.wfile.write(payload)
 
     def _read_json_body(self) -> Dict[str, Any]:
-        content_len = int(self.headers.get("Content-Length", 0))
-        if content_len == 0:
+        content_len_str = self.headers.get("Content-Length", "0")
+        try:
+            content_len = int(content_len_str)
+        except ValueError:
+            content_len = 0
+        if content_len > MAX_JSON_PAYLOAD_SIZE:
+            raise ValueError(f"Payload too large ({content_len} bytes). Maximum allowed size is {MAX_JSON_PAYLOAD_SIZE} bytes.")
+        if content_len <= 0:
             return {}
         raw = self.rfile.read(content_len)
-        return json.loads(raw.decode("utf-8"))
+        try:
+            return json.loads(raw.decode("utf-8"))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Malformed JSON: {e}")
+
+    def do_OPTIONS(self) -> None:
+        """Handle CORS preflight requests securely."""
+        origin = self._get_cors_origin()
+        self.send_response(HTTPStatus.NO_CONTENT)
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+        self.send_header("Access-Control-Max-Age", "86400")
+        self.end_headers()
 
     def _serve_file(self, file_path: Path) -> bool:
         """Serve a static file by streaming. Returns True if served, False if not found."""
@@ -125,7 +183,9 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(file_size))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        cors_origin = self._get_cors_origin()
+        if cors_origin:
+            self.send_header("Access-Control-Allow-Origin", cors_origin)
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
         with open(file_path, "rb") as f:
@@ -560,6 +620,10 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_POST(self) -> None:
+        if not self._is_origin_allowed():
+            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins are rejected."}, status=HTTPStatus.FORBIDDEN)
+            return
+
         parsed = urlparse(self.path)
         path = parsed.path
 
@@ -695,10 +759,29 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "saved", "override": ov})
 
                 elif path == "/api/governance/backup":
-                    import time
-                    name = body.get("name") or f"backup_snapshot_{int(time.time())}.sqlite3"
-                    bp = Path("data/backups") / name
+                    name = body.get("name")
+                    try:
+                        bp = get_safe_backup_path(name)
+                    except (ValueError, PermissionError) as pe:
+                        self._send_json({"error": str(pe)}, status=HTTPStatus.BAD_REQUEST)
+                        return
                     self._send_json(backup_database(db, str(bp)))
+
+                elif path == "/api/governance/restore":
+                    name = body.get("name") or body.get("backup_name")
+                    if not name:
+                        self._send_json({"error": "Missing backup name to restore"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        bp = get_safe_backup_path(name)
+                    except (ValueError, PermissionError) as pe:
+                        self._send_json({"error": str(pe)}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        res = rollback_database(self.db_path, str(bp))
+                        self._send_json(res)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
 
                 elif path == "/api/governance/check":
                     self._send_json(run_database_integrity_check(db))
@@ -722,11 +805,17 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
             except (ValueError, PermissionError) as e:
+                db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
             except Exception as e:
+                db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_PUT(self) -> None:
+        if not self._is_origin_allowed():
+            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins are rejected."}, status=HTTPStatus.FORBIDDEN)
+            return
+
         parsed = urlparse(self.path)
         path = parsed.path
         try:
@@ -746,11 +835,17 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
             except (ValueError, PermissionError) as e:
+                db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
             except Exception as e:
+                db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_DELETE(self) -> None:
+        if not self._is_origin_allowed():
+            self._send_json({"error": "Forbidden: Cross-origin requests from external web origins are rejected."}, status=HTTPStatus.FORBIDDEN)
+            return
+
         parsed = urlparse(self.path)
         path = parsed.path
 
@@ -770,12 +865,10 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
             except (ValueError, PermissionError) as e:
+                db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
             except Exception as e:
-                self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
-            except (ValueError, PermissionError) as e:
-                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
-            except Exception as e:
+                db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 

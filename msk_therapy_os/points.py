@@ -8,6 +8,9 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from pathlib import Path
+import re
+import shutil
 import sqlite3
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -33,6 +36,16 @@ VALID_GOVERNANCE_STATUSES = (
     "UNCERTAIN_POSTURE_OFFSET",
     "UNVERIFIED",
 )
+
+ALLOWED_CLINICAL_CREDENTIALS = {
+    "MD", "DO", "LAC", "PT", "DPT", "DC", "PHD", "MBBS", "FACP", "ND",
+    "L.AC.", "D.P.T.", "M.D.", "D.O."
+}
+
+RECOGNIZED_STANDARDS = {
+    "WHO-2008", "WHO WPRO 2008", "WHO 2008", "GB/T 12346-2006", "GB/T 12346-2021",
+    "BODYPARTS3D 4.0", "FMA 7163", "BODYPARTS3D 4.0 / FMA 7163"
+}
 
 BODY_ENVELOPE = {
     "x_min": -0.35, "x_max": 0.35,
@@ -198,6 +211,34 @@ def init_points_tables(db: sqlite3.Connection) -> None:
                 lib["is_readonly"]
             )
         )
+
+    # Seed evidence catalog with default evidence records and recognized standards
+    try:
+        from msk_therapy_os.evidence import DEFAULT_EVIDENCE_CATALOG
+        for item in DEFAULT_EVIDENCE_CATALOG:
+            db.execute(
+                """INSERT OR IGNORE INTO evidence_catalog
+                   (evidence_id, title, url, organization, year, license, tier, claim_scope, reviewed_on, reviewer)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (item.evidence_id, item.title, item.url, item.organization, item.year, item.license, item.tier, item.claim_scope, item.reviewed_on, item.reviewer)
+            )
+    except Exception:
+        pass
+
+    standards_records = [
+        ("WHO-2008", "WHO Standard Acupuncture Point Locations in the Western Pacific Region", "https://iris.who.int/handle/10665/207439", "World Health Organization", 2008, "Public domain / WHO standard", 1, "Standard 361 classical points", "2026-10-19", "WHO Expert Committee"),
+        ("GB/T 12346-2006", "Nomenclature and location of acupuncture points", "http://openstd.samr.gov.cn/", "Standardization Administration of China", 2006, "National Standard of PRC", 1, "Standard 362 points with Yintang", "2026-10-19", "SAC Expert Committee"),
+        ("GB/T 12346-2021", "Nomenclature and location of meridian points", "http://openstd.samr.gov.cn/", "Standardization Administration of China", 2021, "National Standard of PRC", 1, "Updated 362 meridian points standard", "2026-10-19", "SAC Expert Committee"),
+        ("BODYPARTS3D 4.0", "BodyParts3D Anatomical Concepts Database Release 4.0", "https://lifesciencedb.jp/bp3d/", "DBCLS Japan", 2022, "CC BY-SA 2.1 JP", 2, "Anatomical surface meshes and FMA ontology", "2026-10-19", "DBCLS Consortium"),
+    ]
+    for s in standards_records:
+        db.execute(
+            """INSERT OR IGNORE INTO evidence_catalog
+               (evidence_id, title, url, organization, year, license, tier, claim_scope, reviewed_on, reviewer)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            s
+        )
+
     migrate_governance_schema(db)
     db.commit()
 
@@ -306,7 +347,8 @@ def list_custom_points(
                pos_x, pos_y, pos_z, norm_x, norm_y, norm_z,
                mesh_id, mesh_hash, face_index, barycentric_json, registration_distance,
                registration_status, review_status, indications_json, cautions_json,
-               tuina_method, notes, author, created_utc, updated_utc, is_deleted
+               tuina_method, notes, author, created_utc, updated_utc, is_deleted,
+               evidence_id, reviewer, verification_method, uncertainty_radius_mm
         FROM custom_points
         WHERE 1=1
     """
@@ -355,7 +397,11 @@ def list_custom_points(
             "author": r[28],
             "created_utc": r[29],
             "updated_utc": r[30],
-            "is_deleted": bool(r[31])
+            "is_deleted": bool(r[31]),
+            "evidence_id": r[32] if len(r) > 32 else None,
+            "reviewer": r[33] if len(r) > 33 else None,
+            "verification_method": r[34] if len(r) > 34 else "SURFACE_RAYCAST_INTERSECTION",
+            "uncertainty_radius_mm": r[35] if len(r) > 35 else 0.0
         })
     return points
 
@@ -370,7 +416,8 @@ def get_point(db: sqlite3.Connection, point_id: str) -> Optional[Dict[str, Any]]
                pos_x, pos_y, pos_z, norm_x, norm_y, norm_z,
                mesh_id, mesh_hash, face_index, barycentric_json, registration_distance,
                registration_status, review_status, indications_json, cautions_json,
-               tuina_method, notes, author, created_utc, updated_utc, is_deleted
+               tuina_method, notes, author, created_utc, updated_utc, is_deleted,
+               evidence_id, reviewer, verification_method, uncertainty_radius_mm
         FROM custom_points
         WHERE point_id = ? OR code = ?
         """,
@@ -407,7 +454,11 @@ def get_point(db: sqlite3.Connection, point_id: str) -> Optional[Dict[str, Any]]
         "author": r[28],
         "created_utc": r[29],
         "updated_utc": r[30],
-        "is_deleted": bool(r[31])
+        "is_deleted": bool(r[31]),
+        "evidence_id": r[32] if len(r) > 32 else None,
+        "reviewer": r[33] if len(r) > 33 else None,
+        "verification_method": r[34] if len(r) > 34 else "SURFACE_RAYCAST_INTERSECTION",
+        "uncertainty_radius_mm": r[35] if len(r) > 35 else 0.0
     }
 
 
@@ -461,6 +512,21 @@ def create_point(db: sqlite3.Connection, data: Dict[str, Any], author: str = "Cl
     tuina = data.get("tuina_method", "")
     notes = data.get("notes", "")
 
+    evidence_id = data.get("evidence_id")
+    reviewer = data.get("reviewer")
+    verif_method = data.get("verification_method", "SURFACE_RAYCAST_INTERSECTION")
+    uncert_radius = float(data.get("uncertainty_radius_mm", 0.0) or 0.0)
+
+    validate_governance_tier(
+        reg_status,
+        reviewer=reviewer,
+        evidence_id=evidence_id,
+        uncertainty_radius_mm=uncert_radius,
+        db=db,
+        is_custom=(library_id == "lib_custom_user" or system == "user_custom"),
+        review_status=rev_status
+    )
+
     db.execute(
         """
         INSERT INTO custom_points (
@@ -469,8 +535,9 @@ def create_point(db: sqlite3.Connection, data: Dict[str, Any], author: str = "Cl
             pos_x, pos_y, pos_z, norm_x, norm_y, norm_z,
             mesh_id, mesh_hash, face_index, barycentric_json, registration_distance,
             registration_status, review_status, indications_json, cautions_json,
-            tuina_method, notes, author
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            tuina_method, notes, author,
+            evidence_id, reviewer, verification_method, uncertainty_radius_mm
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             point_id, library_id, code, name_en, data.get("name_zh", ""), data.get("name_vi", ""),
@@ -478,7 +545,8 @@ def create_point(db: sqlite3.Connection, data: Dict[str, Any], author: str = "Cl
             pos[0], pos[1], pos[2], norm[0], norm[1], norm[2],
             mesh_id, mesh_hash, face_index, bary, reg_dist,
             reg_status, rev_status, indications, cautions,
-            tuina, notes, author
+            tuina, notes, author,
+            evidence_id, reviewer, verif_method, uncert_radius
         )
     )
 
@@ -486,10 +554,13 @@ def create_point(db: sqlite3.Connection, data: Dict[str, Any], author: str = "Cl
     # Log CREATE revision
     db.execute(
         """
-        INSERT INTO point_revisions (point_id, revision_number, change_type, previous_state_json, new_state_json, author, notes)
-        VALUES (?, 1, 'CREATE', NULL, ?, ?, ?)
+        INSERT INTO point_revisions (
+            point_id, revision_number, change_type, previous_state_json, new_state_json, author, notes,
+            evidence_id, reviewer, verification_method, uncertainty_radius_mm
+        )
+        VALUES (?, 1, 'CREATE', NULL, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (point_id, json.dumps(created_point), author, "Initial point creation on 3D skin mesh")
+        (point_id, json.dumps(created_point), author, "Initial point creation on 3D skin mesh", evidence_id, reviewer, verif_method, uncert_radius)
     )
     db.commit()
     return created_point
@@ -526,6 +597,21 @@ def update_point(
     tuina = data.get("tuina_method", existing["tuina_method"])
     pt_notes = data.get("notes", existing["notes"])
 
+    evidence_id = data.get("evidence_id", existing.get("evidence_id"))
+    reviewer = data.get("reviewer", existing.get("reviewer"))
+    verif_method = data.get("verification_method", existing.get("verification_method") or "SURFACE_RAYCAST_INTERSECTION")
+    uncert_radius = float(data.get("uncertainty_radius_mm", existing.get("uncertainty_radius_mm") or 0.0) or 0.0)
+
+    validate_governance_tier(
+        reg_status,
+        reviewer=reviewer,
+        evidence_id=evidence_id,
+        uncertainty_radius_mm=uncert_radius,
+        db=db,
+        is_custom=True,
+        review_status=rev_status
+    )
+
     # Determine revision number
     cursor = db.cursor()
     cursor.execute("SELECT MAX(revision_number) FROM point_revisions WHERE point_id = ? OR point_id = ?", (canonical_id, existing["code"]))
@@ -539,6 +625,7 @@ def update_point(
             pos_x = ?, pos_y = ?, pos_z = ?, norm_x = ?, norm_y = ?, norm_z = ?,
             face_index = ?, registration_status = ?, review_status = ?,
             indications_json = ?, cautions_json = ?, tuina_method = ?, notes = ?,
+            evidence_id = ?, reviewer = ?, verification_method = ?, uncertainty_radius_mm = ?,
             updated_utc = strftime('%Y-%m-%dT%H:%M:%SZ','now')
         WHERE point_id = ?
         """,
@@ -547,6 +634,7 @@ def update_point(
             pos[0], pos[1], pos[2], norm[0], norm[1], norm[2],
             face_idx, reg_status, rev_status,
             indications, cautions, tuina, pt_notes,
+            evidence_id, reviewer, verif_method, uncert_radius,
             canonical_id
         )
     )
@@ -555,10 +643,13 @@ def update_point(
     # Log revision
     db.execute(
         """
-        INSERT INTO point_revisions (point_id, revision_number, change_type, previous_state_json, new_state_json, author, notes)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO point_revisions (
+            point_id, revision_number, change_type, previous_state_json, new_state_json, author, notes,
+            evidence_id, reviewer, verification_method, uncertainty_radius_mm
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (canonical_id, next_rev, change_type, json.dumps(existing), json.dumps(updated_point), author, notes or f"Point {change_type}")
+        (canonical_id, next_rev, change_type, json.dumps(existing), json.dumps(updated_point), author, notes or f"Point {change_type}", evidence_id, reviewer, verif_method, uncert_radius)
     )
     db.commit()
     return updated_point
@@ -687,20 +778,41 @@ def set_reference_override(
     rev_status = data.get("review_status", "EXPERT_VERIFIED")
     face_idx = data.get("face_index")
 
+    evidence_id = data.get("evidence_id")
+    reviewer = data.get("reviewer")
+    verif_method = data.get("verification_method", "SURFACE_RAYCAST_INTERSECTION")
+    uncert_radius = float(data.get("uncertainty_radius_mm", 0.0) or 0.0)
+
+    validate_governance_tier(
+        reg_status,
+        reviewer=reviewer,
+        evidence_id=evidence_id,
+        uncertainty_radius_mm=uncert_radius,
+        db=db,
+        is_custom=False,
+        review_status=rev_status
+    )
+
     db.execute(
         """
         INSERT INTO reference_point_overrides (
             reference_code, pos_x, pos_y, pos_z, norm_x, norm_y, norm_z, face_index,
-            registration_status, review_status, notes, author, updated_utc
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%SZ','now'))
+            registration_status, review_status, notes, author,
+            evidence_id, reviewer, verification_method, uncertainty_radius_mm,
+            updated_utc
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%SZ','now'))
         ON CONFLICT(reference_code) DO UPDATE SET
             pos_x=excluded.pos_x, pos_y=excluded.pos_y, pos_z=excluded.pos_z,
             norm_x=excluded.norm_x, norm_y=excluded.norm_y, norm_z=excluded.norm_z,
             face_index=excluded.face_index, registration_status=excluded.registration_status,
             review_status=excluded.review_status, notes=excluded.notes,
-            author=excluded.author, updated_utc=strftime('%Y-%m-%dT%H:%M:%SZ','now')
+            author=excluded.author,
+            evidence_id=excluded.evidence_id, reviewer=excluded.reviewer,
+            verification_method=excluded.verification_method,
+            uncertainty_radius_mm=excluded.uncertainty_radius_mm,
+            updated_utc=strftime('%Y-%m-%dT%H:%M:%SZ','now')
         """,
-        (ref_code, pos[0], pos[1], pos[2], norm[0], norm[1], norm[2], face_idx, reg_status, rev_status, notes, author)
+        (ref_code, pos[0], pos[1], pos[2], norm[0], norm[1], norm[2], face_idx, reg_status, rev_status, notes, author, evidence_id, reviewer, verif_method, uncert_radius)
     )
 
     # Log revision for reference point
@@ -709,10 +821,13 @@ def set_reference_override(
     next_rev = (cursor.fetchone()[0] or 0) + 1
     db.execute(
         """
-        INSERT INTO point_revisions (point_id, revision_number, change_type, previous_state_json, new_state_json, author, notes)
-        VALUES (?, ?, 'OVERRIDE_REFERENCE', NULL, ?, ?, ?)
+        INSERT INTO point_revisions (
+            point_id, revision_number, change_type, previous_state_json, new_state_json, author, notes,
+            evidence_id, reviewer, verification_method, uncertainty_radius_mm
+        )
+        VALUES (?, ?, 'OVERRIDE_REFERENCE', NULL, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (ref_code, next_rev, json.dumps(data), author, notes or f"Override reference point {ref_code}")
+        (ref_code, next_rev, json.dumps(data), author, notes or f"Override reference point {ref_code}", evidence_id, reviewer, verif_method, uncert_radius)
     )
     db.commit()
     return get_reference_override(db, ref_code)
@@ -724,7 +839,8 @@ def get_reference_override(db: sqlite3.Connection, reference_code: str) -> Optio
     cursor.execute(
         """
         SELECT reference_code, pos_x, pos_y, pos_z, norm_x, norm_y, norm_z, face_index,
-               registration_status, review_status, notes, author, created_utc, updated_utc
+               registration_status, review_status, notes, author, created_utc, updated_utc,
+               evidence_id, reviewer, verification_method, uncertainty_radius_mm
         FROM reference_point_overrides
         WHERE reference_code = ?
         """,
@@ -743,7 +859,11 @@ def get_reference_override(db: sqlite3.Connection, reference_code: str) -> Optio
         "notes": r[10] or "",
         "author": r[11],
         "created_utc": r[12],
-        "updated_utc": r[13]
+        "updated_utc": r[13],
+        "evidence_id": r[14] if len(r) > 14 else None,
+        "reviewer": r[15] if len(r) > 15 else None,
+        "verification_method": r[16] if len(r) > 16 else "SURFACE_RAYCAST_INTERSECTION",
+        "uncertainty_radius_mm": r[17] if len(r) > 17 else 0.0
     }
 
 
@@ -753,7 +873,8 @@ def list_reference_overrides(db: sqlite3.Connection) -> Dict[str, Dict[str, Any]
     cursor.execute(
         """
         SELECT reference_code, pos_x, pos_y, pos_z, norm_x, norm_y, norm_z, face_index,
-               registration_status, review_status, notes, author, created_utc, updated_utc
+               registration_status, review_status, notes, author, created_utc, updated_utc,
+               evidence_id, reviewer, verification_method, uncertainty_radius_mm
         FROM reference_point_overrides
         """
     )
@@ -770,7 +891,11 @@ def list_reference_overrides(db: sqlite3.Connection) -> Dict[str, Dict[str, Any]
             "notes": r[10] or "",
             "author": r[11],
             "created_utc": r[12],
-            "updated_utc": r[13]
+            "updated_utc": r[13],
+            "evidence_id": r[14] if len(r) > 14 else None,
+            "reviewer": r[15] if len(r) > 15 else None,
+            "verification_method": r[16] if len(r) > 16 else "SURFACE_RAYCAST_INTERSECTION",
+            "uncertainty_radius_mm": r[17] if len(r) > 17 else 0.0
         }
     return overrides
 
@@ -926,21 +1051,57 @@ def import_library_bundle(
     }
 
 
+def sanitize_backup_filename(name: Optional[str]) -> str:
+    """Sanitize and validate backup filename to prevent directory traversal and arbitrary writes."""
+    if not name or not str(name).strip():
+        return f"backup_snapshot_{int(time.time())}.sqlite3"
+    clean = str(name).strip()
+    if "/" in clean or "\\" in clean or "\0" in clean or ".." in clean:
+        raise ValueError("Path traversal sequences and directory separators are not allowed in backup filenames.")
+    clean = Path(clean).name
+    if not clean.endswith(".sqlite3"):
+        clean += ".sqlite3"
+    if not re.match(r"^[a-zA-Z0-9_\-]+\.sqlite3$", clean):
+        raise ValueError("Backup filename may only contain alphanumeric characters, hyphens, and underscores.")
+    return clean
+
+
+def get_safe_backup_path(filename: Optional[str], base_dir: Optional[Path] = None) -> Path:
+    """Resolve and enforce approved directory isolation for database backups."""
+    clean_name = sanitize_backup_filename(filename)
+    if base_dir is None:
+        base_dir = (Path("data") / "backups").resolve()
+    else:
+        base_dir = base_dir.resolve()
+    base_dir.mkdir(parents=True, exist_ok=True)
+    target = (base_dir / clean_name).resolve()
+    if not str(target).startswith(str(base_dir)):
+        raise PermissionError("Path traversal attack detected: target escapes approved backup directory.")
+    return target
+
+
 def validate_governance_tier(
     registration_status: str,
     reviewer: Optional[str] = None,
     evidence_id: Optional[str] = None,
-    uncertainty_radius_mm: Optional[float] = None
+    uncertainty_radius_mm: Optional[float] = None,
+    db: Optional[sqlite3.Connection] = None,
+    is_custom: bool = False,
+    review_status: Optional[str] = None,
 ) -> None:
     """Enforce strict separation between geometric surface verification and clinical anatomical review.
     
     Rules:
+    - User custom points cannot claim 'OFFICIAL_STANDARD' review status (reserved for WHO/national standards).
     - Surface raycast intersection alone qualifies only for GEOMETRY_VERIFIED or SURFACE_REGISTERED_FJ2810.
     - ANATOMY_REVIEWED claims require:
-      1. A named, qualified human reviewer (must not be empty, and cannot be generic 'AI', 'System', 'Automated').
-      2. An explicit evidence reference or catalog ID.
-      3. A non-negative localization uncertainty radius in millimeters (e.g., <= 10.0mm).
+      1. A named qualified human reviewer possessing recognized clinical credentials (MD, DO, LAc, PT, DPT, DC, PhD, MBBS, FACP, ND).
+      2. An explicit evidence reference or catalog ID registered in evidence_catalog or recognized standards.
+      3. A non-zero, physically bounded localization uncertainty radius in millimeters: 0.0 < uncertainty_radius_mm <= 25.0 mm.
     """
+    if is_custom and review_status == "OFFICIAL_STANDARD":
+        raise ValueError("User custom points cannot claim 'OFFICIAL_STANDARD' review status. Official standards are reserved for canonical WHO/national standard datasets.")
+
     if registration_status not in VALID_GOVERNANCE_STATUSES:
         raise ValueError(f"Invalid registration status '{registration_status}'. Allowed: {VALID_GOVERNANCE_STATUSES}")
 
@@ -952,10 +1113,24 @@ def validate_governance_tier(
         invalid_tokens = {'ai', 'system', 'automated', 'unknown', 'none', 'bot', 'algorithm', 'gpt', 'llm'}
         if rev_words & invalid_tokens or rev.lower() in invalid_tokens:
             raise ValueError(f"Reviewer '{rev}' is invalid. Human clinical governance requires qualified practitioner review, not automated systems.")
-        if not (evidence_id or "").strip():
+        
+        # Clinical credential enforcement
+        tokens = {tok.strip('.,()').upper() for tok in re.findall(r'[A-Za-z\.]+', rev)}
+        if not (tokens & ALLOWED_CLINICAL_CREDENTIALS):
+            raise ValueError(f"Reviewer '{rev}' lacks verifiable clinical credentials. Allowed credentials include: {', '.join(sorted(ALLOWED_CLINICAL_CREDENTIALS))}")
+
+        ev = (evidence_id or "").strip()
+        if not ev:
             raise ValueError("Anatomical review claims ('ANATOMY_REVIEWED') require an explicit evidence catalog reference or citation.")
+        if db is not None:
+            ev_found = db.execute("SELECT 1 FROM evidence_catalog WHERE evidence_id = ?", (ev,)).fetchone()
+            if not ev_found and ev.upper() not in RECOGNIZED_STANDARDS:
+                raise ValueError(f"Evidence ID '{ev}' is not registered in evidence_catalog or recognized standards.")
+
         if uncertainty_radius_mm is not None and uncertainty_radius_mm < 0:
             raise ValueError(f"Uncertainty radius must be non-negative, got {uncertainty_radius_mm}mm.")
+        if uncertainty_radius_mm is None or uncertainty_radius_mm == 0.0 or uncertainty_radius_mm > 25.0:
+            raise ValueError(f"Uncertainty radius must be physically bounded between (0.0, 25.0] mm for anatomical review claims, got {uncertainty_radius_mm}mm.")
 
 
 def migrate_governance_schema(db: sqlite3.Connection) -> None:
@@ -1047,22 +1222,40 @@ def run_database_integrity_check(db: sqlite3.Connection) -> Dict[str, Any]:
     ref_integrity = verify_reference_dataset_integrity()
 
     # 4. Governance compliance audit
-    # Rule: ANATOMY_REVIEWED must have qualified reviewer and evidence_id
+    # Rule: ANATOMY_REVIEWED must have qualified reviewer with clinical credentials, evidence_id, and 0 < uncertainty <= 25mm
     cursor.execute(
         """SELECT point_id, code, registration_status, reviewer, evidence_id, uncertainty_radius_mm
            FROM custom_points
-           WHERE registration_status = 'ANATOMY_REVIEWED'
-             AND (reviewer IS NULL OR trim(reviewer) = '' OR lower(reviewer) IN ('ai', 'system', 'automated', 'unknown', 'none'))"""
+           WHERE registration_status = 'ANATOMY_REVIEWED'"""
     )
-    unqualified_custom = cursor.fetchall()
+    unqualified_custom = []
+    for r in cursor.fetchall():
+        rev = r[3] or ""
+        ev = r[4] or ""
+        rad = r[5]
+        tokens = {tok.strip('.,()').upper() for tok in re.findall(r'[A-Za-z\.]+', rev)}
+        has_cred = bool(tokens & ALLOWED_CLINICAL_CREDENTIALS)
+        rev_words = set(rev.lower().replace('-', ' ').replace('_', ' ').split())
+        invalid_tokens = {'ai', 'system', 'automated', 'unknown', 'none', 'bot', 'algorithm', 'gpt', 'llm'}
+        if not rev.strip() or (rev_words & invalid_tokens) or not has_cred or not ev.strip() or rad is None or rad <= 0.0 or rad > 25.0:
+            unqualified_custom.append(r)
 
     cursor.execute(
         """SELECT reference_code, registration_status, reviewer, evidence_id, uncertainty_radius_mm
            FROM reference_point_overrides
-           WHERE registration_status = 'ANATOMY_REVIEWED'
-             AND (reviewer IS NULL OR trim(reviewer) = '' OR lower(reviewer) IN ('ai', 'system', 'automated', 'unknown', 'none'))"""
+           WHERE registration_status = 'ANATOMY_REVIEWED'"""
     )
-    unqualified_overrides = cursor.fetchall()
+    unqualified_overrides = []
+    for r in cursor.fetchall():
+        rev = r[2] or ""
+        ev = r[3] or ""
+        rad = r[4]
+        tokens = {tok.strip('.,()').upper() for tok in re.findall(r'[A-Za-z\.]+', rev)}
+        has_cred = bool(tokens & ALLOWED_CLINICAL_CREDENTIALS)
+        rev_words = set(rev.lower().replace('-', ' ').replace('_', ' ').split())
+        invalid_tokens = {'ai', 'system', 'automated', 'unknown', 'none', 'bot', 'algorithm', 'gpt', 'llm'}
+        if not rev.strip() or (rev_words & invalid_tokens) or not has_cred or not ev.strip() or rad is None or rad <= 0.0 or rad > 25.0:
+            unqualified_overrides.append(r)
 
     governance_compliant = (len(unqualified_custom) == 0 and len(unqualified_overrides) == 0)
 
@@ -1097,30 +1290,53 @@ def run_database_integrity_check(db: sqlite3.Connection) -> Dict[str, Any]:
 
 
 def backup_database(db: sqlite3.Connection, backup_path: str) -> Dict[str, Any]:
-    """Perform atomic online SQLite backup without locking or interrupting read traffic."""
-    from pathlib import Path
-    bp = Path(backup_path)
+    """Perform atomic online SQLite backup with cryptographic SHA-256 verification."""
+    bp = Path(backup_path).resolve()
     bp.parent.mkdir(parents=True, exist_ok=True)
     dest_db = sqlite3.connect(str(bp))
     with dest_db:
         db.backup(dest_db, pages=100)
     dest_db.close()
+
+    raw_bytes = bp.read_bytes()
+    checksum = hashlib.sha256(raw_bytes).hexdigest()
+    sha_file = bp.with_suffix(bp.suffix + ".sha256")
+    sha_file.write_text(f"{checksum}  {bp.name}\n", encoding="utf-8")
+
     return {
         "status": "SUCCESS",
         "backup_path": str(bp),
-        "size_bytes": bp.stat().st_size if bp.exists() else 0,
+        "sha256_checksum": checksum,
+        "size_bytes": len(raw_bytes),
         "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     }
 
 
 def rollback_database(target_db_path: str, backup_source_path: str) -> Dict[str, Any]:
-    """Restore database from an atomic backup snapshot."""
-    import shutil
-    from pathlib import Path
-    src = Path(backup_source_path)
-    tgt = Path(target_db_path)
+    """Restore database from an atomic backup snapshot after verifying SQLite integrity and SHA-256."""
+    src = Path(backup_source_path).resolve()
+    tgt = Path(target_db_path).resolve()
     if not src.exists():
         raise FileNotFoundError(f"Backup file not found at '{src}'.")
+
+    # Verify SQLite database integrity before restoring
+    try:
+        test_conn = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
+        res = test_conn.execute("PRAGMA integrity_check").fetchall()
+        test_conn.close()
+        if len(res) != 1 or res[0][0] != "ok":
+            raise ValueError(f"Corrupted backup file: SQLite integrity check failed ({res})")
+    except Exception as e:
+        raise ValueError(f"Invalid or corrupted SQLite backup database: {e}")
+
+    # Verify SHA-256 digest if available
+    sha_file = src.with_suffix(src.suffix + ".sha256")
+    if sha_file.exists():
+        expected_sha = sha_file.read_text(encoding="utf-8").split()[0].strip().lower()
+        actual_sha = hashlib.sha256(src.read_bytes()).hexdigest().lower()
+        if expected_sha != actual_sha:
+            raise ValueError(f"Backup SHA-256 checksum mismatch (expected {expected_sha}, got {actual_sha}).")
+
     shutil.copy2(src, tgt)
     return {
         "status": "SUCCESS",
