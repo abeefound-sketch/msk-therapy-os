@@ -7,6 +7,10 @@ __pycache__/
 data/
 *.sha256
 
+# Agent session directories
+.m/
+.mag/
+
 # Upstream research workspaces
 research/upstream/
 research/upstream/*
