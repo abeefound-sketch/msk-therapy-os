@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500" role="img" aria-label="Generic frontal facial schematic for illustrative annotation only">
+<rect width="400" height="500" fill="#f1f5f9"/><ellipse cx="200" cy="240" rx="120" ry="176" fill="#dbeafe" stroke="#334155" stroke-width="3"/>
+<path d="M100 145 Q150 117 181 143 M219 143 Q257 119 300 147" stroke="#334155" fill="none" stroke-width="4"/>
+<ellipse cx="154" cy="174" rx="18" ry="9" stroke="#334155" fill="none"/><ellipse cx="246" cy="174" rx="18" ry="9" stroke="#334155" fill="none"/>
+<path d="M200 183 L183 270 Q200 281 217 270 M169 327 Q200 339 231 327" stroke="#334155" fill="none" stroke-width="3"/>
+<text x="200" y="470" text-anchor="middle" fill="#475569" font-size="13">FICTIONAL SCHEMATIC · NOT AN ACUPOINT MAP</text>
+</svg>

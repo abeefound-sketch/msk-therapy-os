@@ -7,6 +7,8 @@ from msk_therapy_os.assessment import DEFAULT_QUESTIONNAIRES
 from msk_therapy_os.auth import init_auth_tables, seed_default_users
 from msk_therapy_os.evidence import DEFAULT_EVIDENCE_CATALOG
 from msk_therapy_os.points import init_points_tables
+from msk_therapy_os.relationship_catalog import init_relationship_tables, seed_relationship_examples
+from msk_therapy_os.research_studio import init_research_tables, seed_demo_research_set
 
 
 def open_db(path: str) -> sqlite3.Connection:
@@ -131,6 +133,8 @@ def init_db(db: sqlite3.Connection) -> None:
         """
     )
     init_points_tables(db)
+    init_relationship_tables(db)
+    init_research_tables(db)
     init_auth_tables(db)
     db.commit()
 
@@ -139,6 +143,8 @@ def seed_db(db: sqlite3.Connection) -> None:
     """Seed baseline fictional cases, vetted evidence, anatomy structures, and scenarios."""
     init_db(db)
     seed_default_users(db)
+    seed_relationship_examples(db)
+    seed_demo_research_set(db)
 
     # 1. Demo Cases
     db.execute(

@@ -36,6 +36,8 @@ Hệ thống kết hợp ba trụ cột chính:
 ### Danh mục tài liệu Source of Truth trong `1docs/`:
 - **Đặc tả & Lộ trình thực thi (Specs & Roadmaps):**
   - [`specs/HANDOFF_ROADMAP_V2_1_CODING_AGENT.md`](specs/HANDOFF_ROADMAP_V2_1_CODING_AGENT.md): Roadmap V2.1 & biên bản bàn giao thực thi chi tiết M2.9 - M2.12 và M3-M6 cho coding agent.
+  - [`specs/ROADMAP_V2_1.md`](specs/ROADMAP_V2_1.md): Đặc tả phân bổ lộ trình V2.1 (M2.9 đến M6).
+  - [`specs/HUGGINGFACE_DEPLOYMENT.md`](specs/HUGGINGFACE_DEPLOYMENT.md): Hướng dẫn & cổng an toàn triển khai Hugging Face Docker Space.
   - [`specs/msk-therapy-os-v2.1-artifact-manifest.json`](specs/msk-therapy-os-v2.1-artifact-manifest.json): Bảng kê artifact đính kèm (patch, changed-files, snapshot).
   - [`specs/SPEC.md`](specs/SPEC.md) & [`specs/MSK_Therapy_OS_Engineering_Spec.md`](specs/MSK_Therapy_OS_Engineering_Spec.md): Đặc tả hệ thống gốc.
 - **Kiến trúc & Quyết định nền tảng:**
@@ -43,6 +45,7 @@ Hệ thống kết hợp ba trụ cột chính:
   - [`DECISIONS.md`](DECISIONS.md): Toàn bộ Architecture Decision Records (ADRs).
   - [`EVIDENCE.md`](EVIDENCE.md): Danh mục chứng cứ lâm sàng và y học chứng cứ (Tier 1 đến Tier 4).
 - **Kiểm toán & Báo cáo kỹ thuật (Audits):**
+  - [`audits/EXECUTION_V2_1.md`](audits/EXECUTION_V2_1.md): Nhật ký thực thi và kết quả kiểm thử Roadmap V2.1.
   - [`M282_SECURITY_AUTHORIZATION_AUDIT.md`](audits/M282_SECURITY_AUTHORIZATION_AUDIT.md): Kiểm toán bảo mật PBKDF2, RBAC, CSRF, origin check.
   - [`M282_SQLITE_RECOVERY_VALIDATION.md`](audits/M282_SQLITE_RECOVERY_VALIDATION.md): Kiểm chứng khôi phục SQLite online, maintenance lock HTTP 503, rollback snapshot.
   - [`M282_CLINICAL_SAFETY_ENFORCEMENT.md`](audits/M282_CLINICAL_SAFETY_ENFORCEMENT.md): Chặn cứng chuyển tuyến cờ đỏ, cấm nắn chỉnh cột sống (spinal manipulation).

@@ -1,3 +1,13 @@
+---
+title: MSK Therapy OS Educational Demo
+emoji: 🦴
+colorFrom: blue
+colorTo: gray
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # MSK-Therapy-OS (Milestone M1 CLI)
 
 > ⚠️ **EDUCATIONAL AND ENGINEERING PROOF OF CONCEPT ONLY.**  

@@ -7,7 +7,7 @@ without cross-origin issues.
 from __future__ import annotations
 
 from http import HTTPStatus
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 from pathlib import Path
@@ -25,6 +25,18 @@ from msk_therapy_os.assessment import (
     record_rom,
 )
 from msk_therapy_os.db import open_db, init_db, seed_db
+from msk_therapy_os.relationship_catalog import find_entities, get_entity, get_relations
+from msk_therapy_os.research_studio import (
+    list_research_sets,
+    get_research_set,
+    create_research_set,
+    create_definition,
+    list_definitions,
+    create_reactive_observation,
+    case_research_timeline,
+    diagram_visible_to,
+    set_visible_to,
+)
 from msk_therapy_os.evidence import get_evidence_by_id, list_evidence
 from msk_therapy_os.reporting import generate_case_report
 from msk_therapy_os.auth import (
@@ -81,7 +93,8 @@ ATLAS_UI_DIR = STATIC_DIR / "atlas"
 
 # Resolve the Open Anatomy Atlas data directory (same location the atlas tools use).
 _APPDATA = os.environ.get("APPDATA", "")
-ATLAS_DATA_DIR = Path(_APPDATA) / "open-anatomy-atlas" / "dataset" if _APPDATA else None
+_ATLAS_DATA_ENV = os.environ.get("MSK_ATLAS_DATA_DIR", "")
+ATLAS_DATA_DIR = Path(_ATLAS_DATA_ENV) if _ATLAS_DATA_ENV else (Path(_APPDATA) / "open-anatomy-atlas" / "dataset" if _APPDATA else None)
 
 MAX_JSON_PAYLOAD_SIZE = 5 * 1024 * 1024  # 5 MB payload limit to prevent DoS
 ALLOWED_ORIGIN_HOSTS = {"localhost", "127.0.0.1", "[::1]"}
@@ -409,6 +422,81 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 elif path == "/api/auth/reviewers":
                     self._send_json(list_clinical_reviewers(db))
 
+                elif path == "/api/explore/search":
+                    self._send_json(
+                        {
+                            "results": find_entities(
+                                db,
+                                query.get("q", [""])[0],
+                                kind=query.get("type", [None])[0],
+                            )
+                        }
+                    )
+
+                elif path.startswith("/api/explore/entities/"):
+                    entity_id = path.removeprefix("/api/explore/entities/")
+                    entity = get_entity(db, entity_id)
+                    if entity:
+                        self._send_json(entity)
+                    else:
+                        self._send_json({"error": "Entity not documented"}, status=HTTPStatus.NOT_FOUND)
+
+                elif path == "/api/explore/relations":
+                    entity_id = query.get("entity_id", [""])[0]
+                    try:
+                        self._send_json(
+                            {
+                                "entity_id": entity_id,
+                                "relations": get_relations(
+                                    db,
+                                    entity_id,
+                                    relation_class=query.get("relation_class", [None])[0],
+                                ),
+                            }
+                        )
+                    except ValueError as error:
+                        self._send_json({"error": str(error)}, status=HTTPStatus.BAD_REQUEST)
+
+                elif path == "/api/research/sets":
+                    user = self._get_authenticated_user(db)
+                    self._send_json(list_research_sets(db, user["user_id"] if user else None))
+
+                elif path.startswith("/api/research/sets/"):
+                    set_id = path.removeprefix("/api/research/sets/")
+                    user = self._get_authenticated_user(db)
+                    result = (
+                        get_research_set(db, set_id)
+                        if set_visible_to(db, set_id, user["user_id"] if user else None)
+                        else None
+                    )
+                    if result:
+                        self._send_json(result)
+                    else:
+                        self._send_json({"error": "Point set not found"}, status=HTTPStatus.NOT_FOUND)
+
+                elif path == "/api/research/definitions":
+                    diagram_id = query.get("diagram_id", [""])[0]
+                    user = self._get_authenticated_user(db)
+                    if not diagram_visible_to(db, diagram_id, user["user_id"] if user else None):
+                        self._send_json({"error": "Diagram unavailable"}, status=HTTPStatus.NOT_FOUND)
+                    else:
+                        self._send_json(list_definitions(db, diagram_id=diagram_id))
+
+                elif path == "/api/research/timeline":
+                    case_id = query.get("case_id", [""])[0]
+                    user = self._get_authenticated_user(db)
+                    try:
+                        self._send_json(
+                            {
+                                "case_id": case_id,
+                                "observations": case_research_timeline(
+                                    db, case_id, user["user_id"] if user else None
+                                ),
+                            }
+                        )
+                    except ValueError as error:
+                        self._send_json({"error": str(error)}, status=HTTPStatus.BAD_REQUEST)
+
                 elif path == "/api/cases":
                     rows = db.execute("SELECT case_id, label FROM cases ORDER BY case_id").fetchall()
                     self._send_json([{"case_id": r[0], "label": r[1]} for r in rows])
@@ -714,6 +802,12 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
             self._send_json({"error": f"Invalid JSON payload: {e}"}, status=HTTPStatus.BAD_REQUEST)
             return
 
+        # Public Spaces must not expose local-auth, writable clinical or research APIs.
+        # The safety drill is stateless and remains available as a calculation.
+        if os.environ.get("MSK_PUBLIC_DEMO_READONLY") == "1" and path != "/api/screen-safety":
+            self._send_json({"error": "Public demonstration is read-only."}, status=HTTPStatus.FORBIDDEN)
+            return
+
         if path == "/api/auth/login":
             uname = body.get("username", "")
             pwd = body.get("password", "")
@@ -770,6 +864,31 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 user = self._get_authenticated_user(db)
                 if user and not self._validate_csrf_if_session(user, body):
                     self._send_json({"error": "Forbidden: Invalid or missing CSRF token."}, status=HTTPStatus.FORBIDDEN)
+                    return
+
+                if path.startswith("/api/research/"):
+                    if not user:
+                        self._send_json(
+                            {"error": "Authentication required for private research editing"},
+                            status=HTTPStatus.UNAUTHORIZED,
+                        )
+                        return
+                    if path == "/api/research/sets":
+                        result = create_research_set(
+                            db,
+                            title=body.get("title"),
+                            framework=body.get("framework", "custom"),
+                            owner=user["user_id"],
+                        )
+                        self._send_json({"status": "created", "set": result}, status=HTTPStatus.CREATED)
+                    elif path == "/api/research/definitions":
+                        result = create_definition(db, body, user["user_id"])
+                        self._send_json({"status": "created", "definition": result}, status=HTTPStatus.CREATED)
+                    elif path == "/api/research/observations":
+                        result = create_reactive_observation(db, body, user["user_id"])
+                        self._send_json({"status": "created", "observation": result}, status=HTTPStatus.CREATED)
+                    else:
+                        self._send_json({"error": "Unknown research endpoint"}, status=HTTPStatus.NOT_FOUND)
                     return
 
                 if path == "/api/auth/verify-reviewer":
@@ -959,7 +1078,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
-            except (ValueError, PermissionError) as e:
+            except (ValueError, PermissionError, sqlite3.IntegrityError) as e:
                 db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
             except Exception as e:
@@ -981,6 +1100,12 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
             self._send_json({"error": f"Invalid JSON payload: {e}"}, status=HTTPStatus.BAD_REQUEST)
             return
 
+        # Public Spaces must not expose local-auth, writable clinical or research APIs.
+        # The safety drill is stateless and remains available as a calculation.
+        if os.environ.get("MSK_PUBLIC_DEMO_READONLY") == "1" and path != "/api/screen-safety":
+            self._send_json({"error": "Public demonstration is read-only."}, status=HTTPStatus.FORBIDDEN)
+            return
+
         with open_db(self.db_path) as db:
             try:
                 user = self._get_authenticated_user(db)
@@ -996,7 +1121,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "updated", "point": updated_pt})
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
-            except (ValueError, PermissionError) as e:
+            except (ValueError, PermissionError, sqlite3.IntegrityError) as e:
                 db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
             except Exception as e:
@@ -1004,6 +1129,9 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_DELETE(self) -> None:
+        if os.environ.get("MSK_PUBLIC_DEMO_READONLY") == "1":
+            self._send_json({"error": "Public demonstration is read-only."}, status=HTTPStatus.FORBIDDEN)
+            return
         if self._check_maintenance_mode():
             return
         if not self._is_origin_allowed():
@@ -1033,7 +1161,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "deleted", "point_id": pt_id})
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
-            except (ValueError, PermissionError) as e:
+            except (ValueError, PermissionError, sqlite3.IntegrityError) as e:
                 db.rollback()
                 self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
             except Exception as e:
@@ -1041,8 +1169,10 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
-def create_server(db_path: str, host: str = "127.0.0.1", port: int = 8080) -> HTTPServer:
+def create_server(db_path: str, host: str = "127.0.0.1", port: int = 8080) -> ThreadingHTTPServer:
     """Create configured HTTPServer instance."""
+    if host not in ("127.0.0.1", "localhost", "::1") and os.environ.get("MSK_PUBLIC_DEMO_READONLY") != "1":
+        raise PermissionError("Non-local binding requires MSK_PUBLIC_DEMO_READONLY=1; writable demo server must remain on localhost")
     with open_db(db_path) as db:
         init_db(db)
         seed_db(db)
@@ -1051,7 +1181,7 @@ def create_server(db_path: str, host: str = "127.0.0.1", port: int = 8080) -> HT
         pass
 
     ConfiguredHandler.db_path = db_path
-    return HTTPServer((host, port), ConfiguredHandler)
+    return ThreadingHTTPServer((host, port), ConfiguredHandler)
 
 
 def run_server(db_path: str, host: str = "127.0.0.1", port: int = 8080) -> None:

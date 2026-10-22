@@ -1,0 +1,16 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.sqlite3
+*.sqlite3-*
+*.db
+.env
+.env.*
+backups
+*.bak
+*.log
+tests
+*.zip
+*.png~
+data
