@@ -34,6 +34,10 @@ Hệ thống kết hợp ba trụ cột chính:
 ```
 
 ### Danh mục tài liệu Source of Truth trong `1docs/`:
+- **Đặc tả & Lộ trình thực thi (Specs & Roadmaps):**
+  - [`specs/HANDOFF_ROADMAP_V2_1_CODING_AGENT.md`](specs/HANDOFF_ROADMAP_V2_1_CODING_AGENT.md): Roadmap V2.1 & biên bản bàn giao thực thi chi tiết M2.9 - M2.12 và M3-M6 cho coding agent.
+  - [`specs/msk-therapy-os-v2.1-artifact-manifest.json`](specs/msk-therapy-os-v2.1-artifact-manifest.json): Bảng kê artifact đính kèm (patch, changed-files, snapshot).
+  - [`specs/SPEC.md`](specs/SPEC.md) & [`specs/MSK_Therapy_OS_Engineering_Spec.md`](specs/MSK_Therapy_OS_Engineering_Spec.md): Đặc tả hệ thống gốc.
 - **Kiến trúc & Quyết định nền tảng:**
   - [`ARCHITECTURE.md`](ARCHITECTURE.md): Kiến trúc Modular Monolith cục bộ, chia 3 phân hệ Atlas - Therapy - Research.
   - [`DECISIONS.md`](DECISIONS.md): Toàn bộ Architecture Decision Records (ADRs).

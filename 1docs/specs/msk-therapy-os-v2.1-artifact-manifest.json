@@ -1,0 +1,51 @@
+{
+  "source_archive": "msk-therapy-os-m3-roadmap-source.zip",
+  "live_windows_repo_updated": false,
+  "changed_files": [
+    ".dockerignore",
+    ".gitignore",
+    "Dockerfile",
+    "HANDOFF_ROADMAP_V2_1_CODING_AGENT.md",
+    "README.md",
+    "deploy/start-space.sh",
+    "docs/EXECUTION_V2_1.md",
+    "docs/HUGGINGFACE_DEPLOYMENT.md",
+    "docs/ROADMAP_V2_1.md",
+    "docs/roadmap_sources/CUSTOM_POINT_RESEARCH_SOURCE.md",
+    "docs/roadmap_sources/M3_TO_M6_REVIEW_PROMPT_SOURCE.md",
+    "docs/roadmap_sources/POSE_TO_ANATOMY_SOURCE.md",
+    "docs/roadmap_sources/RELATIONSHIP_EXPLORER_SOURCE.md",
+    "docs/roadmap_sources/THREE_PHOTO_MORPHOLOGY_SOURCE.md",
+    "msk_therapy_os/db.py",
+    "msk_therapy_os/relationship_catalog.py",
+    "msk_therapy_os/research_studio.py",
+    "msk_therapy_os/server.py",
+    "msk_therapy_os/static/index.html",
+    "msk_therapy_os/static/relationshipExplorer.js",
+    "msk_therapy_os/static/researchStudio.js",
+    "msk_therapy_os/static/research_demo/face_front.svg",
+    "msk_therapy_os/static/research_demo/face_profile.svg",
+    "tests/test_relationship_explorer.py",
+    "tests/test_research_studio.py"
+  ],
+  "artifacts": {
+    "MSK_ROADMAP_V2_1_CODING_AGENT_HANDOFF.md": {
+      "size_bytes": 12609,
+      "sha256": "0969c3d3c9ea9c9ff0186901cf3dd50d89670efcffbaa0b8cecf92216d9378cc"
+    },
+    "msk-therapy-os-v2.1-changes.patch": {
+      "size_bytes": 437050,
+      "sha256": "14285d86b014f6b14ab71c1bada74cd20743035aae0b25bae1fb91521181a2ab"
+    },
+    "msk-therapy-os-v2.1-changed-files.zip": {
+      "size_bytes": 122387,
+      "sha256": "d6201fd6e17b3fdc61bc20448eaed0f5c23376129d4a60dc971f978687247adc"
+    },
+    "msk-therapy-os-v2.1-updated-snapshot.zip": {
+      "size_bytes": 864918,
+      "sha256": "735038d0eb2ed457b01158f6db7908ef391c77456e1f08d9806e44900352a2f6"
+    }
+  },
+  "patch_check": "git apply --check on clean source ZIP: PASS; actual git apply + 13 new tests: PASS",
+  "validation": "92 tests: 89 pass, 1 fail, 2 errors due baseline missing assets/research; 13 new tests PASS"
+}
