@@ -388,6 +388,68 @@
 <button class="btn-secondary" data-i18n="layers.meridians" id="btnToggleMeridians" onclick="toggleAtlasLayer('meridians')" style="font-size:11px; padding:3px 8px;">⚡ 14 Meridians</button>
 <button class="btn-secondary" data-i18n="layers.thai" id="btnToggleThai" onclick="toggleAtlasLayer('thai')" style="font-size:11px; padding:3px 8px;" title="Thai Sen Sib: 3 lines loaded (Sen Ittha, Sen Pingkhla, Sen Sumana) — Incomplete educational dataset (3 of 10 lines)">🇹🇭 Thai Sen Sib <span style="font-size:9px; opacity:0.85; background:#78350f; color:#fde68a; padding:1px 4px; border-radius:3px; margin-left:2px;">3 lines</span></button>
 <button class="btn-secondary" data-i18n="layers.dien_chan" id="btnToggleDienChan" onclick="toggleAtlasLayer('dien_chan')" style="font-size:11px; padding:3px 8px;" title="Vietnamese Dien Chan: 4 facial reflex points — Incomplete educational dataset (Reflexology/Non-WHO)">🇻🇳 Dien Chan Reflex <span style="font-size:9px; opacity:0.85; background:#831843; color:#fbcfe8; padding:1px 4px; border-radius:3px; margin-left:2px;">4 pts</span></button>
+<!-- M2.6 Adaptive Display Settings Popover -->
+<div style="position:relative; display:inline-block;">
+  <button class="btn-secondary" id="btnHostDisplaySettings" onclick="toggleHostDisplaySettings()" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px;" title="Adjust acupoint size, meridian thickness, and smart density">
+    <span>🎨 Display</span>
+  </button>
+  <div id="hostDisplaySettingsPopover" style="display:none; position:absolute; top:32px; left:0; z-index:99999; background:rgba(15,23,42,0.96); border:1px solid #334155; border-radius:6px; padding:10px; box-shadow:0 12px 28px rgba(0,0,0,0.6); width:260px; font-size:11px; color:#e2e8f0;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:4px;">
+      <strong style="color:#38bdf8; font-size:11px;">⚙ Adaptive Visualization</strong>
+      <button onclick="resetHostDisplaySettings()" style="background:transparent; border:none; color:#94a3b8; font-size:10px; cursor:pointer;" title="Restore visual defaults">↺ Reset</button>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <span style="color:#94a3b8;">Scaling Mode:</span>
+      <select id="hostSelScalingMode" onchange="onHostScalingModeChange(this.value)" style="background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:3px; padding:2px 4px; font-size:10px;">
+        <option value="auto">Auto (Responsive)</option>
+        <option value="manual">Manual</option>
+      </select>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <span style="color:#94a3b8;">Smart Density:</span>
+      <label style="cursor:pointer; display:flex; align-items:center; gap:4px;">
+        <input type="checkbox" id="hostChkSmartDensity" onchange="onHostSmartDensityChange(this.checked)" checked />
+        <span id="hostLblSmartDensity" style="color:#10b981; font-weight:600; font-size:10px;">ON</span>
+      </label>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:2px; margin-bottom:6px;">
+      <div style="display:flex; justify-content:space-between; color:#94a3b8; font-size:10px;">
+        <span>Acupoint Size:</span>
+        <span id="hostLblMarkerSize">1.0x</span>
+      </div>
+      <input type="range" id="hostRngMarkerSize" min="50" max="250" value="100" oninput="onHostMarkerSizeChange(this.value)" style="cursor:pointer;" />
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:2px; margin-bottom:6px;">
+      <div style="display:flex; justify-content:space-between; color:#94a3b8; font-size:10px;">
+        <span>Meridian Line:</span>
+        <span id="hostLblStrokeWidth">1.0x</span>
+      </div>
+      <input type="range" id="hostRngStrokeWidth" min="50" max="250" value="100" oninput="onHostStrokeWidthChange(this.value)" style="cursor:pointer;" />
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="color:#94a3b8;">Labels:</span>
+      <select id="hostSelLabelDensity" onchange="onHostLabelDensityChange(this.value)" style="background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:3px; padding:2px 4px; font-size:10px;">
+        <option value="auto">Auto (Zoom-based)</option>
+        <option value="selected">Selected Only</option>
+        <option value="all">All Visible</option>
+        <option value="none">None</option>
+      </select>
+    </div>
+
+    <div id="hostDensityCounters" style="display:flex; justify-content:space-between; font-size:9px; color:#94a3b8; background:rgba(0,0,0,0.3); padding:4px 6px; border-radius:3px;">
+      <span>Avail: <strong id="hostCntAvailable" style="color:#38bdf8;">-</strong></span>
+      <span>Vis: <strong id="hostCntVisible" style="color:#10b981;">-</strong></span>
+      <span>Clust: <strong id="hostCntClustered" style="color:#facc15;">-</strong></span>
+      <span>Filt: <strong id="hostCntFiltered" style="color:#94a3b8;">-</strong></span>
+    </div>
+  </div>
+</div>
+
 <button class="btn-secondary" id="btnOpenStudioEditor" onclick="openStudioEditorModal()" style="font-size:11px; padding:3px 8px; background:#4338ca; color:#e0e7ff; border-color:#6366f1;">🛠️ Meridian Studio</button>
 <span style="border-left:1px solid #475569; height:16px; margin:0 2px;"></span>
 <!-- Meridian Channel Filter Dropdown -->
