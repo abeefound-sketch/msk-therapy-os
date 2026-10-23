@@ -129,6 +129,12 @@ const TissueLayersModule = (() => {
 })();
 
 window.TissueLayersModule = TissueLayersModule;
+window.toggleTissueLayersModal = function() {
+  const modal = document.getElementById('tissueLayersModal');
+  if (!modal) return;
+  const isHidden = modal.style.display === 'none' || !modal.style.display;
+  modal.style.display = isHidden ? 'block' : 'none';
+};
 document.addEventListener('DOMContentLoaded', () => {
   TissueLayersModule.init();
 });

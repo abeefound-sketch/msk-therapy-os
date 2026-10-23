@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-10-23T03:21:13Z",
+  "stages": {
+    "1_initial_integrity": {
+      "status": "PASS",
+      "integrity_check": "ok",
+      "fk_violations": 0,
+      "table_count": 35,
+      "tables": [
+        "adverse_events",
+        "anatomy_structures",
+        "auth_sessions",
+        "cases",
+        "clinical_observations",
+        "clinical_reviewers",
+        "custom_points",
+        "evidence_catalog",
+        "intakes",
+        "kinematic_arcs",
+        "knowledge_entities",
+        "knowledge_relations",
+        "knowledge_sources",
+        "morphology_avatars",
+        "morphology_observations",
+        "patient_proms",
+        "point_libraries",
+        "point_revisions",
+        "pose_landmarks",
+        "pose_studies",
+        "pose_symptom_observations",
+        "questionnaires",
+        "reference_point_overrides",
+        "research_definitions",
+        "research_diagrams",
+        "research_point_sets",
+        "research_reactive_observations",
+        "research_versions",
+        "rom_assessments",
+        "soap_notes",
+        "sqlite_sequence",
+        "therapy_sessions",
+        "tissue_layer_configs",
+        "users",
+        "visits"
+      ]
+    },
+    "2_transaction_rollback": {
+      "status": "PASS",
+      "atomicity_preserved": true
+    },
+    "3_native_backup": {
+      "status": "PASS",
+      "backup_size_bytes": 393216,
+      "sha256": "ee7197d9d22b6257abae9998f8c97ca44f24217a0066838a899fa803e2fae70e",
+      "sha256_file_exists": true
+    },
+    "4_safe_restore": {
+      "status": "PASS",
+      "restore_status": "SUCCESS",
+      "method": "sqlite3_online_backup_api",
+      "integrity_status": "PASS",
+      "foreign_keys_violations": 0,
+      "drill_point_recovered": true
+    },
+    "5_tamper_rejection": {
+      "status": "PASS",
+      "corrupt_checksum_blocked": true
+    }
+  },
+  "overall_status": "PASS"
+}

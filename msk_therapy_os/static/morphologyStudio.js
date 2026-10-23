@@ -19,7 +19,8 @@
   };
 
   async function api(path, options = {}) {
-    const res = await fetch(path, {
+    const fetchFn = (typeof window.apiFetch === 'function') ? window.apiFetch : fetch;
+    const res = await fetchFn(path, {
       headers: { "Content-Type": "application/json", ...options.headers },
       ...options,
     });

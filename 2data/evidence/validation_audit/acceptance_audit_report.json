@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-10-23T03:18:21Z",
+  "base_url": "http://127.0.0.1:59618",
+  "console_errors": [],
+  "console_warnings": [
+    "[.WebGL-0x7cac001e5000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x7cac001e5000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x7cac001e5000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x7cac001e5000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "page_errors": [],
+  "failed_requests": [],
+  "tabs_tested": {
+    "tab-bodymap": "PASS",
+    "tab-explore": "PASS",
+    "tab-research": "PASS",
+    "tab-pose": "PASS",
+    "tab-morphology": "PASS",
+    "tab-cohort": "PASS",
+    "tab-safety": "PASS",
+    "tab-case": "PASS",
+    "tab-soap": "PASS",
+    "tab-evidence": "PASS",
+    "tab-report": "PASS"
+  },
+  "responsiveness": {
+    "fullhd_1920": "1920x1080 - OK",
+    "desktop_1280": "1280x800 - OK",
+    "tablet_768": "768x1024 - OK",
+    "mobile_375": "375x812 - OK"
+  },
+  "overall_status": "PASS",
+  "critical_console_errors": []
+}

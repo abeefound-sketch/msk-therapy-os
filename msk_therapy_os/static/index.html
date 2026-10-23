@@ -335,6 +335,7 @@
 <select id="roleSelect">
 <option data-i18n="app.role_student" value="student">Student (Drafting)</option>
 <option data-i18n="app.role_supervisor" value="reviewer">Clinical Supervisor (Reviewer)</option>
+<option value="admin">System Administrator</option>
 </select>
 <button class="btn-secondary" data-i18n="app.btn_refresh" id="refreshBtn">↻ Refresh</button>
 </div>
@@ -1354,6 +1355,8 @@
       return fetch(url, options);
     }
 
+    window.apiFetch = apiFetch;
+    window.loginAsRole = loginAsRole;
     async function loginAsRole(role) {
       let username = "student";
       let password = "student123";
@@ -2491,6 +2494,7 @@
     document.getElementById("visDate").value = new Date().toISOString().split("T")[0];
 
     // Initial boot
+    loginAsRole(document.getElementById("roleSelect") ? document.getElementById("roleSelect").value : "reviewer");
     loadCases();
     loadCaseData(activeCaseId);
     loadRegionAnatomy(activeRegion);

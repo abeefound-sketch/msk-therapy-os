@@ -3,7 +3,7 @@
 **Cập nhật:** 23/10/2026  
 **Quy chuẩn áp dụng:** `D:\1docs\PROJECT_STRUCTURE_CANON.md` & `D:\1docs\GIT_REPO_CANON.md`  
 **GitHub Repository:** `https://github.com/abeefound-sketch/msk-therapy-os.git`  
-**Nhánh hoạt động:** `hardening/m2.8.2-final-gate`  
+**Nhánh hoạt động:** `feature/roadmap-v2.1-m2.9-m6`  
 
 ---
 
@@ -45,6 +45,7 @@ Hệ thống kết hợp ba trụ cột chính:
   - [`DECISIONS.md`](DECISIONS.md): Toàn bộ Architecture Decision Records (ADRs).
   - [`EVIDENCE.md`](EVIDENCE.md): Danh mục chứng cứ lâm sàng và y học chứng cứ (Tier 1 đến Tier 4).
 - **Kiểm toán & Báo cáo kỹ thuật (Audits):**
+  - [`audits/FINAL_SYSTEM_VALIDATION_AND_OPTIMIZATION.md`](audits/FINAL_SYSTEM_VALIDATION_AND_OPTIMIZATION.md): **[MASTER AUDIT]** Toàn văn báo cáo nghiệm thu độc lập, an toàn lâm sàng, tối ưu hiệu năng & kiểm chứng phục hồi dữ liệu M2.8.2 → M6.
   - [`audits/EXECUTION_V2_1.md`](audits/EXECUTION_V2_1.md): Nhật ký thực thi và kết quả kiểm thử Roadmap V2.1.
   - [`M282_SECURITY_AUTHORIZATION_AUDIT.md`](audits/M282_SECURITY_AUTHORIZATION_AUDIT.md): Kiểm toán bảo mật PBKDF2, RBAC, CSRF, origin check.
   - [`M282_SQLITE_RECOVERY_VALIDATION.md`](audits/M282_SQLITE_RECOVERY_VALIDATION.md): Kiểm chứng khôi phục SQLite online, maintenance lock HTTP 503, rollback snapshot.
