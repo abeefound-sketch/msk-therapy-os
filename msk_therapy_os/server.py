@@ -25,6 +25,12 @@ from msk_therapy_os.assessment import (
     record_rom,
 )
 from msk_therapy_os.db import open_db, init_db, seed_db
+from msk_therapy_os.kinematics import (
+    PHYSIOLOGICAL_ROM_ENVELOPES,
+    record_kinematic_arc,
+    list_kinematic_arcs,
+    evaluate_frame_budget,
+)
 from msk_therapy_os.clinical_proms import (
     PROM_CATALOG,
     record_prom_response,
@@ -567,6 +573,13 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     case_id = query.get("case_id", [None])[0]
                     self._send_json(list_adverse_events(db, case_id))
 
+                elif path == "/api/kinematics/envelopes":
+                    self._send_json(PHYSIOLOGICAL_ROM_ENVELOPES)
+
+                elif path == "/api/kinematics/arcs":
+                    case_id = query.get("case_id", [""])[0]
+                    self._send_json(list_kinematic_arcs(db, case_id))
+
                 elif path == "/api/cases":
                     rows = db.execute("SELECT case_id, label FROM cases ORDER BY case_id").fetchall()
                     self._send_json([{"case_id": r[0], "label": r[1]} for r in rows])
@@ -1067,6 +1080,27 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         reported_by=user.get("user_id", "USR-SYSTEM"),
                     )
                     self._send_json({"status": "created", "adverse_event": res}, status=HTTPStatus.CREATED)
+                    return
+
+                if path == "/api/kinematics/arcs":
+                    if not user:
+                        self._send_json({"error": "Authentication required"}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    res = record_kinematic_arc(
+                        db,
+                        case_id=body.get("case_id", ""),
+                        visit_id=body.get("visit_id"),
+                        joint_name=body.get("joint_name", ""),
+                        measured_rom_deg=float(body.get("measured_rom_deg", 0.0)),
+                        custom_normal_deg=float(body["custom_normal_deg"]) if body.get("custom_normal_deg") is not None else None,
+                    )
+                    self._send_json({"status": "created", "arc": res}, status=HTTPStatus.CREATED)
+                    return
+
+                if path == "/api/kinematics/evaluate-budget":
+                    frame_ms = float(body.get("frame_time_ms", 16.6))
+                    target_fps = float(body.get("target_fps", 30.0))
+                    self._send_json(evaluate_frame_budget(frame_ms, target_fps))
                     return
 
                 if path == "/api/auth/verify-reviewer":
