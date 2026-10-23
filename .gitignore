@@ -25,6 +25,15 @@ build/
 *.pem
 *secret*
 *token*
+*.backup_hmac_key
+2data/.backup_hmac_key
+
+# Ephemeral runtime & test artifacts
+2data/backups/*test*
+2data/backups/*snap*
+2data/backups/*tmp*
+2data/backups/api_test_backup*
+2data/backups/demo_governance_backup*
 
 # Upstream research workspaces
 research/upstream/

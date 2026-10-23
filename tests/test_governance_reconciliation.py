@@ -49,6 +49,8 @@ def test_immutable_reference_dataset_checksum():
 def test_canonical_reconciliation_math():
     """Verify mathematical reconciliation: WHO 361 vs GB/T 12346 362 vs Dien Chan 4."""
     acu_file = Path("msk_therapy_os/static/atlas/data/acupuncture_3d.json")
+    if not acu_file.exists():
+        acu_file = Path(__file__).resolve().parent.parent / "msk_therapy_os/static/atlas/data/acupuncture_3d.json"
     assert acu_file.exists(), "acupuncture_3d.json must exist"
 
     with open(acu_file, "r", encoding="utf-8") as f:

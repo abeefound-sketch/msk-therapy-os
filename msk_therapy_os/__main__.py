@@ -36,6 +36,7 @@ from msk_therapy_os.soap import (
 
 # Exported symbols for full backward compatibility with M0 unit tests
 ATLAS = DEFAULT_ATLAS_BASE
+DEFAULT_DB = "2data/demo.sqlite3" if Path("2data/demo.sqlite3").exists() else "demo.sqlite3"
 
 
 def init(db: sqlite3.Connection) -> None:
@@ -98,14 +99,14 @@ def build_parser() -> argparse.ArgumentParser:
     # 1. M0 Backward Compatible Subcommands
     for act in ["init", "seed-demo", "cases"]:
         cmd = sub.add_parser(act)
-        cmd.add_argument("--db", default="demo.sqlite3")
+        cmd.add_argument("--db", default=DEFAULT_DB)
 
     tl = sub.add_parser("timeline")
-    tl.add_argument("--db", default="demo.sqlite3")
+    tl.add_argument("--db", default=DEFAULT_DB)
     tl.add_argument("--case", required=True)
 
     vis = sub.add_parser("add-visit")
-    vis.add_argument("--db", default="demo.sqlite3")
+    vis.add_argument("--db", default=DEFAULT_DB)
     vis.add_argument("--case", required=True)
     vis.add_argument("--date", dest="when", required=True)
     vis.add_argument("--pain", type=int, required=True)
@@ -124,7 +125,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # 3. M1 Structured Intake
     intake_cmd = sub.add_parser("intake", help="Record structured clinical intake for synthetic case")
-    intake_cmd.add_argument("--db", default="demo.sqlite3")
+    intake_cmd.add_argument("--db", default=DEFAULT_DB)
     intake_cmd.add_argument("--case", required=True)
     intake_cmd.add_argument("--age", required=True, choices=VALID_AGE_BANDS)
     intake_cmd.add_argument("--onset", required=True, help="e.g. acute_1_week, chronic_3_months")
@@ -134,12 +135,12 @@ def build_parser() -> argparse.ArgumentParser:
     intake_cmd.add_argument("--role", default="student", choices=["student", "reviewer"])
 
     show_intake = sub.add_parser("show-intake", help="View structured intake for synthetic case")
-    show_intake.add_argument("--db", default="demo.sqlite3")
+    show_intake.add_argument("--db", default=DEFAULT_DB)
     show_intake.add_argument("--case", required=True)
 
     # 4. M1 Objective ROM
     rom_cmd = sub.add_parser("add-rom", help="Record structured joint-specific ROM measurement")
-    rom_cmd.add_argument("--db", default="demo.sqlite3")
+    rom_cmd.add_argument("--db", default=DEFAULT_DB)
     rom_cmd.add_argument("--visit-id", type=int, required=True)
     rom_cmd.add_argument("--motion", required=True, help="e.g. cervical_flexion, lumbar_extension")
     rom_cmd.add_argument("--side", required=True, choices=VALID_SIDES)
@@ -148,7 +149,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # 5. M1 Structured SOAP & Review Workflow
     soap_cmd = sub.add_parser("add-soap", help="Draft or record structured SOAP note")
-    soap_cmd.add_argument("--db", default="demo.sqlite3")
+    soap_cmd.add_argument("--db", default=DEFAULT_DB)
     soap_cmd.add_argument("--visit-id", type=int, required=True)
     soap_cmd.add_argument("--s", dest="subjective", required=True, help="Subjective findings")
     soap_cmd.add_argument("--o", dest="objective", required=True, help="Objective findings")
@@ -157,7 +158,7 @@ def build_parser() -> argparse.ArgumentParser:
     soap_cmd.add_argument("--role", default="student", choices=["student", "reviewer"])
 
     review_cmd = sub.add_parser("review-soap", help="Clinical supervisor review and sign-off of SOAP note")
-    review_cmd.add_argument("--db", default="demo.sqlite3")
+    review_cmd.add_argument("--db", default=DEFAULT_DB)
     review_cmd.add_argument("--soap-id", type=int, required=True)
     review_cmd.add_argument("--reviewer", required=True, help="Supervisor name / identifier")
     review_cmd.add_argument("--role", default="reviewer", choices=["reviewer", "student"])
@@ -166,31 +167,31 @@ def build_parser() -> argparse.ArgumentParser:
 
     # 6. M1 Offline Report
     rep_cmd = sub.add_parser("report", help="Generate full offline clinical education report")
-    rep_cmd.add_argument("--db", default="demo.sqlite3")
+    rep_cmd.add_argument("--db", default=DEFAULT_DB)
     rep_cmd.add_argument("--case", required=True)
     rep_cmd.add_argument("--out", help="Optional output path to write markdown report file")
 
     # 7. M1 Evidence Catalog
     ev_cmd = sub.add_parser("evidence", help="Browse curated evidence library and citations")
-    ev_cmd.add_argument("--db", default="demo.sqlite3")
+    ev_cmd.add_argument("--db", default=DEFAULT_DB)
     ev_cmd.add_argument("--tier", type=int, choices=[1, 2, 3, 4], help="Filter by evidence tier")
     ev_cmd.add_argument("--id", dest="evidence_id", help="Lookup specific evidence ID")
 
     # 8. M1 Anatomy Adapter
     anat_cmd = sub.add_parser("anatomy", help="Browse anatomy structures, BodyParts3D IDs, and traditional namespaces")
-    anat_cmd.add_argument("--db", default="demo.sqlite3")
+    anat_cmd.add_argument("--db", default=DEFAULT_DB)
     anat_cmd.add_argument("--region", help="Filter by anatomical region (neck, low_back, face, etc.)")
     anat_cmd.add_argument("--namespace", choices=[ns.value for ns in KnowledgeNamespace], help="Filter by namespace")
     anat_cmd.add_argument("--id", dest="structure_id", help="Lookup specific structure ID")
 
     # 9. M1 Scenario Questionnaires
     q_cmd = sub.add_parser("questionnaires", help="List scenario-based assessment questionnaires")
-    q_cmd.add_argument("--db", default="demo.sqlite3")
+    q_cmd.add_argument("--db", default=DEFAULT_DB)
     q_cmd.add_argument("--region", help="Filter by body region")
 
     # 10. M2 Body-Map Web Server
     srv = sub.add_parser("serve", help="Launch local HTTP web server for Milestone M2 Body-Map UI")
-    srv.add_argument("--db", default="demo.sqlite3")
+    srv.add_argument("--db", default=DEFAULT_DB)
     srv.add_argument("--host", default="127.0.0.1")
     srv.add_argument("--port", type=int, default=8080)
 

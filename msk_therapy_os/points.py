@@ -6,10 +6,13 @@ SHA-256 dataset integrity hashing, and canonical reference protection.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import math
+import os
 from pathlib import Path
 import re
+import secrets
 import sqlite3
 import threading
 import time
@@ -1316,8 +1319,35 @@ def run_database_integrity_check(db: sqlite3.Connection) -> Dict[str, Any]:
     }
 
 
+def get_backup_signing_key() -> bytes:
+    """Retrieve or generate persistent HMAC secret key for backup anti-tamper authentication."""
+    env_key = os.environ.get("MSK_BACKUP_HMAC_KEY")
+    if env_key:
+        return env_key.encode("utf-8")
+    
+    # Check 2data/.backup_hmac_key or .backup_hmac_key
+    target_dir = Path("2data") if Path("2data").exists() else Path(".")
+    key_file = target_dir / ".backup_hmac_key"
+    if key_file.exists():
+        try:
+            k = key_file.read_bytes().strip()
+            if len(k) >= 16:
+                return k
+        except Exception:
+            pass
+    
+    # Generate persistent 32-byte secret
+    new_key = secrets.token_bytes(32)
+    try:
+        key_file.parent.mkdir(parents=True, exist_ok=True)
+        key_file.write_bytes(new_key)
+    except Exception:
+        pass
+    return new_key
+
+
 def backup_database(db: sqlite3.Connection, backup_path: str) -> Dict[str, Any]:
-    """Perform atomic online SQLite backup with cryptographic SHA-256 verification."""
+    """Perform atomic online SQLite backup with cryptographic SHA-256 verification and HMAC-SHA256 anti-tamper signing."""
     with MAINTENANCE_LOCK:
         bp = Path(backup_path).resolve()
         bp.parent.mkdir(parents=True, exist_ok=True)
@@ -1331,24 +1361,31 @@ def backup_database(db: sqlite3.Connection, backup_path: str) -> Dict[str, Any]:
         sha_file = bp.with_suffix(bp.suffix + ".sha256")
         sha_file.write_text(f"{checksum}  {bp.name}\n", encoding="utf-8")
 
+        # Anti-tamper keyed HMAC-SHA256 signature
+        hmac_key = get_backup_signing_key()
+        hmac_sig = hmac.new(hmac_key, raw_bytes, hashlib.sha256).hexdigest()
+        hmac_file = bp.with_suffix(bp.suffix + ".hmac")
+        hmac_file.write_text(f"{hmac_sig}  {bp.name}\n", encoding="utf-8")
+
         return {
             "status": "SUCCESS",
             "backup_path": str(bp),
             "sha256_checksum": checksum,
+            "hmac_signature": hmac_sig,
             "size_bytes": len(raw_bytes),
             "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         }
 
 
-def restore_database_safely(target_db_path: str, backup_source_path: str) -> Dict[str, Any]:
-    """Safely restore SQLite database using native backup API with exclusive server maintenance lock and verification."""
+def restore_database_safely(target_db_path: str, backup_source_path: str, require_hmac: bool = False) -> Dict[str, Any]:
+    """Safely restore SQLite database using native backup API with anti-tamper verification and exclusive maintenance lock."""
     global IS_MAINTENANCE_ACTIVE
     src = Path(backup_source_path).resolve()
     tgt = Path(target_db_path).resolve()
     if not src.exists():
         raise FileNotFoundError(f"Backup file not found at '{src}'.")
 
-    # 1. Verify SHA-256 digest if .sha256 file exists
+    # 1. Verify SHA-256 digest if .sha256 file exists (bit-rot/corruption check)
     sha_file = src.with_suffix(src.suffix + ".sha256")
     if sha_file.exists():
         expected_sha = sha_file.read_text(encoding="utf-8").split()[0].strip().lower()
@@ -1356,7 +1393,19 @@ def restore_database_safely(target_db_path: str, backup_source_path: str) -> Dic
         if expected_sha != actual_sha:
             raise ValueError(f"Backup SHA-256 checksum mismatch (expected {expected_sha}, got {actual_sha}).")
 
-    # 2. Verify SQLite database integrity & schema compatibility before restoring
+    # 2. Anti-tamper verification (HMAC-SHA256)
+    is_secure = os.environ.get("MSK_MODE") == "secure" or os.environ.get("MSK_SECURE_MODE") in ("1", "true", "True")
+    hmac_file = src.with_suffix(src.suffix + ".hmac")
+    if hmac_file.exists():
+        expected_hmac = hmac_file.read_text(encoding="utf-8").split()[0].strip().lower()
+        key = get_backup_signing_key()
+        actual_hmac = hmac.new(key, src.read_bytes(), hashlib.sha256).hexdigest().lower()
+        if not hmac.compare_digest(expected_hmac, actual_hmac):
+            raise PermissionError(f"Backup anti-tamper verification failed: cryptographic HMAC signature mismatch. File has been tampered with or signed with an unauthorized key.")
+    elif require_hmac or is_secure:
+        raise PermissionError(f"Backup anti-tamper verification failed: missing companion .hmac signature file ({hmac_file.name}). In SECURE mode, backups must be cryptographically authenticated.")
+
+    # 3. Verify SQLite database integrity & schema compatibility before restoring
     try:
         test_conn = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
         res = test_conn.execute("PRAGMA integrity_check").fetchall()
@@ -1453,7 +1502,10 @@ def restore_database_safely(target_db_path: str, backup_source_path: str) -> Dic
 
 def rollback_database(target_db_path: str, backup_source_path: str) -> Dict[str, Any]:
     """Restore database from an atomic backup snapshot after verifying SQLite integrity and SHA-256."""
-    return restore_database_safely(target_db_path, backup_source_path)
+    try:
+        return restore_database_safely(target_db_path, backup_source_path)
+    except PermissionError as pe:
+        raise ValueError(f"Backup validation failed: {pe}") from pe
 
 
 def get_evidence_ledger(db: sqlite3.Connection) -> List[Dict[str, Any]]:
