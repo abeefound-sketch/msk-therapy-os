@@ -450,4 +450,72 @@ def export_case_fhir(db: sqlite3.Connection, case_id: str, require_approved_soap
             }
             bundle["entry"].append(struct_obs)
 
+    # 4. Patient PROMs (Survey Observations)
+    try:
+        prom_rows = db.execute(
+            """SELECT prom_id, visit_id, prom_type, raw_score, percentage_score, interpretation, administered_at
+               FROM patient_proms WHERE case_id = ? ORDER BY administered_at ASC""",
+            (case_id,),
+        ).fetchall()
+        for pr in prom_rows:
+            prom_obs = {
+                "fullUrl": f"urn:uuid:{pr[0].lower()}",
+                "resource": {
+                    "resourceType": "Observation",
+                    "id": pr[0].lower(),
+                    "status": "final",
+                    "category": [
+                        {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "survey"}]}
+                    ],
+                    "code": {
+                        "coding": [{"system": "https://msk-therapy-os.local/prom", "code": pr[2], "display": f"{pr[2]} Survey Score"}]
+                    },
+                    "subject": {"reference": f"Patient/patient-{case_id.lower()}"},
+                    "effectiveDateTime": pr[6],
+                    "valueQuantity": {"value": pr[4], "unit": "%", "system": "http://unitsofmeasure.org", "code": "%"},
+                    "interpretation": [{"text": pr[5]}],
+                }
+            }
+            if pr[1]:
+                prom_obs["resource"]["encounter"] = {"reference": f"Encounter/enc-v{pr[1]}"}
+            bundle["entry"].append(prom_obs)
+    except sqlite3.OperationalError:
+        pass
+
+    # 5. Adverse Events (CTCAE Graded)
+    try:
+        ae_rows = db.execute(
+            """SELECT event_id, visit_id, event_category, ctcae_grade, symptom_description, onset_utc, resolution_status, action_taken
+               FROM adverse_events WHERE case_id = ? ORDER BY onset_utc ASC""",
+            (case_id,),
+        ).fetchall()
+        for ae in ae_rows:
+            ae_res = {
+                "fullUrl": f"urn:uuid:{ae[0].lower()}",
+                "resource": {
+                    "resourceType": "AdverseEvent",
+                    "id": ae[0].lower(),
+                    "actuality": "actual",
+                    "category": [
+                        {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/adverse-event-category", "code": "incident"}]}
+                    ],
+                    "event": {
+                        "text": f"[{ae[2]}] {ae[4]}"
+                    },
+                    "subject": {"reference": f"Patient/patient-{case_id.lower()}"},
+                    "date": ae[5],
+                    "severity": {
+                        "coding": [{"system": "http://evs.nci.nih.gov/ftp1/CTCAE/CTCAE_5.0", "code": f"Grade-{ae[3]}", "display": f"CTCAE Grade {ae[3]}"}]
+                    },
+                    "outcome": {
+                        "text": f"Status: {ae[6]} | Action: {ae[7]}"
+                    }
+                }
+            }
+            if ae[1]:
+                ae_res["resource"]["encounter"] = {"reference": f"Encounter/enc-v{ae[1]}"}
+            bundle["entry"].append(ae_res)
+    except sqlite3.OperationalError:
+        pass
+
     return bundle

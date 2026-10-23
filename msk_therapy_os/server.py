@@ -25,6 +25,13 @@ from msk_therapy_os.assessment import (
     record_rom,
 )
 from msk_therapy_os.db import open_db, init_db, seed_db
+from msk_therapy_os.clinical_proms import (
+    PROM_CATALOG,
+    record_prom_response,
+    list_prom_responses,
+    record_adverse_event,
+    list_adverse_events,
+)
 from msk_therapy_os.morphology_studio import (
     create_avatar,
     get_avatar,
@@ -549,6 +556,17 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     avatar_id = query.get("avatar_id", [""])[0]
                     self._send_json(list_morphology_observations(db, avatar_id))
 
+                elif path == "/api/proms/catalog":
+                    self._send_json(PROM_CATALOG)
+
+                elif path == "/api/proms/responses":
+                    case_id = query.get("case_id", [""])[0]
+                    self._send_json(list_prom_responses(db, case_id))
+
+                elif path == "/api/adverse-events":
+                    case_id = query.get("case_id", [None])[0]
+                    self._send_json(list_adverse_events(db, case_id))
+
                 elif path == "/api/cases":
                     rows = db.execute("SELECT case_id, label FROM cases ORDER BY case_id").fetchall()
                     self._send_json([{"case_id": r[0], "label": r[1]} for r in rows])
@@ -1016,6 +1034,39 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         operator_notes=body.get("operator_notes", ""),
                     )
                     self._send_json({"status": "created", "observation": res}, status=HTTPStatus.CREATED)
+                    return
+
+                if path == "/api/proms/responses":
+                    if not user:
+                        self._send_json({"error": "Authentication required"}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    res = record_prom_response(
+                        db,
+                        case_id=body.get("case_id", ""),
+                        visit_id=body.get("visit_id"),
+                        prom_type=body.get("prom_type", ""),
+                        item_responses=body.get("item_responses", []),
+                    )
+                    self._send_json({"status": "created", "prom": res}, status=HTTPStatus.CREATED)
+                    return
+
+                if path == "/api/adverse-events":
+                    if not user:
+                        self._send_json({"error": "Authentication required"}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    res = record_adverse_event(
+                        db,
+                        case_id=body.get("case_id", ""),
+                        visit_id=body.get("visit_id"),
+                        event_category=body.get("event_category", "musculoskeletal"),
+                        ctcae_grade=int(body.get("ctcae_grade", 1)),
+                        symptom_description=body.get("symptom_description", ""),
+                        onset_utc=body.get("onset_utc", ""),
+                        resolution_status=body.get("resolution_status", "resolved"),
+                        action_taken=body.get("action_taken", ""),
+                        reported_by=user.get("user_id", "USR-SYSTEM"),
+                    )
+                    self._send_json({"status": "created", "adverse_event": res}, status=HTTPStatus.CREATED)
                     return
 
                 if path == "/api/auth/verify-reviewer":
