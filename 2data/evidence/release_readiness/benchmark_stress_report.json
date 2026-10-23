@@ -1,0 +1,94 @@
+{
+  "timestamp_utc": "2026-10-23T05:02:24Z",
+  "target_url": "http://127.0.0.1:57973",
+  "database_path": "2data/demo.sqlite3",
+  "environment": {
+    "os": "Windows 10 (10.0.19045)",
+    "processor": "Intel64 Family 6 Model 61 Stepping 4, GenuineIntel",
+    "cpu_physical_cores": 2,
+    "cpu_logical_cores": 4,
+    "total_system_ram_gb": 7.89,
+    "python_version": "3.11.9"
+  },
+  "target_specification_hardware": {
+    "cpu": "Intel Core i7-5600U @ 2.60GHz",
+    "gpu": "Intel HD Graphics 5500",
+    "ram": "8 GB",
+    "os": "Windows x64"
+  },
+  "p0_security_audit": {
+    "client_mode": {
+      "mode": "demo",
+      "isSecure": false
+    },
+    "zero_hardcoded_passwords": true
+  },
+  "p1_performance_stress": {
+    "webgl_telemetry": {
+      "webgl_supported": true,
+      "vendor": "WebKit",
+      "renderer": "WebKit WebGL",
+      "unmasked_vendor": "Google Inc. (Intel)",
+      "unmasked_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "max_texture_size": 16384,
+      "max_renderbuffer_size": 16384,
+      "max_vertex_attribs": 16
+    },
+    "frame_metrics": {
+      "sample_count": 119,
+      "mean_frame_time_ms": 16.67,
+      "min_frame_time_ms": 16.5,
+      "max_frame_time_ms": 16.8,
+      "p95_frame_time_ms": 16.7,
+      "std_dev_ms": 0.06,
+      "effective_fps": 60,
+      "meets_30fps_target": true
+    },
+    "memory_forensics": {
+      "baseline": {
+        "js_heap_used_mb": 9.07,
+        "js_heap_total_mb": 20.7,
+        "os_rss_working_set_mb": 0
+      },
+      "post_stress": {
+        "js_heap_used_mb": 11.03,
+        "js_heap_total_mb": 14.55,
+        "os_rss_working_set_mb": 0
+      },
+      "deltas": {
+        "js_heap_growth_mb": 1.96,
+        "os_rss_growth_mb": 0,
+        "leak_detected": false
+      }
+    }
+  },
+  "p3_clinical_acceptance": {
+    "safety_gate_enforcement": {
+      "flag": "bowel_bladder_change",
+      "disposition_summary": "DISPOSITION: STOP_AND_REFER\nSafe to Proceed with Observation: NO\nFlags: bowel_bladder_change\nHARD STOP AND IMMEDIATE REFERRAL: CRITICAL RED FLAG DETECTED. DO NOT PROCEED with massage, manual technique",
+      "hard_stop_enforced": true
+    },
+    "soap_supervisor_signoff": {
+      "soap_id": 1,
+      "decision": null,
+      "reviewer": null,
+      "status": "APPROVED"
+    },
+    "fhir_r4_export": {
+      "resourceType": "Bundle",
+      "entry_count": 27,
+      "is_valid": true
+    },
+    "cohort_analytics": {
+      "total_cases": 4,
+      "total_visits": 3,
+      "status": "VERIFIED"
+    }
+  },
+  "verdict": "LOCAL_PRODUCTION_READY_PASS",
+  "console_errors": [
+    "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "failed_requests": []
+}
