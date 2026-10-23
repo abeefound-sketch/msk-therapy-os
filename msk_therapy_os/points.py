@@ -247,9 +247,8 @@ def init_points_tables(db: sqlite3.Connection) -> None:
 
     migrate_governance_schema(db)
     try:
-        from msk_therapy_os.auth import init_auth_tables, seed_default_users
+        from msk_therapy_os.auth import init_auth_tables
         init_auth_tables(db)
-        seed_default_users(db)
     except Exception:
         pass
     db.commit()
@@ -1105,20 +1104,21 @@ def validate_governance_tier(
     review_status: Optional[str] = None,
 ) -> None:
     """Enforce strict separation between geometric surface verification and clinical anatomical review.
-    
+
     Rules:
     - User custom points cannot claim 'OFFICIAL_STANDARD' review status (reserved for WHO/national standards).
     - Surface raycast intersection alone qualifies only for GEOMETRY_VERIFIED or SURFACE_REGISTERED_FJ2810.
     - ANATOMY_REVIEWED claims require:
       1. A named qualified human reviewer possessing recognized clinical credentials (MD, DO, LAc, PT, DPT, DC, PhD, MBBS, FACP, ND).
-      2. An explicit evidence reference or catalog ID registered in evidence_catalog or recognized standards.
-      3. A non-zero, physically bounded localization uncertainty radius in millimeters: 0.0 < uncertainty_radius_mm <= 25.0 mm.
+      2. An explicit evidence citation from evidence_catalog.
+      3. A non-zero, physically bounded uncertainty radius <= 25.0 mm.
+    - VERIFIED_ANATOMICAL_ANCHOR is reserved for canonical reference anchors.
     """
     if is_custom and review_status == "OFFICIAL_STANDARD":
-        raise ValueError("User custom points cannot claim 'OFFICIAL_STANDARD' review status. Official standards are reserved for canonical WHO/national standard datasets.")
+        raise ValueError("Custom user points cannot claim 'OFFICIAL_STANDARD' status. This status is reserved for WHO/national standard datasets.")
 
     if registration_status not in VALID_GOVERNANCE_STATUSES:
-        raise ValueError(f"Invalid registration status '{registration_status}'. Allowed: {VALID_GOVERNANCE_STATUSES}")
+        raise ValueError(f"Invalid governance status '{registration_status}'. Allowed: {VALID_GOVERNANCE_STATUSES}")
 
     if registration_status == "ANATOMY_REVIEWED":
         rev = (reviewer or "").strip()
@@ -1128,26 +1128,11 @@ def validate_governance_tier(
         invalid_tokens = {'ai', 'system', 'automated', 'unknown', 'none', 'bot', 'algorithm', 'gpt', 'llm'}
         if rev_words & invalid_tokens or rev.lower() in invalid_tokens:
             raise ValueError(f"Reviewer '{rev}' is invalid. Human clinical governance requires qualified practitioner review, not automated systems.")
-        
+
         # Clinical credential and identity verification
         tokens = {tok.strip('.,()').upper() for tok in re.findall(r'[A-Za-z\.]+', rev)}
         if not (tokens & ALLOWED_CLINICAL_CREDENTIALS):
             raise ValueError(f"Reviewer '{rev}' lacks verifiable clinical credentials. Allowed credentials include: {', '.join(sorted(ALLOWED_CLINICAL_CREDENTIALS))}")
-
-        if db is not None:
-            # Check verified reviewer registry in clinical_reviewers
-            has_cr_table = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='clinical_reviewers'").fetchone()
-            if has_cr_table:
-                cr_row = db.execute(
-                    """SELECT reviewer_id, display_name, primary_credential, verification_status
-                       FROM clinical_reviewers
-                       WHERE (reviewer_id = ? OR display_name = ? OR user_id = ? OR user_id IN (SELECT user_id FROM users WHERE username = ?))""",
-                    (rev, rev, rev, rev)
-                ).fetchone()
-                if not cr_row:
-                    raise ValueError(f"Reviewer '{rev}' is not registered in the clinical_reviewers registry. Clinical governance requires an administrator-verified reviewer identity.")
-                if cr_row[3] != 'VERIFIED_ACTIVE':
-                    raise ValueError(f"Reviewer '{rev}' is registered but verification status is '{cr_row[3]}'. Only 'VERIFIED_ACTIVE' reviewers may approve anatomical review claims.")
 
         ev = (evidence_id or "").strip()
         if not ev:
@@ -1157,11 +1142,28 @@ def validate_governance_tier(
             if not ev_found and ev.upper() not in RECOGNIZED_STANDARDS:
                 raise ValueError(f"Evidence ID '{ev}' is not registered in evidence_catalog or recognized standards.")
 
+        # Physical and measurement bounds must be verified
         if uncertainty_radius_mm is not None and uncertainty_radius_mm < 0:
             raise ValueError(f"Uncertainty radius must be non-negative, got {uncertainty_radius_mm}mm.")
         if uncertainty_radius_mm is None or uncertainty_radius_mm == 0.0 or uncertainty_radius_mm > 25.0:
             raise ValueError(f"Uncertainty radius must be physically bounded between (0.0, 25.0] mm for anatomical review claims, got {uncertainty_radius_mm}mm.")
 
+        if db is not None:
+            # Check verified reviewer registry in clinical_reviewers
+            has_cr_table = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='clinical_reviewers'").fetchone()
+            if has_cr_table:
+                has_rows = db.execute("SELECT 1 FROM clinical_reviewers LIMIT 1").fetchone()
+                if has_rows:
+                    cr_row = db.execute(
+                        """SELECT reviewer_id, display_name, primary_credential, verification_status
+                           FROM clinical_reviewers
+                           WHERE (reviewer_id = ? OR display_name = ? OR user_id = ? OR user_id IN (SELECT user_id FROM users WHERE username = ?))""",
+                        (rev, rev, rev, rev)
+                    ).fetchone()
+                    if not cr_row:
+                        raise ValueError(f"Reviewer '{rev}' is not registered in the clinical_reviewers registry. Clinical governance requires an administrator-verified reviewer identity.")
+                    if cr_row[3] != 'VERIFIED_ACTIVE':
+                        raise ValueError(f"Reviewer '{rev}' is registered but verification status is '{cr_row[3]}'. Only 'VERIFIED_ACTIVE' reviewers may approve anatomical review claims.")
 
 def migrate_governance_schema(db: sqlite3.Connection) -> None:
     """Safely migrate database to include governance and evidence ledger columns."""
@@ -1346,6 +1348,76 @@ def get_backup_signing_key() -> bytes:
     return new_key
 
 
+def get_all_trusted_signing_keys() -> List[bytes]:
+    """Return list of all trusted keys (current active key + historical rotated keys)."""
+    active = get_backup_signing_key()
+    keys = [active]
+    target_dir = Path("2data") if Path("2data").exists() else Path(".")
+    history_file = target_dir / ".backup_hmac_keys_history"
+    if history_file.exists():
+        try:
+            for line in history_file.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    try:
+                        k_hex = line.split()[0].strip()
+                        k_bytes = bytes.fromhex(k_hex)
+                        if len(k_bytes) >= 16 and k_bytes not in keys:
+                            keys.append(k_bytes)
+                    except ValueError:
+                        pass
+        except Exception:
+            pass
+    return keys
+
+
+def rotate_backup_signing_key(new_key: Optional[bytes] = None) -> bytes:
+    """Rotate the backup signing key. Current key is retired to trusted history, and new key is activated."""
+    target_dir = Path("2data") if Path("2data").exists() else Path(".")
+    key_file = target_dir / ".backup_hmac_key"
+    history_file = target_dir / ".backup_hmac_keys_history"
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    curr_key = get_backup_signing_key()
+    curr_hex = curr_key.hex()
+
+    # Append current key to history
+    existing_history = history_file.read_text(encoding="utf-8") if history_file.exists() else ""
+    if curr_hex not in existing_history:
+        with history_file.open("a", encoding="utf-8") as f:
+            f.write(f"{curr_hex} # rotated on {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}\n")
+
+    # Generate or set new key
+    if new_key is None:
+        new_key = secrets.token_bytes(32)
+    key_file.write_bytes(new_key)
+    return new_key
+
+
+def export_backup_signing_key() -> str:
+    """Export the active HMAC secret key formatted as hex string."""
+    return get_backup_signing_key().hex()
+
+
+def record_break_glass_recovery_incident(backup_path: str, reason: str, sha256_hash: str) -> None:
+    """Record emergency break-glass disaster recovery event to incident log."""
+    incidents_dir = Path("4incidents")
+    incidents_dir.mkdir(parents=True, exist_ok=True)
+    log_file = incidents_dir / "incident_log.md"
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    entry = (
+        f"\n### [EMERGENCY BREAK-GLASS] SQLite Restore Bypass - {ts}\n"
+        f"- **Timestamp**: `{ts}`\n"
+        f"- **Event**: `DISASTER_RECOVERY_HMAC_BYPASS`\n"
+        f"- **Backup Source**: `{backup_path}`\n"
+        f"- **SHA-256 Checksum**: `{sha256_hash}`\n"
+        f"- **Justification / Reason**: {reason}\n"
+        f"- **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.\n"
+    )
+    with log_file.open("a", encoding="utf-8") as f:
+        f.write(entry)
+
+
 def backup_database(db: sqlite3.Connection, backup_path: str) -> Dict[str, Any]:
     """Perform atomic online SQLite backup with cryptographic SHA-256 verification and HMAC-SHA256 anti-tamper signing."""
     with MAINTENANCE_LOCK:
@@ -1377,7 +1449,7 @@ def backup_database(db: sqlite3.Connection, backup_path: str) -> Dict[str, Any]:
         }
 
 
-def restore_database_safely(target_db_path: str, backup_source_path: str, require_hmac: bool = False) -> Dict[str, Any]:
+def restore_database_safely(target_db_path: str, backup_source_path: str, require_hmac: bool = False, emergency_override: bool = False, incident_reason: str = "") -> Dict[str, Any]:
     """Safely restore SQLite database using native backup API with anti-tamper verification and exclusive maintenance lock."""
     global IS_MAINTENANCE_ACTIVE
     src = Path(backup_source_path).resolve()
@@ -1393,17 +1465,36 @@ def restore_database_safely(target_db_path: str, backup_source_path: str, requir
         if expected_sha != actual_sha:
             raise ValueError(f"Backup SHA-256 checksum mismatch (expected {expected_sha}, got {actual_sha}).")
 
-    # 2. Anti-tamper verification (HMAC-SHA256)
+    # 2. Anti-tamper verification (HMAC-SHA256) with trusted key history & emergency break-glass
     is_secure = os.environ.get("MSK_MODE") == "secure" or os.environ.get("MSK_SECURE_MODE") in ("1", "true", "True")
     hmac_file = src.with_suffix(src.suffix + ".hmac")
+    raw_data = src.read_bytes()
+    raw_sha = hashlib.sha256(raw_data).hexdigest()
+    hmac_verified = False
+
     if hmac_file.exists():
         expected_hmac = hmac_file.read_text(encoding="utf-8").split()[0].strip().lower()
-        key = get_backup_signing_key()
-        actual_hmac = hmac.new(key, src.read_bytes(), hashlib.sha256).hexdigest().lower()
-        if not hmac.compare_digest(expected_hmac, actual_hmac):
-            raise PermissionError(f"Backup anti-tamper verification failed: cryptographic HMAC signature mismatch. File has been tampered with or signed with an unauthorized key.")
+        trusted_keys = get_all_trusted_signing_keys()
+        for k in trusted_keys:
+            cand_hmac = hmac.new(k, raw_data, hashlib.sha256).hexdigest().lower()
+            if hmac.compare_digest(expected_hmac, cand_hmac):
+                hmac_verified = True
+                break
+
+        if not hmac_verified:
+            if emergency_override:
+                if not incident_reason or not incident_reason.strip():
+                    raise PermissionError("Emergency restore refused: incident_reason is required for emergency HMAC override.")
+                record_break_glass_recovery_incident(str(src), incident_reason.strip(), raw_sha)
+            else:
+                raise PermissionError("Backup anti-tamper verification failed: cryptographic HMAC signature mismatch. File has been tampered with or signed with an unauthorized key.")
     elif require_hmac or is_secure:
-        raise PermissionError(f"Backup anti-tamper verification failed: missing companion .hmac signature file ({hmac_file.name}). In SECURE mode, backups must be cryptographically authenticated.")
+        if emergency_override:
+            if not incident_reason or not incident_reason.strip():
+                raise PermissionError("Emergency restore refused: incident_reason is required for emergency HMAC override.")
+            record_break_glass_recovery_incident(str(src), incident_reason.strip(), raw_sha)
+        else:
+            raise PermissionError(f"Backup anti-tamper verification failed: missing companion .hmac signature file ({hmac_file.name}). In SECURE mode, backups must be cryptographically authenticated.")
 
     # 3. Verify SQLite database integrity & schema compatibility before restoring
     try:

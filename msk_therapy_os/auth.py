@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import os
+import re
 import secrets
 import sqlite3
 import time
@@ -19,6 +20,16 @@ PBKDF2_ITERATIONS = 100_000
 VALID_ROLES = ("student", "reviewer", "admin")
 VALID_CREDENTIALS = ("MD", "DO", "LAC", "PT", "DPT", "DC", "PHD", "MBBS", "FACP", "ND")
 VALID_VERIFICATION_STATUSES = ("PENDING_REVIEW", "VERIFIED_ACTIVE", "REVOKED", "EXPIRED")
+
+
+def is_secure_mode() -> bool:
+    """Return True if running in hardened SECURE mode, requiring credentials for all mutations."""
+    return os.environ.get("MSK_MODE", "").lower() == "secure" or os.environ.get("MSK_SECURE_MODE", "").lower() in ("1", "true", "yes")
+
+
+def is_readonly_mode() -> bool:
+    """Return True if running in public demonstration read-only mode."""
+    return os.environ.get("MSK_PUBLIC_DEMO_READONLY", "").lower() in ("1", "true", "yes")
 
 
 def hash_password(password: str, salt: Optional[bytes] = None) -> str:
@@ -92,8 +103,92 @@ DEFAULT_USER_HASHES: Dict[str, str] = {
 }
 
 
-def seed_default_users(db: sqlite3.Connection) -> None:
-    """Seed default local users: admin, verified reviewer, unverified reviewer, student."""
+def get_user_count(db: sqlite3.Connection) -> int:
+    """Return total number of registered users."""
+    init_auth_tables(db)
+    row = db.execute("SELECT COUNT(*) FROM users").fetchone()
+    return row[0] if row else 0
+
+
+def create_user(
+    db: sqlite3.Connection,
+    *,
+    username: str,
+    password: str,
+    role: str,
+    display_name: str,
+    is_active: int = 1,
+) -> Dict[str, Any]:
+    """Create a new user with cryptographically random salt and PBKDF2-HMAC-SHA256."""
+    init_auth_tables(db)
+    u = username.strip().lower()
+    if not u or len(u) < 3 or not re.match(r"^[a-z0-9_\-]+$", u):
+        raise ValueError("Username must be at least 3 characters and contain only alphanumeric characters, underscores, or hyphens.")
+
+    if role not in VALID_ROLES:
+        raise ValueError(f"Invalid role '{role}'. Allowed roles: {', '.join(VALID_ROLES)}")
+
+    if not display_name or not display_name.strip():
+        raise ValueError("display_name cannot be empty.")
+
+    if not password or len(password) < 8:
+        raise ValueError("Password must be at least 8 characters long.")
+
+    if is_secure_mode() and password.lower() in ("admin123", "password", "12345678", "reviewer123", "student123"):
+        raise ValueError("In SECURE mode, default or trivial passwords are strictly prohibited.")
+
+    existing = db.execute("SELECT 1 FROM users WHERE username = ?", (u,)).fetchone()
+    if existing:
+        raise ValueError(f"Username '{u}' is already registered.")
+
+    user_id = f"USR-{role.upper()}-{secrets.token_hex(4).upper()}"
+    p_hash = hash_password(password)
+    db.execute(
+        """INSERT INTO users (user_id, username, password_hash, role, display_name, is_active)
+           VALUES (?, ?, ?, ?, ?, ?)""",
+        (user_id, u, p_hash, role, display_name.strip(), is_active)
+    )
+    db.commit()
+
+    return {
+        "user_id": user_id,
+        "username": u,
+        "role": role,
+        "display_name": display_name.strip(),
+        "is_active": is_active,
+    }
+
+
+def bootstrap_initial_admin(
+    db: sqlite3.Connection,
+    *,
+    username: str,
+    password: str,
+    display_name: str = "Root Administrator",
+) -> Dict[str, Any]:
+    """Secure bootstrap: initialize the first administrative account on a clean system."""
+    count = get_user_count(db)
+    if count > 0:
+        raise PermissionError("Bootstrap refused: System has already been initialized with existing users.")
+
+    return create_user(
+        db,
+        username=username,
+        password=password,
+        role="admin",
+        display_name=display_name,
+    )
+
+
+def seed_default_users(db: sqlite3.Connection, force: bool = False) -> None:
+    """Seed default local users: admin, verified reviewer, unverified reviewer, student.
+    
+    In SECURE mode, default demo credentials are strictly prohibited to prevent unauthorized access.
+    """
+    if is_secure_mode() and not force:
+        # Never inject default demo credentials into a SECURE mode database
+        return
+
     init_auth_tables(db)
 
     # 1. Administrator

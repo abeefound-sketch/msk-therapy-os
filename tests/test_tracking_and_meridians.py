@@ -16,6 +16,7 @@ from msk_therapy_os.tracking import (
     list_sessions,
     record_observation,
     record_session,
+    validate_fhir_r4_bundle,
 )
 
 
@@ -180,6 +181,32 @@ class TestTrackingAndMeridians(unittest.TestCase):
         # Find Observation resources (pain, rom, anatomical structures)
         observations = [e for e in bundle["entry"] if e["resource"]["resourceType"] == "Observation"]
         self.assertGreater(len(observations), 6)
+
+        # Verify FHIR R4 Bundle with automated validator
+        val_res = validate_fhir_r4_bundle(bundle)
+        self.assertTrue(val_res["is_valid"], f"Validation failed: {val_res['errors']}")
+        self.assertEqual(val_res["errors"], [])
+        self.assertIn("DocumentReference", val_res["resource_counts"])
+        self.assertIn("Provenance", val_res["resource_counts"])
+
+        # Test rejection of broken references
+        broken_bundle = dict(bundle)
+        broken_bundle["entry"] = list(bundle["entry"]) + [
+            {
+                "fullUrl": "urn:uuid:obs-bad",
+                "resource": {
+                    "resourceType": "Observation",
+                    "id": "obs-bad",
+                    "status": "final",
+                    "code": {"coding": [{"system": "http://loinc.org", "code": "1234"}]},
+                    "subject": {"reference": "Patient/nonexistent-patient"},
+                    "encounter": {"reference": "Encounter/nonexistent-encounter"}
+                }
+            }
+        ]
+        bad_val = validate_fhir_r4_bundle(broken_bundle)
+        self.assertFalse(bad_val["is_valid"])
+        self.assertTrue(any("Broken internal reference" in err for err in bad_val["errors"]))
 
     def test_traditional_meridian_catalog_and_namespace_separation(self):
         # Verify modern anatomy structures

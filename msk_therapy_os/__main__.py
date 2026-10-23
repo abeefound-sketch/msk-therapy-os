@@ -33,6 +33,14 @@ from msk_therapy_os.soap import (
     get_soap_notes_for_visit,
     review_soap_note,
 )
+from msk_therapy_os.auth import bootstrap_initial_admin, get_user_count, create_user
+from msk_therapy_os.points import (
+    backup_database,
+    restore_database_safely,
+    get_backup_signing_key,
+    rotate_backup_signing_key,
+    export_backup_signing_key,
+)
 
 # Exported symbols for full backward compatibility with M0 unit tests
 ATLAS = DEFAULT_ATLAS_BASE
@@ -195,6 +203,21 @@ def build_parser() -> argparse.ArgumentParser:
     srv.add_argument("--host", default="127.0.0.1")
     srv.add_argument("--port", type=int, default=8080)
 
+    # 11. Security & Admin Bootstrap Commands
+    bs_cmd = sub.add_parser("bootstrap-admin", help="Bootstrap root administrator on a clean database")
+    bs_cmd.add_argument("--db", default=DEFAULT_DB)
+    bs_cmd.add_argument("--username", required=True, help="Administrator username")
+    bs_cmd.add_argument("--password", required=True, help="Strong administrator password (>= 8 chars)")
+    bs_cmd.add_argument("--name", default="Root Administrator", help="Display name")
+
+    sub.add_parser("export-hmac-key", help="Export active HMAC backup authentication key")
+    sub.add_parser("rotate-hmac-key", help="Rotate HMAC backup authentication key and archive old key to history")
+
+    em_cmd = sub.add_parser("emergency-restore", help="Emergency break-glass SQLite database restore")
+    em_cmd.add_argument("--db", default=DEFAULT_DB)
+    em_cmd.add_argument("--backup", required=True, help="Path to backup sqlite3 file")
+    em_cmd.add_argument("--reason", required=True, help="Detailed justification for break-glass restore")
+
     return p
 
 
@@ -231,6 +254,27 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         from msk_therapy_os.server import run_server
         run_server(db_path=args.db, host=args.host, port=args.port)
+        return 0
+
+    if args.action == "export-hmac-key":
+        key_hex = export_backup_signing_key()
+        print(f"ACTIVE_HMAC_KEY: {key_hex}")
+        return 0
+
+    if args.action == "rotate-hmac-key":
+        new_k = rotate_backup_signing_key()
+        print(f"HMAC key rotated successfully. New key: {new_k.hex()}")
+        return 0
+
+    if args.action == "emergency-restore":
+        res = restore_database_safely(
+            target_db_path=args.db,
+            backup_source_path=args.backup,
+            require_hmac=False,
+            emergency_override=True,
+            incident_reason=args.reason
+        )
+        print(f"Emergency restore complete: {res}")
         return 0
 
     if args.action != "init" and not Path(args.db).exists():
@@ -380,6 +424,14 @@ def main(argv: list[str] | None = None) -> int:
                     print(f"[{q.item_id}] {crit_tag} ({q.region}) {q.scenario_title}")
                     print(f"  Q: {q.question_text}")
                     print(f"  Ref: {q.evidence_id}")
+            elif args.action == "bootstrap-admin":
+                admin = bootstrap_initial_admin(
+                    db,
+                    username=args.username,
+                    password=args.password,
+                    display_name=args.name,
+                )
+                print(f"Successfully bootstrapped initial administrator: {admin['username']} ({admin['user_id']})")
         except (ValueError, PermissionError, sqlite3.Error) as error:
             print(f"ERROR: {error}")
             return 2

@@ -23,6 +23,9 @@ from msk_therapy_os.auth import (
     seed_default_users,
     verify_password,
     verify_reviewer,
+    get_user_count,
+    create_user,
+    bootstrap_initial_admin,
 )
 from msk_therapy_os.db import init_db, open_db, seed_db
 from msk_therapy_os.points import (
@@ -51,6 +54,40 @@ class TestAuthAndRBACUnit(unittest.TestCase):
             self.temp_dir.cleanup()
         except Exception:
             pass
+
+    def test_secure_bootstrap_lifecycle(self):
+        """Verify initial root admin bootstrap on clean DB and permanent lockout on subsequent attempts."""
+        clean_db_path = Path(self.temp_dir.name) / "clean_bootstrap.sqlite3"
+        conn = sqlite3.connect(str(clean_db_path))
+        init_db(conn)
+        self.assertEqual(get_user_count(conn), 0)
+
+        # 1. Bootstrap first admin
+        admin = bootstrap_initial_admin(
+            conn,
+            username="sysadmin",
+            password="StrongAdminPassword99!",
+            display_name="System Administrator"
+        )
+        self.assertEqual(admin["username"], "sysadmin")
+        self.assertEqual(admin["role"], "admin")
+        self.assertEqual(get_user_count(conn), 1)
+
+        # 2. Subsequent bootstrap must be strictly forbidden
+        with self.assertRaises(PermissionError):
+            bootstrap_initial_admin(
+                conn,
+                username="hacker_admin",
+                password="AnotherPassword123!",
+                display_name="Impostor"
+            )
+        self.assertEqual(get_user_count(conn), 1)
+
+        # 3. Authenticate with newly bootstrapped admin
+        authed = authenticate_user(conn, "sysadmin", "StrongAdminPassword99!")
+        self.assertIsNotNone(authed)
+        self.assertEqual(authed["username"], "sysadmin")
+        conn.close()
 
     def test_pbkdf2_password_hashing(self):
         """Verify PBKDF2-HMAC-SHA256 password hashing with unique salts."""

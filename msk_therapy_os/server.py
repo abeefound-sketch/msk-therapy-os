@@ -80,7 +80,10 @@ from msk_therapy_os.evidence import get_evidence_by_id, list_evidence
 from msk_therapy_os.reporting import generate_case_report
 from msk_therapy_os.auth import (
     authenticate_user,
+    bootstrap_initial_admin,
     create_session,
+    create_user,
+    get_user_count,
     get_user_from_session,
     get_verified_reviewer,
     invalidate_session,
@@ -126,6 +129,7 @@ from msk_therapy_os.tracking import (
     list_sessions,
     record_observation,
     record_session,
+    validate_fhir_r4_bundle,
 )
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -478,10 +482,13 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         with open_db(self.db_path) as db:
             try:
                 if path == "/api/auth/mode":
+                    user_cnt = get_user_count(db)
                     self._send_json({
                         "mode": "secure" if is_secure_mode() else "demo",
                         "is_secure": is_secure_mode(),
                         "readonly": is_readonly_mode(),
+                        "user_count": user_cnt,
+                        "needs_bootstrap": is_secure_mode() and user_cnt == 0,
                     })
                     return
 
@@ -828,6 +835,11 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     fhir_bundle = export_case_fhir(db, case_id)
                     self._send_json(fhir_bundle)
 
+                elif path == "/api/validate-fhir":
+                    case_id = query.get("case_id", ["DEMO-NECK-001"])[0]
+                    fhir_bundle = export_case_fhir(db, case_id)
+                    self._send_json(validate_fhir_r4_bundle(fhir_bundle))
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
@@ -1035,6 +1047,36 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
             self._send_json({"status": "logged_out"}, set_cookie=cookie)
             return
 
+        if path == "/api/auth/bootstrap":
+            if not is_secure_mode():
+                self._send_json({"error": "Bootstrap is only applicable in SECURE mode."}, status=HTTPStatus.BAD_REQUEST)
+                return
+            if is_readonly_mode():
+                self._send_json({"error": "Public demonstration is read-only."}, status=HTTPStatus.FORBIDDEN)
+                return
+            with open_db(self.db_path) as db:
+                if get_user_count(db) > 0:
+                    self._send_json({"error": "Forbidden: System already initialized. Initial admin bootstrap is permanently locked."}, status=HTTPStatus.FORBIDDEN)
+                    return
+                uname = body.get("username", "").strip()
+                pwd = body.get("password", "")
+                dname = body.get("display_name", "Root Administrator").strip()
+                try:
+                    admin_user = bootstrap_initial_admin(db, username=uname, password=pwd, display_name=dname)
+                    sess = create_session(db, admin_user["user_id"])
+                    admin_user["session_token"] = sess["session_token"]
+                    admin_user["csrf_token"] = sess["csrf_token"]
+                    cookie = f"session_token={sess['session_token']}; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800"
+                    self._send_json({
+                        "status": "bootstrapped",
+                        "user": admin_user,
+                        "session_token": sess["session_token"],
+                        "csrf_token": sess["csrf_token"],
+                    }, set_cookie=cookie, status=HTTPStatus.CREATED)
+                except Exception as e:
+                    self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
         if path == "/api/screen-safety":
             try:
                 flag = body.get("flag", "none")
@@ -1059,7 +1101,27 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         with open_db(self.db_path) as db:
             try:
                 user = self._get_authenticated_user(db)
-                if is_secure_mode() and path not in ("/api/auth/login", "/api/auth/logout", "/api/screen-safety"):
+                if path == "/api/auth/users":
+                    if not user or user.get("role") != "admin":
+                        self._send_json({"error": "Forbidden: Admin privilege required."}, status=HTTPStatus.FORBIDDEN)
+                        return
+                    if not self._validate_csrf_if_session(user, body):
+                        self._send_json({"error": "Forbidden: Invalid or missing CSRF token."}, status=HTTPStatus.FORBIDDEN)
+                        return
+                    try:
+                        nu = create_user(
+                            db,
+                            username=body.get("username", ""),
+                            password=body.get("password", ""),
+                            role=body.get("role", "student"),
+                            display_name=body.get("display_name", ""),
+                            is_active=int(body.get("is_active", 1)),
+                        )
+                        self._send_json({"status": "created", "user": nu}, status=HTTPStatus.CREATED)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+                    return
+                if is_secure_mode() and path not in ("/api/auth/login", "/api/auth/logout", "/api/screen-safety", "/api/auth/bootstrap"):
                     if not user:
                         self._send_json({"error": "Unauthorized: Authentication required in SECURE mode."}, status=HTTPStatus.UNAUTHORIZED)
                         return

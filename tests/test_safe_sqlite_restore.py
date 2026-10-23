@@ -18,10 +18,14 @@ from msk_therapy_os.points import (
     MAINTENANCE_LOCK,
     backup_database,
     create_point,
+    export_backup_signing_key,
+    get_all_trusted_signing_keys,
+    get_backup_signing_key,
     init_points_tables,
     list_custom_points,
     restore_database_safely,
     rollback_database,
+    rotate_backup_signing_key,
     run_database_integrity_check,
 )
 from msk_therapy_os.server import create_server
@@ -117,6 +121,57 @@ class TestSafeSQLiteRestoreUnit(unittest.TestCase):
         with self.assertRaises(ValueError) as ctx:
             restore_database_safely(str(self.db_path), str(corrupt_file))
         self.assertTrue("integrity check failed" in str(ctx.exception).lower() or "invalid or corrupted" in str(ctx.exception).lower())
+
+    def test_hmac_key_rotation_and_historical_key_verification(self):
+        """Verify that after HMAC key rotation, backups signed with retired keys remain verifiable."""
+        backup_file = Path(self.temp_dir.name) / "snapshot_key_rotation.sqlite3"
+        b_res = backup_database(self.conn, str(backup_file))
+        self.assertEqual(b_res["status"], "SUCCESS")
+
+        # Rotate HMAC key
+        new_k = rotate_backup_signing_key()
+        self.assertIsNotNone(new_k)
+
+        # Restore must succeed because old key is archived in trusted history
+        self.conn.close()
+        r_res = restore_database_safely(str(self.db_path), str(backup_file))
+        self.assertEqual(r_res["status"], "SUCCESS")
+        self.conn = sqlite3.connect(str(self.db_path))
+
+    def test_emergency_break_glass_recovery_when_hmac_is_lost(self):
+        """Verify emergency disaster recovery break-glass procedure when HMAC keys are destroyed."""
+        backup_file = Path(self.temp_dir.name) / "snapshot_disaster_recovery.sqlite3"
+        b_res = backup_database(self.conn, str(backup_file))
+        self.assertEqual(b_res["status"], "SUCCESS")
+
+        # Tamper HMAC file to simulate lost/unverifiable secret
+        hmac_file = backup_file.with_suffix(".sqlite3.hmac")
+        hmac_file.write_text("0000000000000000000000000000000000000000000000000000000000000000  snapshot_disaster_recovery.sqlite3\n", encoding="utf-8")
+
+        self.conn.close()
+        # Normal restore must strictly fail
+        with self.assertRaises(PermissionError):
+            restore_database_safely(str(self.db_path), str(backup_file))
+
+        # Emergency restore without reason must fail
+        with self.assertRaises(PermissionError):
+            restore_database_safely(str(self.db_path), str(backup_file), emergency_override=True, incident_reason="")
+
+        # Emergency restore with justification succeeds and logs to 4incidents
+        r_res = restore_database_safely(
+            str(self.db_path),
+            str(backup_file),
+            emergency_override=True,
+            incident_reason="Disaster recovery exercise: root HSM key loss drill"
+        )
+        self.assertEqual(r_res["status"], "SUCCESS")
+
+        log_path = Path("4incidents/incident_log.md")
+        self.assertTrue(log_path.exists())
+        log_text = log_path.read_text(encoding="utf-8")
+        self.assertIn("DISASTER_RECOVERY_HMAC_BYPASS", log_text)
+        self.assertIn("Disaster recovery exercise: root HSM key loss drill", log_text)
+        self.conn = sqlite3.connect(str(self.db_path))
 
     def test_restore_rejects_incompatible_schema(self):
         """Verify restore aborts if backup lacks required clinical/point tables."""

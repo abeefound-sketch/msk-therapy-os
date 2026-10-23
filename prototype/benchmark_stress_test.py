@@ -1,16 +1,20 @@
-"""Comprehensive Performance Stress, Memory Leak Forensics, and Real-World Clinical Acceptance Drill.
+"""Comprehensive Performance Stress, Multi-Process Chromium Memory Telemetry, and Real-World Clinical Acceptance Drill.
 
-Validates:
-P1:
-- Raw measurement of CPU processing time, frame interval, effective FPS, WebGL draw calls.
-- Layered memory forensics: JS Heap (used/total), CDP metrics, OS Process Working Set (RSS).
-- Stress test: Multi-layer Atlas rendering, 300+ acupoints, 10-cycle rapid tab switching (110 transitions).
-- Memory leak detection: JS Heap delta & OS RSS delta across cycles.
+P0 Security:
+- Verification of SECURE vs DEMO mode separation.
+- Zero hardcoded passwords in client JavaScript bundle.
+- Root admin bootstrap verification.
 
-P3:
-- End-to-end clinical workflow: Intake -> ROM -> SOAP Draft -> Safety Red Flag Hard-Stop ->
-  Supervisor Credentialed Login -> SOAP Approval -> FHIR R4 Bundle Export -> Research Cohort Analytics.
-- Verification of offline operation, responsive UI, zero console exceptions.
+P1 Performance & Forensics:
+- Chromium Process Tree Tracking: main browser, GPU process, renderer, utility.
+- Raw measurement of CPU cores, RAM, frame interval, effective FPS, WebGL draw calls.
+- Multi-round memory sampling (5 rounds) with linear growth slope analysis.
+
+P3 Real-World Clinical Workstation Acceptance:
+- End-to-end student/supervisor encounter.
+- Real SQLite persistence assertions (no hardcoded PASS).
+- HL7 FHIR R4 Bundle validation with DocumentReference and supervisor Provenance.
+- Cohort research analytics and offline visual verification.
 """
 from __future__ import annotations
 
@@ -24,11 +28,15 @@ import threading
 import time
 from typing import Any, Dict, List
 
+# Ensure repository root is on sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import psutil
 from playwright.sync_api import sync_playwright
 
-from msk_therapy_os.db import init_db, seed_db
+from msk_therapy_os.db import open_db
 from msk_therapy_os.server import create_server
+from msk_therapy_os.tracking import validate_fhir_r4_bundle
 
 
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "2data/evidence/release_readiness"
@@ -41,9 +49,69 @@ def find_free_port() -> int:
         return s.getsockname()[1]
 
 
+def get_chromium_process_tree_memory() -> Dict[str, Any]:
+    """Inspect and aggregate true OS working set memory across all child processes of Chromium."""
+    try:
+        current_proc = psutil.Process(os.getpid())
+        children = current_proc.children(recursive=True)
+    except Exception:
+        children = []
+
+    chrome_procs = []
+    for c in children:
+        try:
+            name = c.name().lower()
+            if "chrome" in name or "chromium" in name:
+                chrome_procs.append(c)
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+
+    by_type: Dict[str, float] = {
+        "browser-main": 0.0,
+        "gpu-process": 0.0,
+        "renderer": 0.0,
+        "utility": 0.0,
+        "other": 0.0,
+    }
+    process_pids = []
+    total_rss_bytes = 0
+
+    for proc in chrome_procs:
+        try:
+            mem = proc.memory_info()
+            rss_mb = mem.rss / (1024 * 1024)
+            total_rss_bytes += mem.rss
+            process_pids.append(proc.pid)
+
+            cmd = " ".join(proc.cmdline())
+            if "--type=gpu-process" in cmd:
+                by_type["gpu-process"] += rss_mb
+            elif "--type=renderer" in cmd:
+                by_type["renderer"] += rss_mb
+            elif "--type=utility" in cmd:
+                by_type["utility"] += rss_mb
+            elif "--type=" not in cmd:
+                by_type["browser-main"] += rss_mb
+            else:
+                by_type["other"] += rss_mb
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+
+    total_mb = round(total_rss_bytes / (1024 * 1024), 2)
+    for k in by_type:
+        by_type[k] = round(by_type[k], 2)
+
+    return {
+        "process_count": len(chrome_procs),
+        "pids": process_pids,
+        "total_working_set_rss_mb": total_mb,
+        "by_type": by_type,
+    }
+
+
 def run_full_acceptance_and_stress_drill():
     print("=" * 80)
-    print("MSK-THERAPY-OS: LOCAL PRODUCTION RELEASE READINESS DRILL (P1 & P3)")
+    print("MSK-THERAPY-OS: LOCAL PRODUCTION RELEASE READINESS DRILL (P0, P1, P3)")
     print("=" * 80)
 
     db_path = "2data/demo.sqlite3" if Path("2data/demo.sqlite3").exists() else "demo.sqlite3"
@@ -81,6 +149,7 @@ def run_full_acceptance_and_stress_drill():
 
     console_errors: List[str] = []
     failed_requests: List[str] = []
+    rounds_telemetry: List[Dict[str, Any]] = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
@@ -102,14 +171,22 @@ def run_full_acceptance_and_stress_drill():
         cdp = context.new_cdp_session(page)
         cdp.send("Performance.enable")
 
-        browser_pid = browser.process.pid if hasattr(browser, "process") and browser.process else None
-        proc = psutil.Process(browser_pid) if browser_pid else None
-
         print("[*] Navigating to MSK-Therapy-OS Application...")
         t0 = time.perf_counter()
         page.goto(base_url, wait_until="networkidle")
         tti_sec = round(time.perf_counter() - t0, 3)
         print(f"[+] Loaded application in {tti_sec}s")
+
+        # Round 0: Initial boot
+        mem_r0 = get_chromium_process_tree_memory()
+        cdp_r0 = cdp.send("Performance.getMetrics")["metrics"]
+        js_r0 = next((m["value"] for m in cdp_r0 if m["name"] == "JSHeapUsedSize"), 0)
+        rounds_telemetry.append({
+            "round": 0,
+            "stage": "initial_boot",
+            "process_tree": mem_r0,
+            "js_heap_used_mb": round(js_r0 / (1024 * 1024), 2),
+        })
 
         # ---------------------------------------------------------------------
         # P0 Audit Validation: Check Mode & Verify No Hardcoded Credentials in JS
@@ -125,7 +202,6 @@ def run_full_acceptance_and_stress_drill():
         print("[*] Collecting WebGL Hardware & Driver Telemetry...")
         page.wait_for_timeout(2000)
 
-        # Get WebGL forensics from main frame or atlas iframe
         webgl_info = page.evaluate("""() => {
             const canvas = document.createElement("canvas");
             const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -146,11 +222,16 @@ def run_full_acceptance_and_stress_drill():
         print(f"    Renderer: {webgl_info.get('unmasked_renderer', 'N/A')}")
         print(f"    Vendor:   {webgl_info.get('unmasked_vendor', 'N/A')}")
 
-        # Baseline Memory Measurement
-        cdp_metrics_baseline = cdp.send("Performance.getMetrics")["metrics"]
-        js_heap_used_b = next((m["value"] for m in cdp_metrics_baseline if m["name"] == "JSHeapUsedSize"), 0)
-        js_heap_total_b = next((m["value"] for m in cdp_metrics_baseline if m["name"] == "JSHeapTotalSize"), 0)
-        os_rss_mb_b = round(proc.memory_info().rss / (1024 * 1024), 2) if proc else 0
+        # Round 1: Post WebGL / Atlas
+        mem_r1 = get_chromium_process_tree_memory()
+        cdp_r1 = cdp.send("Performance.getMetrics")["metrics"]
+        js_r1 = next((m["value"] for m in cdp_r1 if m["name"] == "JSHeapUsedSize"), 0)
+        rounds_telemetry.append({
+            "round": 1,
+            "stage": "post_webgl_init",
+            "process_tree": mem_r1,
+            "js_heap_used_mb": round(js_r1 / (1024 * 1024), 2),
+        })
 
         # Frame Interval and Latency Benchmark during 3D Atlas Interaction
         print("[*] Running 120-frame latency & FPS benchmark during 3D Atlas interaction...")
@@ -163,7 +244,7 @@ def run_full_acceptance_and_stress_drill():
             function frame(now) {
                 const delta = now - lastTime;
                 lastTime = now;
-                if (frameCount > 0) { // skip first jitter
+                if (frameCount > 0) {
                     frameTimes.push(delta);
                 }
                 frameCount++;
@@ -207,7 +288,19 @@ def run_full_acceptance_and_stress_drill():
         for cycle in range(10):
             for i in range(tab_count):
                 tab_buttons.nth(i).click()
-                page.wait_for_timeout(30)  # fast real-world tab cycling
+                page.wait_for_timeout(30)
+            if cycle == 4:
+                # Round 2: mid-stress test
+                mem_r2 = get_chromium_process_tree_memory()
+                cdp_r2 = cdp.send("Performance.getMetrics")["metrics"]
+                js_r2 = next((m["value"] for m in cdp_r2 if m["name"] == "JSHeapUsedSize"), 0)
+                rounds_telemetry.append({
+                    "round": 2,
+                    "stage": "mid_stress_50_switches",
+                    "process_tree": mem_r2,
+                    "js_heap_used_mb": round(js_r2 / (1024 * 1024), 2),
+                })
+
         tab_switch_elapsed = round(time.perf_counter() - tab_switch_start, 2)
         print(f"[+] Completed 110 tab switches in {tab_switch_elapsed}s (avg {round(tab_switch_elapsed / (10 * tab_count) * 1000, 1)}ms/switch)")
 
@@ -215,34 +308,45 @@ def run_full_acceptance_and_stress_drill():
         page.locator('.tab-btn[data-tab="tab-bodymap"]').click()
         page.wait_for_timeout(500)
 
-        # Measure Memory After Stress Test to Detect Leaks
-        cdp_metrics_post = cdp.send("Performance.getMetrics")["metrics"]
-        js_heap_used_post = next((m["value"] for m in cdp_metrics_post if m["name"] == "JSHeapUsedSize"), 0)
-        js_heap_total_post = next((m["value"] for m in cdp_metrics_post if m["name"] == "JSHeapTotalSize"), 0)
-        os_rss_mb_post = round(proc.memory_info().rss / (1024 * 1024), 2) if proc else 0
+        # Round 3: Post tab switching stress test
+        mem_r3 = get_chromium_process_tree_memory()
+        cdp_r3 = cdp.send("Performance.getMetrics")["metrics"]
+        js_r3 = next((m["value"] for m in cdp_r3 if m["name"] == "JSHeapUsedSize"), 0)
+        rounds_telemetry.append({
+            "round": 3,
+            "stage": "post_stress_110_switches",
+            "process_tree": mem_r3,
+            "js_heap_used_mb": round(js_r3 / (1024 * 1024), 2),
+        })
 
-        heap_growth_mb = round((js_heap_used_post - js_heap_used_b) / (1024 * 1024), 2)
-        rss_growth_mb = round(os_rss_mb_post - os_rss_mb_b, 2)
+        # Multi-round Slope Calculation:
+        # Separate cold-start asset loading (Round 0 -> 1) from steady-state runtime stress (Round 1 -> 3)
+        rss_values = [r["process_tree"]["total_working_set_rss_mb"] for r in rounds_telemetry]
+        js_values = [r["js_heap_used_mb"] for r in rounds_telemetry]
+        
+        # Cold start asset allocation
+        cold_start_rss_delta = round(rss_values[1] - rss_values[0], 2)
+        
+        # Steady-state stress slope across 110 tab switches (Round 1 -> Round 2 -> Round 3)
+        stress_stages = len(rss_values[1:]) - 1
+        steady_state_rss_slope = round((rss_values[-1] - rss_values[1]) / max(stress_stages, 1), 2)
+        steady_state_js_slope = round((js_values[-1] - js_values[1]) / max(stress_stages, 1), 2)
 
+        report["p1_performance_stress"]["memory_rounds"] = rounds_telemetry
         report["p1_performance_stress"]["memory_forensics"] = {
-            "baseline": {
-                "js_heap_used_mb": round(js_heap_used_b / (1024 * 1024), 2),
-                "js_heap_total_mb": round(js_heap_total_b / (1024 * 1024), 2),
-                "os_rss_working_set_mb": os_rss_mb_b,
-            },
-            "post_stress": {
-                "js_heap_used_mb": round(js_heap_used_post / (1024 * 1024), 2),
-                "js_heap_total_mb": round(js_heap_total_post / (1024 * 1024), 2),
-                "os_rss_working_set_mb": os_rss_mb_post,
-            },
-            "deltas": {
-                "js_heap_growth_mb": heap_growth_mb,
-                "os_rss_growth_mb": rss_growth_mb,
-                "leak_detected": heap_growth_mb > 50.0 or rss_growth_mb > 100.0,
-            }
+            "cold_start_process_tree": rounds_telemetry[0]["process_tree"],
+            "steady_state_baseline_process_tree": rounds_telemetry[1]["process_tree"],
+            "final_process_tree": rounds_telemetry[-1]["process_tree"],
+            "cold_start_allocation_mb": cold_start_rss_delta,
+            "js_heap_baseline_mb": rounds_telemetry[1]["js_heap_used_mb"],
+            "js_heap_final_mb": rounds_telemetry[-1]["js_heap_used_mb"],
+            "steady_state_rss_slope_mb_per_stage": steady_state_rss_slope,
+            "steady_state_js_slope_mb_per_stage": steady_state_js_slope,
+            "leak_detected": steady_state_rss_slope > 30.0 or steady_state_js_slope > 20.0,
         }
-        print(f"    JS Heap: {round(js_heap_used_b/(1024*1024), 1)} MB -> {round(js_heap_used_post/(1024*1024), 1)} MB (Delta: {heap_growth_mb} MB)")
-        print(f"    OS RSS:  {os_rss_mb_b} MB -> {os_rss_mb_post} MB (Delta: {rss_growth_mb} MB)")
+        print(f"    Chromium Process Tree RSS: Cold Start={rounds_telemetry[0]['process_tree']['total_working_set_rss_mb']} MB -> Steady State={rounds_telemetry[1]['process_tree']['total_working_set_rss_mb']} MB -> Post Stress={rounds_telemetry[-1]['process_tree']['total_working_set_rss_mb']} MB (Steady Slope: {steady_state_rss_slope} MB/stage)")
+        print(f"    Chromium GPU Process RSS:  {rounds_telemetry[0]['process_tree']['by_type']['gpu-process']} MB -> {rounds_telemetry[-1]['process_tree']['by_type']['gpu-process']} MB")
+        print(f"    Chromium Renderer RSS:     {rounds_telemetry[0]['process_tree']['by_type']['renderer']} MB -> {rounds_telemetry[-1]['process_tree']['by_type']['renderer']} MB")
 
         # ---------------------------------------------------------------------
         # P3 Real-World Clinical Workstation Acceptance Drill
@@ -274,27 +378,35 @@ def run_full_acceptance_and_stress_drill():
         page.screenshot(path=str(OUTPUT_DIR / "01_clinical_safety_hardstop.png"))
 
         # 3. SOAP Note Drafting & Supervisor Approval
-        print("    Testing SOAP Note Drafting & Supervisory Sign-off...")
+        print("    Testing SOAP Note Drafting & Supervisory Sign-off with Direct SQLite Verification...")
         page.locator('.tab-btn[data-tab="tab-bodymap"]').click()
         page.wait_for_timeout(300)
 
+        # Retrieve a valid visit ID dynamically from database or API
+        with open_db(db_path) as db:
+            valid_visit_row = db.execute("SELECT id FROM visits WHERE case_id = 'DEMO-NECK-001' ORDER BY id ASC LIMIT 1").fetchone()
+            target_visit_id = valid_visit_row[0] if valid_visit_row else 1
+
+        print(f"    Using target visit #{target_visit_id} for SOAP note drafting...")
+
         # Student drafts SOAP note via API fetch
-        draft_res = page.evaluate("""async () => {
-            const res = await apiFetch("/api/soap", {
+        draft_res = page.evaluate(f"""async () => {{
+            const res = await apiFetch("/api/soap", {{
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    visit_id: 1,
+                headers: {{ "Content-Type": "application/json" }},
+                body: JSON.stringify({{
+                    visit_id: {target_visit_id},
                     subjective: "Learner encounter: patient notes neck tightness following intensive desk posture.",
                     objective: "Active cervical lateral flexion restricted to 32 deg bilaterally.",
                     assessment: "Working learning hypothesis: postural myofascial discomfort without radiculopathy.",
                     plan: "Active range-of-motion pauses, thoracic mobility drills, and conservative postural hygiene.",
                     author_role: "student"
-                })
-            });
+                }})
+            }});
             return await res.json();
-        }""")
-        soap_id = draft_res.get("soap_id", 1)
+        }}""")
+        soap_id = draft_res.get("soap_id")
+        assert soap_id is not None, f"Failed to draft SOAP note: {draft_res}"
         print(f"    SOAP Note #{soap_id} drafted by student")
 
         # Supervisor logs in with credentials and verifies
@@ -324,32 +436,50 @@ def run_full_acceptance_and_stress_drill():
             }});
             return await res.json();
         }}""")
-        print(f"    SOAP Note #{soap_id} Review Decision: {review_res.get('decision')}")
+        print(f"    SOAP Note #{soap_id} Review API Response: {review_res}")
+
+        # Direct verification of persisted row in SQLite
+        with open_db(db_path) as db:
+            db_soap = db.execute(
+                "SELECT id, visit_id, review_status, reviewed_by, review_notes FROM soap_notes WHERE id = ?",
+                (soap_id,)
+            ).fetchone()
+
+        assert db_soap is not None, f"SOAP note #{soap_id} was not found in SQLite database!"
+        actual_status = db_soap[2]
+        actual_reviewer = db_soap[3]
+        print(f"    Direct SQLite Verification: status='{actual_status}', reviewer='{actual_reviewer}'")
+        assert actual_status == "APPROVED", f"Expected review_status APPROVED in SQLite, got {actual_status}"
+        assert actual_reviewer and "Chen" in actual_reviewer, f"Expected supervisor Dr. Sarah Chen, got {actual_reviewer}"
+
         report["p3_clinical_acceptance"]["soap_supervisor_signoff"] = {
             "soap_id": soap_id,
+            "visit_id": target_visit_id,
             "decision": review_res.get("decision"),
-            "reviewer": review_res.get("reviewer"),
-            "status": "APPROVED",
+            "reviewer": actual_reviewer,
+            "status": actual_status,
+            "persisted_in_sqlite": True,
         }
         page.screenshot(path=str(OUTPUT_DIR / "02_soap_supervisor_approved.png"))
 
-        # 4. FHIR R4 Bundle Export Validation
-        print("    Testing FHIR R4 Bundle Export...")
-        fhir_bundle = page.evaluate("""async () => {
-            const res = await apiFetch("/api/export-fhir?case_id=DEMO-NECK-001");
+        # 4. FHIR R4 Bundle Export and Rigorous Validator Execution
+        print("    Testing FHIR R4 Bundle Export & Automated Schema Validation...")
+        fhir_val_res = page.evaluate("""async () => {
+            const res = await apiFetch("/api/validate-fhir?case_id=DEMO-NECK-001");
             return await res.json();
         }""")
-        is_valid_fhir = (
-            fhir_bundle.get("resourceType") == "Bundle"
-            and fhir_bundle.get("type") == "collection"
-            and "entry" in fhir_bundle
-            and len(fhir_bundle["entry"]) >= 2
-        )
-        print(f"    FHIR R4 Bundle: {len(fhir_bundle.get('entry', []))} entries, valid={is_valid_fhir}")
+        print(f"    FHIR R4 Validation Report: valid={fhir_val_res.get('is_valid')}, entries={fhir_val_res.get('entry_count')}, counts={fhir_val_res.get('resource_counts')}")
+        assert fhir_val_res.get("is_valid") is True, f"FHIR Bundle validation failed: {fhir_val_res.get('errors')}"
+        assert len(fhir_val_res.get("errors", [])) == 0, f"FHIR validation errors found: {fhir_val_res.get('errors')}"
+        assert "DocumentReference" in fhir_val_res.get("resource_counts", {}), "Missing DocumentReference in FHIR bundle"
+        assert "Provenance" in fhir_val_res.get("resource_counts", {}), "Missing Provenance in FHIR bundle"
+
         report["p3_clinical_acceptance"]["fhir_r4_export"] = {
-            "resourceType": fhir_bundle.get("resourceType"),
-            "entry_count": len(fhir_bundle.get("entry", [])),
-            "is_valid": is_valid_fhir,
+            "is_valid": fhir_val_res.get("is_valid"),
+            "entry_count": fhir_val_res.get("entry_count"),
+            "resource_counts": fhir_val_res.get("resource_counts"),
+            "errors": fhir_val_res.get("errors"),
+            "warnings": fhir_val_res.get("warnings"),
         }
 
         # 5. Research Cohort Hub Verification
@@ -384,12 +514,13 @@ def run_full_acceptance_and_stress_drill():
 
     # Determine Verdict
     fps_ok = report["p1_performance_stress"]["frame_metrics"]["meets_30fps_target"]
-    leak_ok = not report["p1_performance_stress"]["memory_forensics"]["deltas"]["leak_detected"]
+    leak_ok = not report["p1_performance_stress"]["memory_forensics"]["leak_detected"]
     safety_ok = report["p3_clinical_acceptance"]["safety_gate_enforcement"]["hard_stop_enforced"]
-    soap_ok = report["p3_clinical_acceptance"]["soap_supervisor_signoff"]["status"] == "APPROVED"
+    soap_ok = report["p3_clinical_acceptance"]["soap_supervisor_signoff"]["status"] == "APPROVED" and report["p3_clinical_acceptance"]["soap_supervisor_signoff"]["persisted_in_sqlite"]
     fhir_ok = report["p3_clinical_acceptance"]["fhir_r4_export"]["is_valid"]
+    rss_measured_ok = report["p1_performance_stress"]["memory_forensics"]["final_process_tree"]["total_working_set_rss_mb"] > 0
 
-    if fps_ok and leak_ok and safety_ok and soap_ok and fhir_ok:
+    if fps_ok and leak_ok and safety_ok and soap_ok and fhir_ok and rss_measured_ok:
         report["verdict"] = "LOCAL_PRODUCTION_READY_PASS"
     else:
         report["verdict"] = "PARTIAL"
@@ -398,6 +529,10 @@ def run_full_acceptance_and_stress_drill():
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print("=" * 80)
     print(f"[+] DRILL COMPLETED WITH VERDICT: {report['verdict']}")
+    print(f"[+] Total Chromium Working Set: {report['p1_performance_stress']['memory_forensics']['final_process_tree']['total_working_set_rss_mb']} MB")
+    print(f"[+] GPU Process Working Set:   {report['p1_performance_stress']['memory_forensics']['final_process_tree']['by_type']['gpu-process']} MB")
+    print(f"[+] SOAP SQLite Persisted:     {report['p3_clinical_acceptance']['soap_supervisor_signoff']['persisted_in_sqlite']}")
+    print(f"[+] FHIR R4 Bundle Valid:      {report['p3_clinical_acceptance']['fhir_r4_export']['is_valid']}")
     print(f"[+] Full Report written to: {report_path.resolve()}")
     print("=" * 80)
     return report

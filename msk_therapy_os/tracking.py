@@ -1,6 +1,8 @@
 """Longitudinal tracking, structured anatomical observations, therapy sessions, and FHIR R4 export."""
 from __future__ import annotations
 
+import base64
+
 import json
 import sqlite3
 from typing import Any, Dict, List, Optional
@@ -450,6 +452,90 @@ def export_case_fhir(db: sqlite3.Connection, case_id: str, require_approved_soap
             }
             bundle["entry"].append(struct_obs)
 
+        # SOAP Clinical Documentation (DocumentReference) & Supervisor Sign-off (Provenance)
+        for sp in v.get("soaps", []):
+            doc_id = f"docref-soap-{sp['id']}"
+            doc_content = (
+                f"SOAP Note #{sp['id']} (Visit #{v['visit_id']})\n"
+                f"Subjective: {sp.get('subjective', '')}\n"
+                f"Objective: {sp.get('objective', '')}\n"
+                f"Assessment: {sp.get('assessment', '')}\n"
+                f"Plan: {sp.get('plan', '')}\n"
+                f"Author Role: {sp.get('author_role', 'student')}\n"
+                f"Review Status: {sp.get('review_status', 'DRAFT')}\n"
+                f"Reviewed By: {sp.get('reviewed_by', 'None')}\n"
+                f"Feedback: {sp.get('review_notes', '')}"
+            )
+            is_approved = sp.get("review_status") in ("APPROVED", "SUPERVISED")
+            doc_res = {
+                "fullUrl": f"urn:uuid:{doc_id}",
+                "resource": {
+                    "resourceType": "DocumentReference",
+                    "id": doc_id,
+                    "status": "current" if is_approved else "preliminary",
+                    "docStatus": "final" if is_approved else "preliminary",
+                    "type": {
+                        "coding": [
+                            {"system": "http://loinc.org", "code": "11488-4", "display": "Consultation note"}
+                        ],
+                        "text": "SOAP Clinical Documentation"
+                    },
+                    "subject": {"reference": f"Patient/patient-{case_id.lower()}"},
+                    "context": {
+                        "encounter": [{"reference": f"Encounter/{enc_id}"}],
+                    },
+                    "date": f"{v['visit_date']}T12:00:00Z",
+                    "author": [{"display": f"Role: {sp.get('author_role', 'student')}"}],
+                    "description": f"SOAP Note - Visit {v['visit_id']}",
+                    "content": [
+                        {
+                            "attachment": {
+                                "contentType": "text/plain",
+                                "data": base64.b64encode(doc_content.encode("utf-8")).decode("ascii"),
+                                "title": f"SOAP Note #{sp['id']}"
+                            }
+                        }
+                    ]
+                }
+            }
+            bundle["entry"].append(doc_res)
+
+            if sp.get("reviewed_by") and is_approved:
+                prov_id = f"provenance-soap-{sp['id']}"
+                prov_res = {
+                    "fullUrl": f"urn:uuid:{prov_id}",
+                    "resource": {
+                        "resourceType": "Provenance",
+                        "id": prov_id,
+                        "target": [{"reference": f"DocumentReference/{doc_id}"}],
+                        "recorded": f"{v['visit_date']}T12:30:00Z",
+                        "activity": {
+                            "coding": [
+                                {"system": "http://terminology.hl7.org/CodeSystem/v3-DocumentCompletion", "code": "LA", "display": "legally authenticated"}
+                            ]
+                        },
+                        "agent": [
+                            {
+                                "type": {
+                                    "coding": [{"system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type", "code": "verifier", "display": "Verifier"}]
+                                },
+                                "who": {"display": sp.get("reviewed_by")}
+                            }
+                        ],
+                        "signature": [
+                            {
+                                "type": [
+                                    {"system": "urn:iso-astm:E1762-95:2013", "code": "1.2.840.10065.1.12.1.1", "display": "Author's Signature"}
+                                ],
+                                "when": f"{v['visit_date']}T12:30:00Z",
+                                "who": {"display": sp.get("reviewed_by")},
+                                "data": base64.b64encode(f"Supervisor Sign-Off: {sp.get('reviewed_by')} - {sp.get('review_status')}".encode("utf-8")).decode("ascii")
+                            }
+                        ]
+                    }
+                }
+                bundle["entry"].append(prov_res)
+
     # 4. Patient PROMs (Survey Observations)
     try:
         prom_rows = db.execute(
@@ -477,7 +563,7 @@ def export_case_fhir(db: sqlite3.Connection, case_id: str, require_approved_soap
                 }
             }
             if pr[1]:
-                prom_obs["resource"]["encounter"] = {"reference": f"Encounter/enc-v{pr[1]}"}
+                prom_obs["resource"]["encounter"] = {"reference": f"Encounter/encounter-v{pr[1]}"}
             bundle["entry"].append(prom_obs)
     except sqlite3.OperationalError:
         pass
@@ -513,9 +599,117 @@ def export_case_fhir(db: sqlite3.Connection, case_id: str, require_approved_soap
                 }
             }
             if ae[1]:
-                ae_res["resource"]["encounter"] = {"reference": f"Encounter/enc-v{ae[1]}"}
+                ae_res["resource"]["encounter"] = {"reference": f"Encounter/encounter-v{ae[1]}"}
             bundle["entry"].append(ae_res)
     except sqlite3.OperationalError:
         pass
 
     return bundle
+
+
+def validate_fhir_r4_bundle(bundle: Dict[str, Any]) -> Dict[str, Any]:
+    """Validate an HL7 FHIR R4 Bundle for structural compliance, reference integrity, and required elements."""
+    errors: List[str] = []
+    warnings: List[str] = []
+    resource_counts: Dict[str, int] = {}
+
+    if not isinstance(bundle, dict):
+        return {"is_valid": False, "errors": ["Bundle must be a JSON object"], "warnings": [], "resource_counts": {}}
+
+    if bundle.get("resourceType") != "Bundle":
+        errors.append(f"Expected resourceType 'Bundle', got '{bundle.get('resourceType')}'")
+
+    if not bundle.get("id"):
+        errors.append("Bundle missing required 'id'")
+
+    entries = bundle.get("entry", [])
+    if not isinstance(entries, list):
+        errors.append("Bundle 'entry' must be an array")
+        return {"is_valid": False, "errors": errors, "warnings": warnings, "resource_counts": resource_counts}
+
+    # Collect all resource identifiers
+    known_resources = set()
+    for i, entry in enumerate(entries):
+        res = entry.get("resource")
+        if not res or not isinstance(res, dict):
+            errors.append(f"Entry #{i} missing valid 'resource' object")
+            continue
+        rtype = res.get("resourceType")
+        rid = res.get("id")
+        if not rtype or not rid:
+            errors.append(f"Entry #{i} missing 'resourceType' or 'id'")
+            continue
+        full_ref = f"{rtype}/{rid}"
+        known_resources.add(full_ref)
+        resource_counts[rtype] = resource_counts.get(rtype, 0) + 1
+
+    # Check reference integrity across all entries
+    def inspect_references(node: Any, path: str = "") -> None:
+        if isinstance(node, dict):
+            if "reference" in node and isinstance(node["reference"], str):
+                ref_val = node["reference"]
+                # Skip pure UUID urns or external URLs
+                if not ref_val.startswith(("urn:uuid:", "http://", "https://")):
+                    if "/" in ref_val:
+                        target_type = ref_val.split("/")[0]
+                        if target_type in ("Patient", "Encounter", "Observation", "DocumentReference", "Provenance", "AdverseEvent"):
+                            if ref_val not in known_resources:
+                                errors.append(f"Broken internal reference '{ref_val}' at {path}")
+            for k, v in node.items():
+                inspect_references(v, f"{path}.{k}" if path else k)
+        elif isinstance(node, list):
+            for idx, item in enumerate(node):
+                inspect_references(item, f"{path}[{idx}]")
+
+    for entry in entries:
+        if "resource" in entry:
+            inspect_references(entry["resource"], entry["resource"].get("resourceType", "Resource"))
+
+    # Required field verification per FHIR R4 resource profile
+    for entry in entries:
+        res = entry.get("resource", {})
+        rtype = res.get("resourceType")
+        rid = res.get("id", "unknown")
+
+        if rtype == "Patient":
+            if not res.get("identifier"):
+                warnings.append(f"Patient/{rid} lacks 'identifier'")
+        elif rtype == "Encounter":
+            if not res.get("status"):
+                errors.append(f"Encounter/{rid} missing required 'status'")
+            if not res.get("class"):
+                errors.append(f"Encounter/{rid} missing required 'class'")
+            if not res.get("subject"):
+                errors.append(f"Encounter/{rid} missing required 'subject'")
+        elif rtype == "Observation":
+            if not res.get("status"):
+                errors.append(f"Observation/{rid} missing required 'status'")
+            if not res.get("code"):
+                errors.append(f"Observation/{rid} missing required 'code'")
+            if not res.get("subject"):
+                errors.append(f"Observation/{rid} missing required 'subject'")
+        elif rtype == "DocumentReference":
+            if not res.get("status"):
+                errors.append(f"DocumentReference/{rid} missing required 'status'")
+            if not res.get("type"):
+                errors.append(f"DocumentReference/{rid} missing required 'type'")
+            if not res.get("content"):
+                errors.append(f"DocumentReference/{rid} missing required 'content'")
+        elif rtype == "Provenance":
+            if not res.get("target"):
+                errors.append(f"Provenance/{rid} missing required 'target'")
+            if not res.get("agent"):
+                errors.append(f"Provenance/{rid} missing required 'agent'")
+        elif rtype == "AdverseEvent":
+            if not res.get("actuality"):
+                errors.append(f"AdverseEvent/{rid} missing required 'actuality'")
+            if not res.get("event"):
+                errors.append(f"AdverseEvent/{rid} missing required 'event'")
+
+    return {
+        "is_valid": len(errors) == 0,
+        "errors": errors,
+        "warnings": warnings,
+        "entry_count": len(entries),
+        "resource_counts": resource_counts,
+    }

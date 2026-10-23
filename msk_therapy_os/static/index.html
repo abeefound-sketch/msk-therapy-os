@@ -370,6 +370,32 @@
     </div>
   </div>
 </div>
+<!-- SECURE MODE Initial Root Administrator Bootstrap Modal -->
+<div id="bootstrapModal" style="display:none; position:fixed; inset:0; background:rgba(2,6,23,0.9); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:#0f172a; border:1px solid #10b981; border-radius:10px; padding:24px; width:420px; max-width:92vw; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="color:#10b981; font-size:16px; font-weight:600;">Root System Initialization</h3>
+      <span class="badge" style="background:#064e3b; color:#6ee7b7; font-size:10px;">SECURE BOOTSTRAP</span>
+    </div>
+    <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">This clean system has no initial administrator. Initialize root administrator credentials to secure local operations. Once created, bootstrap is permanently locked.</p>
+    <div style="margin-bottom:12px;">
+      <label for="bootUsername" style="display:block; font-size:12px; color:#cbd5e1; margin-bottom:4px;">Admin Username</label>
+      <input id="bootUsername" type="text" autocomplete="username" style="width:100%; padding:8px 10px; background:#1e293b; border:1px solid #475569; border-radius:6px; color:#fff;" placeholder="e.g. sysadmin" />
+    </div>
+    <div style="margin-bottom:12px;">
+      <label for="bootDisplayName" style="display:block; font-size:12px; color:#cbd5e1; margin-bottom:4px;">Display Name</label>
+      <input id="bootDisplayName" type="text" style="width:100%; padding:8px 10px; background:#1e293b; border:1px solid #475569; border-radius:6px; color:#fff;" placeholder="e.g. Chief Administrator" />
+    </div>
+    <div style="margin-bottom:16px;">
+      <label for="bootPassword" style="display:block; font-size:12px; color:#cbd5e1; margin-bottom:4px;">Strong Password (&gt;= 8 chars)</label>
+      <input id="bootPassword" type="password" autocomplete="new-password" style="width:100%; padding:8px 10px; background:#1e293b; border:1px solid #475569; border-radius:6px; color:#fff;" placeholder="Create strong passphrase" />
+    </div>
+    <div id="bootError" style="display:none; color:#ef4444; font-size:12px; margin-bottom:14px; padding:8px 10px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); border-radius:6px;"></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px;">
+      <button id="bootSubmitBtn" type="button" class="btn-primary" style="padding:6px 16px; background:#059669; color:#fff; border:none; border-radius:6px; font-weight:500; cursor:pointer;" onclick="performBootstrap()">Initialize Root Administrator</button>
+    </div>
+  </div>
+</div>
 <nav class="nav-tabs">
 <button class="tab-btn active" data-i18n="nav.bodymap" data-tab="tab-bodymap">Interactive Body-Map &amp; Anatomy</button>
 <button class="tab-btn" data-tab="tab-explore">Anatomy × Point Explorer (M2.9)</button>
@@ -1394,6 +1420,50 @@
     window.closeAuthModal = closeAuthModal;
     window.performLogin = performLogin;
     window.performLogout = performLogout;
+    window.performBootstrap = performBootstrap;
+
+    async function performBootstrap() {
+      const u = (document.getElementById("bootUsername")?.value || "").trim();
+      const d = (document.getElementById("bootDisplayName")?.value || "").trim() || "System Administrator";
+      const p = document.getElementById("bootPassword")?.value || "";
+      const errEl = document.getElementById("bootError");
+      if (errEl) errEl.style.display = "none";
+
+      if (!u || !p) {
+        if (errEl) {
+          errEl.textContent = "Username and password are required.";
+          errEl.style.display = "block";
+        }
+        return;
+      }
+      try {
+        const res = await fetch("/api/auth/bootstrap", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, password: p, display_name: d })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (errEl) {
+            errEl.textContent = data.error || "Bootstrap failed";
+            errEl.style.display = "block";
+          }
+          return;
+        }
+        authSessionToken = data.session_token;
+        authCsrfToken = data.csrf_token;
+        authCurrentUser = data.user;
+        activeRole = data.user.role;
+        const bModal = document.getElementById("bootstrapModal");
+        if (bModal) bModal.style.display = "none";
+        updateAuthUI();
+      } catch (err) {
+        if (errEl) {
+          errEl.textContent = "Network error during bootstrap";
+          errEl.style.display = "block";
+        }
+      }
+    }
 
     function openAuthModal() {
       const modal = document.getElementById("authModal");
@@ -2669,6 +2739,10 @@
           const modeData = await modeRes.json();
           appSecurityMode = modeData.mode;
           isSecureMode = modeData.is_secure;
+          if (modeData.needs_bootstrap) {
+            const bModal = document.getElementById("bootstrapModal");
+            if (bModal) bModal.style.display = "flex";
+          }
         }
       } catch (err) {
         console.warn("Could not determine server mode:", err);

@@ -1,6 +1,6 @@
 {
-  "timestamp_utc": "2026-10-23T05:02:24Z",
-  "target_url": "http://127.0.0.1:57973",
+  "timestamp_utc": "2026-10-23T14:00:31Z",
+  "target_url": "http://127.0.0.1:56636",
   "database_path": "2data/demo.sqlite3",
   "environment": {
     "os": "Windows 10 (10.0.19045)",
@@ -37,29 +37,161 @@
     "frame_metrics": {
       "sample_count": 119,
       "mean_frame_time_ms": 16.67,
-      "min_frame_time_ms": 16.5,
+      "min_frame_time_ms": 16.6,
       "max_frame_time_ms": 16.8,
-      "p95_frame_time_ms": 16.7,
+      "p95_frame_time_ms": 16.8,
       "std_dev_ms": 0.06,
       "effective_fps": 60,
       "meets_30fps_target": true
     },
-    "memory_forensics": {
-      "baseline": {
-        "js_heap_used_mb": 9.07,
-        "js_heap_total_mb": 20.7,
-        "os_rss_working_set_mb": 0
+    "memory_rounds": [
+      {
+        "round": 0,
+        "stage": "initial_boot",
+        "process_tree": {
+          "process_count": 4,
+          "pids": [
+            12572,
+            13192,
+            13372,
+            10908
+          ],
+          "total_working_set_rss_mb": 849.04,
+          "by_type": {
+            "browser-main": 46.96,
+            "gpu-process": 469.24,
+            "renderer": 296.95,
+            "utility": 35.89,
+            "other": 0.0
+          }
+        },
+        "js_heap_used_mb": 8.6
       },
-      "post_stress": {
-        "js_heap_used_mb": 11.03,
-        "js_heap_total_mb": 14.55,
-        "os_rss_working_set_mb": 0
+      {
+        "round": 1,
+        "stage": "post_webgl_init",
+        "process_tree": {
+          "process_count": 4,
+          "pids": [
+            12572,
+            13192,
+            13372,
+            10908
+          ],
+          "total_working_set_rss_mb": 932.37,
+          "by_type": {
+            "browser-main": 47.15,
+            "gpu-process": 552.03,
+            "renderer": 297.3,
+            "utility": 35.89,
+            "other": 0.0
+          }
+        },
+        "js_heap_used_mb": 8.85
       },
-      "deltas": {
-        "js_heap_growth_mb": 1.96,
-        "os_rss_growth_mb": 0,
-        "leak_detected": false
+      {
+        "round": 2,
+        "stage": "mid_stress_50_switches",
+        "process_tree": {
+          "process_count": 4,
+          "pids": [
+            12572,
+            13192,
+            13372,
+            10908
+          ],
+          "total_working_set_rss_mb": 868.96,
+          "by_type": {
+            "browser-main": 47.95,
+            "gpu-process": 444.75,
+            "renderer": 340.32,
+            "utility": 35.95,
+            "other": 0.0
+          }
+        },
+        "js_heap_used_mb": 12.15
+      },
+      {
+        "round": 3,
+        "stage": "post_stress_110_switches",
+        "process_tree": {
+          "process_count": 4,
+          "pids": [
+            12572,
+            13192,
+            13372,
+            10908
+          ],
+          "total_working_set_rss_mb": 917.04,
+          "by_type": {
+            "browser-main": 47.96,
+            "gpu-process": 457.77,
+            "renderer": 375.35,
+            "utility": 35.95,
+            "other": 0.0
+          }
+        },
+        "js_heap_used_mb": 9.42
       }
+    ],
+    "memory_forensics": {
+      "cold_start_process_tree": {
+        "process_count": 4,
+        "pids": [
+          12572,
+          13192,
+          13372,
+          10908
+        ],
+        "total_working_set_rss_mb": 849.04,
+        "by_type": {
+          "browser-main": 46.96,
+          "gpu-process": 469.24,
+          "renderer": 296.95,
+          "utility": 35.89,
+          "other": 0.0
+        }
+      },
+      "steady_state_baseline_process_tree": {
+        "process_count": 4,
+        "pids": [
+          12572,
+          13192,
+          13372,
+          10908
+        ],
+        "total_working_set_rss_mb": 932.37,
+        "by_type": {
+          "browser-main": 47.15,
+          "gpu-process": 552.03,
+          "renderer": 297.3,
+          "utility": 35.89,
+          "other": 0.0
+        }
+      },
+      "final_process_tree": {
+        "process_count": 4,
+        "pids": [
+          12572,
+          13192,
+          13372,
+          10908
+        ],
+        "total_working_set_rss_mb": 917.04,
+        "by_type": {
+          "browser-main": 47.96,
+          "gpu-process": 457.77,
+          "renderer": 375.35,
+          "utility": 35.95,
+          "other": 0.0
+        }
+      },
+      "cold_start_allocation_mb": 83.33,
+      "js_heap_baseline_mb": 8.85,
+      "js_heap_final_mb": 9.42,
+      "steady_state_rss_slope_mb_per_stage": -7.67,
+      "steady_state_js_slope_mb_per_stage": 0.29,
+      "leak_detected": false
     }
   },
   "p3_clinical_acceptance": {
@@ -69,15 +201,25 @@
       "hard_stop_enforced": true
     },
     "soap_supervisor_signoff": {
-      "soap_id": 1,
-      "decision": null,
-      "reviewer": null,
-      "status": "APPROVED"
+      "soap_id": 24,
+      "visit_id": 4,
+      "decision": "APPROVED",
+      "reviewer": "Dr. Sarah Chen, MD",
+      "status": "APPROVED",
+      "persisted_in_sqlite": true
     },
     "fhir_r4_export": {
-      "resourceType": "Bundle",
-      "entry_count": 27,
-      "is_valid": true
+      "is_valid": true,
+      "entry_count": 70,
+      "resource_counts": {
+        "Patient": 1,
+        "Encounter": 3,
+        "Observation": 23,
+        "DocumentReference": 22,
+        "Provenance": 21
+      },
+      "errors": [],
+      "warnings": []
     },
     "cohort_analytics": {
       "total_cases": 4,
@@ -86,9 +228,8 @@
     }
   },
   "verdict": "LOCAL_PRODUCTION_READY_PASS",
-  "console_errors": [
-    "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
-  ],
-  "failed_requests": []
+  "console_errors": [],
+  "failed_requests": [
+    "GET http://127.0.0.1:56636/atlas/data/meshes.bin - net::ERR_ABORTED"
+  ]
 }

@@ -27,6 +27,8 @@ build/
 *token*
 *.backup_hmac_key
 2data/.backup_hmac_key
+*.backup_hmac_keys_history
+2data/.backup_hmac_keys_history
 
 # Ephemeral runtime & test artifacts
 2data/backups/*test*

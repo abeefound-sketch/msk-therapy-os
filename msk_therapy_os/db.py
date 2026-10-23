@@ -4,7 +4,7 @@ from __future__ import annotations
 import sqlite3
 from msk_therapy_os.anatomy import DEFAULT_ANATOMY_CATALOG
 from msk_therapy_os.assessment import DEFAULT_QUESTIONNAIRES
-from msk_therapy_os.auth import init_auth_tables, seed_default_users
+from msk_therapy_os.auth import init_auth_tables, seed_default_users, is_secure_mode
 from msk_therapy_os.evidence import DEFAULT_EVIDENCE_CATALOG
 from msk_therapy_os.clinical_proms import init_prom_and_cohort_tables, seed_synthetic_m3_cohort
 from msk_therapy_os.kinematics import init_kinematics_tables
@@ -149,10 +149,11 @@ def init_db(db: sqlite3.Connection) -> None:
     db.commit()
 
 
-def seed_db(db: sqlite3.Connection) -> None:
+def seed_db(db: sqlite3.Connection, seed_users: bool = True) -> None:
     """Seed baseline fictional cases, vetted evidence, anatomy structures, and scenarios."""
     init_db(db)
-    seed_default_users(db)
+    if seed_users and not is_secure_mode():
+        seed_default_users(db)
     seed_relationship_examples(db)
     seed_demo_research_set(db)
     seed_synthetic_m3_cohort(db)
