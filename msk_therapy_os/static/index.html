@@ -345,6 +345,7 @@
 <button class="tab-btn" data-tab="tab-research">Custom Point Research Studio (M2.10)</button>
 <button class="tab-btn" data-tab="tab-pose">Pose-to-Anatomy Explorer (M2.11)</button>
 <button class="tab-btn" data-tab="tab-morphology">Patient Morphology Studio (M2.12)</button>
+<button class="tab-btn" data-tab="tab-cohort">Research Cohort Hub (M6)</button>
 <button class="tab-btn" data-i18n="nav.safety" data-tab="tab-safety">Safety &amp; Red Flags Gating Drill</button>
 <button class="tab-btn" data-i18n="nav.case" data-tab="tab-case">Longitudinal Tracking &amp; Timeline</button>
 <button class="tab-btn" data-i18n="nav.soap" data-tab="tab-soap">Structured SOAP &amp; Supervision</button>
@@ -1227,6 +1228,19 @@
   </div>
 </section>
 
+<!-- TAB 11: RESEARCH COHORT ANALYTICS (M6) -->
+<section class="tab-content" id="tab-cohort" style="display:none;">
+  <div class="card">
+    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>De-identified Longitudinal Research Cohort Hub (M6)</span>
+      <button class="btn-secondary" onclick="CohortDashboardModule.loadSummary()" style="font-size:11px; padding:3px 8px;">↺ Refresh Data</button>
+    </div>
+    <div id="cohortDashboardContent">
+      <div style="color:var(--text-muted); font-size:12px; padding:20px; text-align:center;">Loading synthetic cohort analytics...</div>
+    </div>
+  </div>
+</section>
+
 </main>
 <script>
     // --- Multilingual Terminology Resolution Helper ---
@@ -1750,6 +1764,7 @@
         if (target === "tab-report") loadReport();
         if (target === "tab-evidence") loadEvidence();
         if (target === "tab-case") loadCaseData(activeCaseId);
+        if (target === "tab-cohort") CohortDashboardModule.loadSummary();
       });
     });
 
@@ -2489,6 +2504,7 @@
 <script src="/poseExplorer.js"></script>
 <script src="/morphologyStudio.js"></script>
 <script src="/tissueLayers.js"></script>
+<script src="/cohortDashboard.js"></script>
 
 </body>
 </html>

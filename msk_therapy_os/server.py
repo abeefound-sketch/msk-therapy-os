@@ -30,6 +30,10 @@ from msk_therapy_os.tissue_layers import (
     get_user_layer_config,
     update_layer_config,
 )
+from msk_therapy_os.cohort_dashboard import (
+    get_cohort_summary,
+    export_deidentified_cohort,
+)
 from msk_therapy_os.kinematics import (
     PHYSIOLOGICAL_ROM_ENVELOPES,
     record_kinematic_arc,
@@ -592,6 +596,14 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     user = self._get_authenticated_user(db)
                     user_id = user["username"] if user else query.get("user_id", ["anonymous"])[0]
                     self._send_json(get_user_layer_config(db, user_id))
+
+                elif path == "/api/cohort/summary":
+                    self._send_json(get_cohort_summary(db))
+
+                elif path == "/api/cohort/export":
+                    fmt = query.get("format", ["json"])[0]
+                    content, mime_type = export_deidentified_cohort(db, export_format=fmt)
+                    self._send_text(content, content_type=mime_type)
 
                 elif path == "/api/cases":
                     rows = db.execute("SELECT case_id, label FROM cases ORDER BY case_id").fetchall()
