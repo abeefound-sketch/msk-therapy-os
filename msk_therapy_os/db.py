@@ -8,6 +8,7 @@ from msk_therapy_os.auth import init_auth_tables, seed_default_users
 from msk_therapy_os.evidence import DEFAULT_EVIDENCE_CATALOG
 from msk_therapy_os.clinical_proms import init_prom_and_cohort_tables, seed_synthetic_m3_cohort
 from msk_therapy_os.kinematics import init_kinematics_tables
+from msk_therapy_os.tissue_layers import init_tissue_layer_tables
 from msk_therapy_os.morphology_studio import init_morphology_tables
 from msk_therapy_os.points import init_points_tables
 from msk_therapy_os.pose_anatomy import init_pose_tables
@@ -143,6 +144,7 @@ def init_db(db: sqlite3.Connection) -> None:
     init_morphology_tables(db)
     init_prom_and_cohort_tables(db)
     init_kinematics_tables(db)
+    init_tissue_layer_tables(db)
     init_auth_tables(db)
     db.commit()
 

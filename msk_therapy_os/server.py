@@ -25,6 +25,11 @@ from msk_therapy_os.assessment import (
     record_rom,
 )
 from msk_therapy_os.db import open_db, init_db, seed_db
+from msk_therapy_os.tissue_layers import (
+    get_layer_catalog,
+    get_user_layer_config,
+    update_layer_config,
+)
 from msk_therapy_os.kinematics import (
     PHYSIOLOGICAL_ROM_ENVELOPES,
     record_kinematic_arc,
@@ -579,6 +584,14 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 elif path == "/api/kinematics/arcs":
                     case_id = query.get("case_id", [""])[0]
                     self._send_json(list_kinematic_arcs(db, case_id))
+
+                elif path == "/api/anatomy/layers":
+                    self._send_json(get_layer_catalog())
+
+                elif path == "/api/anatomy/layers/config":
+                    user = self._get_authenticated_user(db)
+                    user_id = user["username"] if user else query.get("user_id", ["anonymous"])[0]
+                    self._send_json(get_user_layer_config(db, user_id))
 
                 elif path == "/api/cases":
                     rows = db.execute("SELECT case_id, label FROM cases ORDER BY case_id").fetchall()
@@ -1337,6 +1350,20 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     avatar_id = parts[4]
                     res = update_avatar_params(db, avatar_id, body.get("params", {}), notes=body.get("notes"))
                     self._send_json({"status": "updated", "avatar": res})
+                    return
+
+                if path == "/api/anatomy/layers/config":
+                    user_id = user["username"] if user else body.get("user_id", "anonymous")
+                    res = update_layer_config(
+                        db,
+                        user_id=user_id,
+                        layer_name=body.get("layer_name", ""),
+                        opacity=float(body.get("opacity", 1.0)),
+                        is_visible=bool(body.get("is_visible", True)),
+                        slice_plane=body.get("slice_plane", "none"),
+                        slice_offset=float(body.get("slice_offset", 0.0)),
+                    )
+                    self._send_json({"status": "updated", "config": res})
                     return
 
                 if path.startswith("/api/points/"):
