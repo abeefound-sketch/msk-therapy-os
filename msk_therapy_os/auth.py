@@ -83,12 +83,21 @@ def init_auth_tables(db: sqlite3.Connection) -> None:
     db.commit()
 
 
+DEFAULT_USER_HASHES: Dict[str, str] = {
+    "admin123": "pbkdf2:sha256:100000$128abaf242cfb27cd23e56553c7dfd7f$5ecbff790edbc4418dd75833443d4b8604d3cd191ae5c32ea5a7963828296a30",
+    "reviewer123": "pbkdf2:sha256:100000$37eb8b1d35ff10a43acc0172788fc557$0de69d7cf415f5eaeecae2fce74e2240bfbd5034365c9d529bccda84b5770f72",
+    "pending123": "pbkdf2:sha256:100000$fc87f6e9c1371d1bcfe48484660eab1a$6aebb1100447b274624c5108949bedce04fb7ff28932dc165f43f770d9eba9f1",
+    "faculty123": "pbkdf2:sha256:100000$f5f61e9c8b91a49bfc2ec7bd14d9698d$8401c383211d682ce3d98e4dafbec50c38a6e394b7ae6a9552eec5db973abc9a",
+    "student123": "pbkdf2:sha256:100000$287dbb1502a1dbb75bd61f85540c08c2$dce28b03055c98a755e0241564deae6f9d1290b9dc19be1e17746548a8dffe5e",
+}
+
+
 def seed_default_users(db: sqlite3.Connection) -> None:
     """Seed default local users: admin, verified reviewer, unverified reviewer, student."""
     init_auth_tables(db)
 
     # 1. Administrator
-    admin_hash = hash_password("admin123")
+    admin_hash = DEFAULT_USER_HASHES.get("admin123") or hash_password("admin123")
     db.execute(
         """INSERT OR IGNORE INTO users (user_id, username, password_hash, role, display_name)
            VALUES ('USR-ADMIN-01', 'admin', ?, 'admin', 'System Administrator')""",
@@ -96,7 +105,7 @@ def seed_default_users(db: sqlite3.Connection) -> None:
     )
 
     # 2. Verified Clinical Supervisor (Dr. Sarah Chen, MD)
-    reviewer_hash = hash_password("reviewer123")
+    reviewer_hash = DEFAULT_USER_HASHES.get("reviewer123") or hash_password("reviewer123")
     db.execute(
         """INSERT OR IGNORE INTO users (user_id, username, password_hash, role, display_name)
            VALUES ('USR-REV-CHEN-01', 'dr_chen', ?, 'reviewer', 'Dr. Sarah Chen, MD')""",
@@ -115,7 +124,7 @@ def seed_default_users(db: sqlite3.Connection) -> None:
     )
 
     # 3. Unverified / Pending Reviewer (Dr. Pending, PT)
-    pending_hash = hash_password("pending123")
+    pending_hash = DEFAULT_USER_HASHES.get("pending123") or hash_password("pending123")
     db.execute(
         """INSERT OR IGNORE INTO users (user_id, username, password_hash, role, display_name)
            VALUES ('USR-REV-PEND-02', 'dr_pending', ?, 'reviewer', 'Dr. Alex Reed, PT')""",
@@ -147,12 +156,12 @@ def seed_default_users(db: sqlite3.Connection) -> None:
         ("USR-FAC-11", "clinical_instructor", "Clinical Instructor", "PT", "REV-INST-01", "CA-PT-9988", "Physical Therapy Board of California"),
         ("USR-FAC-12", "dr_taylor", "Dr. Taylor (PT Reviewer)", "PT", "REV-TAYLOR-01", "CA-PT-7766", "Physical Therapy Board of California"),
     ]
+    faculty_hash = DEFAULT_USER_HASHES.get("faculty123") or hash_password("faculty123")
     for uid, uname, dname, cred, revid, lic, juris in faculty_reviewers:
-        f_hash = hash_password("faculty123")
         db.execute(
             """INSERT OR IGNORE INTO users (user_id, username, password_hash, role, display_name)
                VALUES (?, ?, ?, 'reviewer', ?)""",
-            (uid, uname, f_hash, dname)
+            (uid, uname, faculty_hash, dname)
         )
         db.execute(
             """INSERT OR IGNORE INTO clinical_reviewers (
@@ -163,7 +172,7 @@ def seed_default_users(db: sqlite3.Connection) -> None:
         )
 
     # 5. Student Practitioner
-    student_hash = hash_password("student123")
+    student_hash = DEFAULT_USER_HASHES.get("student123") or hash_password("student123")
     db.execute(
         """INSERT OR IGNORE INTO users (user_id, username, password_hash, role, display_name)
            VALUES ('USR-STUDENT-01', 'student', ?, 'student', 'Clinical Student Practitioner')""",

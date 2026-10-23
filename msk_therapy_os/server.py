@@ -82,6 +82,7 @@ from msk_therapy_os.auth import (
     authenticate_user,
     create_session,
     get_user_from_session,
+    get_verified_reviewer,
     invalidate_session,
     list_clinical_reviewers,
     verify_reviewer,
@@ -149,8 +150,33 @@ MIME_TYPES = {
 }
 
 
+DEFAULT_DB: str = "2data/demo.sqlite3" if Path("2data/demo.sqlite3").exists() else "demo.sqlite3"
+
+
+def is_secure_mode() -> bool:
+    """Return True if running in hardened SECURE mode, requiring credentials for all mutations."""
+    return os.environ.get("MSK_MODE", "").lower() == "secure" or os.environ.get("MSK_SECURE_MODE", "").lower() in ("1", "true", "yes")
+
+
+def is_readonly_mode() -> bool:
+    """Return True if running in public demonstration read-only mode."""
+    return os.environ.get("MSK_PUBLIC_DEMO_READONLY", "").lower() in ("1", "true", "yes")
+
+
+def _validate_synthetic_case_id(case_id: str) -> None:
+    """Enforce synthetic patient boundary - reject real patient PII identifiers."""
+    if not isinstance(case_id, str):
+        raise ValueError("Case ID must be a string.")
+    cid = case_id.strip().upper()
+    if not (cid.startswith("DEMO-") or cid.startswith("TEST-") or cid.startswith("SYNTH-")):
+        raise ValueError(
+            f"Strict clinical safety barrier: Case ID '{case_id}' rejected. "
+            "Only synthetic identifiers ('DEMO-*', 'TEST-*', 'SYNTH-*') are permitted."
+        )
+
+
 class MSKRequestHandler(BaseHTTPRequestHandler):
-    db_path: str = "demo.sqlite3"
+    db_path: str = DEFAULT_DB
 
     def log_message(self, format: str, *args: Any) -> None:
         """Suppress default HTTP request logging to keep console clean unless debugging."""
@@ -451,7 +477,15 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
         with open_db(self.db_path) as db:
             try:
-                if path == "/api/auth/me":
+                if path == "/api/auth/mode":
+                    self._send_json({
+                        "mode": "secure" if is_secure_mode() else "demo",
+                        "is_secure": is_secure_mode(),
+                        "readonly": is_readonly_mode(),
+                    })
+                    return
+
+                elif path == "/api/auth/me":
                     user = self._get_authenticated_user(db)
                     if user:
                         self._send_json({"authenticated": True, "user": user})
@@ -601,6 +635,14 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json(get_cohort_summary(db))
 
                 elif path == "/api/cohort/export":
+                    user = self._get_authenticated_user(db)
+                    if is_secure_mode():
+                        if not user:
+                            self._send_json({"error": "Unauthorized: Authentication required to export research cohort in SECURE mode."}, status=HTTPStatus.UNAUTHORIZED)
+                            return
+                        if user.get("role") not in ("reviewer", "admin"):
+                            self._send_json({"error": "Forbidden: Clinical reviewer or administrator role required for cohort exports."}, status=HTTPStatus.FORBIDDEN)
+                            return
                     fmt = query.get("format", ["json"])[0]
                     content, mime_type = export_deidentified_cohort(db, export_format=fmt)
                     self._send_text(content, content_type=mime_type)
@@ -912,8 +954,55 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
         # Public Spaces must not expose local-auth, writable clinical or research APIs.
         # The safety drill is stateless and remains available as a calculation.
-        if os.environ.get("MSK_PUBLIC_DEMO_READONLY") == "1" and path != "/api/screen-safety":
+        if is_readonly_mode() and path != "/api/screen-safety":
             self._send_json({"error": "Public demonstration is read-only."}, status=HTTPStatus.FORBIDDEN)
+            return
+
+        if path == "/api/auth/demo-switch":
+            if is_secure_mode():
+                self._send_json(
+                    {"error": "Forbidden: Demo role switching is strictly disabled in SECURE mode. Please authenticate using authorized credentials."},
+                    status=HTTPStatus.FORBIDDEN
+                )
+                return
+            if is_readonly_mode():
+                self._send_json({"error": "Public demonstration is read-only."}, status=HTTPStatus.FORBIDDEN)
+                return
+            target_role = body.get("role", "student")
+            role_user_map = {
+                "student": "student",
+                "reviewer": "dr_chen",
+                "admin": "admin",
+            }
+            target_username = role_user_map.get(target_role, "student")
+            with open_db(self.db_path) as db:
+                cursor = db.cursor()
+                cursor.execute(
+                    "SELECT user_id, username, role, display_name FROM users WHERE username = ? AND is_active = 1",
+                    (target_username,)
+                )
+                row = cursor.fetchone()
+                if not row:
+                    self._send_json({"error": f"Demo user for role '{target_role}' not found."}, status=HTTPStatus.NOT_FOUND)
+                    return
+                u = {
+                    "user_id": row[0],
+                    "username": row[1],
+                    "role": row[2],
+                    "display_name": row[3],
+                }
+                sess = create_session(db, u["user_id"])
+                u["session_token"] = sess["session_token"]
+                u["csrf_token"] = sess["csrf_token"]
+                cookie = f"session_token={sess['session_token']}; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800"
+                self._send_json({
+                    "status": "authenticated",
+                    "mode": "demo",
+                    "user": u,
+                    "session_token": sess["session_token"],
+                    "csrf_token": sess["csrf_token"],
+                    "expires_utc": sess["expires_utc"],
+                }, set_cookie=cookie)
             return
 
         if path == "/api/auth/login":
@@ -970,7 +1059,14 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         with open_db(self.db_path) as db:
             try:
                 user = self._get_authenticated_user(db)
-                if user and not self._validate_csrf_if_session(user, body):
+                if is_secure_mode() and path not in ("/api/auth/login", "/api/auth/logout", "/api/screen-safety"):
+                    if not user:
+                        self._send_json({"error": "Unauthorized: Authentication required in SECURE mode."}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    if not self._validate_csrf_if_session(user, body):
+                        self._send_json({"error": "Forbidden: Invalid or missing CSRF token in SECURE mode."}, status=HTTPStatus.FORBIDDEN)
+                        return
+                elif user and not self._validate_csrf_if_session(user, body):
                     self._send_json({"error": "Forbidden: Invalid or missing CSRF token."}, status=HTTPStatus.FORBIDDEN)
                     return
 
@@ -1143,6 +1239,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     return
 
                 elif path == "/api/visit":
+                    _validate_synthetic_case_id(body.get("case", ""))
                     disposition = add_visit(
                         db,
                         case=body["case"],
@@ -1183,13 +1280,24 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     if user:
                         reviewer_role = user.get("role", "")
                         reviewer_name = user.get("display_name", "")
-                    else:
+                    elif not is_secure_mode():
                         reviewer_role = body.get("role", "reviewer")
                         reviewer_name = body.get("reviewer", "Clinical Supervisor")
+                    else:
+                        self._send_json({"error": "Unauthorized: Authentication required to review SOAP notes in SECURE mode."}, status=HTTPStatus.UNAUTHORIZED)
+                        return
 
                     if reviewer_role != "reviewer":
-                        self._send_json({"error": "Forbidden: Only users with 'reviewer' role can approve or reject SOAP notes."}, status=HTTPStatus.FORBIDDEN)
+                        self._send_json({"error": "Forbidden: Only users with verified 'reviewer' role can approve or reject SOAP notes."}, status=HTTPStatus.FORBIDDEN)
                         return
+
+                    # In SECURE mode or when user is present, verify active reviewer credentials in clinical_reviewers registry
+                    if user or is_secure_mode():
+                        uid = user["user_id"] if user else ""
+                        verified_rev = get_verified_reviewer(db, uid)
+                        if not verified_rev:
+                            self._send_json({"error": "Forbidden: Supervisor account has not been verified active by an administrator."}, status=HTTPStatus.FORBIDDEN)
+                            return
 
                     review_soap_note(
                         db,
@@ -1346,7 +1454,14 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
         with open_db(self.db_path) as db:
             try:
                 user = self._get_authenticated_user(db)
-                if user and not self._validate_csrf_if_session(user, body):
+                if is_secure_mode() and path not in ("/api/auth/login", "/api/auth/logout", "/api/screen-safety"):
+                    if not user:
+                        self._send_json({"error": "Unauthorized: Authentication required in SECURE mode."}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    if not self._validate_csrf_if_session(user, body):
+                        self._send_json({"error": "Forbidden: Invalid or missing CSRF token in SECURE mode."}, status=HTTPStatus.FORBIDDEN)
+                        return
+                elif user and not self._validate_csrf_if_session(user, body):
                     self._send_json({"error": "Forbidden: Invalid or missing CSRF token."}, status=HTTPStatus.FORBIDDEN)
                     return
 
@@ -1434,7 +1549,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
-def create_server(db_path: str, host: str = "127.0.0.1", port: int = 8080) -> ThreadingHTTPServer:
+def create_server(db_path: str = DEFAULT_DB, host: str = "127.0.0.1", port: int = 8080) -> ThreadingHTTPServer:
     """Create configured HTTPServer instance."""
     if host not in ("127.0.0.1", "localhost", "::1") and os.environ.get("MSK_PUBLIC_DEMO_READONLY") != "1":
         raise PermissionError("Non-local binding requires MSK_PUBLIC_DEMO_READONLY=1; writable demo server must remain on localhost")
@@ -1449,7 +1564,7 @@ def create_server(db_path: str, host: str = "127.0.0.1", port: int = 8080) -> Th
     return ThreadingHTTPServer((host, port), ConfiguredHandler)
 
 
-def run_server(db_path: str, host: str = "127.0.0.1", port: int = 8080) -> None:
+def run_server(db_path: str = DEFAULT_DB, host: str = "127.0.0.1", port: int = 8080) -> None:
     """Run server until keyboard interrupt."""
     server = create_server(db_path, host, port)
     print("========================================================================")

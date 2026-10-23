@@ -331,15 +331,45 @@
 </div>
 <label data-i18n="app.active_case" for="caseSelect" style="color:var(--text-muted); font-size:12px;">Active Demo Case:</label>
 <select id="caseSelect"></select>
-<label data-i18n="app.operator_role" for="roleSelect" style="color:var(--text-muted); font-size:12px;">Operator Role:</label>
-<select id="roleSelect">
-<option data-i18n="app.role_student" value="student">Student (Drafting)</option>
-<option data-i18n="app.role_supervisor" value="reviewer">Clinical Supervisor (Reviewer)</option>
-<option value="admin">System Administrator</option>
-</select>
+<div id="demoRoleContainer" style="display:inline-flex; align-items:center; gap:6px;">
+  <label data-i18n="app.operator_role" for="roleSelect" style="color:var(--text-muted); font-size:12px;">Demo Role:</label>
+  <select id="roleSelect">
+    <option data-i18n="app.role_student" value="student">Student (Drafting)</option>
+    <option data-i18n="app.role_supervisor" value="reviewer">Clinical Supervisor (Reviewer)</option>
+    <option value="admin">System Administrator</option>
+  </select>
+</div>
+<div id="authContainer" style="display:inline-flex; align-items:center; gap:8px;">
+  <span id="authStatusBadge" class="badge" style="background:#1e293b; border:1px solid #475569; font-size:11px; padding:3px 8px;">Connecting...</span>
+  <button id="authActionBtn" class="btn-secondary" style="font-size:11px; padding:3px 8px;" type="button">Sign In</button>
+</div>
 <button class="btn-secondary" data-i18n="app.btn_refresh" id="refreshBtn">↻ Refresh</button>
 </div>
 </header>
+
+<!-- SECURE MODE Local Authentication Modal -->
+<div id="authModal" style="display:none; position:fixed; inset:0; background:rgba(2,6,23,0.8); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:#0f172a; border:1px solid #38bdf8; border-radius:10px; padding:24px; width:380px; max-width:92vw; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="color:#38bdf8; font-size:16px; font-weight:600;">Local Authentication</h3>
+      <span class="badge" style="background:#1e293b; color:#94a3b8; font-size:10px;">SECURE MODE</span>
+    </div>
+    <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">Verified credentials required. In SECURE MODE, privileges cannot be switched without authenticating.</p>
+    <div style="margin-bottom:12px;">
+      <label for="loginUsername" style="display:block; font-size:12px; color:#cbd5e1; margin-bottom:4px;">Username</label>
+      <input id="loginUsername" type="text" autocomplete="username" style="width:100%; padding:8px 10px; background:#1e293b; border:1px solid #475569; border-radius:6px; color:#fff;" placeholder="dr_chen, admin, student" />
+    </div>
+    <div style="margin-bottom:16px;">
+      <label for="loginPassword" style="display:block; font-size:12px; color:#cbd5e1; margin-bottom:4px;">Password</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" style="width:100%; padding:8px 10px; background:#1e293b; border:1px solid #475569; border-radius:6px; color:#fff;" placeholder="Enter password" />
+    </div>
+    <div id="loginError" style="display:none; color:#ef4444; font-size:12px; margin-bottom:14px; padding:8px 10px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); border-radius:6px;"></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px;">
+      <button id="loginCancelBtn" type="button" class="btn-secondary" style="padding:6px 14px;">Cancel</button>
+      <button id="loginSubmitBtn" type="button" class="btn-primary" style="padding:6px 16px; background:#0284c7; color:#fff; border:none; border-radius:6px; font-weight:500; cursor:pointer;">Sign In</button>
+    </div>
+  </div>
+</div>
 <nav class="nav-tabs">
 <button class="tab-btn active" data-i18n="nav.bodymap" data-tab="tab-bodymap">Interactive Body-Map &amp; Anatomy</button>
 <button class="tab-btn" data-tab="tab-explore">Anatomy × Point Explorer (M2.9)</button>
@@ -1344,6 +1374,9 @@
     let authCsrfToken = null;
     let authCurrentUser = null;
 
+    let appSecurityMode = "demo";
+    let isSecureMode = false;
+
     async function apiFetch(url, options = {}) {
       options.headers = options.headers || {};
       if (authSessionToken) {
@@ -1357,21 +1390,92 @@
 
     window.apiFetch = apiFetch;
     window.loginAsRole = loginAsRole;
+    window.openAuthModal = openAuthModal;
+    window.closeAuthModal = closeAuthModal;
+    window.performLogin = performLogin;
+    window.performLogout = performLogout;
+
+    function openAuthModal() {
+      const modal = document.getElementById("authModal");
+      if (modal) {
+        modal.style.display = "flex";
+        const err = document.getElementById("loginError");
+        if (err) err.style.display = "none";
+        const u = document.getElementById("loginUsername");
+        if (u) { u.focus(); }
+      }
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById("authModal");
+      if (modal) modal.style.display = "none";
+    }
+
+    function updateAuthUI() {
+      const statusBadge = document.getElementById("authStatusBadge");
+      const actionBtn = document.getElementById("authActionBtn");
+      const soapBadge = document.getElementById("soapRoleBadge");
+      const demoContainer = document.getElementById("demoRoleContainer");
+
+      if (isSecureMode) {
+        if (demoContainer) demoContainer.style.display = "none";
+        if (authCurrentUser) {
+          if (statusBadge) {
+            statusBadge.textContent = `${authCurrentUser.display_name} (${authCurrentUser.role.toUpperCase()})`;
+            statusBadge.style.color = "#38bdf8";
+            statusBadge.style.borderColor = "#0284c7";
+          }
+          if (actionBtn) {
+            actionBtn.textContent = "Log Out";
+            actionBtn.onclick = performLogout;
+          }
+          if (soapBadge) {
+            soapBadge.textContent = `Authenticated: ${authCurrentUser.display_name} (${authCurrentUser.role.toUpperCase()})`;
+          }
+        } else {
+          if (statusBadge) {
+            statusBadge.textContent = "Unauthenticated";
+            statusBadge.style.color = "#ef4444";
+            statusBadge.style.borderColor = "rgba(239,68,68,0.4)";
+          }
+          if (actionBtn) {
+            actionBtn.textContent = "Sign In";
+            actionBtn.onclick = openAuthModal;
+          }
+          if (soapBadge) {
+            soapBadge.textContent = "Authentication Required (SECURE MODE)";
+          }
+        }
+      } else {
+        // DEMO MODE
+        if (demoContainer) demoContainer.style.display = "inline-flex";
+        if (authCurrentUser) {
+          if (statusBadge) {
+            statusBadge.textContent = `Demo: ${authCurrentUser.display_name} (${authCurrentUser.role.toUpperCase()})`;
+            statusBadge.style.color = "#10b981";
+            statusBadge.style.borderColor = "#059669";
+          }
+          if (actionBtn) {
+            actionBtn.textContent = "Sign In";
+            actionBtn.onclick = openAuthModal;
+          }
+          if (soapBadge) {
+            soapBadge.textContent = `Demo Session: ${authCurrentUser.display_name} (${authCurrentUser.role.toUpperCase()})`;
+          }
+        }
+      }
+    }
+
     async function loginAsRole(role) {
-      let username = "student";
-      let password = "student123";
-      if (role === "reviewer") {
-        username = "dr_chen";
-        password = "reviewer123";
-      } else if (role === "admin") {
-        username = "admin";
-        password = "admin123";
+      if (isSecureMode) {
+        openAuthModal();
+        return;
       }
       try {
-        const res = await apiFetch("/api/auth/login", {
+        const res = await apiFetch("/api/auth/demo-switch", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ role })
         });
         if (res.ok) {
           const data = await res.json();
@@ -1379,13 +1483,62 @@
           authCsrfToken = data.csrf_token;
           authCurrentUser = data.user;
           activeRole = data.user.role;
-          const badge = document.getElementById("soapRoleBadge");
-          if (badge) {
-            badge.textContent = `Authenticated: ${data.user.display_name} (${data.user.role.toUpperCase()})`;
-          }
+          updateAuthUI();
+        } else if (res.status === 403) {
+          openAuthModal();
         }
       } catch (err) {
-        console.warn("Auto-login error:", err);
+        console.warn("Demo switch error:", err);
+      }
+    }
+
+    async function performLogin(username, password) {
+      const errEl = document.getElementById("loginError");
+      if (errEl) errEl.style.display = "none";
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (errEl) {
+            errEl.textContent = data.error || "Invalid username or password";
+            errEl.style.display = "block";
+          }
+          return;
+        }
+        authSessionToken = data.session_token;
+        authCsrfToken = data.csrf_token;
+        authCurrentUser = data.user;
+        activeRole = data.user.role;
+        closeAuthModal();
+        updateAuthUI();
+        if (document.getElementById("roleSelect")) {
+          document.getElementById("roleSelect").value = data.user.role;
+        }
+        loadCaseData(activeCaseId);
+      } catch (err) {
+        if (errEl) {
+          errEl.textContent = "Authentication connection error";
+          errEl.style.display = "block";
+        }
+      }
+    }
+
+    async function performLogout() {
+      try {
+        await apiFetch("/api/auth/logout", { method: "POST" });
+      } catch (e) {}
+      authSessionToken = null;
+      authCsrfToken = null;
+      authCurrentUser = null;
+      updateAuthUI();
+      if (isSecureMode) {
+        openAuthModal();
+      } else {
+        loginAsRole("student");
       }
     }
     let availableRedFlags = [];
@@ -2493,13 +2646,67 @@
     // Set today's date in form
     document.getElementById("visDate").value = new Date().toISOString().split("T")[0];
 
-    // Initial boot
-    loginAsRole(document.getElementById("roleSelect") ? document.getElementById("roleSelect").value : "reviewer");
-    loadCases();
-    loadCaseData(activeCaseId);
-    loadRegionAnatomy(activeRegion);
-    loadRegionQuestionnaires(activeRegion);
-    loadSafetyFlags();
+    // Auth Modal event listeners
+    document.getElementById("loginCancelBtn")?.addEventListener("click", closeAuthModal);
+    document.getElementById("loginSubmitBtn")?.addEventListener("click", () => {
+      const u = document.getElementById("loginUsername")?.value.trim();
+      const p = document.getElementById("loginPassword")?.value;
+      if (u && p) performLogin(u, p);
+    });
+    document.getElementById("loginPassword")?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const u = document.getElementById("loginUsername")?.value.trim();
+        const p = document.getElementById("loginPassword")?.value;
+        if (u && p) performLogin(u, p);
+      }
+    });
+
+    // Initial boot & security mode detection
+    async function initAppAuth() {
+      try {
+        const modeRes = await fetch("/api/auth/mode");
+        if (modeRes.ok) {
+          const modeData = await modeRes.json();
+          appSecurityMode = modeData.mode;
+          isSecureMode = modeData.is_secure;
+        }
+      } catch (err) {
+        console.warn("Could not determine server mode:", err);
+      }
+
+      // Check current session
+      try {
+        const meRes = await apiFetch("/api/auth/me");
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          if (meData.authenticated && meData.user) {
+            authCurrentUser = meData.user;
+            activeRole = meData.user.role;
+            authSessionToken = meData.user.session_token || authSessionToken;
+            authCsrfToken = meData.user.csrf_token || authCsrfToken;
+          }
+        }
+      } catch (err) {}
+
+      if (!authCurrentUser) {
+        if (!isSecureMode) {
+          const defaultRole = document.getElementById("roleSelect") ? document.getElementById("roleSelect").value : "reviewer";
+          await loginAsRole(defaultRole);
+        } else {
+          updateAuthUI();
+        }
+      } else {
+        updateAuthUI();
+      }
+
+      loadCases();
+      loadCaseData(activeCaseId);
+      loadRegionAnatomy(activeRegion);
+      loadRegionQuestionnaires(activeRegion);
+      loadSafetyFlags();
+    }
+
+    initAppAuth();
   </script>
 <script src="/meridianEditor.js"></script>
 
