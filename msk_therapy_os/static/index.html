@@ -343,6 +343,7 @@
 <button class="tab-btn active" data-i18n="nav.bodymap" data-tab="tab-bodymap">Interactive Body-Map &amp; Anatomy</button>
 <button class="tab-btn" data-tab="tab-explore">Anatomy × Point Explorer (M2.9)</button>
 <button class="tab-btn" data-tab="tab-research">Custom Point Research Studio (M2.10)</button>
+<button class="tab-btn" data-tab="tab-pose">Pose-to-Anatomy Explorer (M2.11)</button>
 <button class="tab-btn" data-i18n="nav.safety" data-tab="tab-safety">Safety &amp; Red Flags Gating Drill</button>
 <button class="tab-btn" data-i18n="nav.case" data-tab="tab-case">Longitudinal Tracking &amp; Timeline</button>
 <button class="tab-btn" data-i18n="nav.soap" data-tab="tab-soap">Structured SOAP &amp; Supervision</button>
@@ -1008,6 +1009,76 @@
         <button id="rsTimeline" type="button">Case history</button>
         <div id="rsDefinitions" aria-live="polite" style="padding:8px 0"></div>
         <div id="rsHistory" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- M2.11: Pose-to-Anatomy Explorer (Movement Biomechanics & Candidate Muscles) -->
+<section class="tab-content" id="tab-pose" style="display:none;">
+  <div class="card">
+    <div class="card-title">Pose-to-Anatomy Explorer · Movement Biomechanics &amp; Candidate Muscles (M2.11)</div>
+    <p class="alert-box alert-warning">EDUCATIONAL &amp; BIOMECHANICAL REFERENCE ONLY. Single-image landmark estimation is not clinical goniometry and does not measure EMG muscle activation, muscle force, or pathology. Never use for autonomous diagnosis or intervention prescription.</p>
+    
+    <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:end; margin-bottom:12px;">
+      <label>Case:
+        <select id="poseCaseSelect">
+          <option value="DEMO-NECK-001">DEMO-NECK-001 (Neck Discomfort)</option>
+          <option value="DEMO-LOWBACK-002">DEMO-LOWBACK-002 (Low-Back Discomfort)</option>
+        </select>
+      </label>
+      <label>Pose Drill:
+        <select id="poseStudySelect" style="min-width:220px;"></select>
+      </label>
+      <button id="poseLoadBtn" type="button" class="btn-secondary">Reload</button>
+      <button id="poseCreateDemoBtn" type="button">Generate Sample Pose Drill</button>
+      <button id="poseFocusAtlasBtn" type="button" class="btn-secondary" style="border-color:#38bdf8; color:#38bdf8;">Focus Candidate Muscles in 3D Atlas</button>
+    </div>
+    
+    <div id="poseStatus" role="status" aria-live="polite" style="padding:4px 0; font-size:12px; color:var(--text-muted);"></div>
+
+    <div style="display:grid; grid-template-columns: 420px 1fr 340px; gap: 18px; align-items: start;">
+      <!-- Column 1: Pose Canvas -->
+      <div>
+        <div style="font-weight:600; margin-bottom:6px;">2D Landmark Skeleton (Single-Image Estimate)</div>
+        <div style="border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #0b1120;">
+          <svg id="poseSvg" viewBox="0 0 400 500" width="100%" height="450" style="display:block;"></svg>
+        </div>
+        <div id="poseLandmarkEditor"></div>
+        <button id="poseSaveLmBtn" type="button" style="margin-top:8px; width:100%;">Save Manual Landmark Corrections</button>
+      </div>
+
+      <!-- Column 2: Biomechanical Insights & Candidate Muscles -->
+      <div>
+        <div style="font-weight:600; margin-bottom:6px;">Model-Estimated Joint Actions &amp; Candidate Muscles</div>
+        <div id="poseActionInsights"></div>
+      </div>
+
+      <!-- Column 3: Pose-Linked Clinical Symptom Documentation -->
+      <div style="background: rgba(30,41,59,0.3); border:1px solid var(--border); border-radius:6px; padding:12px;">
+        <div style="font-weight:600; margin-bottom:8px; color:var(--primary);">Pose-Linked Symptom Finding</div>
+        <label style="display:block; margin-bottom:6px;">Reported Symptom Zone:
+          <input id="poseSymptomZone" placeholder="e.g. Left lateral neck / Upper trap" style="width:100%; margin-top:2px;" />
+        </label>
+        <label style="display:block; margin-bottom:6px;">Pain Severity (0–10):
+          <input id="posePainScore" type="number" min="0" max="10" placeholder="0-10" style="width:100%; margin-top:2px;" />
+        </label>
+        <label style="display:block; margin-bottom:6px;">Movement Phase:
+          <select id="posePhaseSelect" style="width:100%; margin-top:2px;">
+            <option value="Initial movement onset">Initial movement onset</option>
+            <option value="Mid-range concentric">Mid-range concentric</option>
+            <option value="End-range isometric hold">End-range isometric hold</option>
+            <option value="Eccentric lowering">Eccentric lowering</option>
+          </select>
+        </label>
+        <label style="display:block; margin-bottom:8px;">Reported Sensation:
+          <textarea id="poseSymptomDesc" rows="2" placeholder="Patient describes sharp pulling or dull ache..." style="width:100%; margin-top:2px;"></textarea>
+        </label>
+        <button id="poseSaveObsBtn" type="button" style="width:100%; margin-bottom:12px;">Record Pose Finding</button>
+
+        <div style="font-weight:600; font-size:12px; margin-bottom:6px;">History for this Pose:</div>
+        <div id="poseObservationList"></div>
       </div>
     </div>
   </div>
@@ -2272,6 +2343,7 @@
 
 <script src="/relationshipExplorer.js"></script>
 <script src="/researchStudio.js"></script>
+<script src="/poseExplorer.js"></script>
 
 </body>
 </html>

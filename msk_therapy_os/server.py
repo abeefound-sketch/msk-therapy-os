@@ -25,6 +25,15 @@ from msk_therapy_os.assessment import (
     record_rom,
 )
 from msk_therapy_os.db import open_db, init_db, seed_db
+from msk_therapy_os.pose_anatomy import (
+    CURATED_ACTION_MUSCLES,
+    create_pose_study,
+    get_pose_study,
+    list_pose_studies,
+    update_landmarks,
+    record_pose_observation,
+    list_pose_observations,
+)
 from msk_therapy_os.relationship_catalog import find_entities, get_entity, get_relations
 from msk_therapy_os.research_studio import (
     list_research_sets,
@@ -497,6 +506,25 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     except ValueError as error:
                         self._send_json({"error": str(error)}, status=HTTPStatus.BAD_REQUEST)
 
+                elif path == "/api/pose/actions":
+                    self._send_json(CURATED_ACTION_MUSCLES)
+
+                elif path == "/api/pose/studies":
+                    case_id = query.get("case_id", [""])[0]
+                    self._send_json(list_pose_studies(db, case_id))
+
+                elif path.startswith("/api/pose/studies/"):
+                    study_id = path.removeprefix("/api/pose/studies/")
+                    study = get_pose_study(db, study_id)
+                    if study:
+                        self._send_json(study)
+                    else:
+                        self._send_json({"error": "Pose study not found"}, status=HTTPStatus.NOT_FOUND)
+
+                elif path == "/api/pose/observations":
+                    study_id = query.get("study_id", [""])[0]
+                    self._send_json(list_pose_observations(db, study_id))
+
                 elif path == "/api/cases":
                     rows = db.execute("SELECT case_id, label FROM cases ORDER BY case_id").fetchall()
                     self._send_json([{"case_id": r[0], "label": r[1]} for r in rows])
@@ -891,6 +919,41 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         self._send_json({"error": "Unknown research endpoint"}, status=HTTPStatus.NOT_FOUND)
                     return
 
+                if path == "/api/pose/studies":
+                    if not user:
+                        self._send_json({"error": "Authentication required"}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    res = create_pose_study(
+                        db,
+                        case_id=body.get("case_id", ""),
+                        title=body.get("title", ""),
+                        camera_view=body.get("camera_view", "front"),
+                        image_asset=body.get("image_asset", ""),
+                        image_sha256=body.get("image_sha256", ""),
+                        raw_landmarks=body.get("landmarks", []),
+                    )
+                    self._send_json({"status": "created", "study": res}, status=HTTPStatus.CREATED)
+                    return
+
+                if path == "/api/pose/observations":
+                    if not user:
+                        self._send_json({"error": "Authentication required"}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    res = record_pose_observation(
+                        db,
+                        study_id=body.get("study_id", ""),
+                        case_id=body.get("case_id", ""),
+                        visit_id=body.get("visit_id"),
+                        symptom_zone=body.get("symptom_zone", ""),
+                        pain_score=body.get("pain_score"),
+                        movement_phase=body.get("movement_phase", ""),
+                        reported_symptoms=body.get("reported_symptoms", ""),
+                        functional_limitation=body.get("functional_limitation", ""),
+                        notes=body.get("notes", ""),
+                    )
+                    self._send_json({"status": "created", "observation": res}, status=HTTPStatus.CREATED)
+                    return
+
                 if path == "/api/auth/verify-reviewer":
                     if not user:
                         self._send_json({"error": "Authentication required. Admin privileges required."}, status=HTTPStatus.UNAUTHORIZED)
@@ -1111,6 +1174,13 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 user = self._get_authenticated_user(db)
                 if user and not self._validate_csrf_if_session(user, body):
                     self._send_json({"error": "Forbidden: Invalid or missing CSRF token."}, status=HTTPStatus.FORBIDDEN)
+                    return
+
+                if path.startswith("/api/pose/studies/") and path.endswith("/landmarks"):
+                    parts = path.split("/")
+                    study_id = parts[4]
+                    res = update_landmarks(db, study_id, body.get("landmarks", []))
+                    self._send_json({"status": "updated", "study": res})
                     return
 
                 if path.startswith("/api/points/"):
