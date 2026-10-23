@@ -344,6 +344,7 @@
 <button class="tab-btn" data-tab="tab-explore">Anatomy × Point Explorer (M2.9)</button>
 <button class="tab-btn" data-tab="tab-research">Custom Point Research Studio (M2.10)</button>
 <button class="tab-btn" data-tab="tab-pose">Pose-to-Anatomy Explorer (M2.11)</button>
+<button class="tab-btn" data-tab="tab-morphology">Patient Morphology Studio (M2.12)</button>
 <button class="tab-btn" data-i18n="nav.safety" data-tab="tab-safety">Safety &amp; Red Flags Gating Drill</button>
 <button class="tab-btn" data-i18n="nav.case" data-tab="tab-case">Longitudinal Tracking &amp; Timeline</button>
 <button class="tab-btn" data-i18n="nav.soap" data-tab="tab-soap">Structured SOAP &amp; Supervision</button>
@@ -1079,6 +1080,138 @@
 
         <div style="font-weight:600; font-size:12px; margin-bottom:6px;">History for this Pose:</div>
         <div id="poseObservationList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- M2.12: Three-Photo Patient Morphology Studio (Surface-Only Avatar) -->
+<section class="tab-content" id="tab-morphology" style="display:none;">
+  <div class="card">
+    <div class="card-title">Three-Photo Patient Morphology &amp; Surface Avatar Studio (M2.12)</div>
+    <p class="alert-box alert-warning">APPROXIMATE EXTERNAL SURFACE AVATAR ONLY. Clothed photos and anthropometric measurements do not reveal internal muscles, fat compartments, vessels, nerves, or safe acupuncture depth. Reference anatomy is maintained as an independent dual-model. Never use for surgical or invasive procedure planning.</p>
+    
+    <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:end; margin-bottom:12px;">
+      <label>Case:
+        <select id="morphCaseSelect">
+          <option value="DEMO-NECK-001">DEMO-NECK-001 (Neck Discomfort)</option>
+          <option value="DEMO-LOWBACK-002">DEMO-LOWBACK-002 (Low-Back Discomfort)</option>
+        </select>
+      </label>
+      <label>Avatar Version:
+        <select id="morphAvatarSelect" style="min-width:240px;"></select>
+      </label>
+      <button id="morphReloadBtn" type="button" class="btn-secondary">Reload</button>
+      <button id="morphCreateBtn" type="button">Create New Avatar Version</button>
+    </div>
+    
+    <div id="morphStatus" role="status" aria-live="polite" style="padding:4px 0; font-size:12px; color:var(--text-muted);"></div>
+
+    <div style="display:grid; grid-template-columns: 360px 1fr 340px; gap: 18px; align-items: start;">
+      <!-- Column 1: Parametric Anthropometry Controls -->
+      <div style="background: rgba(30,41,59,0.3); border:1px solid var(--border); border-radius:6px; padding:12px;">
+        <div style="font-weight:600; margin-bottom:10px; color:var(--primary);">Surface Anthropometry Sliders</div>
+        
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px;">
+            <span>Height:</span><span><strong id="val_height_cm">172</strong> cm</span>
+          </div>
+          <input id="morph_height_cm" type="range" min="120" max="210" step="0.5" value="172" style="width:100%;" />
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px;">
+            <span>Weight:</span><span><strong id="val_weight_kg">70</strong> kg</span>
+          </div>
+          <input id="morph_weight_kg" type="range" min="40" max="150" step="0.5" value="70" style="width:100%;" />
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px;">
+            <span>Chest Circumference:</span><span><strong id="val_chest_circ_cm">96</strong> cm</span>
+          </div>
+          <input id="morph_chest_circ_cm" type="range" min="65" max="145" step="0.5" value="96" style="width:100%;" />
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px;">
+            <span>Waist Circumference:</span><span><strong id="val_waist_circ_cm">82</strong> cm</span>
+          </div>
+          <input id="morph_waist_circ_cm" type="range" min="55" max="140" step="0.5" value="82" style="width:100%;" />
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px;">
+            <span>Hip Circumference:</span><span><strong id="val_hip_circ_cm">99</strong> cm</span>
+          </div>
+          <input id="morph_hip_circ_cm" type="range" min="70" max="150" step="0.5" value="99" style="width:100%;" />
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px;">
+            <span>Shoulder Width:</span><span><strong id="val_shoulder_width_cm">44</strong> cm</span>
+          </div>
+          <input id="morph_shoulder_width_cm" type="range" min="30" max="60" step="0.5" value="44" style="width:100%;" />
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px;">
+            <span>Abdomen Prominence:</span><span><strong id="val_abdomen_prominence">0.2</strong></span>
+          </div>
+          <input id="morph_abdomen_prominence" type="range" min="-0.5" max="1.5" step="0.1" value="0.2" style="width:100%;" />
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px;">
+            <span>Pelvic Tilt:</span><span><strong id="val_pelvic_tilt_deg">0</strong>°</span>
+          </div>
+          <input id="morph_pelvic_tilt_deg" type="range" min="-15" max="15" step="1" value="0" style="width:100%;" />
+        </div>
+
+        <button id="morphSaveParamsBtn" type="button" style="width:100%;">Save Surface Parameters</button>
+      </div>
+
+      <!-- Column 2: Dual Silhouettes Canvas -->
+      <div>
+        <div style="font-weight:600; margin-bottom:6px;">Dual-View Surface Silhouette (Front &amp; Sagittal)</div>
+        <div style="display:flex; gap:12px; background:#0b1120; border:1px solid var(--border); border-radius:6px; padding:12px; justify-content:center;">
+          <svg id="morphFrontSvg" viewBox="0 0 300 460" width="48%" height="440"></svg>
+          <svg id="morphSideSvg" viewBox="0 0 300 460" width="48%" height="440"></svg>
+        </div>
+      </div>
+
+      <!-- Column 3: Regional Observations & Findings -->
+      <div style="background: rgba(30,41,59,0.3); border:1px solid var(--border); border-radius:6px; padding:12px;">
+        <div style="font-weight:600; margin-bottom:8px; color:var(--primary);">Anchor Surface Observation</div>
+        <label style="display:block; margin-bottom:6px;">Body Region:
+          <select id="morphObsRegion" style="width:100%; margin-top:2px;">
+            <option value="cervical_spine">Cervical Spine</option>
+            <option value="cervicothoracic_junction">Cervicothoracic Junction</option>
+            <option value="shoulder_girdle">Shoulder Girdle</option>
+            <option value="lumbar_spine">Lumbar Spine</option>
+            <option value="pelvis_hips">Pelvis &amp; Hips</option>
+          </select>
+        </label>
+        <label style="display:block; margin-bottom:6px;">Observation Type:
+          <select id="morphObsType" style="width:100%; margin-top:2px;">
+            <option value="asymmetry">Asymmetry (Left vs Right)</option>
+            <option value="edema_swelling">Edema / Swelling</option>
+            <option value="circumference_delta">Circumference Delta</option>
+            <option value="posture">Postural Deviation</option>
+            <option value="palpable_finding">Palpable Surface Finding</option>
+          </select>
+        </label>
+        <label style="display:block; margin-bottom:6px;">Severity / Prominence (0–10):
+          <input id="morphObsSeverity" type="number" min="0" max="10" placeholder="0-10" style="width:100%; margin-top:2px;" />
+        </label>
+        <label style="display:block; margin-bottom:8px;">Finding Summary:
+          <textarea id="morphObsDesc" rows="3" placeholder="Describe physical observation..." style="width:100%; margin-top:2px;"></textarea>
+        </label>
+        <button id="morphSaveObsBtn" type="button" style="width:100%; margin-bottom:12px;">Anchor Finding to Avatar</button>
+
+        <div style="font-weight:600; font-size:12px; margin-bottom:6px;">Observations on this Avatar:</div>
+        <div id="morphObsList"></div>
       </div>
     </div>
   </div>
@@ -2344,6 +2477,7 @@
 <script src="/relationshipExplorer.js"></script>
 <script src="/researchStudio.js"></script>
 <script src="/poseExplorer.js"></script>
+<script src="/morphologyStudio.js"></script>
 
 </body>
 </html>

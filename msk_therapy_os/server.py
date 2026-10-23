@@ -25,6 +25,14 @@ from msk_therapy_os.assessment import (
     record_rom,
 )
 from msk_therapy_os.db import open_db, init_db, seed_db
+from msk_therapy_os.morphology_studio import (
+    create_avatar,
+    get_avatar,
+    list_avatars,
+    update_avatar_params,
+    record_morphology_observation,
+    list_morphology_observations,
+)
 from msk_therapy_os.pose_anatomy import (
     CURATED_ACTION_MUSCLES,
     create_pose_study,
@@ -525,6 +533,22 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     study_id = query.get("study_id", [""])[0]
                     self._send_json(list_pose_observations(db, study_id))
 
+                elif path == "/api/morphology/avatars":
+                    case_id = query.get("case_id", [""])[0]
+                    self._send_json(list_avatars(db, case_id))
+
+                elif path.startswith("/api/morphology/avatars/"):
+                    avatar_id = path.removeprefix("/api/morphology/avatars/")
+                    avatar = get_avatar(db, avatar_id)
+                    if avatar:
+                        self._send_json(avatar)
+                    else:
+                        self._send_json({"error": "Avatar not found"}, status=HTTPStatus.NOT_FOUND)
+
+                elif path == "/api/morphology/observations":
+                    avatar_id = query.get("avatar_id", [""])[0]
+                    self._send_json(list_morphology_observations(db, avatar_id))
+
                 elif path == "/api/cases":
                     rows = db.execute("SELECT case_id, label FROM cases ORDER BY case_id").fetchall()
                     self._send_json([{"case_id": r[0], "label": r[1]} for r in rows])
@@ -954,6 +978,46 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "created", "observation": res}, status=HTTPStatus.CREATED)
                     return
 
+                if path == "/api/morphology/avatars":
+                    if not user:
+                        self._send_json({"error": "Authentication required"}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    res = create_avatar(
+                        db,
+                        case_id=body.get("case_id", ""),
+                        title=body.get("title", ""),
+                        height_cm=float(body.get("height_cm", 170.0)),
+                        weight_kg=float(body["weight_kg"]) if body.get("weight_kg") is not None else None,
+                        chest_circ_cm=float(body["chest_circ_cm"]) if body.get("chest_circ_cm") is not None else None,
+                        waist_circ_cm=float(body["waist_circ_cm"]) if body.get("waist_circ_cm") is not None else None,
+                        hip_circ_cm=float(body["hip_circ_cm"]) if body.get("hip_circ_cm") is not None else None,
+                        extra_params=body.get("extra_params"),
+                        photo_front=body.get("photo_front", ""),
+                        photo_side=body.get("photo_side", ""),
+                        photo_back=body.get("photo_back", ""),
+                        notes=body.get("notes", ""),
+                    )
+                    self._send_json({"status": "created", "avatar": res}, status=HTTPStatus.CREATED)
+                    return
+
+                if path == "/api/morphology/observations":
+                    if not user:
+                        self._send_json({"error": "Authentication required"}, status=HTTPStatus.UNAUTHORIZED)
+                        return
+                    res = record_morphology_observation(
+                        db,
+                        avatar_id=body.get("avatar_id", ""),
+                        case_id=body.get("case_id", ""),
+                        visit_id=body.get("visit_id"),
+                        body_region=body.get("body_region", ""),
+                        observation_type=body.get("observation_type", "circumference_delta"),
+                        severity=body.get("severity"),
+                        findings_summary=body.get("findings_summary", ""),
+                        operator_notes=body.get("operator_notes", ""),
+                    )
+                    self._send_json({"status": "created", "observation": res}, status=HTTPStatus.CREATED)
+                    return
+
                 if path == "/api/auth/verify-reviewer":
                     if not user:
                         self._send_json({"error": "Authentication required. Admin privileges required."}, status=HTTPStatus.UNAUTHORIZED)
@@ -1181,6 +1245,13 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     study_id = parts[4]
                     res = update_landmarks(db, study_id, body.get("landmarks", []))
                     self._send_json({"status": "updated", "study": res})
+                    return
+
+                if path.startswith("/api/morphology/avatars/"):
+                    parts = path.split("/")
+                    avatar_id = parts[4]
+                    res = update_avatar_params(db, avatar_id, body.get("params", {}), notes=body.get("notes"))
+                    self._send_json({"status": "updated", "avatar": res})
                     return
 
                 if path.startswith("/api/points/"):
