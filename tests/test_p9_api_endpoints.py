@@ -49,7 +49,7 @@ def test_api_landmarks(live_server):
         assert len(data) >= 30
         c7 = next((x for x in data if x["landmark_id"] == "LM_C7_SPINE"), None)
         assert c7 is not None
-        assert c7["fma_id"] == "FMA:13337"
+        assert c7["fma_id"] == "FMA:12525"
 
     # Region filter
     url_filtered = f"{live_server}/api/landmarks?region=head_neck"

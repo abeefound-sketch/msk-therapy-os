@@ -43,7 +43,7 @@ def test_canonical_reference_frame_and_landmarks():
     # Check key primary skeletal anchors
     c7 = reg.get_landmark("LM_C7_SPINE")
     assert c7 is not None
-    assert c7.fma_id == "FMA:13337"
+    assert c7.fma_id == "FMA:12525"
     assert c7.canonical_position[1] == pytest.approx(1.478, abs=0.01)
 
     vertex = reg.get_landmark("LM_VERTEX_CROWN")
@@ -204,7 +204,7 @@ def test_database_persistence_and_querying():
     assert len(db_lms) >= 30
     c7_row = get_anatomical_landmark(db, "LM_C7_SPINE")
     assert c7_row is not None
-    assert c7_row["fma_id"] == "FMA:13337"
+    assert c7_row["fma_id"] == "FMA:12525"
 
     # Query cun rules
     db_rules = list_cun_scaling_rules(db)

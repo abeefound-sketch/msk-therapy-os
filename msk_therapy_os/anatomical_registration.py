@@ -212,10 +212,6 @@ def svd_3x3(h: List[List[float]]) -> Tuple[List[List[float]], List[float], List[
         for i in range(3):
             u[i][2] = u_col2[i]
 
-    if mat3_det(u) < 0:
-        for i in range(3):
-            u[i][2] = -u[i][2]
-
     vt = mat3_transpose(v)
     return u, singular_values, vt
 

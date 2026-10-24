@@ -194,13 +194,21 @@ WHO_BONE_SEGMENTS: Dict[str, BoneProportionalSegment] = {
 
 @dataclass
 class RegionalCunMetric:
-    """Calculated physical metric for 1 B-cun within an anatomical segment."""
+    """Calculated physical metric for 1 B-cun within an anatomical segment.
+
+    Attributes:
+        deviation_from_global_pct: Percent difference relative to global stature average (Height / 75).
+            Formula: ((mm_per_cun - global_mean) / global_mean) * 100
+        ratio_vs_forearm_pct: Percent difference relative to standard forearm B-cun baseline (~20.3mm).
+            Formula: ((mm_per_cun - forearm_cun) / forearm_cun) * 100
+    """
     segment_id: str
     segment_length_mm: float
     standard_units: float
     mm_per_cun: float
     deviation_from_global_pct: float
     who_reference: str
+    ratio_vs_forearm_pct: float = 0.0
 
 
 class CunScalingEngine:
@@ -248,6 +256,15 @@ class CunScalingEngine:
                 deviation_from_global_pct=round(dev_pct, 2),
                 who_reference=seg.who_reference,
             )
+
+        # Compute pairwise ratio relative to forearm B-cun baseline (~20.34mm)
+        forearm_metric = metrics.get("SEG_FOREARM_ELBOW_TO_WRIST_R")
+        forearm_base_mm = forearm_metric.mm_per_cun if forearm_metric else 20.34
+
+        for seg_id, metric in metrics.items():
+            if forearm_base_mm > 0:
+                ratio_pct = ((metric.mm_per_cun - forearm_base_mm) / forearm_base_mm) * 100.0
+                metric.ratio_vs_forearm_pct = round(ratio_pct, 2)
 
         return metrics
 
