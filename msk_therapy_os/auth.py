@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import os
+import sys
 import re
 import secrets
 import sqlite3
@@ -97,6 +98,12 @@ def init_auth_tables(db: sqlite3.Connection) -> None:
             expires_epoch REAL NOT NULL,
             last_seen_utc TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
         );
+
+        CREATE TABLE IF NOT EXISTS system_bootstrap (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            admin_username TEXT NOT NULL,
+            created_utc TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
+        );
         """
     )
     db.commit()
@@ -109,6 +116,18 @@ DEFAULT_USER_HASHES: Dict[str, str] = {
     "faculty123": "pbkdf2:sha256:100000$f5f61e9c8b91a49bfc2ec7bd14d9698d$8401c383211d682ce3d98e4dafbec50c38a6e394b7ae6a9552eec5db973abc9a",
     "student123": "pbkdf2:sha256:100000$287dbb1502a1dbb75bd61f85540c08c2$dce28b03055c98a755e0241564deae6f9d1290b9dc19be1e17746548a8dffe5e",
 }
+
+
+def get_active_admin_count(db: sqlite3.Connection) -> int:
+    """Return count of administrators who are active and not locked."""
+    init_auth_tables(db)
+    row = db.execute(
+        """SELECT COUNT(*) FROM users 
+           WHERE role = 'admin' 
+             AND is_active = 1 
+             AND password_hash NOT LIKE 'LOCKED_%'"""
+    ).fetchone()
+    return row[0] if row else 0
 
 
 def get_user_count(db: sqlite3.Connection) -> int:
@@ -173,53 +192,229 @@ def bootstrap_initial_admin(
     username: str,
     password: str,
     display_name: str = "Root Administrator",
+    allow_claim_if_all_admins_locked: bool = False,
 ) -> Dict[str, Any]:
     """Secure bootstrap: initialize the first administrative account on a clean system.
 
-    Guarded by an atomic transaction and thread lock to prevent race conditions.
+    Guarded by atomic BEGIN IMMEDIATE transaction, system_bootstrap primary key constraint,
+    and thread lock to prevent both multi-threaded and multi-process race conditions.
     """
+    u = username.strip().lower()
+    if not u or len(u) < 3 or not re.match(r"^[a-z0-9_\-]+$", u):
+        raise ValueError("Username must be at least 3 characters and contain only alphanumeric characters, underscores, or hyphens.")
+
+    if not display_name or not display_name.strip():
+        raise ValueError("display_name cannot be empty.")
+
+    if not password or len(password) < 8:
+        raise ValueError("Password must be at least 8 characters long.")
+
+    if is_secure_mode() and password.lower() in DISALLOWED_DEFAULT_PASSWORDS:
+        raise ValueError("In SECURE mode, default or trivial passwords are strictly prohibited.")
+
+    p_hash = hash_password(password)
+    user_id = f"USR-ADMIN-{secrets.token_hex(4).upper()}"
+
     with BOOTSTRAP_LOCK:
         init_auth_tables(db)
-        with db:
+        if db.in_transaction:
+            db.rollback()
+        orig_isolation = db.isolation_level
+        db.isolation_level = None
+        try:
+            try:
+                db.execute("BEGIN IMMEDIATE")
+            except sqlite3.OperationalError as e:
+                raise PermissionError(f"Bootstrap lock acquisition failed: database is locked ({e})") from e
+
             row = db.execute("SELECT COUNT(*) FROM users").fetchone()
             count = row[0] if row else 0
-            if count > 0:
-                raise PermissionError("Bootstrap refused: System has already been initialized with existing users.")
+            boot_row = db.execute("SELECT admin_username FROM system_bootstrap WHERE id = 1").fetchone()
 
-            return create_user(
-                db,
-                username=username,
-                password=password,
-                role="admin",
-                display_name=display_name,
+            if count > 0 or boot_row:
+                if allow_claim_if_all_admins_locked:
+                    active_admins = db.execute(
+                        "SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1 AND password_hash NOT LIKE 'LOCKED_%'"
+                    ).fetchone()[0]
+                    if active_admins > 0:
+                        db.execute("ROLLBACK")
+                        raise PermissionError("Bootstrap refused: System has active administrator accounts.")
+                    existing_user = db.execute("SELECT user_id, role FROM users WHERE username = ?", (u,)).fetchone()
+                    if existing_user and existing_user[1] == "admin":
+                        db.execute("UPDATE users SET password_hash = ?, is_active = 1 WHERE user_id = ?", (p_hash, existing_user[0]))
+                        db.execute(
+                            "INSERT OR REPLACE INTO system_bootstrap (id, admin_username, created_utc) VALUES (1, ?, strftime('%Y-%m-%dT%H:%M:%SZ','now'))",
+                            (u,)
+                        )
+                        db.execute("COMMIT")
+                        return {
+                            "user_id": existing_user[0],
+                            "username": u,
+                            "role": "admin",
+                            "display_name": display_name.strip(),
+                            "is_active": 1,
+                        }
+                    else:
+                        db.execute("ROLLBACK")
+                        raise PermissionError(f"Admin account '{u}' not found to claim.")
+                else:
+                    db.execute("ROLLBACK")
+                    raise PermissionError("Bootstrap refused: System has already been initialized with existing users.")
+
+            # Atomically insert into system_bootstrap first.
+            # SQLite's id=1 PRIMARY KEY CHECK constraint guarantees physical mutual exclusion across OS processes.
+            try:
+                db.execute(
+                    "INSERT INTO system_bootstrap (id, admin_username, created_utc) VALUES (1, ?, strftime('%Y-%m-%dT%H:%M:%SZ','now'))",
+                    (u,)
+                )
+            except sqlite3.IntegrityError as e:
+                db.execute("ROLLBACK")
+                raise PermissionError("Bootstrap refused: System has already been initialized with existing users.") from e
+
+            db.execute(
+                """INSERT INTO users (user_id, username, password_hash, role, display_name, is_active)
+                   VALUES (?, ?, ?, 'admin', ?, 1)""",
+                (user_id, u, p_hash, display_name.strip()),
             )
+            db.execute("COMMIT")
+
+            return {
+                "user_id": user_id,
+                "username": u,
+                "role": "admin",
+                "display_name": display_name.strip(),
+                "is_active": 1,
+            }
+        except Exception:
+            try:
+                db.execute("ROLLBACK")
+            except Exception:
+                pass
+            raise
+        finally:
+            db.isolation_level = orig_isolation
+
+
+def recover_admin_account(
+    db: sqlite3.Connection,
+    *,
+    username: str,
+    new_password: str,
+    reason: str,
+    operator: str = "cli_admin",
+) -> Dict[str, Any]:
+    """Securely recover or claim an administrator account on a migrated or locked database.
+
+    Verifies user existence and role, validates password complexity, updates password atomically
+    via BEGIN IMMEDIATE, and audits the recovery event to 4incidents/incident_log.md without leaking secrets.
+    """
+    init_auth_tables(db)
+    u = username.strip().lower()
+    if not u:
+        raise ValueError("Username cannot be empty.")
+
+    if not reason or not reason.strip():
+        raise ValueError("Administrative recovery requires a non-empty justification reason.")
+
+    if not new_password or len(new_password) < 8:
+        raise ValueError("New password must be at least 8 characters long.")
+
+    if is_secure_mode() and new_password.lower() in DISALLOWED_DEFAULT_PASSWORDS:
+        raise ValueError("Cannot reset administrator to a disallowed default or trivial password.")
+
+    orig_isolation = db.isolation_level
+    db.isolation_level = None
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        cursor = db.cursor()
+        row = cursor.execute("SELECT user_id, username, role, display_name FROM users WHERE username = ?", (u,)).fetchone()
+        if not row:
+            db.execute("ROLLBACK")
+            raise ValueError(f"User '{u}' was not found in database.")
+
+        user_id, uname, role, dname = row
+        if role != "admin":
+            db.execute("ROLLBACK")
+            raise PermissionError(f"User '{u}' has role '{role}', not 'admin'. Only administrator accounts can be recovered via this procedure.")
+
+        new_hash = hash_password(new_password)
+        cursor.execute("UPDATE users SET password_hash = ?, is_active = 1 WHERE user_id = ?", (new_hash, user_id))
+        db.execute("COMMIT")
+
+        # Record incident in incident_log.md
+        try:
+            incident_log = Path("4incidents/incident_log.md")
+            if incident_log.exists():
+                entry = (
+                    f"\n### [ADMIN_RECOVERY] - {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}\n"
+                    f"- **Operator:** {operator}\n"
+                    f"- **Target Account:** {u} ({user_id})\n"
+                    f"- **Action:** Administrative password recovery and account unlock\n"
+                    f"- **Reason:** {reason.strip()}\n"
+                )
+                with open(incident_log, "a", encoding="utf-8") as f:
+                    f.write(entry)
+        except Exception:
+            pass
+
+        return {
+            "status": "ADMIN_RECOVERED",
+            "user_id": user_id,
+            "username": u,
+            "display_name": dname,
+            "is_active": 1,
+            "reason": reason.strip(),
+        }
+    except Exception:
+        try:
+            db.execute("ROLLBACK")
+        except Exception:
+            pass
+        raise
+    finally:
+        db.isolation_level = orig_isolation
 
 
 def migrate_legacy_db_to_secure_mode(
     db: sqlite3.Connection,
     *,
     deactivate_demo_users: bool = False,
+    claim_admin_username: Optional[str] = None,
+    new_admin_password: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Safely migrate a legacy database to SECURE mode by locking all default public credentials.
 
     Ensures that default demo credentials cannot be exploited while fully preserving
     user records, clinical reviewers, and historical audit linkage across visits,
     SOAP approvals, and observations.
+
+    If claim_admin_username and new_admin_password are provided, updates that administrator
+    with the new secure password during migration, preventing administrative lockout.
     """
     init_auth_tables(db)
-    cursor = db.cursor()
-    default_hashes = list(DEFAULT_USER_HASHES.values())
-    placeholders = ",".join("?" for _ in default_hashes)
+    orig_isolation = db.isolation_level
+    db.isolation_level = None
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        cursor = db.cursor()
+        default_hashes = list(DEFAULT_USER_HASHES.values())
+        placeholders = ",".join("?" for _ in default_hashes)
 
-    rows = cursor.execute(
-        f"SELECT user_id, username, role, display_name FROM users WHERE password_hash IN ({placeholders})",
-        default_hashes
-    ).fetchall()
+        rows = cursor.execute(
+            f"SELECT user_id, username, role, display_name FROM users WHERE password_hash IN ({placeholders})",
+            default_hashes
+        ).fetchall()
 
-    migrated_users = []
-    with db:
+        migrated_users = []
         for uid, uname, role, dname in rows:
-            if deactivate_demo_users:
+            if claim_admin_username and uname.lower() == claim_admin_username.lower() and new_admin_password:
+                if len(new_admin_password) < 8 or new_admin_password.lower() in DISALLOWED_DEFAULT_PASSWORDS:
+                    raise ValueError("New admin password must be at least 8 chars and not a disallowed default password.")
+                new_hash = hash_password(new_admin_password)
+                cursor.execute("UPDATE users SET password_hash = ?, is_active = 1 WHERE user_id = ?", (new_hash, uid))
+                action = "password_updated_to_secure"
+            elif deactivate_demo_users:
                 cursor.execute("UPDATE users SET is_active = 0 WHERE user_id = ?", (uid,))
                 action = "deactivated"
             else:
@@ -233,11 +428,24 @@ def migrate_legacy_db_to_secure_mode(
                 "display_name": dname,
                 "action": action,
             })
-    return {
-        "status": "MIGRATED_TO_SECURE",
-        "migrated_count": len(migrated_users),
-        "users": migrated_users,
-    }
+        cursor.execute(
+            "INSERT OR REPLACE INTO system_bootstrap (id, admin_username, created_utc) VALUES (1, ?, strftime('%Y-%m-%dT%H:%M:%SZ','now'))",
+            (claim_admin_username or "legacy_migration",)
+        )
+        db.execute("COMMIT")
+        return {
+            "status": "MIGRATED_TO_SECURE",
+            "migrated_count": len(migrated_users),
+            "users": migrated_users,
+        }
+    except Exception:
+        try:
+            db.execute("ROLLBACK")
+        except Exception:
+            pass
+        raise
+    finally:
+        db.isolation_level = orig_isolation
 
 
 def seed_default_users(db: sqlite3.Connection, force: bool = False) -> None:

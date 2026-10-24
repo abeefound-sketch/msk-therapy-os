@@ -352,73 +352,71 @@ def run_full_acceptance_and_stress_drill():
         print(f"    Effective FPS: {frame_metrics['effective_fps']} FPS (Mean: {frame_metrics['mean_frame_time_ms']}ms, P95: {frame_metrics['p95_frame_time_ms']}ms)")
 
         # ---------------------------------------------------------------------
-        # Stress Test: 10 Cycles Rapid Tab Switching across all 11 tabs (110 transitions)
+        # Stress Test: 3 Multi-round Cycles with Idle Cooldown across 11 tabs (165 transitions)
         # ---------------------------------------------------------------------
-        print("[*] Executing Stress Test: 10 Cycles of rapid tab switching (110 transitions)...")
+        print("[*] Executing Stress Test: 3 Cycles of 55 rapid tab switches with idle cooldown (165 total transitions)...")
         tab_buttons = page.locator(".tab-btn")
         tab_count = tab_buttons.count()
         tab_switch_start = time.perf_counter()
 
-        for cycle in range(10):
-            for i in range(tab_count):
-                tab_buttons.nth(i).click()
-                page.wait_for_timeout(30)
-            if cycle == 4:
-                # Round 2: mid-stress test
-                mem_r2 = get_chromium_process_tree_memory()
-                cdp_r2 = cdp.send("Performance.getMetrics")["metrics"]
-                js_r2 = next((m["value"] for m in cdp_r2 if m["name"] == "JSHeapUsedSize"), 0)
-                rounds_telemetry.append({
-                    "round": 2,
-                    "stage": "mid_stress_50_switches",
-                    "process_tree": mem_r2,
-                    "js_heap_used_mb": round(js_r2 / (1024 * 1024), 2),
-                })
+        for cycle in range(1, 4):
+            print(f"[*] Cycle {cycle}/3: Executing 55 rapid tab switches...")
+            for sub in range(5):
+                for i in range(tab_count):
+                    tab_buttons.nth(i).click()
+                    page.wait_for_timeout(25)
+
+            # Return to Atlas tab and idle cooldown
+            page.locator('.tab-btn[data-tab="tab-bodymap"]').click()
+            page.wait_for_timeout(600)
+
+            # Sample telemetry at cycle cooldown
+            mem_c = get_chromium_process_tree_memory()
+            cdp_c = cdp.send("Performance.getMetrics")["metrics"]
+            js_c = next((m["value"] for m in cdp_c if m["name"] == "JSHeapUsedSize"), 0)
+            rounds_telemetry.append({
+                "round": 1 + cycle,
+                "stage": f"cycle_{cycle}_cooldown_post_{cycle * 55}_switches",
+                "process_tree": mem_c,
+                "js_heap_used_mb": round(js_c / (1024 * 1024), 2),
+            })
+            print(f"    Cycle {cycle} Cooldown Telemetry: Total RSS={mem_c['total_working_set_rss_mb']} MB, JS Heap={round(js_c / (1024 * 1024), 2)} MB")
 
         tab_switch_elapsed = round(time.perf_counter() - tab_switch_start, 2)
-        print(f"[+] Completed 110 tab switches in {tab_switch_elapsed}s (avg {round(tab_switch_elapsed / (10 * tab_count) * 1000, 1)}ms/switch)")
-
-        # Return to Atlas tab
-        page.locator('.tab-btn[data-tab="tab-bodymap"]').click()
-        page.wait_for_timeout(500)
-
-        # Round 3: Post tab switching stress test
-        mem_r3 = get_chromium_process_tree_memory()
-        cdp_r3 = cdp.send("Performance.getMetrics")["metrics"]
-        js_r3 = next((m["value"] for m in cdp_r3 if m["name"] == "JSHeapUsedSize"), 0)
-        rounds_telemetry.append({
-            "round": 3,
-            "stage": "post_stress_110_switches",
-            "process_tree": mem_r3,
-            "js_heap_used_mb": round(js_r3 / (1024 * 1024), 2),
-        })
+        print(f"[+] Completed 165 tab switches in {tab_switch_elapsed}s (avg {round(tab_switch_elapsed / (3 * 5 * tab_count) * 1000, 1)}ms/switch)")
 
         # Multi-round Slope Calculation:
-        # Separate cold-start asset loading (Round 0 -> 1) from steady-state runtime stress (Round 1 -> 3)
+        # Separate cold-start asset loading (Round 0 -> 1) from steady-state runtime stress (Cycle 1 -> Cycle 3)
         rss_values = [r["process_tree"]["total_working_set_rss_mb"] for r in rounds_telemetry]
         js_values = [r["js_heap_used_mb"] for r in rounds_telemetry]
-        
+
         # Cold start asset allocation
         cold_start_rss_delta = round(rss_values[1] - rss_values[0], 2)
-        
-        # Steady-state stress slope across 110 tab switches (Round 1 -> Round 2 -> Round 3)
-        stress_stages = len(rss_values[1:]) - 1
-        steady_state_rss_slope = round((rss_values[-1] - rss_values[1]) / max(stress_stages, 1), 2)
-        steady_state_js_slope = round((js_values[-1] - js_values[1]) / max(stress_stages, 1), 2)
+
+        # Steady-state multi-cycle slope between Cycle 1 (round index 2) and Cycle 3 (round index 4)
+        cycle_1_rss = rss_values[2]
+        cycle_3_rss = rss_values[4]
+        cumulative_creep_mb = round(cycle_3_rss - cycle_1_rss, 2)
+        steady_state_rss_slope = round((cycle_3_rss - cycle_1_rss) / 2.0, 2)
+        steady_state_js_slope = round((js_values[4] - js_values[2]) / 2.0, 2)
 
         report["p1_performance_stress"]["memory_rounds"] = rounds_telemetry
         report["p1_performance_stress"]["memory_forensics"] = {
             "cold_start_process_tree": rounds_telemetry[0]["process_tree"],
             "steady_state_baseline_process_tree": rounds_telemetry[1]["process_tree"],
-            "final_process_tree": rounds_telemetry[-1]["process_tree"],
+            "cycle_1_cooldown_process_tree": rounds_telemetry[2]["process_tree"],
+            "cycle_2_cooldown_process_tree": rounds_telemetry[3]["process_tree"],
+            "final_process_tree": rounds_telemetry[4]["process_tree"],
             "cold_start_allocation_mb": cold_start_rss_delta,
             "js_heap_baseline_mb": rounds_telemetry[1]["js_heap_used_mb"],
             "js_heap_final_mb": rounds_telemetry[-1]["js_heap_used_mb"],
+            "cumulative_creep_mb": cumulative_creep_mb,
             "steady_state_rss_slope_mb_per_stage": steady_state_rss_slope,
             "steady_state_js_slope_mb_per_stage": steady_state_js_slope,
-            "leak_detected": steady_state_rss_slope > 30.0 or steady_state_js_slope > 20.0,
+            "leak_detected": cumulative_creep_mb > 35.0 or steady_state_js_slope > 20.0,
         }
-        print(f"    Chromium Process Tree RSS: Cold Start={rounds_telemetry[0]['process_tree']['total_working_set_rss_mb']} MB -> Steady State={rounds_telemetry[1]['process_tree']['total_working_set_rss_mb']} MB -> Post Stress={rounds_telemetry[-1]['process_tree']['total_working_set_rss_mb']} MB (Steady Slope: {steady_state_rss_slope} MB/stage)")
+        print(f"    Chromium Process Tree RSS: Cold Start={rounds_telemetry[0]['process_tree']['total_working_set_rss_mb']} MB -> Baseline={rounds_telemetry[1]['process_tree']['total_working_set_rss_mb']} MB -> Cycle 1={rss_values[2]} MB -> Cycle 2={rss_values[3]} MB -> Cycle 3={rss_values[4]} MB")
+        print(f"    Cumulative Stress Creep (Cycle 1 -> Cycle 3): {cumulative_creep_mb} MB (Slope: {steady_state_rss_slope} MB/cycle)")
         print(f"    Chromium GPU Process RSS:  {rounds_telemetry[0]['process_tree']['by_type']['gpu-process']} MB -> {rounds_telemetry[-1]['process_tree']['by_type']['gpu-process']} MB")
         print(f"    Chromium Renderer RSS:     {rounds_telemetry[0]['process_tree']['by_type']['renderer']} MB -> {rounds_telemetry[-1]['process_tree']['by_type']['renderer']} MB")
 

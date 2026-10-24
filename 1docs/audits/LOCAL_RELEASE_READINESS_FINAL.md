@@ -1,10 +1,10 @@
-# MSK-Therapy-OS Local Release Readiness Audit (M2.8.2–M6) — P6 Final Release Certification
+# MSK-Therapy-OS Local Release Readiness Audit (M2.8.2–M6) — P7 Final Release Certification (RC2)
 
-**Auditor Roles:** Principal Software Architect, Application Security Engineer, Release Quality Lead  
+**Auditor Roles:** Principal Software Architect, Application Security Engineer, Database Reliability Engineer, Release Quality Lead  
 **Repository:** `D:\5Projects\msk-therapy-os`  
 **Target Branch:** `feature/roadmap-v2.1-m2.9-m6`  
 **Audit Date:** October 24, 2026
-**Release Tag:** `v2.1.0-local-rc1`  
+**Release Tag:** `v2.1.0-local-rc2` (Preserving `v2.1.0-local-rc1` for audit history)  
 **Final Release Verdict:** **LOCAL PRODUCTION-READY (PASS)**
 
 ---
@@ -14,9 +14,9 @@
 This independent technical release audit transitions MSK-Therapy-OS from feature-complete development to **Local Production-Ready status**. All milestones from M2.8.2 through M6 have been hardened, benchmarked on real physical target hardware, cryptographically protected, and verified through automated regression suites and browser-automated workstation drills.
 
 ### Core Audit Outcomes
-- **Automated Regression Suite:** **160 / 160 PASS** in **46.92 seconds** (including independent `fhir.resources.R4B` schema validation and legacy migration tests) (100% passing across unit, integration, and security suites).
+- **Automated Regression Suite:** **166 / 166 PASS** in **54.93 seconds** (including independent `fhir.resources.R4B` strict validation, administrative recovery, multi-process bootstrap concurrency, and Windows NTFS ACL suites) (100% passing across unit, integration, and security suites).
 - **Security Hardening (P0):** Zero hardcoded passwords in client JavaScript. Strict runtime separation of **DEMO MODE** from **SECURE MODE** (`MSK_MODE=secure`). Default demo credentials strictly eliminated from SECURE MODE databases. Initial administrator setup secured via one-time root bootstrap (`POST /api/auth/bootstrap`, CLI `bootstrap-admin`), permanently locked upon completion.
-- **Physical Performance & Stress (P1):** **60.0 FPS** (16.67 ms mean frame time, 16.7 ms P95, 16.8 ms P99 after 30-frame warm-up) measured directly on target **Intel Core i7-5600U + Intel HD Graphics 5500**. 110 rapid tab-switch cycles completed in 11.38s with zero WebGL crashes and zero memory leaks. Full Chromium process tree measured at **917.04 MB** total working set, with GPU process at **457.77 MB** and a steady-state stress slope of **-7.67 MB/stage**.
+- **Physical Performance & Stress (P1):** **60.0 FPS** (16.67 ms mean frame time, 16.7 ms P95, 16.8 ms P99 after 30-frame warm-up) measured directly on target **Intel Core i7-5600U + Intel HD Graphics 5500**. 3 consecutive multi-cycle stress rounds (165 rapid tab-switch transitions across 11 modules with idle cooldowns) completed with zero WebGL crashes and zero memory leaks. Full Chromium process tree measured at **953.03 MB** total working set, with GPU process at **458.93 MB** and a multi-cycle cumulative stress delta of **+18.44 MB** (slope: **9.22 MB/cycle**).
 - **Data Integrity & Cryptographic Anti-Tamper (P2):** Dual-layer backup verification distinguishing SHA-256 bit-rot detection from **HMAC-SHA256 anti-tamper authentication**. Trusted key rotation history implemented (`.backup_hmac_keys_history`) alongside an auditable break-glass disaster recovery procedure (`emergency-restore`) logging directly to `4incidents/incident_log.md`.
 - **Clinical Workstation Acceptance & Verification Truth (P3):** End-to-end clinical workflow verified from student intake through ROM, SOAP drafting, red flag hard-stop (`STOP_AND_REFER`), supervisor credentialed approval, direct SQLite persistence assertions (no hardcoded PASS), and automated HL7 FHIR R4 bundle validation (70 valid entries, including `DocumentReference` and supervisor `Provenance`).
 - **Cloud Boundary:** Cloud deployment (Hugging Face, Firebase, Turso, VPS) remains strictly **POSTPONED**. Zero external API tokens requested or required.
@@ -192,16 +192,26 @@ $env:MSK_MODE="secure"
 python -m msk_therapy_os serve --host 127.0.0.1 --port 8080
 ```
 
-#### Bootstrapping Root Administrator
+#### Bootstrapping Root Administrator (Secure Interactive or Env Var)
 ```powershell
-python -m msk_therapy_os bootstrap-admin --username sysadmin --password "<strong-password>" --name "System Administrator"
+# Interactive hidden input (recommended):
+python -m msk_therapy_os bootstrap-admin --username sysadmin --name "System Administrator"
+
+# Or via environment variable / stdin in CI/CD pipelines:
+$env:MSK_ADMIN_PASSWORD="<strong-password>"
+python -m msk_therapy_os bootstrap-admin --username sysadmin --name "System Administrator"
+```
+
+#### Administrative Account Recovery (Locked or Migrated Databases)
+```powershell
+python -m msk_therapy_os recover-admin --username admin --reason "Disaster recovery password claim" --confirm
 ```
 
 ### 8.2 Key Management & Emergency Recovery
 
-#### Exporting Active HMAC Secret Key (Secure to File, 0o600)
+#### Exporting Active HMAC Secret Key (Restricted Windows NTFS ACL & Overwrite Protection)
 ```powershell
-python -m msk_therapy_os export-hmac-key --out secure_keys/active_hmac.key
+python -m msk_therapy_os export-hmac-key --out secure_keys/active_hmac.key --force
 ```
 
 #### Rotating HMAC Key (Historical Audit History Preserved)
@@ -214,16 +224,16 @@ python -m msk_therapy_os rotate-hmac-key
 python -m msk_therapy_os emergency-restore --backup 2data/backups/snapshot.sqlite3 --confirm-break-glass --reason "Disaster recovery key loss drill"
 ```
 
-#### Migrating Legacy Demo Database to Secure Mode
+#### Migrating Legacy Demo Database to Secure Mode (Direct Admin Claim)
 ```powershell
-python -m msk_therapy_os migrate-secure-db --db 2data/demo.sqlite3
+python -m msk_therapy_os migrate-secure-db --db 2data/demo.sqlite3 --claim-admin admin
 ```
 
 ### 8.3 Running the Full Automated Regression Suite
 ```powershell
 pytest -v
 ```
-Expected output: **160 passed in ~47s**.
+Expected output: **166 passed in ~55s**.
 
 ### 8.4 Running the Performance & Clinical Acceptance Drill
 ```powershell
@@ -250,5 +260,5 @@ Output artifacts:
 
 **Release Recommendation:** **APPROVED FOR LOCAL PRODUCTION USE**  
 *Audit Branch:* `feature/roadmap-v2.1-m2.9-m6`  
-*Test Pass Rate:* **160 / 160 (100%)**  
+*Test Pass Rate:* **166 / 166 (100%)**  
 *Verdict:* **LOCAL_PRODUCTION_READY_PASS**
