@@ -248,6 +248,7 @@ def init_points_tables(db: sqlite3.Connection) -> None:
         )
 
     migrate_governance_schema(db)
+    migrate_anatomical_registration_schema(db)
     try:
         from msk_therapy_os.auth import init_auth_tables
         init_auth_tables(db)
@@ -1205,6 +1206,153 @@ def migrate_governance_schema(db: sqlite3.Connection) -> None:
 
     db.commit()
 
+
+
+
+def migrate_anatomical_registration_schema(db: sqlite3.Connection) -> None:
+    """Initialize and migrate tables for anatomical landmarks, registration metrics, and B-cun rules."""
+    cursor = db.cursor()
+    cursor.executescript("""
+        CREATE TABLE IF NOT EXISTS anatomical_landmarks (
+            landmark_id TEXT PRIMARY KEY,
+            name_en TEXT NOT NULL,
+            name_zh TEXT,
+            name_vi TEXT,
+            landmark_type TEXT NOT NULL,
+            region TEXT NOT NULL,
+            canonical_x REAL NOT NULL,
+            canonical_y REAL NOT NULL,
+            canonical_z REAL NOT NULL,
+            fma_id TEXT NOT NULL,
+            skeletal_anchor TEXT NOT NULL,
+            tolerance_radius_mm REAL NOT NULL,
+            clinical_uncertainty_mm REAL NOT NULL,
+            verification_status TEXT NOT NULL,
+            description TEXT,
+            created_utc TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS landmark_registration_metrics (
+            metric_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source_name TEXT NOT NULL,
+            region TEXT NOT NULL,
+            rms_error_mm REAL NOT NULL,
+            max_error_mm REAL NOT NULL,
+            rotation_matrix_json TEXT NOT NULL,
+            translation_vector_json TEXT NOT NULL,
+            scale REAL NOT NULL DEFAULT 1.0,
+            status TEXT NOT NULL,
+            rejection_reason TEXT,
+            registered_at_utc TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS cun_scaling_rules (
+            segment_id TEXT PRIMARY KEY,
+            name_en TEXT NOT NULL,
+            name_zh TEXT,
+            region TEXT NOT NULL,
+            axis TEXT NOT NULL,
+            standard_bcun_units REAL NOT NULL,
+            start_landmark_id TEXT NOT NULL,
+            end_landmark_id TEXT NOT NULL,
+            who_reference TEXT NOT NULL,
+            notes TEXT
+        );
+    """)
+
+    # Seed canonical landmarks
+    try:
+        from msk_therapy_os.landmark_registry import CANONICAL_LANDMARKS
+        for lm in CANONICAL_LANDMARKS.values():
+            cursor.execute("""
+                INSERT OR IGNORE INTO anatomical_landmarks
+                (landmark_id, name_en, name_zh, name_vi, landmark_type, region,
+                 canonical_x, canonical_y, canonical_z, fma_id, skeletal_anchor,
+                 tolerance_radius_mm, clinical_uncertainty_mm, verification_status, description)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                lm.landmark_id, lm.name_en, lm.name_zh, lm.name_vi, lm.landmark_type.value, lm.region.value,
+                lm.canonical_position[0], lm.canonical_position[1], lm.canonical_position[2],
+                lm.fma_id, lm.skeletal_anchor, lm.tolerance_radius_mm, lm.clinical_uncertainty_mm,
+                lm.verification_status, lm.description
+            ))
+    except Exception:
+        pass
+
+    # Seed WHO B-cun scaling segments
+    try:
+        from msk_therapy_os.cun_scaling import WHO_BONE_SEGMENTS
+        for seg in WHO_BONE_SEGMENTS.values():
+            cursor.execute("""
+                INSERT OR IGNORE INTO cun_scaling_rules
+                (segment_id, name_en, name_zh, region, axis, standard_bcun_units,
+                 start_landmark_id, end_landmark_id, who_reference, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                seg.segment_id, seg.name_en, seg.name_zh, seg.region.value, seg.axis.value,
+                seg.standard_bcun_units, seg.start_landmark_id, seg.end_landmark_id,
+                seg.who_reference, seg.notes
+            ))
+    except Exception:
+        pass
+
+    db.commit()
+
+
+def list_anatomical_landmarks(db: sqlite3.Connection, region: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Query registered anatomical landmarks with optional region filter."""
+    cursor = db.cursor()
+    if region:
+        cursor.execute("SELECT * FROM anatomical_landmarks WHERE region = ? ORDER BY landmark_id ASC", (region,))
+    else:
+        cursor.execute("SELECT * FROM anatomical_landmarks ORDER BY landmark_id ASC")
+    cols = [col[0] for col in cursor.description]
+    return [dict(zip(cols, row)) for row in cursor.fetchall()]
+
+
+def get_anatomical_landmark(db: sqlite3.Connection, landmark_id: str) -> Optional[Dict[str, Any]]:
+    """Retrieve single landmark record by ID."""
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM anatomical_landmarks WHERE landmark_id = ?", (landmark_id,))
+    row = cursor.fetchone()
+    if not row:
+        return None
+    cols = [col[0] for col in cursor.description]
+    return dict(zip(cols, row))
+
+
+def list_cun_scaling_rules(db: sqlite3.Connection, region: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Query registered WHO B-cun proportional segment rules."""
+    cursor = db.cursor()
+    if region:
+        cursor.execute("SELECT * FROM cun_scaling_rules WHERE region = ? ORDER BY segment_id ASC", (region,))
+    else:
+        cursor.execute("SELECT * FROM cun_scaling_rules ORDER BY segment_id ASC")
+    cols = [col[0] for col in cursor.description]
+    return [dict(zip(cols, row)) for row in cursor.fetchall()]
+
+
+def record_registration_metric(db: sqlite3.Connection, metric_data: Dict[str, Any]) -> int:
+    """Store audit record of landmark registration transform and residual error."""
+    cursor = db.cursor()
+    cursor.execute("""
+        INSERT INTO landmark_registration_metrics
+        (source_name, region, rms_error_mm, max_error_mm, rotation_matrix_json,
+         translation_vector_json, scale, status, rejection_reason)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        metric_data["source_name"],
+        metric_data["region"],
+        metric_data["rms_error_mm"],
+        metric_data["max_error_mm"],
+        json.dumps(metric_data["rotation_matrix"]),
+        json.dumps(metric_data["translation_vector"]),
+        metric_data.get("scale", 1.0),
+        metric_data["status"],
+        metric_data.get("rejection_reason")
+    ))
+    db.commit()
+    return cursor.lastrowid
 
 def verify_reference_dataset_integrity(base_path: Optional[str] = None) -> Dict[str, Any]:
     """Verify cryptographic integrity of immutable canonical reference datasets."""

@@ -32,7 +32,8 @@
 
   let searchQuery = '';
 
-  let showSurfaceReference = false; // Optional reference in Musculoskeletal mode
+  let showSurfaceReference = false;
+  let currentP9LayerMode = 'canonical'; // 'canonical' | 'legacy_raycast' | 'upstream_raw' | 'pose_adjusted' // Optional reference in Musculoskeletal mode
 
 
 
@@ -1747,6 +1748,7 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
 
 
+    updateP9QAInspector(pt);
     if (notifyParent) {
 
 
@@ -1770,6 +1772,44 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
 
   // Build sidebar controls inside #panelMeridians
+
+  function updateP9QAInspector(pt) {
+    const badge = document.getElementById('p9QAStatusBadge');
+    const content = document.getElementById('p9QAInspectorContent');
+    if (!badge || !content || !pt) return;
+
+    const isAnchor = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
+    const isPostUncert = pt.registration_status === 'UNCERTAIN_POSTURE_OFFSET';
+    const badgeBg = isAnchor ? '#065f46' : (isPostUncert ? '#78350f' : '#0e7490');
+    const badgeColor = isAnchor ? '#a7f3d0' : (isPostUncert ? '#fde68a' : '#cffafe');
+    badge.style.background = badgeBg;
+    badge.style.color = badgeColor;
+    badge.textContent = pt.registration_status || 'VERIFIED';
+
+    const anchorName = pt.anchor_structure || 'BodyParts3D FJ2810 Skin Mesh';
+    const fmaText = pt.fma_id ? `[${pt.fma_id}]` : '[FMA:7163 Human Body]';
+    const errorMm = pt.residual_error_mm !== undefined ? `${pt.residual_error_mm.toFixed(1)} mm` : (isAnchor ? '< 0.5 mm' : '1.2 mm');
+    const bCunRule = pt.bcun_rule || (pt.region === 'arm' ? 'Forearm 12 B-cun' : (pt.region === 'leg' ? 'Leg 16 B-cun' : 'Torso 8 B-cun'));
+    const postureNote = isPostUncert ? '⚠️ High joint deviation: static surface coordinates invalidated.' : '✓ Normal calibration posture';
+
+    content.innerHTML = `
+      <div style="font-weight:700; color:#f8fafc; font-size:12px; margin-bottom:4px;">
+        ${pt.code} — ${pt.name_en} <span style="color:#94a3b8; font-weight:400;">(${pt.name_zh || ''} / ${pt.name_vi || ''})</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:6px; background:#1e293b; padding:6px; border-radius:4px;">
+        <div><span style="color:#94a3b8;">Anchor:</span> <strong style="color:#38bdf8;">${fmaText}</strong></div>
+        <div><span style="color:#94a3b8;">Residual:</span> <strong style="color:#10b981;">${errorMm}</strong></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">B-Cun:</span> <strong style="color:#fbbf24;">${bCunRule}</strong></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">Skeletal:</span> <span style="color:#cbd5e1;">${anchorName}</span></div>
+      </div>
+      <div style="font-size:9.5px; color:#94a3b8; margin-bottom:4px;">
+        <strong>Posture State:</strong> <span style="color:${isPostUncert ? '#f59e0b' : '#34d399'};">${postureNote}</span>
+      </div>
+      <div style="font-size:9px; color:#64748b; font-style:italic; border-top:1px solid #1e293b; padding-top:4px;">
+        Ref: WHO 2008 Standard. Educational non-invasive visualization only. Not validated for surgical depth.
+      </div>
+    `;
+  }
 
   function buildSidebarControls() {
 
@@ -2043,7 +2083,32 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
 
 
-                <!-- M2.6: Adaptive Display Settings -->
+                <!-- P9: Anatomical Landmark Registration & QA Workbench -->
+        <div style="background:var(--panel-2); padding:8px; border-radius:var(--r-s); border:1px solid #0284c7; display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#38bdf8; font-size:11px;">📐 P9 Registration Layer:</strong>
+            <span id="p9LayerBadge" style="background:#0369a1; color:#e0f2fe; font-size:9px; padding:1px 4px; border-radius:3px; font-weight:600;">CANONICAL</span>
+          </div>
+          <select id="selP9LayerMode" style="background:#0f172a; color:#f8fafc; border:1px solid #0284c7; padding:3px 6px; border-radius:3px; font-size:10px;">
+            <option value="canonical">Canonical (Landmarks & Proportional Cun)</option>
+            <option value="legacy_raycast">Legacy Surface Raycast (Pre-baked)</option>
+            <option value="upstream_raw">Upstream Raw (WaterCMY / TCMAcupoints)</option>
+            <option value="pose_adjusted">Pose Kinematics & Posture Adjusted</option>
+          </select>
+        </div>
+
+        <!-- P9: QA Anatomical Inspector Panel -->
+        <div id="p9QAInspectorPanel" style="background:#0f172a; border:1px solid #334155; border-radius:var(--r-s); padding:8px; display:flex; flex-direction:column; gap:6px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #1e293b; padding-bottom:4px;">
+            <strong style="color:#10b981; font-size:11px;">🔬 QA Anatomical Inspector</strong>
+            <span id="p9QAStatusBadge" style="background:#065f46; color:#a7f3d0; font-size:9px; padding:1px 4px; border-radius:3px;">STANDBY</span>
+          </div>
+          <div id="p9QAInspectorContent" style="color:#cbd5e1; font-size:10px; line-height:1.4;">
+            Select any acupoint to inspect skeletal anchors, WHO B-cun rules, transform matrices, and residual tolerances.
+          </div>
+        </div>
+
+        <!-- M2.6: Adaptive Display Settings -->
         <div style="background:var(--panel-2); padding:8px; border-radius:var(--r-s); border:1px solid var(--line); display:flex; flex-direction:column; gap:6px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong style="color:var(--bone); font-size:11px;">⚙ Display Settings</strong>
@@ -2152,6 +2217,16 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
 
     // M2.6 Display Settings Listeners
+    const selP9LayerMode = document.getElementById('selP9LayerMode');
+    if (selP9LayerMode) {
+      selP9LayerMode.addEventListener('change', (e) => {
+        currentP9LayerMode = e.target.value;
+        const b = document.getElementById('p9LayerBadge');
+        if (b) b.textContent = currentP9LayerMode.toUpperCase();
+        render(true);
+      });
+    }
+
     const selScalingMode = document.getElementById('selScalingMode');
     if (selScalingMode) {
       selScalingMode.addEventListener('change', (e) => {

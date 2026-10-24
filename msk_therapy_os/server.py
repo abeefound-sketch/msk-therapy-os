@@ -91,7 +91,16 @@ from msk_therapy_os.auth import (
     verify_reviewer,
 )
 from msk_therapy_os.safety import evaluate_safety
+from msk_therapy_os.landmark_registry import LandmarkRegistry, BodyRegion
+from msk_therapy_os.anatomical_registration import AnatomicalRegistrationEngine
+from msk_therapy_os.cun_scaling import CunScalingEngine
+from msk_therapy_os.pose_rigging import PoseKinematicsEngine, GuardedSurfaceProjector
 from msk_therapy_os.points import (
+    list_anatomical_landmarks,
+    get_anatomical_landmark,
+    list_cun_scaling_rules,
+    record_registration_metric,
+
     list_libraries,
     create_library,
     list_custom_points,
@@ -867,6 +876,18 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     else:
                         self._send_json({"error": "Acupuncture 3D dataset not found"}, status=HTTPStatus.NOT_FOUND)
 
+                elif path == "/api/landmarks":
+                    reg_filt = query.get("region", [None])[0]
+                    self._send_json(list_anatomical_landmarks(db, region=reg_filt))
+
+                elif path == "/api/cun-rules":
+                    reg_filt = query.get("region", [None])[0]
+                    self._send_json(list_cun_scaling_rules(db, region=reg_filt))
+
+                elif path == "/api/cun/metrics":
+                    engine = CunScalingEngine()
+                    self._send_json({k: v.__dict__ for k, v in engine.calculate_segment_metrics().items()})
+
                 elif path == "/api/points/libraries":
                     self._send_json(list_libraries(db))
 
@@ -1397,6 +1418,48 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         practitioner_role=p_role,
                     )
                     self._send_json({"status": "created", "session_id": sess_id})
+
+                elif path == "/api/registration/align":
+                    src_landmarks = body.get("source_landmarks", {})
+                    src_name = body.get("source_name", "upstream")
+                    region_str = body.get("region", "head_neck")
+                    try:
+                        region_enum = BodyRegion(region_str)
+                    except ValueError:
+                        region_enum = BodyRegion.HEAD_NECK
+                    engine = AnatomicalRegistrationEngine()
+                    transform = engine.calculate_umeyama_alignment(
+                        src_landmarks,
+                        allow_scaling=body.get("allow_scaling", False),
+                        source_name=src_name,
+                        region=region_enum,
+                    )
+                    t_dict = transform.to_dict()
+                    record_registration_metric(db, {
+                        "source_name": src_name,
+                        "region": region_str,
+                        "rms_error_mm": transform.rms_error_mm,
+                        "max_error_mm": transform.max_error_mm,
+                        "rotation_matrix": transform.rotation_matrix,
+                        "translation_vector": transform.translation_vector,
+                        "scale": transform.scale,
+                        "status": transform.status,
+                        "rejection_reason": transform.rejection_reason,
+                    })
+                    self._send_json(t_dict)
+
+                elif path == "/api/cun/adapt":
+                    morph_params = body.get("morphology_params", {})
+                    engine = CunScalingEngine()
+                    adapted = engine.compute_morphology_adapted_cun(morph_params)
+                    self._send_json(adapted)
+
+                elif path == "/api/pose/evaluate":
+                    point_code = body.get("point_code", "")
+                    joint_angles = body.get("joint_angles", {})
+                    kin_engine = PoseKinematicsEngine()
+                    eval_result = kin_engine.evaluate_acupoint_posture_status(point_code, joint_angles)
+                    self._send_json(eval_result)
 
                 elif path == "/api/points/libraries":
                     new_lib = create_library(db, body)
