@@ -95,6 +95,16 @@ from msk_therapy_os.landmark_registry import LandmarkRegistry, BodyRegion
 from msk_therapy_os.anatomical_registration import AnatomicalRegistrationEngine
 from msk_therapy_os.cun_scaling import CunScalingEngine
 from msk_therapy_os.pose_rigging import PoseKinematicsEngine, GuardedSurfaceProjector
+from msk_therapy_os.spatial_resolver import AnatomicalSpatialResolver
+
+_cached_spatial_resolver = None
+
+def get_spatial_resolver() -> AnatomicalSpatialResolver:
+    global _cached_spatial_resolver
+    if _cached_spatial_resolver is None:
+        _cached_spatial_resolver = AnatomicalSpatialResolver()
+    return _cached_spatial_resolver
+
 from msk_therapy_os.points import (
     list_anatomical_landmarks,
     get_anatomical_landmark,
@@ -849,6 +859,13 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     fhir_bundle = export_case_fhir(db, case_id)
                     self._send_json(validate_fhir_r4_bundle(fhir_bundle))
 
+                elif path == "/api/atlas/geometry/resolve":
+                    layer_mode = query.get("layer_mode", ["canonical"])[0]
+                    resolver = get_spatial_resolver()
+                    overrides = list_reference_overrides(db)
+                    payload = {"layer_mode": layer_mode}
+                    self._send_json(resolver.resolve_atlas_geometry(payload, sqlite_overrides=overrides))
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
@@ -1453,6 +1470,18 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     engine = CunScalingEngine()
                     adapted = engine.compute_morphology_adapted_cun(morph_params)
                     self._send_json(adapted)
+
+                elif path == "/api/atlas/geometry/resolve":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    resolver = get_spatial_resolver()
+                    overrides = list_reference_overrides(db)
+                    try:
+                        resolved_geometry = resolver.resolve_atlas_geometry(body, sqlite_overrides=overrides)
+                        self._send_json(resolved_geometry)
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
 
                 elif path == "/api/pose/evaluate":
                     point_code = body.get("point_code", "")

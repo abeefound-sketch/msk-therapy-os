@@ -33,7 +33,36 @@
   let searchQuery = '';
 
   let showSurfaceReference = false;
-  let currentP9LayerMode = 'canonical'; // 'canonical' | 'legacy_raycast' | 'upstream_raw' | 'pose_adjusted' // Optional reference in Musculoskeletal mode
+  let currentP9LayerMode = 'canonical'; // 'canonical' | 'legacy_raycast' | 'upstream_raw' | 'pose_adjusted'
+
+  // Authoritative Unified Spatial State
+  const AtlasSpatialState = {
+    meshId: 'FJ2810',
+    layerMode: 'canonical',
+    morphology: {
+      height_cm: 172.0,
+      shoulder_width_cm: 42.0,
+      arm_circ_cm: 28.0,
+      waist_circ_cm: 75.0,
+      thigh_circ_cm: 54.0,
+      calf_circ_cm: 36.0,
+    },
+    pose: {
+      joint_angles: {
+        cervical_flexion: 0.0,
+        cervical_extension: 0.0,
+        shoulder_abduction_r: 0.0,
+        shoulder_abduction_l: 0.0,
+        elbow_flexion_r: 0.0,
+        elbow_flexion_l: 0.0,
+        knee_flexion_r: 0.0,
+        knee_flexion_l: 0.0,
+      }
+    },
+    geometryVersion: 0,
+    isResolving: false,
+    resolvedData: null,
+  };
 
 
 
@@ -440,36 +469,91 @@
   }
 
 
-  async function loadData() {
+  async function resolveSpatialGeometry(force = false) {
+    if (!acuData) return;
+    const currentGeneration = ++AtlasSpatialState.geometryVersion;
+    AtlasSpatialState.isResolving = true;
 
     try {
+      const resp = await fetch('/api/atlas/geometry/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          layer_mode: AtlasSpatialState.layerMode,
+          morphology: AtlasSpatialState.morphology,
+          pose: AtlasSpatialState.pose,
+          mesh_id: AtlasSpatialState.meshId,
+          client_generation: currentGeneration,
+        }),
+      });
 
+      if (!resp.ok) {
+        console.warn('[meridians.js] POST /api/atlas/geometry/resolve returned status', resp.status);
+        AtlasSpatialState.isResolving = false;
+        return;
+      }
+
+      const resData = await resp.json();
+
+      // Guard against race conditions: Ignore if a newer request was dispatched
+      if (resData.client_generation !== AtlasSpatialState.geometryVersion) {
+        return;
+      }
+
+      AtlasSpatialState.resolvedData = resData;
+      AtlasSpatialState.isResolving = false;
+
+      // Update points in acuData
+      if (resData.points && acuData.points) {
+        for (const code in resData.points) {
+          const rPt = resData.points[code];
+          if (acuData.points[code]) {
+            Object.assign(acuData.points[code], rPt);
+          } else {
+            acuData.points[code] = rPt;
+          }
+        }
+      }
+
+      // Update meridians in acuData
+      if (resData.meridians && acuData.meridians) {
+        for (const mCode in resData.meridians) {
+          if (acuData.meridians[mCode] && resData.meridians[mCode].paths) {
+            acuData.meridians[mCode].paths = resData.meridians[mCode].paths;
+          }
+        }
+      }
+
+      // Update QA Inspector if a point is selected
+      if (selectedCode && acuData.points[selectedCode]) {
+        updateP9QAInspector(acuData.points[selectedCode]);
+      }
+
+      render(true);
+    } catch (e) {
+      console.error('[meridians.js] Resolution error:', e);
+      AtlasSpatialState.isResolving = false;
+    }
+  }
+
+  async function loadData() {
+    try {
       const res = await fetch('/api/acupuncture-3d');
-
       if (!res.ok) {
-
         console.warn('Could not load /api/acupuncture-3d, fallback to relative path');
-
         const res2 = await fetch('data/acupuncture_3d.json');
-
         acuData = await res2.json();
-
       } else {
-
         acuData = await res.json();
-
       }
 
       buildSidebarControls();
-
-      render();
+      await resolveSpatialGeometry(true);
+      render(true);
 
     } catch (err) {
-
       console.error('Failed to load acupuncture 3D dataset:', err);
-
     }
-
   }
 
 
@@ -943,6 +1027,8 @@
       filterMeridian,
       verifiedOnly,
       selectedCode,
+      AtlasSpatialState.layerMode,
+      AtlasSpatialState.geometryVersion,
       displaySettings.scalingMode,
       displaySettings.markerSizeMultiplier,
       displaySettings.markerSize,
@@ -1068,10 +1154,20 @@
           }
         }
 
-        const isMidline = Math.abs(pt.position[0]) < 0.005;
-        const instances = [{ pos: pt.position, side: isMidline ? 'midline' : 'right' }];
-        if (!isMidline && pt.position[0] > 0.005) {
-          instances.push({ pos: [-pt.position[0], pt.position[1], pt.position[2]], side: 'left' });
+        let instances = [];
+        if (pt.instances && pt.instances.length > 0) {
+          instances = pt.instances.map(inst => ({
+            pos: inst.position,
+            side: inst.side,
+            normal: inst.normal
+          }));
+        } else {
+          const pos = pt.resolved_world_position || pt.position;
+          const isMidline = Math.abs(pos[0]) < 0.005;
+          instances = [{ pos: pos, side: isMidline ? 'midline' : 'right', normal: pt.normal }];
+          if (!isMidline && pos[0] > 0.005) {
+            instances.push({ pos: [-pos[0], pos[1], pos[2]], side: 'left', normal: pt.normal ? [-pt.normal[0], pt.normal[1], pt.normal[2]] : null });
+          }
         }
 
         for (const inst of instances) {
@@ -1079,7 +1175,7 @@
           if (!s) continue;
 
           const isSel = (selectedCode === code);
-          const norm = inst.side === 'left' && pt.normal ? [-pt.normal[0], pt.normal[1], pt.normal[2]] : pt.normal;
+          const norm = inst.normal || (inst.side === 'left' && pt.normal ? [-pt.normal[0], pt.normal[1], pt.normal[2]] : pt.normal);
           const facing = isFacingCamera(inst.pos, r, norm);
 
           if (!r.xray && !facing && !isSel) continue;
@@ -1166,22 +1262,31 @@
         const inst = item.inst;
         const isSel = item.isSel;
         const isVerified = (pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR');
-        const isSurface = (pt.registration_status === 'SURFACE_REGISTERED_FJ2810');
+        const isSurface = (pt.registration_status === 'SURFACE_REGISTERED_FJ2810' || pt.registration_status === 'GEOMETRIC_SURFACE_APPROXIMATION');
+        const isUncertain = (pt.registration_status === 'UNCERTAIN_POSTURE_OFFSET');
+        const isUpstream = (pt.registration_status === 'UPSTREAM_TRANSFORMED');
+        const isLegacy = (pt.registration_status === 'LEGACY_SURFACE_RAYCAST');
         const isDienChan = Boolean(item.system && item.system.startsWith('lib_dien_chan'));
 
         const vis = VisualScaleEngine.getMarkerVisuals(displaySettings, scaleInfo, isSel, isVerified, isSurface, isDienChan);
 
-        let fill = isSel ? '#facc15' : (isVerified ? '#10b981' : (isSurface ? '#06b6d4' : (isDienChan ? '#ec4899' : '#f59e0b')));
-        let stroke = isSel ? '#ffffff' : (isVerified ? '#047857' : (isSurface ? '#0891b2' : (isDienChan ? '#be185d' : '#78350f')));
-        let dash = (isVerified || isSurface) ? '' : 'stroke-dasharray="2,2"';
+        let fill = isSel ? '#facc15' : (isUncertain ? '#f59e0b' : (isVerified ? '#10b981' : (isSurface ? '#06b6d4' : (isUpstream ? '#6366f1' : '#64748b'))));
+        let stroke = isSel ? '#ffffff' : (isUncertain ? '#b45309' : (isVerified ? '#047857' : (isSurface ? '#0891b2' : (isUpstream ? '#4338ca' : '#334155'))));
+        let dash = isUncertain ? 'stroke-dasharray="3,3"' : ((isVerified || isSurface) ? '' : 'stroke-dasharray="2,2"');
         let ptOpacity = item.facing ? '1.0' : '0.35';
 
-        const statusLabel = isVerified ? 'VERIFIED ANCHOR' : (isSurface ? 'SURFACE REGISTERED (FJ2810)' : (isDienChan ? 'VIETNAMESE DIEN CHAN' : 'UNCERTAIN POSTURE OFFSET'));
+        const statusLabel = isUncertain ? '⚠️ UNCERTAIN POSTURE OFFSET' : (isVerified ? 'VERIFIED ANCHOR' : (isSurface ? 'SURFACE REGISTERED (FJ2810)' : (isUpstream ? 'UPSTREAM RAW' : (isLegacy ? 'LEGACY RAYCAST' : (isDienChan ? 'VIETNAMESE DIEN CHAN' : 'UNKNOWN')))));
+
+        let warningRing = '';
+        if (isUncertain) {
+          warningRing = `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${(vis.rad + 2.5).toFixed(1)}" fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="2,2" opacity="${item.facing ? '0.9' : '0.4'}" pointer-events="none" />`;
+        }
 
         ptsHtml += `
           <g class="acu-marker-group" data-code="${code}" data-side="${inst.side}" style="cursor:pointer;">
             <circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${vis.hitRad}" fill="transparent" stroke="none" class="acu-marker ${isDienChan ? 'dien-chan-marker' : ''}" data-code="${code}" data-side="${inst.side}" pointer-events="all"/>
             <circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${vis.rad.toFixed(1)}" fill="${fill}" stroke="${stroke}" stroke-width="${vis.swidth}" ${dash} opacity="${ptOpacity}" pointer-events="none"/>
+            ${warningRing}
             <title>${pt.code} - ${pt.name_en || pt.name || ''} (${pt.name_zh || ''}) [${statusLabel}] [${inst.side.toUpperCase()}]
 Pos: [${inst.pos[0].toFixed(3)}, ${inst.pos[1].toFixed(3)}, ${inst.pos[2].toFixed(3)}]m
 ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
@@ -1316,7 +1421,7 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
     } else if (selectedCode && window.__selectedAcupoint) {
 
-      pos = window.__selectedAcupoint.position;
+      pos = window.__selectedAcupoint.resolved_world_position || window.__selectedAcupoint.position;
 
       const pt = window.__selectedAcupoint;
 
@@ -1324,7 +1429,19 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
       if (pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR') {
 
-        statusTag = lang === 'vi' ? ' [✓ Đã kiểm chứng]' : (lang === 'zh' ? ' [✓ 已验证基准]' : ' [✓ Verified]');
+        statusTag = lang === 'vi' ? ' [✓ Đã kiểm chứng]' : (lang === 'zh' ? ' [✓ 已验证基准]' : ' [✓ Verified Anchor]');
+
+      } else if (pt.registration_status === 'UNCERTAIN_POSTURE_OFFSET') {
+
+        statusTag = ' [⚠️ Uncertain Posture]';
+
+      } else if (pt.registration_status === 'LEGACY_SURFACE_RAYCAST') {
+
+        statusTag = ' [Legacy Raycast]';
+
+      } else if (pt.registration_status === 'UPSTREAM_TRANSFORMED') {
+
+        statusTag = ' [Upstream Raw]';
 
       } else {
 
@@ -1694,11 +1811,12 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
       // This centers rotation and zooming directly on the acupoint (e.g. C7 / GV14)
 
-      const targetPos = pt.position.slice();
+      const pActive = pt.resolved_world_position || pt.position;
+      const targetPos = pActive.slice();
 
-      const isBackPoint = pt.position[2] < -0.035;
+      const isBackPoint = pActive[2] < -0.035;
 
-      const isFrontPoint = pt.position[2] > 0.035;
+      const isFrontPoint = pActive[2] > 0.035;
 
       const yawNorm = Math.abs(r.camera.yaw % (Math.PI * 2));
 
@@ -1778,35 +1896,97 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     const content = document.getElementById('p9QAInspectorContent');
     if (!badge || !content || !pt) return;
 
-    const isAnchor = pt.registration_status === 'VERIFIED_ANATOMICAL_ANCHOR';
-    const isPostUncert = pt.registration_status === 'UNCERTAIN_POSTURE_OFFSET';
-    const badgeBg = isAnchor ? '#065f46' : (isPostUncert ? '#78350f' : '#0e7490');
-    const badgeColor = isAnchor ? '#a7f3d0' : (isPostUncert ? '#fde68a' : '#cffafe');
+    const status = pt.registration_status || 'UNKNOWN';
+    const isAnchor = status === 'VERIFIED_ANATOMICAL_ANCHOR';
+    const isPostUncert = status === 'UNCERTAIN_POSTURE_OFFSET';
+    const isApprox = status === 'GEOMETRIC_SURFACE_APPROXIMATION';
+    const isLegacy = status === 'LEGACY_SURFACE_RAYCAST';
+    const isUpstream = status === 'UPSTREAM_TRANSFORMED';
+
+    let badgeBg = '#475569';
+    let badgeColor = '#e2e8f0';
+    let badgeText = 'UNKNOWN / UNVERIFIED';
+
+    if (isAnchor) {
+      badgeBg = '#065f46';
+      badgeColor = '#a7f3d0';
+      badgeText = 'VERIFIED ANCHOR';
+    } else if (isPostUncert) {
+      badgeBg = '#78350f';
+      badgeColor = '#fde68a';
+      badgeText = '⚠️ UNCERTAIN POSTURE';
+    } else if (isApprox) {
+      badgeBg = '#0e7490';
+      badgeColor = '#cffafe';
+      badgeText = 'APPROX SURFACE';
+    } else if (isLegacy) {
+      badgeBg = '#334155';
+      badgeColor = '#cbd5e1';
+      badgeText = 'LEGACY RAYCAST';
+    } else if (isUpstream) {
+      badgeBg = '#3730a3';
+      badgeColor = '#c7d2fe';
+      badgeText = 'UPSTREAM RAW';
+    }
+
     badge.style.background = badgeBg;
     badge.style.color = badgeColor;
-    badge.textContent = pt.registration_status || 'VERIFIED';
+    badge.textContent = badgeText;
 
-    const anchorName = pt.anchor_structure || 'BodyParts3D FJ2810 Skin Mesh';
-    const fmaText = pt.fma_id ? `[${pt.fma_id}]` : '[FMA:7163 Human Body]';
-    const errorMm = pt.residual_error_mm !== undefined ? `${pt.residual_error_mm.toFixed(1)} mm` : (isAnchor ? '< 0.5 mm' : '1.2 mm');
-    const bCunRule = pt.bcun_rule || (pt.region === 'arm' ? 'Forearm 12 B-cun' : (pt.region === 'leg' ? 'Leg 16 B-cun' : 'Torso 8 B-cun'));
-    const postureNote = isPostUncert ? '⚠️ High joint deviation: static surface coordinates invalidated.' : '✓ Normal calibration posture';
+    const anchorName = pt.skeletal_anchor || pt.anchor_structure || 'None / Surface only';
+    const fmaText = pt.fma_id ? `[${pt.fma_id}]` : 'None / Unmapped';
+    const errorMm = (pt.residual_error_mm !== undefined && pt.residual_error_mm !== null)
+      ? `${pt.residual_error_mm.toFixed(1)} mm`
+      : 'None / Not Measured';
+    const uncertMm = (pt.uncertainty_mm !== undefined && pt.uncertainty_mm !== null)
+      ? `±${pt.uncertainty_mm.toFixed(1)} mm`
+      : 'Unknown / Unverified';
+    const bCunRule = pt.applied_cun_rule || 'None / Unspecified';
+
+    const curPos = pt.resolved_world_position || pt.position || [0,0,0];
+    const posStr = `[${curPos[0].toFixed(4)}, ${curPos[1].toFixed(4)}, ${curPos[2].toFixed(4)}] m`;
+
+    let deltaText = 'N/A';
+    if (pt.legacy_position && pt.resolved_world_position) {
+      const dx = (pt.resolved_world_position[0] - pt.legacy_position[0]) * 1000.0;
+      const dy = (pt.resolved_world_position[1] - pt.legacy_position[1]) * 1000.0;
+      const dz = (pt.resolved_world_position[2] - pt.legacy_position[2]) * 1000.0;
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      deltaText = `${dist.toFixed(1)} mm (ΔX:${dx >= 0 ? '+' : ''}${dx.toFixed(1)}, ΔY:${dy >= 0 ? '+' : ''}${dy.toFixed(1)}, ΔZ:${dz >= 0 ? '+' : ''}${dz.toFixed(1)})`;
+    }
+
+    let postureNote = '✓ Rest calibration posture';
+    if (isPostUncert) {
+      postureNote = pt.rejection_reason || '⚠️ High joint deviation: static surface coordinates invalidated.';
+    } else if (pt.pose_validity && pt.pose_validity.joint && pt.pose_validity.current_angle_deg > 0) {
+      postureNote = `✓ Articulated (${pt.pose_validity.current_angle_deg}° on ${pt.pose_validity.joint})`;
+    }
+
+    const meshInfo = `${pt.mesh_id || 'FJ2810'} (Hash: ${(pt.mesh_hash || '05b49233').substring(0, 8)}...)`;
+    const provenance = pt.source_provenance || 'BodyParts3D FJ2810 Surface Mesh';
 
     content.innerHTML = `
       <div style="font-weight:700; color:#f8fafc; font-size:12px; margin-bottom:4px;">
-        ${pt.code} — ${pt.name_en} <span style="color:#94a3b8; font-weight:400;">(${pt.name_zh || ''} / ${pt.name_vi || ''})</span>
+        ${pt.code} — ${pt.name_en || ''} <span style="color:#94a3b8; font-weight:400;">(${pt.name_zh || ''} / ${pt.name_vi || ''})</span>
       </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:6px; background:#1e293b; padding:6px; border-radius:4px;">
+      <div style="font-size:10px; color:#38bdf8; margin-bottom:4px; font-family:monospace;">
+        Pos: ${posStr} <span style="color:#94a3b8;">(${AtlasSpatialState.layerMode.toUpperCase()})</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:6px; background:#1e293b; padding:6px; border-radius:4px; font-size:9.5px;">
         <div><span style="color:#94a3b8;">Anchor:</span> <strong style="color:#38bdf8;">${fmaText}</strong></div>
         <div><span style="color:#94a3b8;">Residual:</span> <strong style="color:#10b981;">${errorMm}</strong></div>
-        <div style="grid-column:1/3;"><span style="color:#94a3b8;">B-Cun:</span> <strong style="color:#fbbf24;">${bCunRule}</strong></div>
+        <div><span style="color:#94a3b8;">Uncertainty:</span> <strong style="color:#f59e0b;">${uncertMm}</strong></div>
+        <div><span style="color:#94a3b8;">Displacement:</span> <span style="color:#cbd5e1;">${deltaText}</span></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">B-Cun Rule:</span> <strong style="color:#fbbf24;">${bCunRule}</strong></div>
         <div style="grid-column:1/3;"><span style="color:#94a3b8;">Skeletal:</span> <span style="color:#cbd5e1;">${anchorName}</span></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">Provenance:</span> <span style="color:#94a3b8;">${provenance}</span></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">Mesh:</span> <span style="color:#64748b;">${meshInfo}</span></div>
       </div>
       <div style="font-size:9.5px; color:#94a3b8; margin-bottom:4px;">
         <strong>Posture State:</strong> <span style="color:${isPostUncert ? '#f59e0b' : '#34d399'};">${postureNote}</span>
       </div>
       <div style="font-size:9px; color:#64748b; font-style:italic; border-top:1px solid #1e293b; padding-top:4px;">
-        Ref: WHO 2008 Standard. Educational non-invasive visualization only. Not validated for surgical depth.
+        Ref: WHO 2008 Standard. Non-invasive educational visualization only. Not validated for surgical depth.
       </div>
     `;
   }
@@ -2219,11 +2399,13 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     // M2.6 Display Settings Listeners
     const selP9LayerMode = document.getElementById('selP9LayerMode');
     if (selP9LayerMode) {
+      selP9LayerMode.value = AtlasSpatialState.layerMode;
       selP9LayerMode.addEventListener('change', (e) => {
         currentP9LayerMode = e.target.value;
+        AtlasSpatialState.layerMode = e.target.value;
         const b = document.getElementById('p9LayerBadge');
         if (b) b.textContent = currentP9LayerMode.toUpperCase();
-        render(true);
+        resolveSpatialGeometry(true);
       });
     }
 
@@ -2481,6 +2663,39 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
       if (chk) chk.checked = true;
 
       selectPoint(ev.data.code, true);
+
+    } else if (ev.data.action === 'set_p9_layer_mode') {
+
+      const mode = ev.data.mode || 'canonical';
+      currentP9LayerMode = mode;
+      AtlasSpatialState.layerMode = mode;
+      const sel = document.getElementById('selP9LayerMode');
+      if (sel) sel.value = mode;
+      const b = document.getElementById('p9LayerBadge');
+      if (b) b.textContent = mode.toUpperCase();
+      resolveSpatialGeometry(true);
+
+    } else if (ev.data.action === 'set_pose') {
+
+      if (ev.data.pose) {
+        if (ev.data.pose.joint_angles) {
+          Object.assign(AtlasSpatialState.pose.joint_angles, ev.data.pose.joint_angles);
+        } else {
+          Object.assign(AtlasSpatialState.pose.joint_angles, ev.data.pose);
+        }
+        resolveSpatialGeometry(true);
+      }
+
+    } else if (ev.data.action === 'set_morphology') {
+
+      if (ev.data.morphology) {
+        Object.assign(AtlasSpatialState.morphology, ev.data.morphology);
+        resolveSpatialGeometry(true);
+      }
+
+    } else if (ev.data.action === 'resolve_geometry') {
+
+      resolveSpatialGeometry(true);
 
     } else if (ev.data.action === 'set_render_mode') {
 
@@ -2804,6 +3019,8 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
     get displaySettings() { return displaySettings; },
     get currentCounters() { return currentDensityCounters; },
+    AtlasSpatialState,
+    resolveSpatialGeometry,
     VisualScaleEngine,
     MarkerDensityManager,
     OverlayStyleController,
@@ -2814,6 +3031,36 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     selectDienChanPoint,
 
     render,
+
+    setLayerMode: async (mode) => {
+      currentP9LayerMode = mode;
+      AtlasSpatialState.layerMode = mode;
+      const sel = document.getElementById('selP9LayerMode');
+      if (sel) sel.value = mode;
+      const b = document.getElementById('p9LayerBadge');
+      if (b) b.textContent = mode.toUpperCase();
+      return await resolveSpatialGeometry(true);
+    },
+
+    setPose: async (jointAngles) => {
+      if (jointAngles) {
+        Object.assign(AtlasSpatialState.pose.joint_angles, jointAngles);
+        return await resolveSpatialGeometry(true);
+      }
+    },
+
+    setMorphology: async (params) => {
+      if (params) {
+        Object.assign(AtlasSpatialState.morphology, params);
+        return await resolveSpatialGeometry(true);
+      }
+    },
+
+    getPointData: (code) => {
+      return acuData && acuData.points ? acuData.points[code] : null;
+    },
+
+    getResolvedData: () => AtlasSpatialState.resolvedData,
 
     setSurfaceReference: (on) => {
 

@@ -31,6 +31,7 @@ build/
 2data/.backup_hmac_keys_history
 
 # Ephemeral runtime & test artifacts
+demo.sqlite3*
 2data/backups/*test*
 2data/backups/*snap*
 2data/backups/*tmp*
