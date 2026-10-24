@@ -1324,27 +1324,69 @@ def run_database_integrity_check(db: sqlite3.Connection) -> Dict[str, Any]:
 
 
 def secure_file_permissions(filepath: Path | str) -> bool:
-    """Apply strict private file permissions (POSIX 0o600 / Windows NTFS ACL exclusive to owner)."""
+    """Apply strict private file permissions (POSIX 0o600 / Windows NTFS ACL exclusive to owner).
+    
+    Actively inspects the resulting ACL to guarantee that inheritance is stripped,
+    the current user is granted exclusive Full Control (F), and no broad public
+    groups (Everyone, Users) retain access.
+    """
     p = Path(filepath).resolve()
     if not p.exists():
         return False
-    success = True
+
     try:
         os.chmod(p, 0o600)
     except Exception:
-        success = False
+        pass
 
     if platform.system() == "Windows":
         username = os.environ.get("USERNAME")
-        if username:
+        if not username:
             try:
-                cmd = ["icacls", str(p), "/inheritance:r", "/grant:r", f"{username}:(F)"]
-                res = subprocess.run(cmd, capture_output=True, text=True, check=False)
-                if res.returncode == 0:
-                    success = True
+                import getpass
+                username = getpass.getuser()
             except Exception:
-                pass
-    return success
+                username = None
+        if not username:
+            return False
+
+        try:
+            cmd = ["icacls", str(p), "/inheritance:r", "/grant:r", f"{username}:(F)"]
+            res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+            if res.returncode != 0:
+                return False
+
+            # Active audit of NTFS ACL
+            verify_cmd = ["icacls", str(p)]
+            ver_res = subprocess.run(verify_cmd, capture_output=True, text=True, check=False)
+            if ver_res.returncode != 0:
+                return False
+
+            acl_text = ver_res.stdout
+            # Must confirm user has Full Control
+            if username.lower() not in acl_text.lower() or ":(F)" not in acl_text:
+                return False
+
+            # Inheritance must be stripped (no (I) inheritance flag on any access control entry)
+            if ":(I)" in acl_text:
+                return False
+
+            # Broad/insecure group names must not be granted access
+            for broad in ["everyone:(", "builtin\\users:(", "nt authority\\authenticated users:("]:
+                if broad in acl_text.lower():
+                    return False
+        except Exception:
+            return False
+    else:
+        # Strict POSIX permission verification
+        try:
+            st = os.stat(p)
+            if (st.st_mode & 0o777) != 0o600:
+                return False
+        except Exception:
+            return False
+
+    return True
 
 
 def get_backup_signing_key() -> bytes:

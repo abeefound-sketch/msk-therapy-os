@@ -96,6 +96,7 @@ class TestIndependentFHIRR4Validation(unittest.TestCase):
                 self.assertIsNotNone(prov.signature)
                 sig_type_codes = [s.type[0].code for s in prov.signature if s.type]
                 self.assertIn("1.2.840.10065.1.12.1.5", sig_type_codes)
+                self.assertIn("not a PKI cryptographic signature", prov.activity.text)
             elif rtype == "AdverseEvent":
                 ae = AdverseEvent.model_validate(res)
                 self.assertEqual(ae.actuality, "actual")

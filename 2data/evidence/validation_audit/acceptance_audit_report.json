@@ -1,15 +1,20 @@
 {
-  "timestamp": "2026-10-24T06:46:00Z",
-  "base_url": "http://127.0.0.1:60949",
+  "timestamp": "2026-10-24T08:10:47Z",
+  "base_url": "http://127.0.0.1:62866",
   "console_errors": [],
   "console_warnings": [
-    "[.WebGL-0x1464001c0400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x1464001c0400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x1464001c0400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x1464001c0400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    "[.WebGL-0x503400b77200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x503400b77200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x503400b77200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x503400b77200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
   ],
   "page_errors": [],
-  "failed_requests": [],
+  "failed_requests": [
+    {
+      "url": "http://127.0.0.1:62866/atlas/data/meshes.bin",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
   "tabs_tested": {
     "tab-bodymap": "PASS",
     "tab-explore": "PASS",

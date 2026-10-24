@@ -5,6 +5,7 @@ import argparse
 import os
 from datetime import date
 from pathlib import Path
+import secrets
 import sqlite3
 import sys
 
@@ -273,6 +274,7 @@ def build_parser() -> argparse.ArgumentParser:
     mig_cmd.add_argument("--claim-admin", help="Administrator username to immediately claim with a new secure password")
     mig_cmd.add_argument("--admin-password", help="New password for claimed administrator (omit for interactive hidden prompt)")
     mig_cmd.add_argument("--admin-password-stdin", action="store_true", help="Read claimed admin password from stdin")
+    mig_cmd.add_argument("--allow-unclaimed", action="store_true", help="Allow migration without active admin (requires subsequent recover-admin)")
 
     rec_cmd = sub.add_parser("recover-admin", help="Securely recover or claim an administrator account on a migrated or locked database")
     rec_cmd.add_argument("--db", default=DEFAULT_DB)
@@ -331,8 +333,19 @@ def main(argv: list[str] | None = None) -> int:
             out_path.write_bytes(raw_key)
         else:
             out_path.write_text(raw_key.hex() + "\n", encoding="utf-8")
-        secure_file_permissions(out_path)
-        print(f"HMAC signing key securely exported to '{out_path}'. Permissions restricted to current owner.")
+
+        perm_ok = secure_file_permissions(out_path)
+        if not perm_ok:
+            # FAIL CLOSED: shred secret and remove file
+            try:
+                out_path.write_bytes(secrets.token_bytes(len(raw_key)))
+                out_path.unlink()
+            except Exception:
+                pass
+            print(f"ERROR: Failed to establish restrictive private file permissions on '{out_path}'. Export aborted and file removed.")
+            return 2
+
+        print(f"HMAC signing key securely exported to '{out_path}'. Permissions restricted exclusively to current user.")
         return 0
 
     if args.action == "rotate-hmac-key":
@@ -561,11 +574,12 @@ def main(argv: list[str] | None = None) -> int:
                     deactivate_demo_users=args.deactivate,
                     claim_admin_username=claim_user,
                     new_admin_password=claim_pwd,
+                    allow_all_admins_locked=getattr(args, "allow_unclaimed", False),
                 )
                 print(f"Migration complete: {mig_res['migrated_count']} legacy demo user credentials neutralized.")
                 for u in mig_res['users']:
                     print(f"  - [{u['role']}] {u['username']} ({u['user_id']}): {u['action']}")
-        except (ValueError, PermissionError, sqlite3.Error) as error:
+        except (ValueError, PermissionError, RuntimeError, sqlite3.Error) as error:
             print(f"ERROR: {error}")
             return 2
     return 0

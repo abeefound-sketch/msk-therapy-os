@@ -13,6 +13,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest.mock import patch
 import urllib.error
 import urllib.request
 
@@ -232,6 +233,26 @@ class TestSafeSQLiteRestoreUnit(unittest.TestCase):
         new_content = target_file.read_text(encoding="utf-8").strip()
         self.assertNotEqual(new_content, "PRE_EXISTING_CONTENT")
         self.assertEqual(len(new_content), 64, "Exported key must be 64-char hex string")
+    def test_export_hmac_key_fail_closed_when_permissions_fail(self):
+        """Verify export-hmac-key fails closed, deleting the target file if permissions cannot be secured."""
+        target_file = Path(self.temp_dir.name) / "fail_closed_test.key"
+
+        with patch("msk_therapy_os.__main__.secure_file_permissions", return_value=False):
+            # Run export via CLI execution path
+            from msk_therapy_os.__main__ import main
+            ret = main(["export-hmac-key", "--out", str(target_file)])
+            self.assertEqual(ret, 2, "Must return error exit code 2 when permissions cannot be secured")
+            self.assertFalse(target_file.exists(), "Target file must be shredded and unlinked (fail closed)")
+
+    def test_secure_file_permissions_validation(self):
+        """Verify secure_file_permissions actively inspects file on disk and returns False for non-existent files."""
+        non_existent = Path(self.temp_dir.name) / "does_not_exist.key"
+        self.assertFalse(secure_file_permissions(non_existent))
+
+        # Real file
+        valid_file = Path(self.temp_dir.name) / "valid_perm_test.key"
+        valid_file.write_text("secret_data_abc", encoding="utf-8")
+        self.assertTrue(secure_file_permissions(valid_file))
 
 
 class TestSafeSQLiteRestoreIntegration(unittest.TestCase):

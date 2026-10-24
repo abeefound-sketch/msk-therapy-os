@@ -280,7 +280,7 @@ class TestAuthAndRBACUnit(unittest.TestCase):
         self.assertGreater(len(reviewers_before), 0)
 
         # Run migration
-        stats = migrate_legacy_db_to_secure_mode(self.conn, deactivate_demo_users=False)
+        stats = migrate_legacy_db_to_secure_mode(self.conn, deactivate_demo_users=False, allow_all_admins_locked=True)
         self.assertGreater(stats["migrated_count"], 0)
 
         # Verify admin cannot login with old password anymore
@@ -331,7 +331,7 @@ class TestAuthAndRBACUnit(unittest.TestCase):
     def test_administrative_recovery_from_locked_migration(self):
         """Verify recover_admin_account securely unlocks admin on a locked legacy database."""
         # 1. Lock all accounts via migration
-        migrate_legacy_db_to_secure_mode(self.conn, deactivate_demo_users=False)
+        migrate_legacy_db_to_secure_mode(self.conn, deactivate_demo_users=False, allow_all_admins_locked=True)
         self.assertIsNone(authenticate_user(self.conn, "admin", "admin123"))
         self.assertEqual(get_active_admin_count(self.conn), 0)
 
@@ -407,6 +407,145 @@ class TestAuthAndRBACUnit(unittest.TestCase):
         # Verify DB was not partially modified
         after_hash = self.conn.execute("SELECT password_hash FROM users WHERE username = 'admin'").fetchone()[0]
         self.assertEqual(orig_hash, after_hash, "DB state must remain unmodified after failed migration")
+
+    def test_migration_rejects_leaving_zero_active_admins(self):
+        """Verify migration refuses to run if it would leave the database with zero active administrators."""
+        clean_db_path = Path(self.temp_dir.name) / "zero_admin_db.sqlite3"
+        conn = sqlite3.connect(str(clean_db_path))
+        init_db(conn)
+        seed_db(conn)
+
+        orig_hash = conn.execute("SELECT password_hash FROM users WHERE username = 'admin'").fetchone()[0]
+
+        # Attempt migration without claiming an admin and without explicit allow_all_admins_locked
+        with self.assertRaises(PermissionError) as ctx:
+            migrate_legacy_db_to_secure_mode(conn, allow_all_admins_locked=False)
+        self.assertIn("zero active administrator accounts", str(ctx.exception))
+
+        # Verify database was rolled back and admin hash is untouched
+        after_hash = conn.execute("SELECT password_hash FROM users WHERE username = 'admin'").fetchone()[0]
+        self.assertEqual(orig_hash, after_hash)
+        conn.close()
+
+    def test_migration_rejects_nonexistent_admin_claim(self):
+        """Verify migration refuses invalid claim username and rolls back atomically."""
+        clean_db_path = Path(self.temp_dir.name) / "nonexistent_claim.sqlite3"
+        conn = sqlite3.connect(str(clean_db_path))
+        init_db(conn)
+        seed_db(conn)
+
+        with self.assertRaises(ValueError) as ctx:
+            migrate_legacy_db_to_secure_mode(
+                conn,
+                claim_admin_username="ghost_admin",
+                new_admin_password="ValidStrongPass123!@#"
+            )
+        self.assertIn("not found in database", str(ctx.exception))
+        conn.close()
+
+    def test_migration_rejects_non_admin_role_claim(self):
+        """Verify migration refuses to grant admin claim to accounts with non-admin roles."""
+        clean_db_path = Path(self.temp_dir.name) / "non_admin_role_claim.sqlite3"
+        conn = sqlite3.connect(str(clean_db_path))
+        init_db(conn)
+        seed_db(conn)
+
+        # Attempt to claim 'student' as administrator
+        with self.assertRaises(PermissionError) as ctx:
+            migrate_legacy_db_to_secure_mode(
+                conn,
+                claim_admin_username="student",
+                new_admin_password="ValidStrongPass123!@#"
+            )
+        self.assertIn("not 'admin'", str(ctx.exception))
+
+        # Attempt to claim 'dr_chen' (reviewer) as administrator
+        with self.assertRaises(PermissionError) as ctx:
+            migrate_legacy_db_to_secure_mode(
+                conn,
+                claim_admin_username="dr_chen",
+                new_admin_password="ValidStrongPass123!@#"
+            )
+        self.assertIn("not 'admin'", str(ctx.exception))
+        conn.close()
+
+    def test_migration_idempotent_repetition(self):
+        """Verify migration can be executed repeatedly on an already-migrated database without error."""
+        clean_db_path = Path(self.temp_dir.name) / "idempotent_db.sqlite3"
+        conn = sqlite3.connect(str(clean_db_path))
+        init_db(conn)
+        seed_db(conn)
+
+        # First migration with direct admin claim
+        res1 = migrate_legacy_db_to_secure_mode(
+            conn,
+            claim_admin_username="admin",
+            new_admin_password="DirectClaimPass99!"
+        )
+        self.assertGreater(res1["migrated_count"], 0)
+
+        # Second migration (idempotent repeat)
+        res2 = migrate_legacy_db_to_secure_mode(
+            conn,
+            claim_admin_username="admin",
+            new_admin_password="AnotherValidPass888!"
+        )
+        self.assertEqual(res2["status"], "MIGRATED_TO_SECURE")
+
+        # Admin must be authenticated with latest password
+        self.assertIsNotNone(authenticate_user(conn, "admin", "AnotherValidPass888!"))
+        conn.close()
+
+    def test_recover_admin_account_atomic_rollback_on_audit_failure(self):
+        """Verify recover_admin_account rolls back DB transaction if mandatory audit write fails."""
+        orig_hash = self.conn.execute("SELECT password_hash FROM users WHERE username = 'admin'").fetchone()[0]
+
+        # Pass an illegal path (directory as file on Windows/POSIX) to force OSError on write
+        bad_audit_path = Path(self.temp_dir.name) # pointing to an existing directory instead of a file
+
+        with self.assertRaises(RuntimeError) as ctx:
+            recover_admin_account(
+                self.conn,
+                username="admin",
+                new_password="NewUncommittedPass123!@#",
+                reason="Audit failure rollback test",
+                incident_log_path=bad_audit_path
+            )
+        self.assertIn("Mandatory audit logging to", str(ctx.exception))
+
+        # Verify DB was rolled back and password hash is UNCHANGED
+        after_hash = self.conn.execute("SELECT password_hash FROM users WHERE username = 'admin'").fetchone()[0]
+        self.assertEqual(orig_hash, after_hash, "DB password hash must not be committed when audit log write fails")
+
+    def test_recover_admin_audit_log_contains_no_secrets(self):
+        """Verify administrative recovery logs audit event without exposing passwords or hashes."""
+        custom_audit_path = Path(self.temp_dir.name) / "test_incident_log.md"
+        secret_password = "SuperSecretAdminPasswordToTestNoLeak99!"
+
+        rec_res = recover_admin_account(
+            self.conn,
+            username="admin",
+            new_password=secret_password,
+            reason="Security audit leakage verification",
+            operator="lead_auditor",
+            incident_log_path=custom_audit_path
+        )
+        self.assertEqual(rec_res["status"], "ADMIN_RECOVERED")
+        self.assertTrue(custom_audit_path.exists())
+
+        log_content = custom_audit_path.read_text(encoding="utf-8")
+        self.assertNotIn(secret_password, log_content, "Plaintext password must NEVER appear in audit log")
+        self.assertNotIn("pbkdf2", log_content, "Password hash must NEVER appear in audit log")
+        self.assertIn("lead_auditor", log_content)
+        self.assertIn("Security audit leakage verification", log_content)
+
+        # Verify relational table auth_audit_log
+        audit_rows = self.conn.execute("SELECT event_type, operator, target_username, details_json FROM auth_audit_log").fetchall()
+        self.assertGreater(len(audit_rows), 0)
+        for row in audit_rows:
+            details_str = row[3]
+            self.assertNotIn(secret_password, details_str)
+            self.assertNotIn("pbkdf2", details_str)
 
 
 class TestAuthAndRBACIntegration(unittest.TestCase):

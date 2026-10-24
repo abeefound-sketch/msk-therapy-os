@@ -8,7 +8,10 @@ app_port: 7860
 pinned: false
 ---
 
-# MSK-Therapy-OS (Milestone M1 CLI)
+# MSK-Therapy-OS
+
+**Current Release Status:** `v2.1.0-local-rc3` (Frozen Local Production-Ready)  
+**Audit Reports:** [P8 Final Security Closure (RC3)](1docs/audits/P8_FINAL_SECURITY_CLOSURE_RC3.md) | [Local Release Readiness Final](1docs/audits/LOCAL_RELEASE_READINESS_FINAL.md)
 
 > ⚠️ **EDUCATIONAL AND ENGINEERING PROOF OF CONCEPT ONLY.**  
 > Do not enter patient names, identifiable medical details, or real clinical records.  
@@ -55,8 +58,8 @@ python -m msk_therapy_os report --db demo.sqlite3 --case DEMO-NECK-001 --out rep
 python -m msk_therapy_os serve --db demo.sqlite3 --port 8080
 # Open browser at: http://127.0.0.1:8080/
 
-# 12. Run all automated unit tests (38 tests)
-python -m unittest discover -s tests -v
+# 12. Run full automated regression suite (174 tests, 100% PASS)
+python -m pytest tests -v
 ```
 
 ---
@@ -106,3 +109,4 @@ python -m msk_therapy_os questionnaires --db demo.sqlite3 --region neck
 - **Platform:** Windows 64-bit, 8GB RAM, CPU-first, stdlib Python + SQLite.
 - **Constraints Applied:** Constraint-first → Artifact-first → CLI-first → Evidence-first → Cost-aware → Automation-last.
 - **No Cloud / AI Dependencies:** Zero external API keys, zero local LLMs, zero Docker containers.
+- **Release Freeze:** `v2.1.0-local-rc3` is frozen as the definitive Local Production-Ready candidate.
