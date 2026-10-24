@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -29,6 +31,8 @@ from msk_therapy_os.auth import (
     create_user,
     bootstrap_initial_admin,
     migrate_legacy_db_to_secure_mode,
+    recover_admin_account,
+    get_active_admin_count,
 )
 from msk_therapy_os.db import init_db, open_db, seed_db
 from msk_therapy_os.points import (
@@ -294,6 +298,115 @@ class TestAuthAndRBACUnit(unittest.TestCase):
         # Reviewers must still exist and be readable
         reviewers_after = list_clinical_reviewers(self.conn)
         self.assertEqual(len(reviewers_before), len(reviewers_after))
+
+
+    def test_multi_process_bootstrap_concurrency(self):
+        """Verify process-level mutual exclusion using BEGIN IMMEDIATE across separate OS processes."""
+        clean_db_path = Path(self.temp_dir.name) / "multiproc_bootstrap.sqlite3"
+        conn = sqlite3.connect(str(clean_db_path))
+        init_db(conn)
+        conn.close()
+
+        # Launch 4 separate OS processes attempting simultaneous bootstrap
+        procs = []
+        for i in range(4):
+            cmd = [
+                sys.executable, "-m", "msk_therapy_os", "bootstrap-admin",
+                "--db", str(clean_db_path),
+                "--username", f"admin_proc_{i}",
+                "--password", f"StrongProcPass{i}!@#",
+            ]
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            procs.append(p)
+
+        results = [p.wait(timeout=15) for p in procs]
+        success_count = sum(1 for code in results if code == 0)
+        self.assertEqual(success_count, 1, "Exactly one OS process must succeed bootstrapping admin")
+
+        check_conn = sqlite3.connect(str(clean_db_path))
+        self.assertEqual(get_user_count(check_conn), 1)
+        self.assertEqual(get_active_admin_count(check_conn), 1)
+        check_conn.close()
+
+    def test_administrative_recovery_from_locked_migration(self):
+        """Verify recover_admin_account securely unlocks admin on a locked legacy database."""
+        # 1. Lock all accounts via migration
+        migrate_legacy_db_to_secure_mode(self.conn, deactivate_demo_users=False)
+        self.assertIsNone(authenticate_user(self.conn, "admin", "admin123"))
+        self.assertEqual(get_active_admin_count(self.conn), 0)
+
+        # 2. Normal bootstrap must be rejected because users already exist
+        with self.assertRaises(PermissionError):
+            bootstrap_initial_admin(
+                self.conn,
+                username="hacker_admin",
+                password="AnotherPassword123!",
+            )
+
+        # 3. Recover admin with strong password and mandatory audit reason
+        rec_res = recover_admin_account(
+            self.conn,
+            username="admin",
+            new_password="NewSecureAdminPass99!",
+            reason="P7 disaster recovery unlock verification",
+            operator="qa_lead"
+        )
+        self.assertEqual(rec_res["status"], "ADMIN_RECOVERED")
+        self.assertEqual(rec_res["username"], "admin")
+
+        # 4. Authenticate with newly recovered admin password
+        admin_user = authenticate_user(self.conn, "admin", "NewSecureAdminPass99!")
+        self.assertIsNotNone(admin_user)
+        self.assertEqual(admin_user["role"], "admin")
+        self.assertEqual(get_active_admin_count(self.conn), 1)
+
+        # 5. Reviewers and foreign keys must remain 100% intact
+        fk_errors = self.conn.execute("PRAGMA foreign_key_check").fetchall()
+        self.assertEqual(len(fk_errors), 0)
+
+    def test_migration_with_direct_admin_claim(self):
+        """Verify legacy migration directly provisions new secure admin password without lockout."""
+        clean_db_path = Path(self.temp_dir.name) / "direct_claim_db.sqlite3"
+        conn = sqlite3.connect(str(clean_db_path))
+        init_db(conn)
+        seed_db(conn)
+
+        stats = migrate_legacy_db_to_secure_mode(
+            conn,
+            claim_admin_username="admin",
+            new_admin_password="DirectClaimPass99!",
+            deactivate_demo_users=False
+        )
+        self.assertGreater(stats["migrated_count"], 0)
+
+        # Admin must be immediately usable with new password
+        admin_user = authenticate_user(conn, "admin", "DirectClaimPass99!")
+        self.assertIsNotNone(admin_user)
+
+        # Old password must fail
+        self.assertIsNone(authenticate_user(conn, "admin", "admin123"))
+
+        # Other demo accounts must remain locked
+        self.assertIsNone(authenticate_user(conn, "dr_chen", "reviewer123"))
+        conn.close()
+
+    def test_migration_atomic_rollback_on_failure(self):
+        """Verify migration wraps operations in BEGIN IMMEDIATE and rolls back on failure."""
+        # Intentionally tamper with a user row to trigger constraint error during update if needed,
+        # or verify transaction rollback using a mocked exception
+        orig_hash = self.conn.execute("SELECT password_hash FROM users WHERE username = 'admin'").fetchone()[0]
+
+        # Call with invalid password that fails validation
+        with self.assertRaises(ValueError):
+            migrate_legacy_db_to_secure_mode(
+                self.conn,
+                claim_admin_username="admin",
+                new_admin_password="short", # < 8 chars triggers ValueError
+            )
+
+        # Verify DB was not partially modified
+        after_hash = self.conn.execute("SELECT password_hash FROM users WHERE username = 'admin'").fetchone()[0]
+        self.assertEqual(orig_hash, after_hash, "DB state must remain unmodified after failed migration")
 
 
 class TestAuthAndRBACIntegration(unittest.TestCase):

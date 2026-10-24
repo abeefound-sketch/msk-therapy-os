@@ -62,3 +62,27 @@
 - **SHA-256 Checksum**: `68294bb95a09ce017b9ee359cbdc01270275c516a35fc839ce5e55063510f707`
 - **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
 - **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.
+
+### [EMERGENCY BREAK-GLASS] SQLite Restore Bypass - 2026-10-24T06:41:39Z
+- **Timestamp**: `2026-10-24T06:41:39Z`
+- **Event**: `DISASTER_RECOVERY_HMAC_BYPASS`
+- **Backup Source**: `C:\Users\tuanh\AppData\Local\Temp\tmpj61hwzm_\snapshot_disaster_recovery.sqlite3`
+- **SHA-256 Checksum**: `38e9fc767a34dddc5bb5e242e3c186a3fb5edb2ceee3b1f0d51da6fe3649a57d`
+- **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
+- **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.
+
+### [EMERGENCY BREAK-GLASS] SQLite Restore Bypass - 2026-10-24T06:42:53Z
+- **Timestamp**: `2026-10-24T06:42:53Z`
+- **Event**: `DISASTER_RECOVERY_HMAC_BYPASS`
+- **Backup Source**: `C:\Users\tuanh\AppData\Local\Temp\tmp6t8clm7x\snapshot_disaster_recovery.sqlite3`
+- **SHA-256 Checksum**: `9c5b3b41d11684ce2cbf5f4135d9b5ed653bcc8edb7d06052f789ba98305daf7`
+- **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
+- **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.
+
+### [EMERGENCY BREAK-GLASS] SQLite Restore Bypass - 2026-10-24T06:45:35Z
+- **Timestamp**: `2026-10-24T06:45:35Z`
+- **Event**: `DISASTER_RECOVERY_HMAC_BYPASS`
+- **Backup Source**: `C:\Users\tuanh\AppData\Local\Temp\tmpvce_lq79\snapshot_disaster_recovery.sqlite3`
+- **SHA-256 Checksum**: `ef0b60a5d84c3fa5e107cc282ca7ef371e7e840ec083035cda7171076fc1623d`
+- **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
+- **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.

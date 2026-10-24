@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from datetime import date
 from pathlib import Path
 import sqlite3
@@ -40,6 +41,7 @@ from msk_therapy_os.points import (
     get_backup_signing_key,
     rotate_backup_signing_key,
     export_backup_signing_key,
+    secure_file_permissions,
 )
 
 # Exported symbols for full backward compatibility with M0 unit tests
@@ -95,6 +97,46 @@ def add_visit(
     )
     db.commit()
     return disposition
+
+
+def resolve_password_input(
+    cli_arg: Optional[str] = None,
+    *,
+    read_stdin: bool = False,
+    env_var_name: Optional[str] = "MSK_ADMIN_PASSWORD",
+    prompt_label: str = "Administrator Password: ",
+    confirm: bool = False,
+) -> str:
+    """Resolve password securely: env var -> stdin -> CLI argument (with warning) -> interactive getpass."""
+    if env_var_name and os.environ.get(env_var_name):
+        return os.environ[env_var_name]
+
+    if read_stdin:
+        pwd = sys.stdin.readline().rstrip("\r\n")
+        if not pwd:
+            raise ValueError("No password provided via stdin.")
+        return pwd
+
+    if cli_arg:
+        sys.stderr.write(
+            "SECURITY WARNING: Passing password via CLI argument can expose secrets in process tables and shell history.\n"
+            "Use interactive prompt, stdin, or environment variable instead.\n"
+        )
+        return cli_arg
+
+    if sys.stdin.isatty():
+        import getpass
+        p1 = getpass.getpass(prompt_label)
+        if confirm:
+            p2 = getpass.getpass("Confirm " + prompt_label)
+            if p1 != p2:
+                raise ValueError("Passwords do not match.")
+        return p1
+
+    raise ValueError(
+        f"Password must be supplied via interactive prompt, environment variable ({env_var_name or 'MSK_ADMIN_PASSWORD'}), "
+        "stdin, or CLI argument."
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -207,12 +249,15 @@ def build_parser() -> argparse.ArgumentParser:
     bs_cmd = sub.add_parser("bootstrap-admin", help="Bootstrap root administrator on a clean database")
     bs_cmd.add_argument("--db", default=DEFAULT_DB)
     bs_cmd.add_argument("--username", required=True, help="Administrator username")
-    bs_cmd.add_argument("--password", required=True, help="Strong administrator password (>= 8 chars)")
+    bs_cmd.add_argument("--password", help="Strong administrator password (>= 8 chars; omit for interactive hidden prompt)")
+    bs_cmd.add_argument("--password-stdin", action="store_true", help="Read administrator password from standard input")
     bs_cmd.add_argument("--name", default="Root Administrator", help="Display name")
+    bs_cmd.add_argument("--allow-claim", action="store_true", help="Allow bootstrapping if all existing administrators are locked")
 
     exp_cmd = sub.add_parser("export-hmac-key", help="Export active HMAC backup authentication key to a secured file")
     exp_cmd.add_argument("--out", required=True, help="Destination file path to securely write the HMAC key")
     exp_cmd.add_argument("--format", choices=["hex", "binary"], default="hex", help="Output format (default: hex)")
+    exp_cmd.add_argument("--force", action="store_true", help="Overwrite destination key file if it already exists")
 
     sub.add_parser("rotate-hmac-key", help="Rotate HMAC backup authentication key and archive old key to history")
 
@@ -225,6 +270,17 @@ def build_parser() -> argparse.ArgumentParser:
     mig_cmd = sub.add_parser("migrate-secure-db", help="Safely neutralize legacy demo credentials for SECURE mode")
     mig_cmd.add_argument("--db", default=DEFAULT_DB)
     mig_cmd.add_argument("--deactivate", action="store_true", help="Deactivate demo accounts instead of locking passwords")
+    mig_cmd.add_argument("--claim-admin", help="Administrator username to immediately claim with a new secure password")
+    mig_cmd.add_argument("--admin-password", help="New password for claimed administrator (omit for interactive hidden prompt)")
+    mig_cmd.add_argument("--admin-password-stdin", action="store_true", help="Read claimed admin password from stdin")
+
+    rec_cmd = sub.add_parser("recover-admin", help="Securely recover or claim an administrator account on a migrated or locked database")
+    rec_cmd.add_argument("--db", default=DEFAULT_DB)
+    rec_cmd.add_argument("--username", default="admin", help="Administrator username to recover/claim (default: admin)")
+    rec_cmd.add_argument("--password", help="New administrator password (omit for interactive hidden prompt)")
+    rec_cmd.add_argument("--password-stdin", action="store_true", help="Read password from standard input")
+    rec_cmd.add_argument("--reason", required=True, help="Mandatory justification reason for administrative recovery")
+    rec_cmd.add_argument("--confirm", action="store_true", help="Confirm administrative recovery and password update")
 
     return p
 
@@ -266,18 +322,17 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.action == "export-hmac-key":
         out_path = Path(args.out).resolve()
+        if out_path.exists() and not getattr(args, "force", False):
+            print(f"ERROR: Destination file '{out_path}' already exists. Use '--force' to overwrite existing key file.")
+            return 2
         out_path.parent.mkdir(parents=True, exist_ok=True)
         raw_key = get_backup_signing_key()
         if args.format == "binary":
             out_path.write_bytes(raw_key)
         else:
             out_path.write_text(raw_key.hex() + "\n", encoding="utf-8")
-        try:
-            import os
-            os.chmod(out_path, 0o600)
-        except Exception:
-            pass
-        print(f"HMAC signing key securely exported to '{out_path}'. Keep this file confidential.")
+        secure_file_permissions(out_path)
+        print(f"HMAC signing key securely exported to '{out_path}'. Permissions restricted to current owner.")
         return 0
 
     if args.action == "rotate-hmac-key":
@@ -450,15 +505,63 @@ def main(argv: list[str] | None = None) -> int:
                     print(f"  Q: {q.question_text}")
                     print(f"  Ref: {q.evidence_id}")
             elif args.action == "bootstrap-admin":
+                pwd = resolve_password_input(
+                    getattr(args, "password", None),
+                    read_stdin=getattr(args, "password_stdin", False),
+                    env_var_name="MSK_ADMIN_PASSWORD",
+                    prompt_label="Initial Administrator Password: ",
+                    confirm=True
+                )
                 admin = bootstrap_initial_admin(
                     db,
                     username=args.username,
-                    password=args.password,
+                    password=pwd,
                     display_name=args.name,
+                    allow_claim_if_all_admins_locked=getattr(args, "allow_claim", False),
                 )
                 print(f"Successfully bootstrapped initial administrator: {admin['username']} ({admin['user_id']})")
+            elif args.action == "recover-admin":
+                if not getattr(args, "confirm", False):
+                    if sys.stdin.isatty():
+                        ans = input(f"Confirm administrative recovery for account '{args.username}'? (y/N): ").strip().lower()
+                        if ans not in ("y", "yes"):
+                            print("Administrative recovery aborted by user.")
+                            return 2
+                    else:
+                        print("ERROR: Administrative recovery requires '--confirm' flag in non-interactive mode.")
+                        return 2
+                pwd = resolve_password_input(
+                    getattr(args, "password", None),
+                    read_stdin=getattr(args, "password_stdin", False),
+                    env_var_name="MSK_ADMIN_PASSWORD",
+                    prompt_label="New Administrator Password: ",
+                    confirm=True
+                )
+                rec_res = recover_admin_account(
+                    db,
+                    username=args.username,
+                    new_password=pwd,
+                    reason=args.reason,
+                    operator=os.environ.get("USERNAME", "cli_admin"),
+                )
+                print(f"Administrative recovery successful: account '{rec_res['username']}' ({rec_res['user_id']}) unlocked with new password.")
             elif args.action == "migrate-secure-db":
-                mig_res = migrate_legacy_db_to_secure_mode(db, deactivate_demo_users=args.deactivate)
+                claim_user = getattr(args, "claim_admin", None)
+                claim_pwd = None
+                if claim_user:
+                    claim_pwd = resolve_password_input(
+                        getattr(args, "admin_password", None),
+                        read_stdin=getattr(args, "admin_password_stdin", False),
+                        env_var_name="MSK_ADMIN_PASSWORD",
+                        prompt_label=f"New Secure Password for '{claim_user}': ",
+                        confirm=True
+                    )
+                mig_res = migrate_legacy_db_to_secure_mode(
+                    db,
+                    deactivate_demo_users=args.deactivate,
+                    claim_admin_username=claim_user,
+                    new_admin_password=claim_pwd,
+                )
                 print(f"Migration complete: {mig_res['migrated_count']} legacy demo user credentials neutralized.")
                 for u in mig_res['users']:
                     print(f"  - [{u['role']}] {u['username']} ({u['user_id']}): {u['action']}")

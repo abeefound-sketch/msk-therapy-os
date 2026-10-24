@@ -1,6 +1,6 @@
 {
-  "timestamp_utc": "2026-10-24T05:19:13Z",
-  "target_url": "http://127.0.0.1:59690",
+  "timestamp_utc": "2026-10-24T06:44:14Z",
+  "target_url": "http://127.0.0.1:60693",
   "database_path": "2data/demo.sqlite3",
   "environment": {
     "os": "Windows 10 (10.0.19045)",
@@ -38,9 +38,9 @@
       "sample_count": 120,
       "warmup_frames": 30,
       "mean_frame_time_ms": 16.67,
-      "min_frame_time_ms": 16.6,
+      "min_frame_time_ms": 16.5,
       "max_frame_time_ms": 16.8,
-      "p95_frame_time_ms": 16.7,
+      "p95_frame_time_ms": 16.8,
       "p99_frame_time_ms": 16.8,
       "std_dev_ms": 0.06,
       "effective_fps": 60,
@@ -53,21 +53,21 @@
         "process_tree": {
           "process_count": 4,
           "pids": [
-            11136,
-            3824,
-            12168,
-            13660
+            12040,
+            14232,
+            6512,
+            11124
           ],
-          "total_working_set_rss_mb": 847.16,
+          "total_working_set_rss_mb": 877.34,
           "by_type": {
-            "browser-main": 46.85,
-            "gpu-process": 470.32,
-            "renderer": 297.8,
-            "utility": 32.2,
+            "browser-main": 46.86,
+            "gpu-process": 494.16,
+            "renderer": 303.59,
+            "utility": 32.74,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 8.64
+        "js_heap_used_mb": 9.33
       },
       {
         "round": 1,
@@ -75,124 +75,181 @@
         "process_tree": {
           "process_count": 4,
           "pids": [
-            11136,
-            3824,
-            12168,
-            13660
+            12040,
+            14232,
+            6512,
+            11124
           ],
-          "total_working_set_rss_mb": 931.46,
+          "total_working_set_rss_mb": 941.42,
           "by_type": {
-            "browser-main": 47.04,
-            "gpu-process": 553.52,
-            "renderer": 298.7,
-            "utility": 32.2,
+            "browser-main": 47.06,
+            "gpu-process": 557.57,
+            "renderer": 304.05,
+            "utility": 32.74,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 8.89
+        "js_heap_used_mb": 9.58
       },
       {
         "round": 2,
-        "stage": "mid_stress_50_switches",
+        "stage": "cycle_1_cooldown_post_55_switches",
         "process_tree": {
           "process_count": 4,
           "pids": [
-            11136,
-            3824,
-            12168,
-            13660
+            12040,
+            14232,
+            6512,
+            11124
           ],
-          "total_working_set_rss_mb": 902.91,
+          "total_working_set_rss_mb": 934.59,
           "by_type": {
-            "browser-main": 47.82,
-            "gpu-process": 482.13,
-            "renderer": 340.7,
-            "utility": 32.25,
+            "browser-main": 47.85,
+            "gpu-process": 491.55,
+            "renderer": 362.39,
+            "utility": 32.8,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 12.68
+        "js_heap_used_mb": 9.91
       },
       {
         "round": 3,
-        "stage": "post_stress_110_switches",
+        "stage": "cycle_2_cooldown_post_110_switches",
         "process_tree": {
           "process_count": 4,
           "pids": [
-            11136,
-            3824,
-            12168,
-            13660
+            12040,
+            14232,
+            6512,
+            11124
           ],
-          "total_working_set_rss_mb": 915.29,
+          "total_working_set_rss_mb": 906.37,
           "by_type": {
-            "browser-main": 47.84,
-            "gpu-process": 454.21,
-            "renderer": 380.98,
-            "utility": 32.25,
+            "browser-main": 48.0,
+            "gpu-process": 457.39,
+            "renderer": 368.05,
+            "utility": 32.92,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 9.42
+        "js_heap_used_mb": 11.64
+      },
+      {
+        "round": 4,
+        "stage": "cycle_3_cooldown_post_165_switches",
+        "process_tree": {
+          "process_count": 4,
+          "pids": [
+            12040,
+            14232,
+            6512,
+            11124
+          ],
+          "total_working_set_rss_mb": 953.03,
+          "by_type": {
+            "browser-main": 48.02,
+            "gpu-process": 458.93,
+            "renderer": 413.16,
+            "utility": 32.92,
+            "other": 0.0
+          }
+        },
+        "js_heap_used_mb": 9.96
       }
     ],
     "memory_forensics": {
       "cold_start_process_tree": {
         "process_count": 4,
         "pids": [
-          11136,
-          3824,
-          12168,
-          13660
+          12040,
+          14232,
+          6512,
+          11124
         ],
-        "total_working_set_rss_mb": 847.16,
+        "total_working_set_rss_mb": 877.34,
         "by_type": {
-          "browser-main": 46.85,
-          "gpu-process": 470.32,
-          "renderer": 297.8,
-          "utility": 32.2,
+          "browser-main": 46.86,
+          "gpu-process": 494.16,
+          "renderer": 303.59,
+          "utility": 32.74,
           "other": 0.0
         }
       },
       "steady_state_baseline_process_tree": {
         "process_count": 4,
         "pids": [
-          11136,
-          3824,
-          12168,
-          13660
+          12040,
+          14232,
+          6512,
+          11124
         ],
-        "total_working_set_rss_mb": 931.46,
+        "total_working_set_rss_mb": 941.42,
         "by_type": {
-          "browser-main": 47.04,
-          "gpu-process": 553.52,
-          "renderer": 298.7,
-          "utility": 32.2,
+          "browser-main": 47.06,
+          "gpu-process": 557.57,
+          "renderer": 304.05,
+          "utility": 32.74,
+          "other": 0.0
+        }
+      },
+      "cycle_1_cooldown_process_tree": {
+        "process_count": 4,
+        "pids": [
+          12040,
+          14232,
+          6512,
+          11124
+        ],
+        "total_working_set_rss_mb": 934.59,
+        "by_type": {
+          "browser-main": 47.85,
+          "gpu-process": 491.55,
+          "renderer": 362.39,
+          "utility": 32.8,
+          "other": 0.0
+        }
+      },
+      "cycle_2_cooldown_process_tree": {
+        "process_count": 4,
+        "pids": [
+          12040,
+          14232,
+          6512,
+          11124
+        ],
+        "total_working_set_rss_mb": 906.37,
+        "by_type": {
+          "browser-main": 48.0,
+          "gpu-process": 457.39,
+          "renderer": 368.05,
+          "utility": 32.92,
           "other": 0.0
         }
       },
       "final_process_tree": {
         "process_count": 4,
         "pids": [
-          11136,
-          3824,
-          12168,
-          13660
+          12040,
+          14232,
+          6512,
+          11124
         ],
-        "total_working_set_rss_mb": 915.29,
+        "total_working_set_rss_mb": 953.03,
         "by_type": {
-          "browser-main": 47.84,
-          "gpu-process": 454.21,
-          "renderer": 380.98,
-          "utility": 32.25,
+          "browser-main": 48.02,
+          "gpu-process": 458.93,
+          "renderer": 413.16,
+          "utility": 32.92,
           "other": 0.0
         }
       },
-      "cold_start_allocation_mb": 84.3,
-      "js_heap_baseline_mb": 8.89,
-      "js_heap_final_mb": 9.42,
-      "steady_state_rss_slope_mb_per_stage": -8.09,
-      "steady_state_js_slope_mb_per_stage": 0.26,
+      "cold_start_allocation_mb": 64.08,
+      "js_heap_baseline_mb": 9.58,
+      "js_heap_final_mb": 9.96,
+      "cumulative_creep_mb": 18.44,
+      "steady_state_rss_slope_mb_per_stage": 9.22,
+      "steady_state_js_slope_mb_per_stage": 0.03,
       "leak_detected": false
     }
   },
@@ -203,7 +260,7 @@
       "hard_stop_enforced": true
     },
     "soap_supervisor_signoff": {
-      "soap_id": 29,
+      "soap_id": 30,
       "visit_id": 4,
       "decision": "APPROVED",
       "reviewer": "Dr. Sarah Chen, MD",
@@ -212,13 +269,13 @@
     },
     "fhir_r4_export": {
       "is_valid": true,
-      "entry_count": 80,
+      "entry_count": 82,
       "resource_counts": {
         "Patient": 1,
         "Encounter": 3,
         "Observation": 23,
-        "DocumentReference": 27,
-        "Provenance": 26
+        "DocumentReference": 28,
+        "Provenance": 27
       },
       "errors": [],
       "warnings": []
@@ -237,7 +294,7 @@
     "ops_per_thread": 15,
     "total_reads": 100,
     "total_writes": 50,
-    "duration_sec": 0.167,
+    "duration_sec": 0.243,
     "errors": [],
     "concurrency_passed": true
   },
@@ -245,7 +302,7 @@
     "validator": "fhir.resources.R4B.bundle.Bundle",
     "is_valid": true,
     "resource_type": "Bundle",
-    "total_entries": 80,
+    "total_entries": 82,
     "errors": []
   }
 }

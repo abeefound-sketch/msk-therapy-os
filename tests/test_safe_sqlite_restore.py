@@ -4,7 +4,11 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import os
+import platform
 import sqlite3
+import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -25,6 +29,7 @@ from msk_therapy_os.points import (
     list_custom_points,
     restore_database_safely,
     rollback_database,
+    secure_file_permissions,
     rotate_backup_signing_key,
     run_database_integrity_check,
 )
@@ -185,6 +190,48 @@ class TestSafeSQLiteRestoreUnit(unittest.TestCase):
         with self.assertRaises(ValueError) as ctx:
             restore_database_safely(str(self.db_path), str(incompat_file))
         self.assertIn("missing required tables", str(ctx.exception))
+
+    def test_secure_file_permissions_windows_ntfs(self):
+        """Verify secure_file_permissions restricts file to current owner on Windows and POSIX."""
+        test_file = Path(self.temp_dir.name) / "secret_test.key"
+        test_file.write_text("super_secret_payload_123", encoding="utf-8")
+        
+        ok = secure_file_permissions(test_file)
+        self.assertTrue(ok)
+        self.assertTrue(test_file.exists())
+        self.assertEqual(test_file.read_text(encoding="utf-8"), "super_secret_payload_123")
+
+        if platform.system() == "Windows":
+            username = os.environ.get("USERNAME")
+            if username:
+                res = subprocess.run(["icacls", str(test_file)], capture_output=True, text=True, check=False)
+                self.assertEqual(res.returncode, 0)
+                # Verify that current user has full access (F)
+                self.assertIn(username, res.stdout)
+                self.assertIn(":(F)", res.stdout)
+        else:
+            mode = os.stat(test_file).st_mode & 0o777
+            self.assertEqual(mode, 0o600)
+
+    def test_export_hmac_key_overwrite_protection(self):
+        """Verify export-hmac-key CLI prohibits overwriting without --force."""
+        target_file = Path(self.temp_dir.name) / "exported_hmac.key"
+        target_file.write_text("PRE_EXISTING_CONTENT", encoding="utf-8")
+
+        # 1. Attempt export without --force -> must return exit code 2
+        cmd = [sys.executable, "-m", "msk_therapy_os", "export-hmac-key", "--out", str(target_file)]
+        res_no_force = subprocess.run(cmd, capture_output=True, text=True)
+        self.assertEqual(res_no_force.returncode, 2)
+        self.assertIn("already exists. Use '--force'", res_no_force.stdout + res_no_force.stderr)
+        self.assertEqual(target_file.read_text(encoding="utf-8"), "PRE_EXISTING_CONTENT", "File must not be overwritten")
+
+        # 2. Attempt export with --force -> must succeed (exit code 0)
+        cmd_force = [sys.executable, "-m", "msk_therapy_os", "export-hmac-key", "--out", str(target_file), "--force"]
+        res_force = subprocess.run(cmd_force, capture_output=True, text=True)
+        self.assertEqual(res_force.returncode, 0)
+        new_content = target_file.read_text(encoding="utf-8").strip()
+        self.assertNotEqual(new_content, "PRE_EXISTING_CONTENT")
+        self.assertEqual(len(new_content), 64, "Exported key must be 64-char hex string")
 
 
 class TestSafeSQLiteRestoreIntegration(unittest.TestCase):

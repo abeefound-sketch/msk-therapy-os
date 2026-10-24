@@ -54,8 +54,11 @@ class TestIndependentFHIRR4Validation(unittest.TestCase):
             from fhir.resources.R4B.documentreference import DocumentReference
             from fhir.resources.R4B.provenance import Provenance
             from fhir.resources.R4B.adverseevent import AdverseEvent
-        except ImportError:
-            self.skipTest("fhir.resources not installed; skipping external library validation")
+        except ImportError as exc:
+            self.fail(
+                "MANDATORY RELEASE GATE FAILURE: 'fhir.resources' library is required for independent schema verification. "
+                "Skipping external validation is strictly prohibited by Release Gate! Error: " + str(exc)
+            )
 
         bundle_dict = export_case_fhir(self.conn, "DEMO-NECK-001")
         

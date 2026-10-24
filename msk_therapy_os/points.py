@@ -10,6 +10,8 @@ import hmac
 import json
 import math
 import os
+import platform
+import subprocess
 from pathlib import Path
 import re
 import secrets
@@ -1321,6 +1323,30 @@ def run_database_integrity_check(db: sqlite3.Connection) -> Dict[str, Any]:
     }
 
 
+def secure_file_permissions(filepath: Path | str) -> bool:
+    """Apply strict private file permissions (POSIX 0o600 / Windows NTFS ACL exclusive to owner)."""
+    p = Path(filepath).resolve()
+    if not p.exists():
+        return False
+    success = True
+    try:
+        os.chmod(p, 0o600)
+    except Exception:
+        success = False
+
+    if platform.system() == "Windows":
+        username = os.environ.get("USERNAME")
+        if username:
+            try:
+                cmd = ["icacls", str(p), "/inheritance:r", "/grant:r", f"{username}:(F)"]
+                res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+                if res.returncode == 0:
+                    success = True
+            except Exception:
+                pass
+    return success
+
+
 def get_backup_signing_key() -> bytes:
     """Retrieve or generate persistent HMAC secret key for backup anti-tamper authentication."""
     env_key = os.environ.get("MSK_BACKUP_HMAC_KEY")
@@ -1343,6 +1369,7 @@ def get_backup_signing_key() -> bytes:
     try:
         key_file.parent.mkdir(parents=True, exist_ok=True)
         key_file.write_bytes(new_key)
+        secure_file_permissions(key_file)
     except Exception:
         pass
     return new_key
@@ -1391,6 +1418,8 @@ def rotate_backup_signing_key(new_key: Optional[bytes] = None) -> bytes:
     if new_key is None:
         new_key = secrets.token_bytes(32)
     key_file.write_bytes(new_key)
+    secure_file_permissions(key_file)
+    secure_file_permissions(history_file)
     return new_key
 
 
