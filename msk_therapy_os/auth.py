@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import os
 import sys
 import re
@@ -14,6 +15,7 @@ import secrets
 import sqlite3
 import threading
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 SESSION_DURATION_SECONDS = 8 * 3600  # 8 hours session lifetime
@@ -103,6 +105,16 @@ def init_auth_tables(db: sqlite3.Connection) -> None:
             id INTEGER PRIMARY KEY CHECK (id = 1),
             admin_username TEXT NOT NULL,
             created_utc TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS auth_audit_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp_utc TEXT NOT NULL,
+            event_type TEXT NOT NULL,
+            operator TEXT NOT NULL,
+            target_user_id TEXT NOT NULL,
+            target_username TEXT NOT NULL,
+            details_json TEXT NOT NULL
         );
         """
     )
@@ -303,11 +315,14 @@ def recover_admin_account(
     new_password: str,
     reason: str,
     operator: str = "cli_admin",
+    incident_log_path: Optional[Path | str] = None,
 ) -> Dict[str, Any]:
     """Securely recover or claim an administrator account on a migrated or locked database.
 
     Verifies user existence and role, validates password complexity, updates password atomically
-    via BEGIN IMMEDIATE, and audits the recovery event to 4incidents/incident_log.md without leaking secrets.
+    via BEGIN IMMEDIATE, records relational audit entry, and mandatorily logs the recovery event to 
+    4incidents/incident_log.md with fsync. If logging fails, the database transaction is rolled back.
+    Strictly forbids leaking passwords, tokens, or hashes into logs.
     """
     init_auth_tables(db)
     u = username.strip().lower()
@@ -340,23 +355,44 @@ def recover_admin_account(
 
         new_hash = hash_password(new_password)
         cursor.execute("UPDATE users SET password_hash = ?, is_active = 1 WHERE user_id = ?", (new_hash, user_id))
-        db.execute("COMMIT")
 
-        # Record incident in incident_log.md
+        # Relational audit record inside the database transaction
+        ts = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        cursor.execute(
+            """INSERT INTO auth_audit_log (timestamp_utc, event_type, operator, target_user_id, target_username, details_json)
+               VALUES (?, 'ADMIN_RECOVERY', ?, ?, ?, ?)""",
+            (
+                ts,
+                operator,
+                user_id,
+                u,
+                json.dumps({"reason": reason.strip(), "action": "password_recovery_and_unlock"})
+            )
+        )
+
+        # Mandatory physical audit record appended to incident_log.md before transaction commit
+        log_file = Path(incident_log_path or "4incidents/incident_log.md")
         try:
-            incident_log = Path("4incidents/incident_log.md")
-            if incident_log.exists():
-                entry = (
-                    f"\n### [ADMIN_RECOVERY] - {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}\n"
-                    f"- **Operator:** {operator}\n"
-                    f"- **Target Account:** {u} ({user_id})\n"
-                    f"- **Action:** Administrative password recovery and account unlock\n"
-                    f"- **Reason:** {reason.strip()}\n"
-                )
-                with open(incident_log, "a", encoding="utf-8") as f:
-                    f.write(entry)
-        except Exception:
-            pass
+            log_file.parent.mkdir(parents=True, exist_ok=True)
+            entry = (
+                f"\n### [ADMIN_RECOVERY] - {ts}\n"
+                f"- **Timestamp**: `{ts}`\n"
+                f"- **Operator**: {operator}\n"
+                f"- **Target Account**: {u} ({user_id})\n"
+                f"- **Action**: Administrative password recovery and account unlock\n"
+                f"- **Reason**: {reason.strip()}\n"
+            )
+            with log_file.open("a", encoding="utf-8") as f:
+                f.write(entry)
+                f.flush()
+                os.fsync(f.fileno())
+        except Exception as log_err:
+            db.execute("ROLLBACK")
+            raise RuntimeError(
+                f"Administrative recovery aborted: Mandatory audit logging to '{log_file}' failed ({log_err}). Database changes were rolled back."
+            ) from log_err
+
+        db.execute("COMMIT")
 
         return {
             "status": "ADMIN_RECOVERED",
@@ -382,6 +418,7 @@ def migrate_legacy_db_to_secure_mode(
     deactivate_demo_users: bool = False,
     claim_admin_username: Optional[str] = None,
     new_admin_password: Optional[str] = None,
+    allow_all_admins_locked: bool = False,
 ) -> Dict[str, Any]:
     """Safely migrate a legacy database to SECURE mode by locking all default public credentials.
 
@@ -389,8 +426,14 @@ def migrate_legacy_db_to_secure_mode(
     user records, clinical reviewers, and historical audit linkage across visits,
     SOAP approvals, and observations.
 
-    If claim_admin_username and new_admin_password are provided, updates that administrator
-    with the new secure password during migration, preventing administrative lockout.
+    If claim_admin_username is provided:
+      - Validates account exists in the database.
+      - Verifies account role is strictly 'admin'.
+      - Verifies new password complexity and disallows trivial default passwords.
+      - Atomically updates password and unlocks account.
+
+    Guarantees that migration does not leave the database with 0 active administrators
+    unless allow_all_admins_locked is explicitly True.
     """
     init_auth_tables(db)
     orig_isolation = db.isolation_level
@@ -398,6 +441,29 @@ def migrate_legacy_db_to_secure_mode(
     try:
         db.execute("BEGIN IMMEDIATE")
         cursor = db.cursor()
+
+        claim_u = claim_admin_username.strip().lower() if claim_admin_username else None
+        target_admin_row = None
+        if claim_u:
+            target_admin_row = cursor.execute(
+                "SELECT user_id, username, role, display_name FROM users WHERE username = ?",
+                (claim_u,)
+            ).fetchone()
+            if not target_admin_row:
+                db.execute("ROLLBACK")
+                raise ValueError(f"Admin claim account '{claim_admin_username}' was not found in database.")
+            if target_admin_row[2] != "admin":
+                db.execute("ROLLBACK")
+                raise PermissionError(
+                    f"User '{claim_admin_username}' has role '{target_admin_row[2]}', not 'admin'. Only administrator accounts can be claimed during migration."
+                )
+            if not new_admin_password or len(new_admin_password) < 8:
+                db.execute("ROLLBACK")
+                raise ValueError("New admin password must be at least 8 characters long.")
+            if is_secure_mode() and new_admin_password.lower() in DISALLOWED_DEFAULT_PASSWORDS:
+                db.execute("ROLLBACK")
+                raise ValueError("New admin password cannot be a disallowed default or trivial password.")
+
         default_hashes = list(DEFAULT_USER_HASHES.values())
         placeholders = ",".join("?" for _ in default_hashes)
 
@@ -407,13 +473,13 @@ def migrate_legacy_db_to_secure_mode(
         ).fetchall()
 
         migrated_users = []
+        claimed_uid = None
         for uid, uname, role, dname in rows:
-            if claim_admin_username and uname.lower() == claim_admin_username.lower() and new_admin_password:
-                if len(new_admin_password) < 8 or new_admin_password.lower() in DISALLOWED_DEFAULT_PASSWORDS:
-                    raise ValueError("New admin password must be at least 8 chars and not a disallowed default password.")
+            if claim_u and uname.lower() == claim_u:
                 new_hash = hash_password(new_admin_password)
                 cursor.execute("UPDATE users SET password_hash = ?, is_active = 1 WHERE user_id = ?", (new_hash, uid))
                 action = "password_updated_to_secure"
+                claimed_uid = uid
             elif deactivate_demo_users:
                 cursor.execute("UPDATE users SET is_active = 0 WHERE user_id = ?", (uid,))
                 action = "deactivated"
@@ -428,15 +494,56 @@ def migrate_legacy_db_to_secure_mode(
                 "display_name": dname,
                 "action": action,
             })
+
+        # If claim_admin_username was requested and valid, but wasn't in default demo hashes (e.g. idempotent re-run or previously changed)
+        if claim_u and not claimed_uid and target_admin_row:
+            new_hash = hash_password(new_admin_password)
+            cursor.execute("UPDATE users SET password_hash = ?, is_active = 1 WHERE user_id = ?", (new_hash, target_admin_row[0]))
+            migrated_users.append({
+                "user_id": target_admin_row[0],
+                "username": target_admin_row[1],
+                "role": "admin",
+                "display_name": target_admin_row[3],
+                "action": "password_updated_to_secure",
+            })
+
+        # Post-migration validation: verify at least 1 active, non-locked admin exists
+        active_admins = cursor.execute(
+            """SELECT COUNT(*) FROM users 
+               WHERE role = 'admin' 
+                 AND is_active = 1 
+                 AND password_hash NOT LIKE 'LOCKED_%'"""
+        ).fetchone()[0]
+
+        if active_admins == 0 and not allow_all_admins_locked:
+            db.execute("ROLLBACK")
+            raise PermissionError(
+                "Migration aborted: Migration would leave the database with zero active administrator accounts. "
+                "Provide --claim-admin <username> with a secure password or ensure an active admin exists."
+            )
+
         cursor.execute(
             "INSERT OR REPLACE INTO system_bootstrap (id, admin_username, created_utc) VALUES (1, ?, strftime('%Y-%m-%dT%H:%M:%SZ','now'))",
             (claim_admin_username or "legacy_migration",)
         )
+
+        ts = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        cursor.execute(
+            """INSERT INTO auth_audit_log (timestamp_utc, event_type, operator, target_user_id, target_username, details_json)
+               VALUES (?, 'LEGACY_MIGRATION', 'migration_tool', 'SYSTEM', ?, ?)""",
+            (
+                ts,
+                claim_admin_username or "ALL",
+                json.dumps({"migrated_count": len(migrated_users), "active_admins_remaining": active_admins})
+            )
+        )
+
         db.execute("COMMIT")
         return {
             "status": "MIGRATED_TO_SECURE",
             "migrated_count": len(migrated_users),
             "users": migrated_users,
+            "active_admin_count": active_admins,
         }
     except Exception:
         try:

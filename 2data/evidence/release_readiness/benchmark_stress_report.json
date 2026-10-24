@@ -1,6 +1,6 @@
 {
-  "timestamp_utc": "2026-10-24T06:44:14Z",
-  "target_url": "http://127.0.0.1:60693",
+  "timestamp_utc": "2026-10-24T08:10:07Z",
+  "target_url": "http://127.0.0.1:62733",
   "database_path": "2data/demo.sqlite3",
   "environment": {
     "os": "Windows 10 (10.0.19045)",
@@ -40,7 +40,7 @@
       "mean_frame_time_ms": 16.67,
       "min_frame_time_ms": 16.5,
       "max_frame_time_ms": 16.8,
-      "p95_frame_time_ms": 16.8,
+      "p95_frame_time_ms": 16.7,
       "p99_frame_time_ms": 16.8,
       "std_dev_ms": 0.06,
       "effective_fps": 60,
@@ -53,21 +53,21 @@
         "process_tree": {
           "process_count": 4,
           "pids": [
-            12040,
-            14232,
-            6512,
-            11124
+            232,
+            11924,
+            9380,
+            2416
           ],
-          "total_working_set_rss_mb": 877.34,
+          "total_working_set_rss_mb": 738.71,
           "by_type": {
-            "browser-main": 46.86,
-            "gpu-process": 494.16,
-            "renderer": 303.59,
-            "utility": 32.74,
+            "browser-main": 46.88,
+            "gpu-process": 368.25,
+            "renderer": 291.53,
+            "utility": 32.05,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 9.33
+        "js_heap_used_mb": 12.76
       },
       {
         "round": 1,
@@ -75,21 +75,21 @@
         "process_tree": {
           "process_count": 4,
           "pids": [
-            12040,
-            14232,
-            6512,
-            11124
+            232,
+            11924,
+            9380,
+            2416
           ],
-          "total_working_set_rss_mb": 941.42,
+          "total_working_set_rss_mb": 774.88,
           "by_type": {
-            "browser-main": 47.06,
-            "gpu-process": 557.57,
-            "renderer": 304.05,
-            "utility": 32.74,
+            "browser-main": 47.22,
+            "gpu-process": 402.08,
+            "renderer": 293.41,
+            "utility": 32.18,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 9.58
+        "js_heap_used_mb": 8.68
       },
       {
         "round": 2,
@@ -97,21 +97,21 @@
         "process_tree": {
           "process_count": 4,
           "pids": [
-            12040,
-            14232,
-            6512,
-            11124
+            232,
+            11924,
+            9380,
+            2416
           ],
-          "total_working_set_rss_mb": 934.59,
+          "total_working_set_rss_mb": 791.66,
           "by_type": {
-            "browser-main": 47.85,
-            "gpu-process": 491.55,
-            "renderer": 362.39,
-            "utility": 32.8,
+            "browser-main": 47.96,
+            "gpu-process": 358.39,
+            "renderer": 353.08,
+            "utility": 32.23,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 9.91
+        "js_heap_used_mb": 9.92
       },
       {
         "round": 3,
@@ -119,21 +119,21 @@
         "process_tree": {
           "process_count": 4,
           "pids": [
-            12040,
-            14232,
-            6512,
-            11124
+            232,
+            11924,
+            9380,
+            2416
           ],
-          "total_working_set_rss_mb": 906.37,
+          "total_working_set_rss_mb": 773.89,
           "by_type": {
-            "browser-main": 48.0,
-            "gpu-process": 457.39,
-            "renderer": 368.05,
-            "utility": 32.92,
+            "browser-main": 47.98,
+            "gpu-process": 332.66,
+            "renderer": 361.02,
+            "utility": 32.23,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 11.64
+        "js_heap_used_mb": 11.76
       },
       {
         "round": 4,
@@ -141,115 +141,115 @@
         "process_tree": {
           "process_count": 4,
           "pids": [
-            12040,
-            14232,
-            6512,
-            11124
+            232,
+            11924,
+            9380,
+            2416
           ],
-          "total_working_set_rss_mb": 953.03,
+          "total_working_set_rss_mb": 803.94,
           "by_type": {
-            "browser-main": 48.02,
-            "gpu-process": 458.93,
-            "renderer": 413.16,
-            "utility": 32.92,
+            "browser-main": 47.98,
+            "gpu-process": 335.14,
+            "renderer": 388.58,
+            "utility": 32.23,
             "other": 0.0
           }
         },
-        "js_heap_used_mb": 9.96
+        "js_heap_used_mb": 13.0
       }
     ],
     "memory_forensics": {
       "cold_start_process_tree": {
         "process_count": 4,
         "pids": [
-          12040,
-          14232,
-          6512,
-          11124
+          232,
+          11924,
+          9380,
+          2416
         ],
-        "total_working_set_rss_mb": 877.34,
+        "total_working_set_rss_mb": 738.71,
         "by_type": {
-          "browser-main": 46.86,
-          "gpu-process": 494.16,
-          "renderer": 303.59,
-          "utility": 32.74,
+          "browser-main": 46.88,
+          "gpu-process": 368.25,
+          "renderer": 291.53,
+          "utility": 32.05,
           "other": 0.0
         }
       },
       "steady_state_baseline_process_tree": {
         "process_count": 4,
         "pids": [
-          12040,
-          14232,
-          6512,
-          11124
+          232,
+          11924,
+          9380,
+          2416
         ],
-        "total_working_set_rss_mb": 941.42,
+        "total_working_set_rss_mb": 774.88,
         "by_type": {
-          "browser-main": 47.06,
-          "gpu-process": 557.57,
-          "renderer": 304.05,
-          "utility": 32.74,
+          "browser-main": 47.22,
+          "gpu-process": 402.08,
+          "renderer": 293.41,
+          "utility": 32.18,
           "other": 0.0
         }
       },
       "cycle_1_cooldown_process_tree": {
         "process_count": 4,
         "pids": [
-          12040,
-          14232,
-          6512,
-          11124
+          232,
+          11924,
+          9380,
+          2416
         ],
-        "total_working_set_rss_mb": 934.59,
+        "total_working_set_rss_mb": 791.66,
         "by_type": {
-          "browser-main": 47.85,
-          "gpu-process": 491.55,
-          "renderer": 362.39,
-          "utility": 32.8,
+          "browser-main": 47.96,
+          "gpu-process": 358.39,
+          "renderer": 353.08,
+          "utility": 32.23,
           "other": 0.0
         }
       },
       "cycle_2_cooldown_process_tree": {
         "process_count": 4,
         "pids": [
-          12040,
-          14232,
-          6512,
-          11124
+          232,
+          11924,
+          9380,
+          2416
         ],
-        "total_working_set_rss_mb": 906.37,
+        "total_working_set_rss_mb": 773.89,
         "by_type": {
-          "browser-main": 48.0,
-          "gpu-process": 457.39,
-          "renderer": 368.05,
-          "utility": 32.92,
+          "browser-main": 47.98,
+          "gpu-process": 332.66,
+          "renderer": 361.02,
+          "utility": 32.23,
           "other": 0.0
         }
       },
       "final_process_tree": {
         "process_count": 4,
         "pids": [
-          12040,
-          14232,
-          6512,
-          11124
+          232,
+          11924,
+          9380,
+          2416
         ],
-        "total_working_set_rss_mb": 953.03,
+        "total_working_set_rss_mb": 803.94,
         "by_type": {
-          "browser-main": 48.02,
-          "gpu-process": 458.93,
-          "renderer": 413.16,
-          "utility": 32.92,
+          "browser-main": 47.98,
+          "gpu-process": 335.14,
+          "renderer": 388.58,
+          "utility": 32.23,
           "other": 0.0
         }
       },
-      "cold_start_allocation_mb": 64.08,
-      "js_heap_baseline_mb": 9.58,
-      "js_heap_final_mb": 9.96,
-      "cumulative_creep_mb": 18.44,
-      "steady_state_rss_slope_mb_per_stage": 9.22,
-      "steady_state_js_slope_mb_per_stage": 0.03,
+      "cold_start_allocation_mb": 36.17,
+      "js_heap_baseline_mb": 8.68,
+      "js_heap_final_mb": 13.0,
+      "cumulative_creep_mb": 12.28,
+      "steady_state_rss_slope_mb_per_stage": 6.14,
+      "steady_state_js_slope_mb_per_stage": 1.54,
       "leak_detected": false
     }
   },
@@ -260,7 +260,7 @@
       "hard_stop_enforced": true
     },
     "soap_supervisor_signoff": {
-      "soap_id": 30,
+      "soap_id": 31,
       "visit_id": 4,
       "decision": "APPROVED",
       "reviewer": "Dr. Sarah Chen, MD",
@@ -269,13 +269,13 @@
     },
     "fhir_r4_export": {
       "is_valid": true,
-      "entry_count": 82,
+      "entry_count": 84,
       "resource_counts": {
         "Patient": 1,
         "Encounter": 3,
         "Observation": 23,
-        "DocumentReference": 28,
-        "Provenance": 27
+        "DocumentReference": 29,
+        "Provenance": 28
       },
       "errors": [],
       "warnings": []
@@ -288,13 +288,15 @@
   },
   "verdict": "LOCAL_PRODUCTION_READY_PASS",
   "console_errors": [],
-  "failed_requests": [],
+  "failed_requests": [
+    "GET http://127.0.0.1:62733/atlas/data/meshes.bin - net::ERR_ABORTED"
+  ],
   "p2_sqlite_concurrency": {
     "num_threads": 10,
     "ops_per_thread": 15,
     "total_reads": 100,
     "total_writes": 50,
-    "duration_sec": 0.243,
+    "duration_sec": 0.184,
     "errors": [],
     "concurrency_passed": true
   },
@@ -302,7 +304,7 @@
     "validator": "fhir.resources.R4B.bundle.Bundle",
     "is_valid": true,
     "resource_type": "Bundle",
-    "total_entries": 82,
+    "total_entries": 84,
     "errors": []
   }
 }
