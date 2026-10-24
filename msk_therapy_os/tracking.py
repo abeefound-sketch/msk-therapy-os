@@ -511,8 +511,9 @@ def export_case_fhir(db: sqlite3.Connection, case_id: str, require_approved_soap
                         "recorded": f"{v['visit_date']}T12:30:00Z",
                         "activity": {
                             "coding": [
-                                {"system": "http://terminology.hl7.org/CodeSystem/v3-DocumentCompletion", "code": "LA", "display": "legally authenticated"}
-                            ]
+                                {"system": "http://terminology.hl7.org/CodeSystem/v3-DocumentCompletion", "code": "AU", "display": "authenticated"}
+                            ],
+                            "text": "Clinical Supervisor Approval Sign-Off (Workflow Electronic Sign-off; not a PKI cryptographic signature)"
                         },
                         "agent": [
                             {
@@ -525,11 +526,11 @@ def export_case_fhir(db: sqlite3.Connection, case_id: str, require_approved_soap
                         "signature": [
                             {
                                 "type": [
-                                    {"system": "urn:iso-astm:E1762-95:2013", "code": "1.2.840.10065.1.12.1.1", "display": "Author's Signature"}
+                                    {"system": "urn:iso-astm:E1762-95:2013", "code": "1.2.840.10065.1.12.1.5", "display": "Verification Signature"}
                                 ],
                                 "when": f"{v['visit_date']}T12:30:00Z",
                                 "who": {"display": sp.get("reviewed_by")},
-                                "data": base64.b64encode(f"Supervisor Sign-Off: {sp.get('reviewed_by')} - {sp.get('review_status')}".encode("utf-8")).decode("ascii")
+                                "data": base64.b64encode(f"Clinical Supervisor Sign-off: {sp.get('reviewed_by')} - {sp.get('review_status')}".encode("utf-8")).decode("ascii")
                             }
                         ]
                     }

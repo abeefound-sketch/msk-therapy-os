@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -10,6 +11,7 @@ import time
 import unittest
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 from msk_therapy_os.auth import (
     authenticate_user,
@@ -26,6 +28,7 @@ from msk_therapy_os.auth import (
     get_user_count,
     create_user,
     bootstrap_initial_admin,
+    migrate_legacy_db_to_secure_mode,
 )
 from msk_therapy_os.db import init_db, open_db, seed_db
 from msk_therapy_os.points import (
@@ -206,6 +209,91 @@ class TestAuthAndRBACUnit(unittest.TestCase):
             uncertainty_radius_mm=3.0,
             db=self.conn
         )
+
+
+    def test_secure_mode_rejects_legacy_demo_passwords(self):
+        """Verify that SECURE MODE strictly rejects demo credentials and disallowed default passwords."""
+        orig_mode = os.environ.get("MSK_MODE")
+        try:
+            # Under DEMO mode, admin123 works
+            os.environ["MSK_MODE"] = "demo"
+            demo_user = authenticate_user(self.conn, "admin", "admin123")
+            self.assertIsNotNone(demo_user)
+
+            # Under SECURE mode, all default demo passwords are hard-blocked
+            os.environ["MSK_MODE"] = "secure"
+            self.assertIsNone(authenticate_user(self.conn, "admin", "admin123"))
+            self.assertIsNone(authenticate_user(self.conn, "dr_chen", "reviewer123"))
+            self.assertIsNone(authenticate_user(self.conn, "student1", "student123"))
+            self.assertIsNone(authenticate_user(self.conn, "guest_user", "guest123"))
+
+            # Even if user enters another disallowed default password
+            self.assertIsNone(authenticate_user(self.conn, "admin", "password123"))
+        finally:
+            if orig_mode is None:
+                os.environ.pop("MSK_MODE", None)
+            else:
+                os.environ["MSK_MODE"] = orig_mode
+
+    def test_bootstrap_concurrency_race_condition(self):
+        """Verify concurrent attempts to bootstrap initial admin result in exactly one winner."""
+        clean_db_path = Path(self.temp_dir.name) / "concurrency_bootstrap.sqlite3"
+        conn = sqlite3.connect(str(clean_db_path), check_same_thread=False, timeout=15)
+        init_db(conn)
+
+        def try_bootstrap(idx):
+            t_conn = sqlite3.connect(str(clean_db_path), timeout=15)
+            try:
+                bootstrap_initial_admin(
+                    t_conn,
+                    username=f"admin_{idx}",
+                    password=f"StrongAdminPass{idx}!@#",
+                    display_name=f"Admin {idx}"
+                )
+                return True
+            except PermissionError:
+                return False
+            finally:
+                t_conn.close()
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futures = [executor.submit(try_bootstrap, i) for i in range(8)]
+            results = [f.result() for f in futures]
+
+        success_count = sum(1 for r in results if r is True)
+        self.assertEqual(success_count, 1, "Exactly one concurrent thread must succeed bootstrapping admin")
+        self.assertEqual(get_user_count(conn), 1)
+        conn.close()
+
+    def test_legacy_db_migration_to_secure(self):
+        """Verify legacy DB migration locks default accounts while preserving clinical reviewer audit references."""
+        # Check initial state with seeded demo users
+        admin_before = authenticate_user(self.conn, "admin", "admin123")
+        self.assertIsNotNone(admin_before)
+
+        # Count reviewers before
+        reviewers_before = list_clinical_reviewers(self.conn)
+        self.assertGreater(len(reviewers_before), 0)
+
+        # Run migration
+        stats = migrate_legacy_db_to_secure_mode(self.conn, deactivate_demo_users=False)
+        self.assertGreater(stats["migrated_count"], 0)
+
+        # Verify admin cannot login with old password anymore
+        admin_after = authenticate_user(self.conn, "admin", "admin123")
+        self.assertIsNone(admin_after)
+
+        # Inspect database row directly: password_hash must be locked
+        row = self.conn.execute("SELECT password_hash FROM users WHERE username = 'admin'").fetchone()
+        self.assertTrue(row[0].startswith("LOCKED_DEMO_RESET_REQUIRED_"))
+
+        # Verify foreign keys are completely intact
+        fk_errors = self.conn.execute("PRAGMA foreign_key_check").fetchall()
+        self.assertEqual(len(fk_errors), 0, "No FK violations allowed after migration")
+
+        # Reviewers must still exist and be readable
+        reviewers_after = list_clinical_reviewers(self.conn)
+        self.assertEqual(len(reviewers_before), len(reviewers_after))
 
 
 class TestAuthAndRBACIntegration(unittest.TestCase):

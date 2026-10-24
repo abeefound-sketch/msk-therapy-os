@@ -11,6 +11,7 @@ import os
 import re
 import secrets
 import sqlite3
+import threading
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -20,6 +21,13 @@ PBKDF2_ITERATIONS = 100_000
 VALID_ROLES = ("student", "reviewer", "admin")
 VALID_CREDENTIALS = ("MD", "DO", "LAC", "PT", "DPT", "DC", "PHD", "MBBS", "FACP", "ND")
 VALID_VERIFICATION_STATUSES = ("PENDING_REVIEW", "VERIFIED_ACTIVE", "REVOKED", "EXPIRED")
+
+BOOTSTRAP_LOCK = threading.RLock()
+
+DISALLOWED_DEFAULT_PASSWORDS = frozenset({
+    "admin123", "reviewer123", "student123", "pending123", "faculty123",
+    "password", "12345678", "admin", "123456", "root"
+})
 
 
 def is_secure_mode() -> bool:
@@ -134,7 +142,7 @@ def create_user(
     if not password or len(password) < 8:
         raise ValueError("Password must be at least 8 characters long.")
 
-    if is_secure_mode() and password.lower() in ("admin123", "password", "12345678", "reviewer123", "student123"):
+    if is_secure_mode() and password.lower() in DISALLOWED_DEFAULT_PASSWORDS:
         raise ValueError("In SECURE mode, default or trivial passwords are strictly prohibited.")
 
     existing = db.execute("SELECT 1 FROM users WHERE username = ?", (u,)).fetchone()
@@ -166,18 +174,70 @@ def bootstrap_initial_admin(
     password: str,
     display_name: str = "Root Administrator",
 ) -> Dict[str, Any]:
-    """Secure bootstrap: initialize the first administrative account on a clean system."""
-    count = get_user_count(db)
-    if count > 0:
-        raise PermissionError("Bootstrap refused: System has already been initialized with existing users.")
+    """Secure bootstrap: initialize the first administrative account on a clean system.
 
-    return create_user(
-        db,
-        username=username,
-        password=password,
-        role="admin",
-        display_name=display_name,
-    )
+    Guarded by an atomic transaction and thread lock to prevent race conditions.
+    """
+    with BOOTSTRAP_LOCK:
+        init_auth_tables(db)
+        with db:
+            row = db.execute("SELECT COUNT(*) FROM users").fetchone()
+            count = row[0] if row else 0
+            if count > 0:
+                raise PermissionError("Bootstrap refused: System has already been initialized with existing users.")
+
+            return create_user(
+                db,
+                username=username,
+                password=password,
+                role="admin",
+                display_name=display_name,
+            )
+
+
+def migrate_legacy_db_to_secure_mode(
+    db: sqlite3.Connection,
+    *,
+    deactivate_demo_users: bool = False,
+) -> Dict[str, Any]:
+    """Safely migrate a legacy database to SECURE mode by locking all default public credentials.
+
+    Ensures that default demo credentials cannot be exploited while fully preserving
+    user records, clinical reviewers, and historical audit linkage across visits,
+    SOAP approvals, and observations.
+    """
+    init_auth_tables(db)
+    cursor = db.cursor()
+    default_hashes = list(DEFAULT_USER_HASHES.values())
+    placeholders = ",".join("?" for _ in default_hashes)
+
+    rows = cursor.execute(
+        f"SELECT user_id, username, role, display_name FROM users WHERE password_hash IN ({placeholders})",
+        default_hashes
+    ).fetchall()
+
+    migrated_users = []
+    with db:
+        for uid, uname, role, dname in rows:
+            if deactivate_demo_users:
+                cursor.execute("UPDATE users SET is_active = 0 WHERE user_id = ?", (uid,))
+                action = "deactivated"
+            else:
+                locked_marker = f"LOCKED_DEMO_RESET_REQUIRED_{secrets.token_hex(16)}"
+                cursor.execute("UPDATE users SET password_hash = ? WHERE user_id = ?", (locked_marker, uid))
+                action = "password_locked_reset_required"
+            migrated_users.append({
+                "user_id": uid,
+                "username": uname,
+                "role": role,
+                "display_name": dname,
+                "action": action,
+            })
+    return {
+        "status": "MIGRATED_TO_SECURE",
+        "migrated_count": len(migrated_users),
+        "users": migrated_users,
+    }
 
 
 def seed_default_users(db: sqlite3.Connection, force: bool = False) -> None:
@@ -293,6 +353,14 @@ def authenticate_user(db: sqlite3.Connection, username: str, password: str) -> O
     user_id, uname, p_hash, role, disp_name, is_active = row
     if not is_active:
         return None
+
+    # In SECURE mode, reject authentication with known public demo passwords or legacy default hashes
+    if is_secure_mode():
+        if password.lower() in DISALLOWED_DEFAULT_PASSWORDS:
+            return None
+        if p_hash in DEFAULT_USER_HASHES.values() or p_hash.startswith("LOCKED_DEMO_RESET_REQUIRED_"):
+            return None
+
     if not verify_password(password, p_hash):
         return None
 

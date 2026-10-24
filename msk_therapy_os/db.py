@@ -17,9 +17,13 @@ from msk_therapy_os.research_studio import init_research_tables, seed_demo_resea
 
 
 def open_db(path: str) -> sqlite3.Connection:
-    """Open connection with foreign key constraints enabled."""
-    db = sqlite3.connect(path)
+    """Open connection with foreign key constraints, timeout, and WAL journal mode enabled."""
+    db = sqlite3.connect(path, timeout=15.0)
     db.execute("PRAGMA foreign_keys=ON")
+    try:
+        db.execute("PRAGMA journal_mode=WAL")
+    except Exception:
+        pass
     return db
 
 

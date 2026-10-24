@@ -33,7 +33,7 @@ from msk_therapy_os.soap import (
     get_soap_notes_for_visit,
     review_soap_note,
 )
-from msk_therapy_os.auth import bootstrap_initial_admin, get_user_count, create_user
+from msk_therapy_os.auth import bootstrap_initial_admin, get_user_count, create_user, migrate_legacy_db_to_secure_mode
 from msk_therapy_os.points import (
     backup_database,
     restore_database_safely,
@@ -210,13 +210,21 @@ def build_parser() -> argparse.ArgumentParser:
     bs_cmd.add_argument("--password", required=True, help="Strong administrator password (>= 8 chars)")
     bs_cmd.add_argument("--name", default="Root Administrator", help="Display name")
 
-    sub.add_parser("export-hmac-key", help="Export active HMAC backup authentication key")
+    exp_cmd = sub.add_parser("export-hmac-key", help="Export active HMAC backup authentication key to a secured file")
+    exp_cmd.add_argument("--out", required=True, help="Destination file path to securely write the HMAC key")
+    exp_cmd.add_argument("--format", choices=["hex", "binary"], default="hex", help="Output format (default: hex)")
+
     sub.add_parser("rotate-hmac-key", help="Rotate HMAC backup authentication key and archive old key to history")
 
     em_cmd = sub.add_parser("emergency-restore", help="Emergency break-glass SQLite database restore")
     em_cmd.add_argument("--db", default=DEFAULT_DB)
     em_cmd.add_argument("--backup", required=True, help="Path to backup sqlite3 file")
     em_cmd.add_argument("--reason", required=True, help="Detailed justification for break-glass restore")
+    em_cmd.add_argument("--confirm-break-glass", action="store_true", help="Explicit acknowledgement of break-glass emergency restore")
+
+    mig_cmd = sub.add_parser("migrate-secure-db", help="Safely neutralize legacy demo credentials for SECURE mode")
+    mig_cmd.add_argument("--db", default=DEFAULT_DB)
+    mig_cmd.add_argument("--deactivate", action="store_true", help="Deactivate demo accounts instead of locking passwords")
 
     return p
 
@@ -257,24 +265,41 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.action == "export-hmac-key":
-        key_hex = export_backup_signing_key()
-        print(f"ACTIVE_HMAC_KEY: {key_hex}")
+        out_path = Path(args.out).resolve()
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        raw_key = get_backup_signing_key()
+        if args.format == "binary":
+            out_path.write_bytes(raw_key)
+        else:
+            out_path.write_text(raw_key.hex() + "\n", encoding="utf-8")
+        try:
+            import os
+            os.chmod(out_path, 0o600)
+        except Exception:
+            pass
+        print(f"HMAC signing key securely exported to '{out_path}'. Keep this file confidential.")
         return 0
 
     if args.action == "rotate-hmac-key":
-        new_k = rotate_backup_signing_key()
-        print(f"HMAC key rotated successfully. New key: {new_k.hex()}")
+        rotate_backup_signing_key()
+        print("HMAC key rotated successfully. Previous key archived to trusted history. Active key saved to secure storage.")
         return 0
 
     if args.action == "emergency-restore":
+        if not args.confirm_break_glass:
+            print("ERROR: Emergency restore aborted. You must supply '--confirm-break-glass' to execute break-glass recovery.")
+            return 2
+        if not args.reason or not args.reason.strip():
+            print("ERROR: Detailed justification reason required for break-glass recovery.")
+            return 2
         res = restore_database_safely(
             target_db_path=args.db,
             backup_source_path=args.backup,
             require_hmac=False,
             emergency_override=True,
-            incident_reason=args.reason
+            incident_reason=args.reason.strip()
         )
-        print(f"Emergency restore complete: {res}")
+        print(f"Emergency restore complete: Status={res.get('status')}, Method={res.get('method')}")
         return 0
 
     if args.action != "init" and not Path(args.db).exists():
@@ -432,6 +457,11 @@ def main(argv: list[str] | None = None) -> int:
                     display_name=args.name,
                 )
                 print(f"Successfully bootstrapped initial administrator: {admin['username']} ({admin['user_id']})")
+            elif args.action == "migrate-secure-db":
+                mig_res = migrate_legacy_db_to_secure_mode(db, deactivate_demo_users=args.deactivate)
+                print(f"Migration complete: {mig_res['migrated_count']} legacy demo user credentials neutralized.")
+                for u in mig_res['users']:
+                    print(f"  - [{u['role']}] {u['username']} ({u['user_id']}): {u['action']}")
         except (ValueError, PermissionError, sqlite3.Error) as error:
             print(f"ERROR: {error}")
             return 2

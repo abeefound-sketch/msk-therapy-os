@@ -109,6 +109,76 @@ def get_chromium_process_tree_memory() -> Dict[str, Any]:
     }
 
 
+
+def run_sqlite_concurrency_stress_check(db_path: str, num_threads: int = 10, ops_per_thread: int = 15) -> Dict[str, Any]:
+    """Execute concurrent multi-reader multi-writer stress test on SQLite database."""
+    from concurrent.futures import ThreadPoolExecutor
+    errors = []
+    read_count = 0
+    write_count = 0
+    lock = threading.Lock()
+
+    conn_setup = open_db(db_path)
+    cur_setup = conn_setup.cursor()
+    cur_setup.execute("SELECT id FROM visits LIMIT 1")
+    vrow = cur_setup.fetchone()
+    valid_vid = vrow[0] if vrow else 1
+    cur_setup.execute("SELECT structure_id FROM anatomy_structures LIMIT 1")
+    srow = cur_setup.fetchone()
+    valid_sid = srow[0] if srow else "ACU-GB20"
+    conn_setup.close()
+
+    def worker(worker_id: int):
+        nonlocal read_count, write_count
+        try:
+            conn = open_db(db_path)
+            for i in range(ops_per_thread):
+                if i % 3 == 0:
+                    with conn:
+                        conn.execute(
+                            "INSERT INTO clinical_observations (visit_id, structure_id, structure_type, observation_type, severity, finding, interpretation) "
+                            "VALUES (?, ?, 'acupoint', 'palpation', 2, ?, 'normal')",
+                            (valid_vid, valid_sid, f"CONCURRENCY_TEST worker-{worker_id}-{i}")
+                        )
+                    with lock:
+                        write_count += 1
+                else:
+                    cur = conn.cursor()
+                    cur.execute("SELECT COUNT(*) FROM visits")
+                    _ = cur.fetchone()
+                    with lock:
+                        read_count += 1
+            conn.close()
+        except Exception as exc:
+            with lock:
+                errors.append(f"Worker {worker_id} failed: {exc}")
+
+    t0 = time.perf_counter()
+    with ThreadPoolExecutor(max_workers=num_threads) as pool:
+        futures = [pool.submit(worker, w) for w in range(num_threads)]
+        for f in futures:
+            f.result()
+    duration = time.perf_counter() - t0
+
+    try:
+        cleanup_conn = open_db(db_path)
+        with cleanup_conn:
+            cleanup_conn.execute("DELETE FROM clinical_observations WHERE finding LIKE 'CONCURRENCY_TEST%'")
+        cleanup_conn.close()
+    except Exception:
+        pass
+
+    return {
+        "num_threads": num_threads,
+        "ops_per_thread": ops_per_thread,
+        "total_reads": read_count,
+        "total_writes": write_count,
+        "duration_sec": round(duration, 3),
+        "errors": errors,
+        "concurrency_passed": len(errors) == 0,
+    }
+
+
 def run_full_acceptance_and_stress_drill():
     print("=" * 80)
     print("MSK-THERAPY-OS: LOCAL PRODUCTION RELEASE READINESS DRILL (P0, P1, P3)")
@@ -239,12 +309,13 @@ def run_full_acceptance_and_stress_drill():
             const frameTimes = [];
             let lastTime = performance.now();
             let frameCount = 0;
-            const targetFrames = 120;
+            const warmupFrames = 30; // 30-frame warm-up for shader compilation & pipeline binding
+            const targetFrames = 150; // 30 warm-up + 120 measured frames
 
             function frame(now) {
                 const delta = now - lastTime;
                 lastTime = now;
-                if (frameCount > 0) {
+                if (frameCount >= warmupFrames) {
                     frameTimes.push(delta);
                 }
                 frameCount++;
@@ -257,15 +328,18 @@ def run_full_acceptance_and_stress_drill():
                     const min = frameTimes[0];
                     const max = frameTimes[frameTimes.length - 1];
                     const p95 = frameTimes[Math.floor(frameTimes.length * 0.95)];
+                    const p99 = frameTimes[Math.floor(frameTimes.length * 0.99)];
                     const variance = frameTimes.reduce((acc, t) => acc + Math.pow(t - mean, 2), 0) / frameTimes.length;
                     const stdDev = Math.sqrt(variance);
                     const fps = 1000 / mean;
                     resolve({
                         sample_count: frameTimes.length,
+                        warmup_frames: warmupFrames,
                         mean_frame_time_ms: Math.round(mean * 100) / 100,
                         min_frame_time_ms: Math.round(min * 100) / 100,
                         max_frame_time_ms: Math.round(max * 100) / 100,
                         p95_frame_time_ms: Math.round(p95 * 100) / 100,
+                        p99_frame_time_ms: Math.round(p99 * 100) / 100,
                         std_dev_ms: Math.round(stdDev * 100) / 100,
                         effective_fps: Math.round(fps * 10) / 10,
                         meets_30fps_target: fps >= 30.0,
@@ -512,6 +586,34 @@ def run_full_acceptance_and_stress_drill():
     server.shutdown()
     server.server_close()
 
+    print("[*] Running SQLite Concurrency Stress Check (10 threads, reads & writes)...")
+    concurrency_res = run_sqlite_concurrency_stress_check(db_path, num_threads=10, ops_per_thread=15)
+    report["p2_sqlite_concurrency"] = concurrency_res
+    print(f"    Concurrency Result: passed={concurrency_res['concurrency_passed']}, reads={concurrency_res['total_reads']}, writes={concurrency_res['total_writes']} in {concurrency_res['duration_sec']}s")
+
+    print("[*] Running Independent HL7 FHIR R4B Model Validation (fhir.resources)...")
+    try:
+        from fhir.resources.R4B.bundle import Bundle
+        from msk_therapy_os.tracking import export_case_fhir
+        with open_db(db_path) as check_conn:
+            bundle_raw = export_case_fhir(check_conn, "DEMO-NECK-001")
+        bundle_obj = Bundle.model_validate(bundle_raw)
+        report["p2_independent_fhir_validation"] = {
+            "validator": "fhir.resources.R4B.bundle.Bundle",
+            "is_valid": True,
+            "resource_type": bundle_obj.get_resource_type(),
+            "total_entries": len(bundle_obj.entry),
+            "errors": []
+        }
+        print(f"    Independent FHIR R4B Validation: PASSED ({len(bundle_obj.entry)} entries)")
+    except Exception as exc:
+        report["p2_independent_fhir_validation"] = {
+            "validator": "fhir.resources.R4B.bundle.Bundle",
+            "is_valid": False,
+            "errors": [str(exc)]
+        }
+        print(f"    Independent FHIR R4B Validation: FAILED ({exc})")
+
     # Determine Verdict
     fps_ok = report["p1_performance_stress"]["frame_metrics"]["meets_30fps_target"]
     leak_ok = not report["p1_performance_stress"]["memory_forensics"]["leak_detected"]
@@ -520,7 +622,10 @@ def run_full_acceptance_and_stress_drill():
     fhir_ok = report["p3_clinical_acceptance"]["fhir_r4_export"]["is_valid"]
     rss_measured_ok = report["p1_performance_stress"]["memory_forensics"]["final_process_tree"]["total_working_set_rss_mb"] > 0
 
-    if fps_ok and leak_ok and safety_ok and soap_ok and fhir_ok and rss_measured_ok:
+    concurrency_ok = report.get("p2_sqlite_concurrency", {}).get("concurrency_passed", False)
+    independent_fhir_ok = report.get("p2_independent_fhir_validation", {}).get("is_valid", False)
+
+    if fps_ok and leak_ok and safety_ok and soap_ok and fhir_ok and rss_measured_ok and concurrency_ok and independent_fhir_ok:
         report["verdict"] = "LOCAL_PRODUCTION_READY_PASS"
     else:
         report["verdict"] = "PARTIAL"

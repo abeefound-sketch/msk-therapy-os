@@ -45,6 +45,10 @@ class TestSecurityHardening(unittest.TestCase):
         self.conn.execute("PRAGMA foreign_keys=ON")
         init_db(self.conn)
         seed_db(self.conn)
+        from msk_therapy_os.auth import hash_password
+        self.conn.execute("UPDATE users SET password_hash = ? WHERE username = 'student'", (hash_password("SecureStudentPass99!"),))
+        self.conn.execute("UPDATE users SET password_hash = ? WHERE username = 'dr_chen'", (hash_password("SecureReviewerPass99!"),))
+        self.conn.commit()
         self.conn.close()
 
         # Save env
@@ -153,10 +157,17 @@ class TestSecurityHardening(unittest.TestCase):
             self.assertEqual(status, 401)
             self.assertIn("Authentication required in SECURE mode", data.get("error", ""))
 
-            # 4. Legitimate login works
-            status, auth_data = self._http_request(base, "/api/auth/login", method="POST", data={
+            # 4. Default demo password in SECURE mode must be rejected (401)
+            bad_status, bad_auth = self._http_request(base, "/api/auth/login", method="POST", data={
                 "username": "student",
                 "password": "student123",
+            })
+            self.assertEqual(bad_status, 401)
+
+            # Legitimate login with secure non-default password works
+            status, auth_data = self._http_request(base, "/api/auth/login", method="POST", data={
+                "username": "student",
+                "password": "SecureStudentPass99!",
             })
             self.assertEqual(status, 200)
             sess_tok = auth_data["session_token"]
@@ -208,10 +219,10 @@ class TestSecurityHardening(unittest.TestCase):
         t.start()
         try:
             base = f"http://127.0.0.1:{port}"
-            # 1. Login as student
+            # 1. Login as student with secure password
             status, login_res = self._http_request(base, "/api/auth/login", method="POST", data={
                 "username": "student",
-                "password": "student123",
+                "password": "SecureStudentPass99!",
             })
             student_tok = login_res["session_token"]
             student_csrf = login_res["csrf_token"]
@@ -265,7 +276,7 @@ class TestSecurityHardening(unittest.TestCase):
             # 4. Verified Clinical Supervisor (Dr. Sarah Chen, MD) approves SOAP note
             status, dr_login = self._http_request(base, "/api/auth/login", method="POST", data={
                 "username": "dr_chen",
-                "password": "reviewer123",
+                "password": "SecureReviewerPass99!",
             })
             dr_tok = dr_login["session_token"]
             dr_csrf = dr_login["csrf_token"]
