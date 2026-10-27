@@ -105,6 +105,19 @@ def get_spatial_resolver() -> AnatomicalSpatialResolver:
         _cached_spatial_resolver = AnatomicalSpatialResolver()
     return _cached_spatial_resolver
 
+from msk_therapy_os.dien_chan.facial_registration import FacialRegistrationEngine
+from msk_therapy_os.dien_chan.db import (
+    init_dien_chan_tables,
+    seed_dien_chan_database,
+    list_dien_chan_points,
+    get_dien_chan_point,
+    get_protocol_with_points,
+)
+from msk_therapy_os.dien_chan.search import (
+    search_dien_chan_conditions,
+    normalize_vietnamese_text,
+)
+
 from msk_therapy_os.points import (
     list_anatomical_landmarks,
     get_anatomical_landmark,
@@ -981,6 +994,63 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     else:
                         self._send_json(reg.data)
 
+                # -----------------------------------------------------------
+                # Vietnamese Dien Chan Facial Reflexology GET Endpoints
+                # -----------------------------------------------------------
+                elif path == "/api/dien-chan/points":
+                    pts = list_dien_chan_points(db)
+                    self._send_json({"total": len(pts), "points": pts})
+
+                elif path.startswith("/api/dien-chan/points/"):
+                    code = path[len("/api/dien-chan/points/"):].strip()
+                    pt = get_dien_chan_point(db, code)
+                    if pt:
+                        self._send_json(pt)
+                    else:
+                        self._send_json({"error": f"Dien Chan point '{code}' not found"}, status=HTTPStatus.NOT_FOUND)
+
+                elif path == "/api/dien-chan/conditions/search":
+                    q = query.get("q", [""])[0]
+                    res = search_dien_chan_conditions(db, q)
+                    self._send_json(res)
+
+                elif path.startswith("/api/dien-chan/conditions/") and path.endswith("/protocols"):
+                    cond_id = path[len("/api/dien-chan/conditions/"): -len("/protocols")].strip()
+                    cur = db.execute("SELECT protocol_id FROM dien_chan_protocols WHERE condition_id = ? AND status = 'ACTIVE'", (cond_id,))
+                    pids = [r[0] for r in cur.fetchall()]
+                    protos = []
+                    for pid in pids:
+                        p_data = get_protocol_with_points(db, pid)
+                        if p_data:
+                            protos.append(p_data)
+                    self._send_json({"condition_id": cond_id, "protocols": protos})
+
+                elif path.startswith("/api/dien-chan/protocols/"):
+                    proto_id = path[len("/api/dien-chan/protocols/"):].strip()
+                    proto_data = get_protocol_with_points(db, proto_id)
+                    if proto_data:
+                        self._send_json(proto_data)
+                    else:
+                        self._send_json({"error": f"Protocol '{proto_id}' not found"}, status=HTTPStatus.NOT_FOUND)
+
+                elif path.startswith("/api/dien-chan/images/"):
+                    img_name = path[len("/api/dien-chan/images/"):].strip()
+                    safe_names = {
+                        "headache-sinus": "dien_chan_headache_sinus_example.png",
+                        "atlas-front-side": "dien_chan_face_atlas_front_side.png",
+                        "dien_chan_headache_sinus_example.png": "dien_chan_headache_sinus_example.png",
+                        "dien_chan_face_atlas_front_side.png": "dien_chan_face_atlas_front_side.png",
+                    }
+                    if img_name in safe_names:
+                        repo_root = Path(__file__).resolve().parent.parent
+                        target_file = (repo_root / "3refs" / "dien_chan" / "source_images" / safe_names[img_name]).resolve()
+                        if target_file.exists() and self._serve_file(target_file):
+                            return
+                        else:
+                            self._send_json({"error": "Reference image file not found on disk"}, status=HTTPStatus.NOT_FOUND)
+                    else:
+                        self._send_json({"error": "Unknown image reference"}, status=HTTPStatus.NOT_FOUND)
+
                 else:
                     self._send_json({"error": f"Endpoint '{path}' not found"}, status=HTTPStatus.NOT_FOUND)
             except Exception as e:
@@ -1482,6 +1552,15 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         self._send_json(resolved_geometry)
                     except ValueError as ve:
                         self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+
+                elif path == "/api/dien-chan/geometry/resolve":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    point_codes = body.get("point_codes")
+                    reg_engine = FacialRegistrationEngine()
+                    resolved = reg_engine.resolve_points_for_atlas(point_codes=point_codes)
+                    self._send_json({"total": len(resolved), "points": resolved})
 
                 elif path == "/api/pose/evaluate":
                     point_code = body.get("point_code", "")

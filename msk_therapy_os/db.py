@@ -14,6 +14,7 @@ from msk_therapy_os.points import init_points_tables
 from msk_therapy_os.pose_anatomy import init_pose_tables
 from msk_therapy_os.relationship_catalog import init_relationship_tables, seed_relationship_examples
 from msk_therapy_os.research_studio import init_research_tables, seed_demo_research_set
+from msk_therapy_os.dien_chan.db import init_dien_chan_tables, seed_dien_chan_database
 
 
 def open_db(path: str) -> sqlite3.Connection:
@@ -150,6 +151,7 @@ def init_db(db: sqlite3.Connection) -> None:
     init_kinematics_tables(db)
     init_tissue_layer_tables(db)
     init_auth_tables(db)
+    init_dien_chan_tables(db)
     db.commit()
 
 
@@ -161,6 +163,7 @@ def seed_db(db: sqlite3.Connection, seed_users: bool = True) -> None:
     seed_relationship_examples(db)
     seed_demo_research_set(db)
     seed_synthetic_m3_cohort(db)
+    seed_dien_chan_database(db)
 
     # 1. Demo Cases
     db.execute(

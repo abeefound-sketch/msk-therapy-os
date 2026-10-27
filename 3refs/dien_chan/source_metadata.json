@@ -1,0 +1,38 @@
+{
+  "dataset": "Dien Chan Facial Reflexology Reference Images",
+  "version": "1.0.0",
+  "provenance_domain": "VIETNAMESE_DIEN_CHAN_BQC",
+  "school": "Diện Chẩn Điều Khiển Liệu Pháp (GS.TSKH Bùi Quốc Châu, 1980)",
+  "intake_date": "2026-10-24",
+  "curator": "MSK-Therapy-OS Computational Anatomy & Reflexology Engineering Team",
+  "license_status": "RESTRICTED_EDUCATIONAL_LOCAL_ONLY",
+  "redistribution_policy": "Do not distribute raw copyrighted source images in public repositories. Store hashes and metadata only.",
+  "images": [
+    {
+      "source_id": "SRC_IMG_DC_01",
+      "filename": "dien_chan_face_atlas_front_side.png",
+      "relative_path": "3refs/dien_chan/source_images/dien_chan_face_atlas_front_side.png",
+      "sha256": "af3cc92bafa448393df3bf780c94ae2b08085d76219b7e7b70070960deb1018f",
+      "file_size_bytes": 546088,
+      "width_px": 800,
+      "height_px": 480,
+      "views": ["frontal_view", "lateral_profile_view"],
+      "title": "Đồ hình huyệt nhìn thẳng và nhìn nghiêng",
+      "description": "Full facial Dien Chan point map schematic containing numbered reflex points, vertical coordinate lines L-K-H-G-E-D-C-B-A-O-A-B-C-D-E-G-H-K-L and horizontal levels 0-12.",
+      "resolution_assessment": "Low resolution (800x480). Point labels and grid lines require manual verification against anatomical references."
+    },
+    {
+      "source_id": "SRC_IMG_DC_02",
+      "filename": "dien_chan_headache_sinus_example.png",
+      "relative_path": "3refs/dien_chan/source_images/dien_chan_headache_sinus_example.png",
+      "sha256": "e5c169e62fc4fff94ee5fba6992adeeb8a65728f7a9f402375185cdd4e502c74",
+      "file_size_bytes": 489482,
+      "width_px": 800,
+      "height_px": 578,
+      "views": ["frontal_view", "lateral_profile_view"],
+      "title": "Đau Đầu – Viêm Xoang",
+      "description": "Condition protocol diagram indicating active facial points (103, 106, 107, 300, 73, 189, 61, 19, 127, 96, 43) for headache and sinus symptom relief.",
+      "resolution_assessment": "Medium-low resolution (800x578). Active points clearly highlighted on frontal and lateral views."
+    }
+  ]
+}

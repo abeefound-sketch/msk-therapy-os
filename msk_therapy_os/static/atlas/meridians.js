@@ -21,6 +21,8 @@
   let showThai = false;
 
   let showDienChan = false;
+  let activeDienChanProtocol = null;
+  let dienChanProtocolOnly = false;
 
   let verifiedOnly = true; // Default to verified anatomical anchors only
 
@@ -547,6 +549,41 @@
         acuData = await res.json();
       }
 
+      // Load authoritative Dien Chan points from /api/dien-chan/points
+      try {
+        const dcRes = await fetch('/api/dien-chan/points');
+        if (dcRes.ok) {
+          const dcJson = await dcRes.json();
+          if (dcJson && dcJson.points) {
+            acuData.dien_chan = dcJson.points.map(pt => ({
+              code: pt.point_code,
+              point_code: pt.point_code,
+              name: pt.name_vi,
+              name_vi: pt.name_vi,
+              name_en: pt.name_en,
+              name_zh: pt.name_zh,
+              position: pt.position,
+              resolved_world_position: pt.position,
+              normal: pt.surface_normal,
+              surface_normal: pt.surface_normal,
+              grid_coordinate: pt.grid_coordinate,
+              review_status: pt.review_status,
+              uncertainty_mm: pt.uncertainty_mm,
+              projection_residual_mm: pt.projection_residual_mm,
+              fma_anchor: pt.fma_anchor,
+              system: 'lib_dien_chan',
+              domain: 'VIETNAMESE_DIEN_CHAN',
+              laterality: pt.laterality,
+              anatomical_region: pt.anatomical_region,
+              anatomical_location_vi: pt.anatomical_location_vi,
+              source_image_id: pt.source_id,
+            }));
+          }
+        }
+      } catch (errDc) {
+        console.warn('Could not load /api/dien-chan/points, fallback to baked:', errDc);
+      }
+
       buildSidebarControls();
       await resolveSpatialGeometry(true);
       render(true);
@@ -562,6 +599,34 @@
 
     return window.__atlasDebug ? window.__atlasDebug.renderer : null;
 
+  }
+
+  function setDienChanCameraView(view) {
+    const r = getRenderer();
+    if (!r) return;
+    if (view === 'front') {
+      r._animateTo({
+        yaw: 0.0,
+        pitch: 0.02,
+        dist: 0.42,
+        target: [0.0, 1.62, 0.06],
+      });
+    } else if (view === 'left_profile') {
+      r._animateTo({
+        yaw: -1.57,
+        pitch: 0.02,
+        dist: 0.42,
+        target: [0.0, 1.62, 0.06],
+      });
+    } else if (view === 'right_profile') {
+      r._animateTo({
+        yaw: 1.57,
+        pitch: 0.02,
+        dist: 0.42,
+        target: [0.0, 1.62, 0.06],
+      });
+    }
+    render(true);
   }
 
 
@@ -1199,6 +1264,11 @@
     // Also collect Dien Chan reflex points if enabled
     if (showDienChan && acuData.dien_chan) {
       for (const dc of acuData.dien_chan) {
+        const isProtoPt = Boolean(activeDienChanProtocol && activeDienChanProtocol.point_codes && activeDienChanProtocol.point_codes.includes(dc.code));
+        if (dienChanProtocolOnly && !isProtoPt) {
+          continue;
+        }
+
         const s = projectPoint(dc.position, vp, viewport);
         if (!s) continue;
 
@@ -1209,10 +1279,11 @@
         candidates.push({
           code: dc.code,
           pt: dc,
-          inst: { pos: dc.position, side: 'midline' },
+          inst: { pos: dc.position, side: dc.laterality || 'midline' },
           screen: s,
           facing,
           isSel,
+          isProtoPt,
           isEditing: false,
           system: 'lib_dien_chan'
         });
@@ -1267,12 +1338,13 @@
         const isUpstream = (pt.registration_status === 'UPSTREAM_TRANSFORMED');
         const isLegacy = (pt.registration_status === 'LEGACY_SURFACE_RAYCAST');
         const isDienChan = Boolean(item.system && item.system.startsWith('lib_dien_chan'));
+        const isProtoPt = Boolean(item.isProtoPt);
 
         const vis = VisualScaleEngine.getMarkerVisuals(displaySettings, scaleInfo, isSel, isVerified, isSurface, isDienChan);
 
-        let fill = isSel ? '#facc15' : (isUncertain ? '#f59e0b' : (isVerified ? '#10b981' : (isSurface ? '#06b6d4' : (isUpstream ? '#6366f1' : '#64748b'))));
-        let stroke = isSel ? '#ffffff' : (isUncertain ? '#b45309' : (isVerified ? '#047857' : (isSurface ? '#0891b2' : (isUpstream ? '#4338ca' : '#334155'))));
-        let dash = isUncertain ? 'stroke-dasharray="3,3"' : ((isVerified || isSurface) ? '' : 'stroke-dasharray="2,2"');
+        let fill = isSel ? '#facc15' : (isProtoPt ? '#f43f5e' : (isUncertain ? '#f59e0b' : (isVerified ? '#10b981' : (isDienChan ? '#ec4899' : (isSurface ? '#06b6d4' : (isUpstream ? '#6366f1' : '#64748b'))))));
+        let stroke = isSel ? '#ffffff' : (isProtoPt ? '#fbbf24' : (isUncertain ? '#b45309' : (isVerified ? '#047857' : (isDienChan ? '#be185d' : (isSurface ? '#0891b2' : (isUpstream ? '#4338ca' : '#334155'))))));
+        let dash = isUncertain ? 'stroke-dasharray="3,3"' : ((isVerified || isSurface || isProtoPt) ? '' : 'stroke-dasharray="2,2"');
         let ptOpacity = item.facing ? '1.0' : '0.35';
 
         const statusLabel = isUncertain ? '⚠️ UNCERTAIN POSTURE OFFSET' : (isVerified ? 'VERIFIED ANCHOR' : (isSurface ? 'SURFACE REGISTERED (FJ2810)' : (isUpstream ? 'UPSTREAM RAW' : (isLegacy ? 'LEGACY RAYCAST' : (isDienChan ? 'VIETNAMESE DIEN CHAN' : 'UNKNOWN')))));
@@ -1280,12 +1352,14 @@
         let warningRing = '';
         if (isUncertain) {
           warningRing = `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${(vis.rad + 2.5).toFixed(1)}" fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="2,2" opacity="${item.facing ? '0.9' : '0.4'}" pointer-events="none" />`;
+        } else if (isProtoPt) {
+          warningRing = `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${(vis.rad + 3.0).toFixed(1)}" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3,2" opacity="${item.facing ? '0.95' : '0.45'}" pointer-events="none" />`;
         }
 
         ptsHtml += `
           <g class="acu-marker-group" data-code="${code}" data-side="${inst.side}" style="cursor:pointer;">
             <circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${vis.hitRad}" fill="transparent" stroke="none" class="acu-marker ${isDienChan ? 'dien-chan-marker' : ''}" data-code="${code}" data-side="${inst.side}" pointer-events="all"/>
-            <circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${vis.rad.toFixed(1)}" fill="${fill}" stroke="${stroke}" stroke-width="${vis.swidth}" ${dash} opacity="${ptOpacity}" pointer-events="none"/>
+            <circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${(isProtoPt ? vis.rad + 1.2 : vis.rad).toFixed(1)}" fill="${fill}" stroke="${stroke}" stroke-width="${vis.swidth}" ${dash} opacity="${ptOpacity}" pointer-events="none"/>
             ${warningRing}
             <title>${pt.code} - ${pt.name_en || pt.name || ''} (${pt.name_zh || ''}) [${statusLabel}] [${inst.side.toUpperCase()}]
 Pos: [${inst.pos[0].toFixed(3)}, ${inst.pos[1].toFixed(3)}, ${inst.pos[2].toFixed(3)}]m
@@ -1303,7 +1377,9 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
         // Text label rendering
         let shouldRenderLabel = false;
-        if (displaySettings.labelDensity === 'all') {
+        if (isProtoPt || (isDienChan && showDienChan)) {
+          shouldRenderLabel = true;
+        } else if (displaySettings.labelDensity === 'all') {
           shouldRenderLabel = true;
         } else if (displaySettings.labelDensity === 'selected') {
           shouldRenderLabel = isSel;
@@ -1315,7 +1391,9 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
           const lblX = (s[0] + vis.rad + 3.0).toFixed(1);
           const lblY = (s[1] + 3.0).toFixed(1);
           const fontSize = Math.max(9, Math.min(12, Math.round(vis.rad * 2.2)));
-          ptsHtml += `<text x="${lblX}" y="${lblY}" font-size="${fontSize}" font-weight="600" fill="#f8fafc" font-family="-apple-system, BlinkMacSystemFont, sans-serif" style="text-shadow:0 1px 2px rgba(0,0,0,0.8); pointer-events:none;">${code}</text>`;
+          const lblColor = isProtoPt ? '#fbbf24' : (isDienChan ? '#fbcfe8' : '#f8fafc');
+          const cleanCode = isDienChan ? code.replace('DC_', '') : code;
+          ptsHtml += `<text x="${lblX}" y="${lblY}" font-size="${fontSize}" font-weight="${isProtoPt ? '700' : '600'}" fill="${lblColor}" font-family="-apple-system, BlinkMacSystemFont, sans-serif" style="text-shadow:0 1px 2px rgba(0,0,0,0.8); pointer-events:none;">${cleanCode}</text>`;
         }
 
         ptsHtml += `</g>`;
@@ -1687,63 +1765,37 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
     if (!code) return;
 
-    if (code.startsWith('DIEN-')) {
-
+    if (code.startsWith('DIEN-') || code.startsWith('DC_') || code.startsWith('DC-')) {
       selectDienChanPoint(code, true);
-
     } else {
-
       selectPoint(code, true);
-
     }
-
   });
 
-
-
   // Dedicated Dien Chan selection handler (Requirement C - never route via WHO lookup)
-
   function selectDienChanPoint(code, notifyParent = true) {
-
     if (!acuData || !acuData.dien_chan) return;
-
-    const dc = acuData.dien_chan.find(d => d.code === code);
-
+    const dc = acuData.dien_chan.find(d => d.code === code || d.point_code === code);
     if (!dc) return;
 
     selectedCode = code;
-
     window.__selectedDienChan = dc;
-
     window.__selectedAcupoint = null;
 
-
-
     const r = getRenderer();
-
     if (r) {
-
       updatePin();
-
       // Smooth camera focus to face
-
       r._animateTo({
-
         yaw: 0.0,
-
         pitch: 0.03,
-
         dist: 0.38,
-
-        target: [0, 1.65, 0.05],
-
+        target: [0, 1.62, 0.06],
       });
-
     }
 
-
-
-    render();
+    updateP9QAInspector(dc);
+    render(true);
 
 
 
@@ -1896,6 +1948,52 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     const content = document.getElementById('p9QAInspectorContent');
     if (!badge || !content || !pt) return;
 
+    const isDienChan = Boolean(pt.system === 'lib_dien_chan' || (pt.code && (pt.code.startsWith('DC') || pt.code.startsWith('DIEN-'))));
+
+    if (isDienChan) {
+      const isAnchor = pt.review_status === 'VERIFIED_ANATOMICAL_ANCHOR';
+      const badgeBg = isAnchor ? '#065f46' : '#831843';
+      const badgeColor = isAnchor ? '#a7f3d0' : '#fbcfe8';
+      const badgeText = isAnchor ? 'VERIFIED ANCHOR' : (pt.review_status || 'CANDIDATE ANNOTATION');
+
+      badge.style.background = badgeBg;
+      badge.style.color = badgeColor;
+      badge.textContent = badgeText;
+
+      const gridCoord = pt.grid_coordinate || 'Tuyến O/A/B';
+      const curPos = pt.resolved_world_position || pt.position || [0, 0, 0];
+      const posStr = `[${curPos[0].toFixed(4)}, ${curPos[1].toFixed(4)}, ${curPos[2].toFixed(4)}] m`;
+      const fmaText = pt.fma_anchor || 'Facial Reflex Zone';
+      const errorMm = (pt.projection_residual_mm !== undefined && pt.projection_residual_mm !== null)
+        ? `${pt.projection_residual_mm.toFixed(2)} mm`
+        : 'None / Not Measured';
+      const uncertMm = (pt.uncertainty_mm !== undefined && pt.uncertainty_mm !== null)
+        ? `±${pt.uncertainty_mm.toFixed(1)} mm`
+        : 'Unknown / Unverified';
+      const codeClean = pt.point_code || pt.code;
+
+      content.innerHTML = `
+        <div style="font-weight:700; color:#f8fafc; font-size:12px; margin-bottom:4px;">
+          ${codeClean} — ${pt.name_vi || pt.name || ''}
+        </div>
+        <div style="font-size:10px; color:#f472b6; margin-bottom:4px; font-family:monospace;">
+          Tọa độ đồ hình: <strong>${gridCoord}</strong> • Pos: ${posStr}
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:6px; background:#1e293b; padding:6px; border-radius:4px; font-size:9.5px;">
+          <div><span style="color:#94a3b8;">Vùng giải phẫu:</span> <strong style="color:#38bdf8;">${pt.anatomical_region || 'Khuôn mặt'}</strong></div>
+          <div><span style="color:#94a3b8;">Mốc đối chiếu:</span> <strong style="color:#a7f3d0;">${fmaText}</strong></div>
+          <div><span style="color:#94a3b8;">Sai số tái chiếu:</span> <strong style="color:#10b981;">${errorMm}</strong></div>
+          <div><span style="color:#94a3b8;">Độ bất định:</span> <strong style="color:#f59e0b;">${uncertMm}</strong></div>
+          <div style="grid-column:1/3;"><span style="color:#94a3b8;">Vị trí mô tả:</span> <span style="color:#cbd5e1;">${pt.anatomical_location_vi || pt.indication || ''}</span></div>
+          <div style="grid-column:1/3;"><span style="color:#94a3b8;">Xuất xứ nguồn:</span> <span style="color:#cbd5e1;">${pt.source_image_id ? 'Đồ hình Diện Chẩn Image B / BQC 1980' : 'Bùi Quốc Châu Facial Reflexology (1980)'}</span></div>
+        </div>
+        <div style="font-size:9px; color:#f43f5e; background:#881337; padding:4px 6px; border-radius:3px; line-height:1.3;">
+          ⚠️ <strong>Lưu ý y tế:</strong> Dữ liệu Diện Chẩn là phương pháp phản xạ học truyền thống/bổ trợ cho mục đích nghiên cứu & học tập, không phải chỉ định y khoa độc lập.
+        </div>
+      `;
+      return;
+    }
+
     const status = pt.registration_status || 'UNKNOWN';
     const isAnchor = status === 'VERIFIED_ANATOMICAL_ANCHOR';
     const isPostUncert = status === 'UNCERTAIN_POSTURE_OFFSET';
@@ -1989,6 +2087,70 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
         Ref: WHO 2008 Standard. Non-invasive educational visualization only. Not validated for surgical depth.
       </div>
     `;
+  }
+
+  function ensureDienChanModal() {
+    let modal = document.getElementById('dienChanRefModal');
+    if (modal) return modal;
+
+    modal = document.createElement('div');
+    modal.id = 'dienChanRefModal';
+    modal.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:min(720px, 92vw); max-height:85vh; background:#0f172a; border:1px solid #475569; border-radius:8px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.5), 0 8px 10px -6px rgba(0,0,0,0.5); z-index:9999; display:none; flex-direction:column; overflow:hidden; font-family:inherit;';
+
+    modal.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#1e293b; border-bottom:1px solid #334155;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <strong style="color:#f472b6; font-size:12px;">🇻🇳 Đồ Hình Gốc Diện Chẩn (Reference Chart)</strong>
+          <span style="font-size:10px; color:#94a3b8; background:#0f172a; padding:2px 6px; border-radius:3px;">Local Source</span>
+        </div>
+        <button id="btnCloseDienChanModal" style="background:transparent; border:none; color:#cbd5e1; font-size:16px; cursor:pointer; padding:2px 6px;">✕</button>
+      </div>
+      <div style="padding:8px 14px; background:#1e1b4b; display:flex; gap:8px; align-items:center; border-bottom:1px solid #312e81;">
+        <span style="font-size:11px; color:#a5b4fc; font-weight:600;">Chọn đồ hình:</span>
+        <button id="btnRefImgHeadache" style="font-size:11px; padding:3px 8px; background:#4338ca; color:#ffffff; border:1px solid #6366f1; border-radius:3px; cursor:pointer;">Image B: Đau Đầu – Viêm Xoang</button>
+        <button id="btnRefImgAtlas" style="font-size:11px; padding:3px 8px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; border-radius:3px; cursor:pointer;">Image A: Toàn Diện (Front/Side)</button>
+      </div>
+      <div style="flex:1; overflow:auto; padding:12px; display:flex; justify-content:center; align-items:center; background:#020617; min-height:300px;">
+        <img id="imgDienChanRefChart" src="/api/dien-chan/images/headache-sinus" alt="Dien Chan Reference Chart" style="max-width:100%; max-height:60vh; object-fit:contain; border-radius:4px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.3);" />
+      </div>
+      <div style="padding:8px 14px; background:#0f172a; border-top:1px solid #1e293b; font-size:10px; color:#94a3b8; display:flex; justify-content:space-between; align-items:center;">
+        <span>Tài liệu tham khảo lịch sử (GS.TSKH Bùi Quốc Châu, 1980 / 1984). Dữ liệu phục vụ nghiên cứu & học tập.</span>
+        <span style="color:#f43f5e; font-weight:600;">Không thay thế chẩn đoán y khoa</span>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const btnClose = modal.querySelector('#btnCloseDienChanModal');
+    if (btnClose) {
+      btnClose.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+    }
+
+    const btnHeadache = modal.querySelector('#btnRefImgHeadache');
+    const btnAtlas = modal.querySelector('#btnRefImgAtlas');
+    const imgChart = modal.querySelector('#imgDienChanRefChart');
+
+    if (btnHeadache && btnAtlas && imgChart) {
+      btnHeadache.addEventListener('click', () => {
+        imgChart.src = '/api/dien-chan/images/headache-sinus';
+        btnHeadache.style.background = '#4338ca';
+        btnHeadache.style.color = '#ffffff';
+        btnAtlas.style.background = '#1e293b';
+        btnAtlas.style.color = '#cbd5e1';
+      });
+
+      btnAtlas.addEventListener('click', () => {
+        imgChart.src = '/api/dien-chan/images/atlas-front-side';
+        btnAtlas.style.background = '#4338ca';
+        btnAtlas.style.color = '#ffffff';
+        btnHeadache.style.background = '#1e293b';
+        btnHeadache.style.color = '#cbd5e1';
+      });
+    }
+
+    return modal;
   }
 
   function buildSidebarControls() {
@@ -2288,6 +2450,56 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
           </div>
         </div>
 
+        <!-- Vietnamese Dien Chan Facial Reflexology Studio Card -->
+        <div style="background:var(--panel-2); padding:10px; border-radius:var(--r-s); border:1px solid #ec4899; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#f472b6; font-size:12px;">🇻🇳 Diện Chẩn Reflexology Studio</strong>
+            <span style="background:#831843; color:#fbcfe8; font-size:9px; padding:1px 5px; border-radius:3px; font-weight:600;">3D ATLAS</span>
+          </div>
+          
+          <!-- Camera Presets -->
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:10px; color:var(--muted);">Góc nhìn khuôn mặt (Camera):</span>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px;">
+              <button type="button" id="btnDienChanFrontView" style="font-size:10px; padding:4px 2px; background:#1e293b; color:#f8fafc; border:1px solid #475569; border-radius:3px; cursor:pointer;" title="Chính diện">👤 Thẳng</button>
+              <button type="button" id="btnDienChanLeftProfile" style="font-size:10px; padding:4px 2px; background:#1e293b; color:#f8fafc; border:1px solid #475569; border-radius:3px; cursor:pointer;" title="Nghiêng trái">👈 Trái</button>
+              <button type="button" id="btnDienChanRightProfile" style="font-size:10px; padding:4px 2px; background:#1e293b; color:#f8fafc; border:1px solid #475569; border-radius:3px; cursor:pointer;" title="Nghiêng phải">👉 Phải</button>
+            </div>
+          </div>
+
+          <!-- Filter & Display Toggles -->
+          <div style="display:flex; flex-direction:column; gap:4px; font-size:10.5px;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="chkShowDienChanStudio" ${showDienChan ? 'checked' : ''} />
+              <span style="color:#f472b6; font-weight:600;">Hiện huyệt Diện Chẩn</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="chkDienChanProtocolOnly" ${dienChanProtocolOnly ? 'checked' : ''} />
+              <span style="color:#fb7185;">Chỉ hiện huyệt phác đồ đang chọn</span>
+            </label>
+          </div>
+
+          <!-- Symptom / Condition Search -->
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:10px; color:var(--muted);">Tra cứu bệnh lý / triệu chứng:</span>
+            <div style="display:flex; gap:4px;">
+              <input type="text" id="txtDienChanSearch" placeholder="Ví dụ: Đau đầu, viêm xoang, mất ngủ..." style="flex:1; background:#0f172a; color:#f8fafc; border:1px solid #475569; padding:4px 6px; border-radius:3px; font-size:11px;" />
+              <button type="button" id="btnDienChanSearch" style="background:#db2777; color:#ffffff; border:none; border-radius:3px; padding:4px 8px; font-size:11px; cursor:pointer; font-weight:600;">Tìm</button>
+            </div>
+          </div>
+
+          <!-- Active Protocol & Search Results Container -->
+          <div id="dienChanSearchResults" style="display:flex; flex-direction:column; gap:6px;"></div>
+
+          <!-- Active Protocol Card -->
+          <div id="dienChanActiveProtocolCard" style="display:none; flex-direction:column; gap:4px; background:#1e1b4b; border:1px solid #818cf8; padding:6px; border-radius:4px; font-size:10px;"></div>
+
+          <!-- 2D Reference Image Modal Trigger -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+            <button type="button" id="btnToggleDienChanReferenceImg" style="width:100%; font-size:10px; padding:4px 6px; background:#334155; color:#e2e8f0; border:1px solid #64748b; border-radius:3px; cursor:pointer;">🖼️ Xem đồ hình 2D gốc đối chiếu</button>
+          </div>
+        </div>
+
         <!-- M2.6: Adaptive Display Settings -->
         <div style="background:var(--panel-2); padding:8px; border-radius:var(--r-s); border:1px solid var(--line); display:flex; flex-direction:column; gap:6px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -2520,12 +2732,198 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
     });
 
+    // Dien Chan Search & Protocol Activation Logic
+    async function performDienChanSearch(q) {
+      const resultsContainer = document.getElementById('dienChanSearchResults');
+      if (!resultsContainer) return;
+      if (!q || !q.trim()) {
+        resultsContainer.innerHTML = '';
+        return;
+      }
+      resultsContainer.innerHTML = '<div style="font-size:10px; color:#94a3b8; padding:4px;">Đang tìm kiếm...</div>';
+      try {
+        const res = await fetch(`/api/dien-chan/conditions/search?q=${encodeURIComponent(q.trim())}`);
+        if (!res.ok) {
+          resultsContainer.innerHTML = '<div style="font-size:10px; color:#f43f5e; padding:4px;">Lỗi kết nối máy chủ.</div>';
+          return;
+        }
+        const data = await res.json();
+        const results = data.results || [];
+        if (results.length === 0) {
+          resultsContainer.innerHTML = `
+            <div style="font-size:10px; color:#f59e0b; background:#451a03; padding:5px 8px; border-radius:3px; border:1px solid #78350f;">
+              Chưa có dữ liệu đã đối chiếu. Hệ thống không tạo phác đồ giả.
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        for (const item of results) {
+          const cond = item.condition || item;
+          const protocols = item.protocols || [];
+          const matchLabel = item.match_reason || item.match_type || 'Phù hợp';
+          html += `
+            <div style="background:#0f172a; border:1px solid #334155; border-radius:4px; padding:6px; display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:#f472b6; font-size:11px;">${cond.name_vi}</strong>
+                <span style="font-size:9px; color:#94a3b8;">${cond.category || ''}</span>
+              </div>
+              <div style="font-size:9.5px; color:#94a3b8;">
+                Khớp: <span style="color:#38bdf8;">${matchLabel}</span>
+              </div>
+          `;
+
+          if (protocols.length === 0) {
+            html += `<div style="font-size:9.5px; color:#94a3b8; font-style:italic;">Chưa có phác đồ đối chiếu</div>`;
+          } else {
+            for (const proto of protocols) {
+              const ptCodes = proto.point_codes || [];
+              const protoTitle = proto.title_vi || proto.name_vi || proto.title_en || 'Phác đồ';
+              const srcCite = (proto.source && proto.source.title) ? `${proto.source.title} (${proto.source.author})` : (proto.source_citation || 'Đồ hình gốc');
+              html += `
+                <div style="background:#1e1b4b; border:1px solid #4338ca; border-radius:3px; padding:4px 6px; margin-top:2px;">
+                  <div style="font-size:10px; font-weight:600; color:#c7d2fe;">${protoTitle}</div>
+                  <div style="font-size:9px; color:#cbd5e1; margin:2px 0;">
+                    Huyệt (${ptCodes.length}): <strong style="color:#f43f5e;">${ptCodes.join(', ')}</strong>
+                  </div>
+                  <div style="font-size:8.5px; color:#818cf8; margin-bottom:4px;">
+                    Nguồn: ${srcCite}
+                  </div>
+                  <button type="button" class="btn-apply-dien-chan-protocol" data-proto-id="${proto.protocol_id}" style="width:100%; font-size:9.5px; padding:3px 6px; background:#db2777; color:#ffffff; border:none; border-radius:2px; cursor:pointer; font-weight:600;">
+                    ✓ Áp dụng &amp; Highlight
+                  </button>
+                </div>
+              `;
+            }
+          }
+          html += `</div>`;
+        }
+        resultsContainer.innerHTML = html;
+
+        resultsContainer.querySelectorAll('.btn-apply-dien-chan-protocol').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const protoId = btn.getAttribute('data-proto-id');
+            const foundProto = results.flatMap(r => r.protocols).find(p => p.protocol_id === protoId);
+            if (foundProto) {
+              activateDienChanProtocol(foundProto);
+            }
+          });
+        });
+      } catch (err) {
+        resultsContainer.innerHTML = `<div style="font-size:10px; color:#f43f5e; padding:4px;">Lỗi: ${err.message}</div>`;
+      }
+    }
+
+    function activateDienChanProtocol(proto) {
+      activeDienChanProtocol = proto;
+      showDienChan = true;
+      const chkMain = document.getElementById('chkShowDienChan');
+      const chkStudio = document.getElementById('chkShowDienChanStudio');
+      if (chkMain) chkMain.checked = true;
+      if (chkStudio) chkStudio.checked = true;
+
+      setDienChanCameraView('front');
+      renderActiveProtocolCard();
+      render(true);
+    }
+
+    function renderActiveProtocolCard() {
+      const card = document.getElementById('dienChanActiveProtocolCard');
+      if (!card) return;
+      if (!activeDienChanProtocol) {
+        card.style.display = 'none';
+        card.innerHTML = '';
+        return;
+      }
+      const ptCodes = activeDienChanProtocol.point_codes || [];
+      card.style.display = 'flex';
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="color:#c7d2fe; font-size:10.5px;">Phác đồ: ${activeDienChanProtocol.name_vi}</strong>
+          <button type="button" id="btnClearActiveProtocol" style="background:transparent; border:none; color:#f43f5e; cursor:pointer; font-weight:700; font-size:11px;">✕ Bỏ chọn</button>
+        </div>
+        <div style="color:#94a3b8; font-size:9.5px;">Tình trạng: <span style="color:#38bdf8;">${activeDienChanProtocol.condition_name_vi || activeDienChanProtocol.condition_id || ''}</span></div>
+        <div style="color:#fbcfe8; font-size:9.5px;">Huyệt (${ptCodes.length}): <strong style="color:#f43f5e;">${ptCodes.join(', ')}</strong></div>
+        <div style="color:#64748b; font-size:8.5px;">Nguồn: ${activeDienChanProtocol.source_citation || 'Đồ hình gốc Image B'}</div>
+      `;
+
+      const btnClear = card.querySelector('#btnClearActiveProtocol');
+      if (btnClear) {
+        btnClear.addEventListener('click', () => {
+          activeDienChanProtocol = null;
+          renderActiveProtocolCard();
+          render(true);
+        });
+      }
+    }
+
+    // Dien Chan Buttons & Listeners
+    const btnDcFront = document.getElementById('btnDienChanFrontView');
+    if (btnDcFront) btnDcFront.addEventListener('click', () => setDienChanCameraView('front'));
+
+    const btnDcLeft = document.getElementById('btnDienChanLeftProfile');
+    if (btnDcLeft) btnDcLeft.addEventListener('click', () => setDienChanCameraView('left_profile'));
+
+    const btnDcRight = document.getElementById('btnDienChanRightProfile');
+    if (btnDcRight) btnDcRight.addEventListener('click', () => setDienChanCameraView('right_profile'));
+
+    const chkDcStudio = document.getElementById('chkShowDienChanStudio');
+    if (chkDcStudio) {
+      chkDcStudio.addEventListener('change', (e) => {
+        showDienChan = e.target.checked;
+        const chkMain = document.getElementById('chkShowDienChan');
+        if (chkMain) chkMain.checked = showDienChan;
+        render(true);
+      });
+    }
+
+    const chkDcProtoOnly = document.getElementById('chkDienChanProtocolOnly');
+    if (chkDcProtoOnly) {
+      chkDcProtoOnly.addEventListener('change', (e) => {
+        dienChanProtocolOnly = e.target.checked;
+        render(true);
+      });
+    }
+
+    const btnDcSearch = document.getElementById('btnDienChanSearch');
+    const txtDcSearch = document.getElementById('txtDienChanSearch');
+    if (btnDcSearch && txtDcSearch) {
+      btnDcSearch.addEventListener('click', () => performDienChanSearch(txtDcSearch.value));
+      txtDcSearch.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          performDienChanSearch(txtDcSearch.value);
+        }
+      });
+    }
+
+    const btnToggleRef = document.getElementById('btnToggleDienChanReferenceImg');
+    if (btnToggleRef) {
+      btnToggleRef.addEventListener('click', () => {
+        const m = ensureDienChanModal();
+        m.style.display = 'flex';
+      });
+    }
+
+    renderActiveProtocolCard();
+
+    // Expose search & protocol activation on internal window handlers
+    window.__dienChanInternal = {
+      performDienChanSearch,
+      activateDienChanProtocol,
+      clearActiveProtocol: () => {
+        activeDienChanProtocol = null;
+        renderActiveProtocolCard();
+        render(true);
+      }
+    };
+
     document.getElementById('chkShowDienChan').addEventListener('change', (e) => {
-
       showDienChan = e.target.checked;
-
-      render();
-
+      const chkStudio = document.getElementById('chkShowDienChanStudio');
+      if (chkStudio) chkStudio.checked = showDienChan;
+      render(true);
     });
 
     document.getElementById('selAcuRegion').addEventListener('change', (e) => {
@@ -3014,8 +3412,14 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
 
   window.__meridiansDebug = {
-
     get acuData() { return acuData; },
+    get activeDienChanProtocol() { return activeDienChanProtocol; },
+    searchDienChan: (q) => window.__dienChanInternal ? window.__dienChanInternal.performDienChanSearch(q) : null,
+    selectProtocol: (proto) => window.__dienChanInternal ? window.__dienChanInternal.activateDienChanProtocol(proto) : null,
+    clearActiveProtocol: () => window.__dienChanInternal ? window.__dienChanInternal.clearActiveProtocol() : null,
+    getActiveProtocol: () => activeDienChanProtocol,
+    setDienChanCameraView,
+    getDienChanPoints: () => (acuData && acuData.dien_chan ? acuData.dien_chan : []),
 
     get displaySettings() { return displaySettings; },
     get currentCounters() { return currentDensityCounters; },

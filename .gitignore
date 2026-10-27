@@ -39,6 +39,7 @@ demo.sqlite3*
 2data/backups/demo_governance_backup*
 
 # Upstream research workspaces
+3refs/dien_chan/source_images/*.png
 research/upstream/
 research/upstream/*
 !research/upstream/.gitkeep
