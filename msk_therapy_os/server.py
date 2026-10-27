@@ -1813,3 +1813,7 @@ def run_server(db_path: str = DEFAULT_DB, host: str = "127.0.0.1", port: int = 8
         print("\nStopping server...")
     finally:
         server.server_close()
+
+
+if __name__ == "__main__":
+    run_server()
