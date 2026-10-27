@@ -31,6 +31,7 @@ from .pose_rigging import (
     rotate_point_around_axis,
     GuardedSurfaceProjector,
 )
+from .meridian_surface_engine import MeridianSurfacePathEngine
 
 CANONICAL_MESH_ID = "FJ2810"
 CANONICAL_MESH_HASH = "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808"
@@ -330,6 +331,7 @@ class AnatomicalSpatialResolver:
 
         self._raw_dataset: Dict[str, Any] = {}
         self._meridian_cache: Dict[Tuple, Any] = {}
+        self._meridian_engine = MeridianSurfacePathEngine()
         self._load_base_dataset()
 
     def _load_base_dataset(self) -> None:
@@ -613,15 +615,6 @@ class AnatomicalSpatialResolver:
 
         target_ids = meridian_ids or list(all_meridians.keys())
 
-        ref_h = 172.0
-        pat_h = float(morphology_params.get("height_cm", ref_h))
-        h_ratio = pat_h / ref_h
-        ref_s = 42.0
-        pat_s = float(morphology_params.get("shoulder_width_cm", ref_s))
-        s_ratio = pat_s / ref_s
-        is_neutral_morph = (abs(h_ratio - 1.0) < 1e-4 and abs(s_ratio - 1.0) < 1e-4)
-        pose_items = tuple(sorted((k, round(float(v), 2)) for k, v in joint_angles.items() if abs(float(v)) > 0.01))
-
         for m_code in target_ids:
             if m_code not in all_meridians:
                 continue
@@ -630,54 +623,37 @@ class AnatomicalSpatialResolver:
             point_codes = m_raw.get("points", [])
             paths_out = []
 
-            for p_idx, p_raw in enumerate(m_raw.get("paths", [])):
-                side = p_raw.get("side", "right")
-                base_vertices = p_raw.get("surface_vertices") or p_raw.get("points") or []
-
-                if layer_mode == "legacy_raycast" or not base_vertices or (layer_mode == "canonical" and is_neutral_morph):
+            if layer_mode == "legacy_raycast":
+                # Historical pre-baked static surface path for comparative baseline
+                for p_raw in m_raw.get("paths", []):
+                    side = p_raw.get("side", "right")
+                    base_vertices = p_raw.get("surface_vertices") or p_raw.get("points") or []
                     paths_out.append({
                         "side": side,
                         "point_count": len(base_vertices),
                         "surface_vertices": base_vertices,
-                        "disclaimer": "Historical pre-baked surface path" if layer_mode == "legacy_raycast" else "Educational visualization approximation constrained to skin surface",
+                        "surface_normals": [[0.0, 0.0, 1.0] for _ in base_vertices],
+                        "segments": [],
+                        "point_residual_max_mm": None,
+                        "point_residual_mean_mm": None,
+                        "point_anchor_count": len(point_codes),
+                        "disclaimer": "Historical pre-baked surface path (Legacy)",
                     })
-                    continue
-
-                cache_key = (m_code, p_idx, layer_mode, round(h_ratio, 4), round(s_ratio, 4), pose_items)
-                if cache_key in self._meridian_cache:
-                    transformed_vertices = self._meridian_cache[cache_key]
-                else:
-                    transformed_vertices = []
-                    for v in base_vertices:
-                        v_tuple = (v[0], v[1], v[2])
-                        y = v[1]
-                        if y > 1.50:
-                            v_reg = "head_neck"
-                        elif y > 0.85:
-                            v_reg = "arm" if abs(v[0]) > 0.16 else "torso"
-                        else:
-                            v_reg = "lower_extremity"
-
-                        # 1. Morphology scaling
-                        v_morph = self.apply_morphology_scaling(v_tuple, v_reg, morphology_params)
-
-                        # 2. Pose Kinematics
-                        if layer_mode == "pose_adjusted":
-                            v_final = self.apply_pose_kinematics(v_morph, v_reg, side, joint_angles)
-                        elif layer_mode == "upstream_raw":
-                            v_final = (v_morph[0], v_morph[1] + 0.005, v_morph[2])
-                        else:
-                            v_final = v_morph
-
-                        transformed_vertices.append(list(v_final))
-                    self._meridian_cache[cache_key] = transformed_vertices
-
-                paths_out.append({
-                    "side": side,
-                    "point_count": len(transformed_vertices),
-                    "surface_vertices": transformed_vertices,
-                    "disclaimer": "Educational visualization approximation constrained to skin surface",
-                })
+            else:
+                # Dynamic Reconstructed Surface Engine (WHO 2008 + FJ2810 Ground Truth)
+                is_midline = (m_code in ["GV", "CV"])
+                sides = ["midline"] if is_midline else ["right", "left"]
+                for side in sides:
+                    path_obj = self._meridian_engine.reconstruct_channel(
+                        channel_code=m_code,
+                        meridian_meta=m_raw,
+                        resolved_points=resolved_points,
+                        side=side,
+                        layer_mode=layer_mode,
+                        morphology_params=morphology_params,
+                        joint_angles=joint_angles,
+                    )
+                    paths_out.append(path_obj)
 
             meridians_out[m_code] = {
                 "code": m_code,
@@ -712,7 +688,15 @@ class AnatomicalSpatialResolver:
 
         # 1. Resolve Acupoints
         all_points = self._raw_dataset.get("points", {})
-        target_point_keys = point_ids if point_ids else list(all_points.keys())
+        target_point_keys = set(point_ids) if point_ids else set(all_points.keys())
+
+        # If meridian_ids were requested, ensure all control points for those meridians are in target_point_keys
+        if meridian_ids:
+            all_meridians = self._raw_dataset.get("meridians", {})
+            for m_code in meridian_ids:
+                if m_code in all_meridians:
+                    for pt_code in all_meridians[m_code].get("points", []):
+                        target_point_keys.add(pt_code)
 
         resolved_points: Dict[str, Dict[str, Any]] = {}
         verified_count = 0

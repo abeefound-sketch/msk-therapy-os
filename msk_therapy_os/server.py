@@ -879,6 +879,36 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     payload = {"layer_mode": layer_mode}
                     self._send_json(resolver.resolve_atlas_geometry(payload, sqlite_overrides=overrides))
 
+                elif path == "/api/atlas/meridians/resolve":
+                    layer_mode = query.get("layer_mode", ["canonical"])[0]
+                    m_ids = query.get("channel_ids") or query.get("meridian_ids")
+                    channel_ids = [x.strip() for x in m_ids[0].split(",")] if m_ids else None
+                    side = query.get("side", ["all"])[0]
+                    resolver = get_spatial_resolver()
+                    overrides = list_reference_overrides(db)
+                    payload = {
+                        "layer_mode": layer_mode,
+                        "meridian_ids": channel_ids,
+                    }
+                    geo = resolver.resolve_atlas_geometry(payload, sqlite_overrides=overrides)
+                    meridians_res = geo.get("meridians", {})
+                    if side in ("right", "left", "midline"):
+                        filtered = {}
+                        for c, m in meridians_res.items():
+                            f_paths = [p for p in m.get("paths", []) if p.get("side") == side]
+                            m_copy = dict(m)
+                            m_copy["paths"] = f_paths
+                            filtered[c] = m_copy
+                        meridians_res = filtered
+                    self._send_json({
+                        "status": "success",
+                        "layer_mode": layer_mode,
+                        "mesh_id": geo.get("mesh_id", "FJ2810"),
+                        "mesh_hash": geo.get("mesh_hash", ""),
+                        "channel_count": len(meridians_res),
+                        "meridians": meridians_res,
+                    })
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
@@ -1550,6 +1580,43 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     try:
                         resolved_geometry = resolver.resolve_atlas_geometry(body, sqlite_overrides=overrides)
                         self._send_json(resolved_geometry)
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+
+                elif path == "/api/atlas/meridians/resolve":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    resolver = get_spatial_resolver()
+                    overrides = list_reference_overrides(db)
+                    try:
+                        channel_ids = body.get("channel_ids") or body.get("meridian_ids")
+                        side = body.get("side", "all")
+                        geo_payload = {
+                            "layer_mode": body.get("layer_mode", "canonical"),
+                            "meridian_ids": channel_ids,
+                            "morphology": body.get("morphology", {}),
+                            "pose": body.get("pose", {}),
+                            "mesh_id": body.get("mesh_id", "FJ2810"),
+                        }
+                        geo = resolver.resolve_atlas_geometry(geo_payload, sqlite_overrides=overrides)
+                        meridians_res = geo.get("meridians", {})
+                        if side in ("right", "left", "midline"):
+                            filtered = {}
+                            for c, m in meridians_res.items():
+                                f_paths = [p for p in m.get("paths", []) if p.get("side") == side]
+                                m_copy = dict(m)
+                                m_copy["paths"] = f_paths
+                                filtered[c] = m_copy
+                            meridians_res = filtered
+                        self._send_json({
+                            "status": "success",
+                            "layer_mode": geo_payload["layer_mode"],
+                            "mesh_id": geo.get("mesh_id", "FJ2810"),
+                            "mesh_hash": geo.get("mesh_hash", ""),
+                            "channel_count": len(meridians_res),
+                            "meridians": meridians_res,
+                        })
                     except ValueError as ve:
                         self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
 

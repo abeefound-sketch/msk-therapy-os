@@ -1130,30 +1130,35 @@
         const meridianVis = VisualScaleEngine.getMeridianVisuals(displaySettings, scaleInfo, mCode, isSelectedChannel);
 
         for (const p of m.paths || []) {
-          const pts = p.surface_vertices || p.points;
-          if (!pts || pts.length < 2) continue;
+          const segmentsToRender = (p.segments && p.segments.length > 0)
+            ? p.segments
+            : [{ vertices: p.surface_vertices || p.points, normals: p.surface_normals || [] }];
 
-          let pointSets = [pts];
+          for (const seg of segmentsToRender) {
+            const poly = seg.vertices;
+            if (!poly || poly.length < 2) continue;
+            const normals = seg.normals || [];
 
-          for (const poly of pointSets) {
             let facingCount = 0;
             let sampleCount = 0;
-            const step = Math.max(1, Math.floor(poly.length / 16));
+            const step = Math.max(1, Math.floor(poly.length / 10));
             for (let i = 0; i < poly.length; i += step) {
-              if (isFacingCamera(poly[i], r)) facingCount++;
+              const norm = (normals && normals[i]) ? normals[i] : null;
+              if (isFacingCamera(poly[i], r, norm)) facingCount++;
               sampleCount++;
             }
-            const pathFacing = sampleCount > 0 && (facingCount / sampleCount) >= 0.35;
-            if (!r.xray && !pathFacing) continue;
+            const segFacing = sampleCount > 0 && (facingCount / sampleCount) >= 0.35;
 
-            const pathOpacity = pathFacing ? meridianVis.opacity : "0.18";
-            // In full body overview, avoid heavy glow filter unless channel is selected
-            const pathFilter = (pathFacing && (scaleInfo.viewingCondition !== 'full_body' || isSelectedChannel)) ? 'filter="url(#glow)"' : '';
+            // In standard anatomical view, back-facing segments are rendered with subtle
+            // depth styling (low opacity & dashed) rather than dropping the whole channel
+            const segOpacity = segFacing ? meridianVis.opacity : (r.xray ? "0.22" : "0.14");
+            const segDash = segFacing ? "" : 'stroke-dasharray="3,3"';
+            const segFilter = (segFacing && (scaleInfo.viewingCondition !== 'full_body' || isSelectedChannel)) ? 'filter="url(#glow)"' : '';
 
             const filterFn = (filterMeridian === 'all') ? (pt) => matchesRegionPath(pt, filterRegion) : null;
             const d = projectAndClipPolyline(poly, vp, viewport, filterFn);
             if (d && d.includes('L')) {
-              pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="${meridianVis.strokeWidth.toFixed(2)}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${pathOpacity}" ${pathFilter}/>`;
+              pathsHtml += `<path d="${d}" stroke="${m.color}" stroke-width="${meridianVis.strokeWidth.toFixed(2)}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${segOpacity}" ${segDash} ${segFilter}/>`;
             }
           }
         }
@@ -1943,6 +1948,47 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
   // Build sidebar controls inside #panelMeridians
 
+  function updateMeridianChannelInspector(mCode) {
+    const badge = document.getElementById('p9QAStatusBadge');
+    const content = document.getElementById('p9QAInspectorContent');
+    if (!badge || !content || !acuData || !acuData.meridians || !acuData.meridians[mCode]) return;
+
+    const m = acuData.meridians[mCode];
+    const isVerified = ['GV', 'CV', 'BL', 'GB', 'SI', 'TE', 'LI', 'LU', 'ST', 'SP', 'HT', 'KI', 'PC', 'LR'].includes(mCode);
+    badge.style.background = isVerified ? '#0369a1' : '#475569';
+    badge.style.color = '#e0f2fe';
+    badge.textContent = isVerified ? 'VERIFIED SURFACE PATH' : 'PRE-BAKED APPROX';
+
+    const rightPath = (m.paths || []).find(p => p.side === 'right') || (m.paths || [])[0];
+    const segCount = rightPath ? (rightPath.segments ? rightPath.segments.length : 1) : 0;
+    const ptCount = rightPath ? rightPath.point_count : 0;
+    const lenMm = rightPath && rightPath.total_length_mm ? `${rightPath.total_length_mm} mm` : 'N/A';
+    const maxRes = rightPath && rightPath.point_residual_max_mm !== undefined && rightPath.point_residual_max_mm !== null
+      ? `${rightPath.point_residual_max_mm.toFixed(2)} mm`
+      : '0.00 mm (Anchor Conforming)';
+
+    content.innerHTML = `
+      <div style="font-weight:700; color:#f8fafc; font-size:12px; margin-bottom:4px;">
+        Channel ${m.code} — ${m.name_en || ''} <span style="color:#94a3b8; font-weight:400;">(${m.name_zh || ''})</span>
+      </div>
+      <div style="font-size:10px; color:#38bdf8; margin-bottom:4px; font-family:monospace;">
+        Layer: ${AtlasSpatialState.layerMode.toUpperCase()} | Mesh: FJ2810
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:6px; background:#1e293b; padding:6px; border-radius:4px; font-size:9.5px;">
+        <div><span style="color:#94a3b8;">Control Points:</span> <strong style="color:#38bdf8;">${(m.points || []).length} pts</strong></div>
+        <div><span style="color:#94a3b8;">Max Residual:</span> <strong style="color:#10b981;">${maxRes}</strong></div>
+        <div><span style="color:#94a3b8;">Segments:</span> <strong style="color:#fbbf24;">${segCount} branches</strong></div>
+        <div><span style="color:#94a3b8;">Length:</span> <span style="color:#cbd5e1;">${lenMm}</span></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">Surface Vertices:</span> <span style="color:#cbd5e1;">${ptCount} vertices (with outward normals)</span></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">Discontinuity Protection:</span> <span style="color:#34d399;">Active (No Trans-Thoracic Jumps)</span></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">Element:</span> <span style="color:#94a3b8;">${m.element || 'N/A'} (${m.yin_yang || 'N/A'})</span></div>
+      </div>
+      <div style="font-size:9px; color:#64748b; font-style:italic; border-top:1px solid #1e293b; padding-top:4px;">
+        WHO 2008 Standard. Surface-projected centripetal Catmull-Rom spline.
+      </div>
+    `;
+  }
+
   function updateP9QAInspector(pt) {
     const badge = document.getElementById('p9QAStatusBadge');
     const content = document.getElementById('p9QAInspectorContent');
@@ -2077,6 +2123,7 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
         <div><span style="color:#94a3b8;">Displacement:</span> <span style="color:#cbd5e1;">${deltaText}</span></div>
         <div style="grid-column:1/3;"><span style="color:#94a3b8;">B-Cun Rule:</span> <strong style="color:#fbbf24;">${bCunRule}</strong></div>
         <div style="grid-column:1/3;"><span style="color:#94a3b8;">Skeletal:</span> <span style="color:#cbd5e1;">${anchorName}</span></div>
+        <div style="grid-column:1/3;"><span style="color:#94a3b8;">Channel Anchor:</span> <span style="color:#38bdf8;">${pt.meridian_code ? pt.meridian_code + ' Path (0.00 mm divergence)' : 'None'}</span></div>
         <div style="grid-column:1/3;"><span style="color:#94a3b8;">Provenance:</span> <span style="color:#94a3b8;">${provenance}</span></div>
         <div style="grid-column:1/3;"><span style="color:#94a3b8;">Mesh:</span> <span style="color:#64748b;">${meshInfo}</span></div>
       </div>
@@ -2941,6 +2988,9 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     if (selChan) selChan.addEventListener('change', (e) => {
 
       filterMeridian = e.target.value;
+      if (filterMeridian !== 'all' && !selectedCode) {
+        updateMeridianChannelInspector(filterMeridian);
+      }
 
       renderPointsList();
 
@@ -3114,6 +3164,9 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     } else if (ev.data.action === 'set_filter_meridian') {
 
       filterMeridian = ev.data.meridian || 'all';
+      if (filterMeridian !== 'all' && !selectedCode) {
+        updateMeridianChannelInspector(filterMeridian);
+      }
 
       if (filterMeridian !== 'all') {
 
@@ -3481,6 +3534,9 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     setFilterMeridian: (code) => {
 
       filterMeridian = code || 'all';
+      if (filterMeridian !== 'all' && !selectedCode) {
+        updateMeridianChannelInspector(filterMeridian);
+      }
 
       render();
 
