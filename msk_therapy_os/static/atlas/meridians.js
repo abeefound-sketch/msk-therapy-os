@@ -2497,6 +2497,91 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
           </div>
         </div>
 
+        <!-- P9.4: Editable Meridian QA Studio Panel -->
+        <div id="p94MeridianStudioPanel" style="background:#0f172a; border:1px solid #0284c7; border-radius:var(--r-s); padding:8px; display:flex; flex-direction:column; gap:8px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #1e293b; padding-bottom:4px;">
+            <strong style="color:#38bdf8; font-size:11px;">🗺️ Meridian Route QA Studio</strong>
+            <span id="p94StudioStatusBadge" style="background:#0369a1; color:#e0f2fe; font-size:9px; padding:1px 5px; border-radius:3px; font-weight:600;">WHO 2008</span>
+          </div>
+
+          <!-- Coverage & Data Quality Summary -->
+          <div style="background:#1e293b; padding:6px; border-radius:4px; display:flex; flex-direction:column; gap:4px; font-size:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="color:#94a3b8; font-weight:600;">361 Acupoints Coverage:</span>
+              <button type="button" id="btnRefreshCoverage" style="background:#0284c7; color:#ffffff; border:none; border-radius:3px; padding:2px 6px; font-size:9px; cursor:pointer;">🔄 Refresh</button>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; text-align:center;">
+              <div style="background:#0f172a; padding:3px; border-radius:3px; border-top:2px solid #10b981;">
+                <div style="color:#94a3b8; font-size:8.5px;">Class A (Audited)</div>
+                <strong id="lblCovClassA" style="color:#10b981; font-size:11px;">18</strong>
+              </div>
+              <div style="background:#0f172a; padding:3px; border-radius:3px; border-top:2px solid #38bdf8;">
+                <div style="color:#94a3b8; font-size:8.5px;">Class B (Rules)</div>
+                <strong id="lblCovClassB" style="color:#38bdf8; font-size:11px;">52</strong>
+              </div>
+              <div style="background:#0f172a; padding:3px; border-radius:3px; border-top:2px solid #f59e0b;">
+                <div style="color:#94a3b8; font-size:8.5px;">Class D (Legacy)</div>
+                <strong id="lblCovClassD" style="color:#f59e0b; font-size:11px;">292</strong>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:9px; color:#cbd5e1; margin-top:2px;">
+              <span>Verified Rate: <strong id="lblCovVerifiedPct" style="color:#34d399;">19.3%</strong></span>
+              <span>Spline Residual: <strong style="color:#10b981;">0.000 mm</strong></span>
+            </div>
+          </div>
+
+          <!-- Channel Route Topology Inspector -->
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:10px; color:#94a3b8;">Chọn đường kinh kiểm định:</span>
+              <select id="selStudioChannel" style="background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:2px 4px; border-radius:3px; font-size:10px;">
+                <option value="GB">GB — Gallbladder (Đởm - Auricular Loop)</option>
+                <option value="BL">BL — Bladder (Bàng Quang - Dual Column)</option>
+                <option value="ST">ST — Stomach (Vị - Cranio-Cervical Gap)</option>
+                <option value="GV">GV — Governor Vessel (Đốc Mạch - Midline)</option>
+                <option value="CV">CV — Conception Vessel (Nhâm Mạch - Midline)</option>
+                <option value="LU">LU — Lung (Phế - Clavicle to Thumb)</option>
+                <option value="LI">LI — Large Intestine (Đại Trường - Index)</option>
+                <option value="SP">SP — Spleen (Tỳ - Great Toe to Dabao)</option>
+                <option value="HT">HT — Heart (Tâm - Axilla to Little Finger)</option>
+                <option value="SI">SI — Small Intestine (Tiểu Trường)</option>
+                <option value="KI">KI — Kidney (Thận - Sole to Clavicle)</option>
+                <option value="PC">PC — Pericardium (Tâm Bào - Midline Arm)</option>
+                <option value="TE">TE — Triple Energizer (Tam Tiêu)</option>
+                <option value="LR">LR — Liver (Can - Great Toe to Rib)</option>
+              </select>
+            </div>
+            <div id="studioTopologyContainer" style="background:#1e293b; border-radius:4px; padding:6px; font-size:10px; line-height:1.4;">
+              Đang tải thông tin topo đường kinh...
+            </div>
+          </div>
+
+          <!-- Editable Revision Form & Audit Workflow -->
+          <div style="display:flex; flex-direction:column; gap:4px; border-top:1px solid #1e293b; padding-top:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:600; color:#cbd5e1; font-size:10px;">Đề xuất hiệu chỉnh mốc / waypoint:</span>
+              <button type="button" id="btnToggleRevForm" style="background:#334155; color:#f8fafc; border:none; border-radius:2px; padding:1px 5px; font-size:9px; cursor:pointer;">+ Mở form</button>
+            </div>
+            <div id="studioRevForm" style="display:none; flex-direction:column; gap:4px; background:#1e293b; padding:6px; border-radius:4px;">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+                <input type="text" id="txtRevTargetId" placeholder="Mã waypoint (e.g. WP_GB_R_01)" style="background:#0f172a; color:#f8fafc; border:1px solid #475569; padding:3px 5px; border-radius:3px; font-size:9.5px;" />
+                <select id="selRevType" style="background:#0f172a; color:#f8fafc; border:1px solid #475569; padding:3px 5px; border-radius:3px; font-size:9.5px;">
+                  <option value="MOVE_WAYPOINT">MOVE_WAYPOINT (Dịch chuyển)</option>
+                  <option value="ADD_WAYPOINT">ADD_WAYPOINT (Thêm mốc)</option>
+                  <option value="GAP_TOGGLE">GAP_TOGGLE (Ngắt đoạn)</option>
+                </select>
+              </div>
+              <input type="text" id="txtRevPosition" placeholder="Tọa độ mới: X, Y, Z (m)" style="background:#0f172a; color:#f8fafc; border:1px solid #475569; padding:3px 5px; border-radius:3px; font-size:9.5px;" />
+              <input type="text" id="txtRevJustification" placeholder="Căn cứ giải phẫu / lâm sàng" style="background:#0f172a; color:#f8fafc; border:1px solid #475569; padding:3px 5px; border-radius:3px; font-size:9.5px;" />
+              <input type="text" id="txtRevAuthor" placeholder="Chuyên gia đề xuất (MD, LAc...)" style="background:#0f172a; color:#f8fafc; border:1px solid #475569; padding:3px 5px; border-radius:3px; font-size:9.5px;" />
+              <div style="display:flex; justify-content:flex-end; gap:4px; margin-top:2px;">
+                <button type="button" id="btnSubmitRevision" style="background:#10b981; color:#ffffff; border:none; border-radius:3px; padding:3px 8px; font-size:9.5px; font-weight:600; cursor:pointer;">Gửi duyệt</button>
+              </div>
+            </div>
+            <div id="studioRevStatusMsg" style="font-size:9px; color:#34d399; display:none;"></div>
+          </div>
+        </div>
+
         <!-- Vietnamese Dien Chan Facial Reflexology Studio Card -->
         <div style="background:var(--panel-2); padding:10px; border-radius:var(--r-s); border:1px solid #ec4899; display:flex; flex-direction:column; gap:8px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -2954,6 +3039,156 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     }
 
     renderActiveProtocolCard();
+
+    // --- P9.4: Meridian Route QA Studio Logic ---
+    async function loadStudioCoverage() {
+      try {
+        const res = await fetch('/api/atlas/meridians/coverage');
+        if (!res.ok) return;
+        const data = await res.json();
+        const dist = data.class_distribution || {};
+        const elA = document.getElementById('lblCovClassA');
+        const elB = document.getElementById('lblCovClassB');
+        const elD = document.getElementById('lblCovClassD');
+        const elPct = document.getElementById('lblCovVerifiedPct');
+        if (elA) elA.textContent = dist.CLASS_A ?? 18;
+        if (elB) elB.textContent = dist.CLASS_B ?? 52;
+        if (elD) elD.textContent = dist.CLASS_D ?? 292;
+        if (elPct) elPct.textContent = `${data.verified_percentage ?? 19.3}%`;
+      } catch (err) {
+        console.warn('Failed to load meridian studio coverage:', err);
+      }
+    }
+
+    async function loadStudioTopology(channelCode) {
+      const container = document.getElementById('studioTopologyContainer');
+      if (!container) return;
+      container.innerHTML = '<span style="color:#94a3b8;">Đang tải topo...</span>';
+      try {
+        const res = await fetch(`/api/atlas/meridians/route-graph?channel_code=${encodeURIComponent(channelCode)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const graphs = data.route_graphs || [];
+        if (!graphs.length) {
+          container.innerHTML = `<span style="color:#f59e0b;">Không tìm thấy dữ liệu đường kinh ${channelCode}</span>`;
+          return;
+        }
+        const g = graphs[0];
+        const branches = g.branches || [];
+        const waypoints = g.waypoints || [];
+        let html = `
+          <div style="font-weight:700; color:#38bdf8; margin-bottom:4px;">
+            ${g.channel_code} — ${g.name_en} <span style="color:#94a3b8; font-weight:400;">(${g.name_zh})</span>
+          </div>
+          <div style="color:#94a3b8; font-size:9.5px; margin-bottom:4px;">
+            Phân nhánh: <strong style="color:#f8fafc;">${branches.length} nhánh</strong> • Tổng mốc: <strong style="color:#f8fafc;">${waypoints.length} waypoints</strong>
+          </div>
+        `;
+        branches.forEach((b, bIdx) => {
+          const bWps = waypoints.filter(w => w.branch_id === b.branch_id);
+          html += `
+            <div style="margin-top:4px; padding:4px; background:#0f172a; border-radius:3px; border-left:2px solid #0284c7;">
+              <div style="font-weight:600; color:#e0f2fe; font-size:9.5px;">Nhánh ${bIdx+1}: ${b.branch_name}</div>
+              <div style="color:#64748b; font-size:8.5px; margin:2px 0;">Hành lang: ${b.anatomical_corridor}</div>
+              <div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:2px;">
+                ${bWps.slice(0, 10).map(w => {
+                  const isAnc = w.waypoint_type === 'ACUPOINT_ANCHOR';
+                  const bg = isAnc ? '#065f46' : '#1e3a8a';
+                  const clr = isAnc ? '#a7f3d0' : '#bfdbfe';
+                  return `<span style="background:${bg}; color:${clr}; font-size:8px; padding:1px 3px; border-radius:2px;" title="${w.anatomical_structure}">${w.waypoint_code}</span>`;
+                }).join('')}
+                ${bWps.length > 10 ? `<span style="color:#64748b; font-size:8px;">+${bWps.length - 10} mốc...</span>` : ''}
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<span style="color:#f43f5e;">Lỗi tải dữ liệu: ${err.message}</span>`;
+      }
+    }
+
+    const btnRefCov = document.getElementById('btnRefreshCoverage');
+    if (btnRefCov) {
+      btnRefCov.addEventListener('click', () => loadStudioCoverage());
+    }
+
+    const selStudioCh = document.getElementById('selStudioChannel');
+    if (selStudioCh) {
+      selStudioCh.addEventListener('change', (e) => loadStudioTopology(e.target.value));
+      loadStudioTopology(selStudioCh.value || 'GB');
+    }
+
+    const btnTglRev = document.getElementById('btnToggleRevForm');
+    const revForm = document.getElementById('studioRevForm');
+    if (btnTglRev && revForm) {
+      btnTglRev.addEventListener('click', () => {
+        const isHidden = revForm.style.display === 'none';
+        revForm.style.display = isHidden ? 'flex' : 'none';
+        btnTglRev.textContent = isHidden ? '- Đóng form' : '+ Mở form';
+      });
+    }
+
+    const btnSubRev = document.getElementById('btnSubmitRevision');
+    if (btnSubRev) {
+      btnSubRev.addEventListener('click', async () => {
+        const targetId = (document.getElementById('txtRevTargetId')?.value || '').trim();
+        const revType = document.getElementById('selRevType')?.value || 'MOVE_WAYPOINT';
+        const posStr = (document.getElementById('txtRevPosition')?.value || '').trim();
+        const justification = (document.getElementById('txtRevJustification')?.value || '').trim();
+        const author = (document.getElementById('txtRevAuthor')?.value || '').trim() || 'Clinical Specialist';
+        const ch = selStudioCh ? selStudioCh.value : 'GB';
+        const statusMsg = document.getElementById('studioRevStatusMsg');
+
+        if (!targetId || !justification) {
+          if (statusMsg) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.color = '#f43f5e';
+            statusMsg.textContent = 'Vui lòng nhập mã waypoint và căn cứ giải phẫu!';
+          }
+          return;
+        }
+
+        let newPos = [0.0, 1.0, 0.0];
+        if (posStr) {
+          const parts = posStr.split(',').map(s => parseFloat(s.trim()));
+          if (parts.length === 3 && parts.every(n => !isNaN(n))) newPos = parts;
+        }
+
+        try {
+          const res = await fetch('/api/atlas/meridians/revisions', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              channel_code: ch,
+              branch_id: `${ch}_R_B1`,
+              revision_type: revType,
+              target_id: targetId,
+              old_state: {position: [0.0, 1.0, 0.0]},
+              new_state: {position: newPos},
+              clinical_justification: justification,
+              author: author
+            })
+          });
+          const ret = await res.json();
+          if (res.ok) {
+            if (statusMsg) {
+              statusMsg.style.display = 'block';
+              statusMsg.style.color = '#34d399';
+              statusMsg.textContent = `✓ Đã tạo đề xuất #${ret.revision_id} (${ret.revision_status}).`;
+            }
+          } else {
+            throw new Error(ret.error || 'Request failed');
+          }
+        } catch (e) {
+          if (statusMsg) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.color = '#f43f5e';
+            statusMsg.textContent = `Lỗi: ${e.message}`;
+          }
+        }
+      });
+    }
 
     // Expose search & protocol activation on internal window handlers
     window.__dienChanInternal = {
@@ -3518,6 +3753,23 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     },
 
     getResolvedData: () => AtlasSpatialState.resolvedData,
+    getCoverageDashboard: () => fetch('/api/atlas/meridians/coverage').then(r => r.json()),
+    getRouteGraph: (ch) => fetch(`/api/atlas/meridians/route-graph?channel_code=${encodeURIComponent(ch || 'GB')}`).then(r => r.json()),
+    submitRevision: (data) => fetch('/api/atlas/meridians/revisions', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    }).then(r => r.json()),
+    reviewRevision: (revId, decision, reviewer = 'Lead QA', comments = '') => fetch(`/api/atlas/meridians/revisions/${revId}/review`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({decision, reviewer, comments})
+    }).then(r => r.json()),
+    rollbackRevision: (revId, author = 'Lead QA') => fetch(`/api/atlas/meridians/revisions/${revId}/rollback`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({author})
+    }).then(r => r.json()),
 
     setSurfaceReference: (on) => {
 

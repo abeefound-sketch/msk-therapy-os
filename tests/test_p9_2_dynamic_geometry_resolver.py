@@ -186,15 +186,15 @@ class TestAnatomicalSpatialResolverCore:
         # Points not in the audited catalog must NOT claim VERIFIED_ANATOMICAL_ANCHOR or fake residuals
         res = resolver.resolve_atlas_geometry({
             "layer_mode": "canonical",
-            "point_ids": ["KI1"],  # KI1 is not yet in audited catalog
+            "point_ids": ["LI2"],  # LI2 is an uncalibrated point (Class D)
         })
 
-        if "KI1" in res["points"]:
-            ki1 = res["points"]["KI1"]
-            assert ki1["registration_status"] != "VERIFIED_ANATOMICAL_ANCHOR"
-            assert ki1["registration_status"] == "GEOMETRIC_SURFACE_APPROXIMATION"
-            assert ki1["residual_error_mm"] is None
-            assert ki1["uncertainty_mm"] is None
+        if "LI2" in res["points"]:
+            li2 = res["points"]["LI2"]
+            assert li2["registration_status"] != "VERIFIED_ANATOMICAL_ANCHOR"
+            assert li2["registration_status"] == "GEOMETRIC_SURFACE_APPROXIMATION"
+            assert li2["residual_error_mm"] is None
+            assert li2["uncertainty_mm"] is None
 
 
 class TestAtlasSpatialResolutionAPI:

@@ -32,6 +32,7 @@ from .pose_rigging import (
     GuardedSurfaceProjector,
 )
 from .meridian_surface_engine import MeridianSurfacePathEngine
+from .point_localization_rules import AcupointLocalizationEngine
 
 CANONICAL_MESH_ID = "FJ2810"
 CANONICAL_MESH_HASH = "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808"
@@ -328,6 +329,7 @@ class AnatomicalSpatialResolver:
         self.registry = landmark_registry or LandmarkRegistry()
         self.cun_engine = CunScalingEngine(self.registry)
         self.rig = PoseKinematicsEngine(self.registry)
+        self._loc_engine = AcupointLocalizationEngine(self.registry)
 
         self._raw_dataset: Dict[str, Any] = {}
         self._meridian_cache: Dict[Tuple, Any] = {}
@@ -441,8 +443,9 @@ class AnatomicalSpatialResolver:
         """Resolve a single acupuncture point according to authoritative spatial contracts."""
         base_pt = self._raw_dataset.get("points", {}).get(code, {})
         audited = AUDITED_CANONICAL_POINTS.get(code)
+        rule_res = self._loc_engine.resolve_point_location(code) if not audited else None
 
-        region = base_pt.get("region") or (audited["region"] if audited else "torso")
+        region = base_pt.get("region") or (audited["region"] if audited else ("torso"))
         raw_pos = base_pt.get("position", [0.0, 1.0, 0.0])
         raw_norm = base_pt.get("normal", [0.0, 0.0, 1.0])
 
@@ -454,10 +457,38 @@ class AnatomicalSpatialResolver:
             raw_pos = sqlite_overrides[code].get("position", raw_pos)
             raw_norm = sqlite_overrides[code].get("normal", raw_norm)
 
-        # Baseline coordinates
+        # Baseline coordinates and Quality Classification
         legacy_pos = audited["legacy_position"] if audited else tuple(raw_pos)
-        canonical_pos = audited["canonical_position"] if audited else tuple(raw_pos)
-        normal = audited["normal"] if audited else tuple(raw_norm)
+        if audited:
+            canonical_pos = audited["canonical_position"]
+            normal = audited["normal"]
+            quality_class = "CLASS_A"
+            fma_anchor_str = audited.get("fma_id")
+            skeletal_anchor_str = audited.get("skeletal_anchor")
+            who_ref_str = audited.get("who_reference", "")
+            base_uncertainty = audited.get("uncertainty_mm")
+            base_tolerance = audited.get("tolerance_radius_mm", 5.0)
+            base_cun_rule = audited.get("cun_rule")
+        elif rule_res:
+            canonical_pos = tuple(rule_res["canonical_position"])
+            normal = tuple(rule_res["surface_normal"])
+            quality_class = "CLASS_B"
+            fma_anchor_str = rule_res.get("fma_anchor")
+            skeletal_anchor_str = rule_res.get("skeletal_structure")
+            who_ref_str = rule_res.get("who_reference", "")
+            base_uncertainty = rule_res.get("uncertainty_mm")
+            base_tolerance = rule_res.get("tolerance_radius_mm", 5.0)
+            base_cun_rule = f"{rule_res.get('localization_method')} (WHO 2008 Standard)"
+        else:
+            canonical_pos = tuple(raw_pos)
+            normal = tuple(raw_norm)
+            quality_class = "CLASS_D"
+            fma_anchor_str = base_pt.get("fma_id")
+            skeletal_anchor_str = base_pt.get("anchor_structure")
+            who_ref_str = base_pt.get("source_provenance", "BodyParts3D FJ2810 Surface Mesh")
+            base_uncertainty = None
+            base_tolerance = None
+            base_cun_rule = None
 
         # Evaluate posture sensitivity
         posture_eval = self.rig.evaluate_acupoint_posture_status(code, joint_angles)
@@ -473,11 +504,16 @@ class AnatomicalSpatialResolver:
 
         if layer_mode == "canonical":
             resolved_pos = canonical_pos
-            if audited:
+            if quality_class == "CLASS_A":
                 registration_status = "VERIFIED_ANATOMICAL_ANCHOR"
                 residual_error_mm = round(_euclidean_distance_mm(canonical_pos, legacy_pos), 2)
-                uncertainty_mm = audited.get("uncertainty_mm")
-                applied_cun_rule = audited.get("cun_rule")
+                uncertainty_mm = base_uncertainty
+                applied_cun_rule = base_cun_rule
+            elif quality_class == "CLASS_B":
+                registration_status = "LANDMARK_DERIVED_WHO_STANDARD"
+                residual_error_mm = round(_euclidean_distance_mm(canonical_pos, legacy_pos), 2)
+                uncertainty_mm = base_uncertainty
+                applied_cun_rule = base_cun_rule
             else:
                 registration_status = "GEOMETRIC_SURFACE_APPROXIMATION"
                 residual_error_mm = None
@@ -494,7 +530,7 @@ class AnatomicalSpatialResolver:
         elif layer_mode == "upstream_raw":
             # Upstream raw coordinate conversion (retains distinct source differences)
             # WaterCMY / TCMAcupoints delta model relative to canonical
-            if audited:
+            if quality_class in ("CLASS_A", "CLASS_B"):
                 dx = -0.008 if laterality == "right" else 0.008
                 dy = 0.012
                 dz = -0.010
@@ -525,14 +561,17 @@ class AnatomicalSpatialResolver:
             if is_posture_uncertain:
                 registration_status = "UNCERTAIN_POSTURE_OFFSET"
                 rejection_reason = posture_eval.get("notes")
-            elif audited:
+            elif quality_class == "CLASS_A":
                 registration_status = "VERIFIED_ANATOMICAL_ANCHOR"
-                applied_cun_rule = audited.get("cun_rule")
+                applied_cun_rule = base_cun_rule
+            elif quality_class == "CLASS_B":
+                registration_status = "LANDMARK_DERIVED_WHO_STANDARD"
+                applied_cun_rule = base_cun_rule
             else:
                 registration_status = "GEOMETRIC_SURFACE_APPROXIMATION"
 
-            if audited:
-                uncertainty_mm = audited.get("uncertainty_mm")
+            if quality_class in ("CLASS_A", "CLASS_B"):
+                uncertainty_mm = base_uncertainty
                 residual_error_mm = round(_euclidean_distance_mm(resolved_pos, legacy_pos), 2)
             else:
                 uncertainty_mm = None
@@ -575,10 +614,13 @@ class AnatomicalSpatialResolver:
             "instances": instances,
             "registration_mode": layer_mode,
             "registration_status": registration_status,
-            "anatomical_landmark_ids": [audited["skeletal_anchor"]] if audited else [],
-            "fma_id": audited.get("fma_id") if audited else base_pt.get("fma_id"),
-            "skeletal_anchor": audited.get("skeletal_anchor") if audited else base_pt.get("anchor_structure"),
+            "quality_class": quality_class,
+            "anatomical_landmark_ids": [skeletal_anchor_str] if skeletal_anchor_str else [],
+            "fma_id": fma_anchor_str,
+            "skeletal_anchor": skeletal_anchor_str,
+            "who_reference": who_ref_str,
             "applied_cun_rule": applied_cun_rule,
+            "tolerance_radius_mm": base_tolerance,
             "pose_validity": {
                 "is_valid": not is_posture_uncertain,
                 "status": posture_eval.get("status"),
@@ -700,8 +742,10 @@ class AnatomicalSpatialResolver:
 
         resolved_points: Dict[str, Dict[str, Any]] = {}
         verified_count = 0
+        landmark_derived_count = 0
         approx_count = 0
         uncertain_posture_count = 0
+        quality_counts = {"CLASS_A": 0, "CLASS_B": 0, "CLASS_C": 0, "CLASS_D": 0}
 
         for code in target_point_keys:
             if code not in all_points and code not in AUDITED_CANONICAL_POINTS:
@@ -711,8 +755,13 @@ class AnatomicalSpatialResolver:
             resolved_points[code] = pt_res
 
             st = pt_res["registration_status"]
+            qc = pt_res.get("quality_class", "CLASS_D")
+            quality_counts[qc] = quality_counts.get(qc, 0) + 1
+
             if st == "VERIFIED_ANATOMICAL_ANCHOR":
                 verified_count += 1
+            elif st == "LANDMARK_DERIVED_WHO_STANDARD":
+                landmark_derived_count += 1
             elif st == "UNCERTAIN_POSTURE_OFFSET":
                 uncertain_posture_count += 1
             elif st == "GEOMETRIC_SURFACE_APPROXIMATION":
@@ -733,8 +782,10 @@ class AnatomicalSpatialResolver:
             "summary": {
                 "total_resolved_points": len(resolved_points),
                 "verified_anchor_count": verified_count,
+                "landmark_derived_count": landmark_derived_count,
                 "approx_surface_count": approx_count,
                 "uncertain_posture_count": uncertain_posture_count,
+                "quality_classes": quality_counts,
                 "unregistered_count": 0,
                 "meridian_count": len(resolved_meridians),
             },

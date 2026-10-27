@@ -197,17 +197,17 @@ def test_playwright_atlas_dynamic_geometry_suite(browser_server):
         assert "FMA:35463" in st36_content
         assert "Residual:" in st36_content
 
-        # Select non-audited point (e.g. KI1)
-        page.evaluate("() => window.__meridiansDebug.selectPoint('KI1')")
+        # Select non-audited point (e.g. LI2 - Class D)
+        page.evaluate("() => window.__meridiansDebug.selectPoint('LI2')")
         page.wait_for_timeout(500)
 
-        ki1_badge = page.inner_text("#p9QAStatusBadge")
-        ki1_content = page.inner_text("#p9QAInspectorContent")
+        li2_badge = page.inner_text("#p9QAStatusBadge")
+        li2_content = page.inner_text("#p9QAInspectorContent")
 
-        # KI1 must NOT claim VERIFIED ANCHOR or fake < 0.5 mm
-        assert "VERIFIED ANCHOR" not in ki1_badge
-        assert "< 0.5 mm" not in ki1_content
-        assert "None / Not Measured" in ki1_content
+        # LI2 must NOT claim VERIFIED ANCHOR or fake < 0.5 mm
+        assert "VERIFIED ANCHOR" not in li2_badge
+        assert "< 0.5 mm" not in li2_content
+        assert "None / Not Measured" in li2_content
 
         page.screenshot(path=str(EVIDENCE_DIR / "05_qa_inspector_authentic_abstention.png"))
 

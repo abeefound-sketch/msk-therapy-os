@@ -18,6 +18,13 @@ from dataclasses import dataclass, field
 import math
 from typing import Any, Dict, List, Optional, Tuple
 
+from .meridian_route_graph import (
+    MeridianRouteGraph,
+    WaypointType,
+    RouteBranch,
+    RouteWaypoint,
+)
+
 # Anatomical Branch Partitioning: Splitting classical multi-branch channels
 # to prevent artificial jump lines cutting through the body / organs.
 MERIDIAN_BRANCH_RANGES: Dict[str, List[Tuple[str, str]]] = {
@@ -128,6 +135,7 @@ class MeridianSurfacePathEngine:
 
     def __init__(self) -> None:
         self._cache: Dict[Any, Dict[str, Any]] = {}
+        self._route_graph = MeridianRouteGraph()
 
     def clear_cache(self) -> None:
         self._cache.clear()
@@ -236,7 +244,8 @@ class MeridianSurfacePathEngine:
         if cache_key in self._cache:
             return self._cache[cache_key]
 
-        branches = self._partition_points_into_branches(channel_code, ordered_points)
+        # 1. Check authoritative route graph topology
+        graph_branches = self._route_graph.get_channel_branches(channel_code, side)
 
         all_surface_vertices: List[List[float]] = []
         all_surface_normals: List[List[float]] = []
@@ -245,134 +254,244 @@ class MeridianSurfacePathEngine:
         total_length_mm = 0.0
         anchor_count = 0
 
-        for b_idx, branch_points in enumerate(branches):
-            # Collect resolved anchor points for this branch
-            branch_data: List[Tuple[str, List[float], List[float], str]] = []
-            for pt_code in branch_points:
-                if pt_code in resolved_points:
-                    pt_res = resolved_points[pt_code]
-                    p_pos, p_norm, p_reg = self._get_point_coords_and_normal(pt_res, side)
-                    branch_data.append((pt_code, p_pos, p_norm, p_reg))
-                    anchor_count += 1
-
-            if len(branch_data) < 2:
-                # If only 1 point, emit single vertex
-                if branch_data:
-                    c, p, n, r = branch_data[0]
-                    seg_id = f"{channel_code}_{side}_b{b_idx+1}_single"
-                    segments_out.append({
-                        "segment_id": seg_id,
-                        "branch_index": b_idx,
-                        "start_point": c,
-                        "end_point": c,
-                        "region": r,
-                        "points": [c],
-                        "vertices": [p],
-                        "normals": [n],
-                        "arc_length_mm": 0.0,
-                        "point_indices": {c: 0},
-                    })
-                    all_surface_vertices.append(p)
-                    all_surface_normals.append(n)
-                continue
-
-            # Build continuous smooth spline for this branch
-            branch_vertices: List[List[float]] = []
-            branch_normals: List[List[float]] = []
-            point_indices: Dict[str, int] = {}
-            branch_length_mm = 0.0
-
-            n_pts = len(branch_data)
-            for i in range(n_pts - 1):
-                pt_curr_code, p1, n1, reg1 = branch_data[i]
-                pt_next_code, p2, n2, reg2 = branch_data[i + 1]
-
-                # Virtual boundary knots for smooth end tangents
-                if i == 0:
-                    p0 = [2 * p1[k] - p2[k] for k in range(3)]
-                else:
-                    p0 = branch_data[i - 1][1]
-
-                if i + 2 < n_pts:
-                    p3 = branch_data[i + 2][1]
-                else:
-                    p3 = [2 * p2[k] - p1[k] for k in range(3)]
-
-                d_span = _euclidean_dist(p1, p2)
-                branch_length_mm += d_span * 1000.0
-
-                # Adaptive sampling based on anatomical distance
-                if d_span < 0.020:
-                    n_samples = 2
-                elif d_span < 0.060:
-                    n_samples = 3
-                elif d_span < 0.120:
-                    n_samples = 4
-                else:
-                    n_samples = max(4, min(7, int(d_span / 0.025)))
-
-                spline_samples = _catmull_rom_centripetal_segment(p0, p1, p2, p3, n_samples=n_samples)
-
-                # Append samples (skip first sample of subsequent segments to avoid duplicate vertices)
-                start_step = 0 if i == 0 else 1
-                for s_idx in range(start_step, len(spline_samples)):
-                    s, raw_pos = spline_samples[s_idx]
-
-                    # Interpolate unit normal
-                    lerp_norm = [
-                        (1.0 - s) * n1[k] + s * n2[k] for k in range(3)
-                    ]
-                    unit_norm = _normalize(lerp_norm)
-
-                    # Guarded surface elevation to hug skin envelope
-                    # Sagitta convex lift = 4 * s * (1 - s) * d^2 / (8 * R)
-                    # Typical limb radius R ~ 0.07 m
-                    sagitta_lift = min(0.0035, 4.0 * s * (1.0 - s) * (d_span * d_span) / (8.0 * 0.07))
-                    skin_clearance = 0.0012  # 1.2 mm WebGL clearance
-                    total_lift = sagitta_lift + skin_clearance
-
-                    # At exact anchor knots (s=0 and s=1), keep exactly on the resolved anchor position
-                    if s_idx == 0:
-                        final_pos = [round(x, 6) for x in p1]
-                    elif s_idx == len(spline_samples) - 1:
-                        final_pos = [round(x, 6) for x in p2]
+        if graph_branches:
+            for b_idx, g_branch in enumerate(graph_branches):
+                branch_data: List[Tuple[str, List[float], List[float], str, bool]] = []
+                for wp in g_branch.waypoints:
+                    if wp.waypoint_type == WaypointType.EXPLICIT_GAP:
+                        continue
+                    if wp.waypoint_type == WaypointType.ACUPOINT_ANCHOR and wp.point_code and wp.point_code in resolved_points:
+                        pt_res = resolved_points[wp.point_code]
+                        p_pos, p_norm, p_reg = self._get_point_coords_and_normal(pt_res, side)
+                        branch_data.append((wp.point_code, p_pos, p_norm, p_reg, True))
+                        anchor_count += 1
                     else:
-                        final_pos = [
-                            round(raw_pos[k] + total_lift * unit_norm[k], 6) for k in range(3)
-                        ]
+                        is_mid = (channel_code in ("GV", "CV") or side == "midline")
+                        w_pos = list(wp.position)
+                        w_norm = list(wp.normal)
+                        if side == "left" and not is_mid:
+                            w_pos[0] = -abs(w_pos[0])
+                            w_norm[0] = -abs(w_norm[0])
+                        branch_data.append((wp.waypoint_code, w_pos, w_norm, wp.region, False))
 
-                    current_idx = len(branch_vertices)
-                    branch_vertices.append(final_pos)
-                    branch_normals.append([round(x, 5) for x in unit_norm])
+                if len(branch_data) < 2:
+                    if branch_data:
+                        c, p, n, r, is_anc = branch_data[0]
+                        seg_id = f"{channel_code}_{side}_b{b_idx+1}_{c}"
+                        segments_out.append({
+                            "segment_id": seg_id,
+                            "branch_index": b_idx,
+                            "branch_id": g_branch.branch_id,
+                            "start_point": c,
+                            "end_point": c,
+                            "region": r,
+                            "points": [c],
+                            "vertices": [p],
+                            "normals": [n],
+                            "arc_length_mm": 0.0,
+                            "point_indices": {c: 0} if is_anc else {},
+                        })
+                        all_surface_vertices.append(p)
+                        all_surface_normals.append(n)
+                    continue
 
-                    if i == 0 and s_idx == 0:
-                        point_indices[pt_curr_code] = current_idx
-                    elif s_idx == len(spline_samples) - 1:
-                        point_indices[pt_next_code] = current_idx
+                branch_vertices: List[List[float]] = []
+                branch_normals: List[List[float]] = []
+                point_indices: Dict[str, int] = {}
+                branch_length_mm = 0.0
 
-            # Primary region for this branch
-            dom_region = branch_data[0][3] if branch_data else "general"
+                n_pts = len(branch_data)
+                for i in range(n_pts - 1):
+                    pt_curr_code, p1, n1, reg1, is_anc1 = branch_data[i]
+                    pt_next_code, p2, n2, reg2, is_anc2 = branch_data[i + 1]
 
-            start_code = branch_data[0][0]
-            end_code = branch_data[-1][0]
-            seg_id = f"{channel_code}_{side}_b{b_idx+1}_{start_code}_{end_code}"
+                    if i == 0:
+                        p0 = [2 * p1[k] - p2[k] for k in range(3)]
+                    else:
+                        p0 = branch_data[i - 1][1]
 
-            segments_out.append({
-                "segment_id": seg_id,
-                "branch_index": b_idx,
-                "start_point": start_code,
-                "end_point": end_code,
-                "region": dom_region,
-                "points": branch_points,
-                "vertices": branch_vertices,
-                "normals": branch_normals,
-                "arc_length_mm": round(branch_length_mm, 2),
-                "point_indices": point_indices,
-            })
+                    if i + 2 < n_pts:
+                        p3 = branch_data[i + 2][1]
+                    else:
+                        p3 = [2 * p2[k] - p1[k] for k in range(3)]
 
-            total_length_mm += branch_length_mm
-            all_surface_vertices.extend(branch_vertices)
-            all_surface_normals.extend(branch_normals)
+                    d_span = _euclidean_dist(p1, p2)
+                    branch_length_mm += d_span * 1000.0
+
+                    if d_span < 0.020:
+                        n_samples = 2
+                    elif d_span < 0.060:
+                        n_samples = 3
+                    elif d_span < 0.120:
+                        n_samples = 4
+                    else:
+                        n_samples = max(4, min(16, int(d_span / 0.025) + 1))
+
+                    spline_samples = _catmull_rom_centripetal_segment(p0, p1, p2, p3, n_samples=n_samples)
+
+                    start_step = 0 if i == 0 else 1
+                    for s_idx in range(start_step, len(spline_samples)):
+                        s, raw_pos = spline_samples[s_idx]
+                        lerp_norm = [(1.0 - s) * n1[k] + s * n2[k] for k in range(3)]
+                        unit_norm = _normalize(lerp_norm)
+
+                        sagitta_lift = min(0.0035, 4.0 * s * (1.0 - s) * (d_span * d_span) / (8.0 * 0.07))
+                        skin_clearance = 0.0012
+                        total_lift = sagitta_lift + skin_clearance
+
+                        if s_idx == 0:
+                            final_pos = [round(x, 6) for x in p1]
+                        elif s_idx == len(spline_samples) - 1:
+                            final_pos = [round(x, 6) for x in p2]
+                        else:
+                            final_pos = [round(raw_pos[k] + total_lift * unit_norm[k], 6) for k in range(3)]
+
+                        current_idx = len(branch_vertices)
+                        branch_vertices.append(final_pos)
+                        branch_normals.append([round(x, 5) for x in unit_norm])
+
+                        if i == 0 and s_idx == 0 and is_anc1:
+                            point_indices[pt_curr_code] = current_idx
+                        elif s_idx == len(spline_samples) - 1 and is_anc2:
+                            point_indices[pt_next_code] = current_idx
+
+                dom_region = branch_data[0][3] if branch_data else "general"
+                start_code = branch_data[0][0]
+                end_code = branch_data[-1][0]
+                seg_id = f"{channel_code}_{side}_b{b_idx+1}_{start_code}_{end_code}"
+
+                segments_out.append({
+                    "segment_id": seg_id,
+                    "branch_index": b_idx,
+                    "branch_id": g_branch.branch_id,
+                    "start_point": start_code,
+                    "end_point": end_code,
+                    "region": dom_region,
+                    "points": [d[0] for d in branch_data if d[4]],
+                    "vertices": branch_vertices,
+                    "normals": branch_normals,
+                    "arc_length_mm": round(branch_length_mm, 2),
+                    "point_indices": point_indices,
+                })
+
+                total_length_mm += branch_length_mm
+                all_surface_vertices.extend(branch_vertices)
+                all_surface_normals.extend(branch_normals)
+
+        else:
+            # Fallback to partition by point ranges
+            branches = self._partition_points_into_branches(channel_code, ordered_points)
+
+            for b_idx, branch_points in enumerate(branches):
+                branch_data: List[Tuple[str, List[float], List[float], str]] = []
+                for pt_code in branch_points:
+                    if pt_code in resolved_points:
+                        pt_res = resolved_points[pt_code]
+                        p_pos, p_norm, p_reg = self._get_point_coords_and_normal(pt_res, side)
+                        branch_data.append((pt_code, p_pos, p_norm, p_reg))
+                        anchor_count += 1
+
+                if len(branch_data) < 2:
+                    if branch_data:
+                        c, p, n, r = branch_data[0]
+                        seg_id = f"{channel_code}_{side}_b{b_idx+1}_single"
+                        segments_out.append({
+                            "segment_id": seg_id,
+                            "branch_index": b_idx,
+                            "start_point": c,
+                            "end_point": c,
+                            "region": r,
+                            "points": [c],
+                            "vertices": [p],
+                            "normals": [n],
+                            "arc_length_mm": 0.0,
+                            "point_indices": {c: 0},
+                        })
+                        all_surface_vertices.append(p)
+                        all_surface_normals.append(n)
+                    continue
+
+                branch_vertices: List[List[float]] = []
+                branch_normals: List[List[float]] = []
+                point_indices: Dict[str, int] = {}
+                branch_length_mm = 0.0
+
+                n_pts = len(branch_data)
+                for i in range(n_pts - 1):
+                    pt_curr_code, p1, n1, reg1 = branch_data[i]
+                    pt_next_code, p2, n2, reg2 = branch_data[i + 1]
+
+                    if i == 0:
+                        p0 = [2 * p1[k] - p2[k] for k in range(3)]
+                    else:
+                        p0 = branch_data[i - 1][1]
+
+                    if i + 2 < n_pts:
+                        p3 = branch_data[i + 2][1]
+                    else:
+                        p3 = [2 * p2[k] - p1[k] for k in range(3)]
+
+                    d_span = _euclidean_dist(p1, p2)
+                    branch_length_mm += d_span * 1000.0
+
+                    if d_span < 0.020:
+                        n_samples = 2
+                    elif d_span < 0.060:
+                        n_samples = 3
+                    elif d_span < 0.120:
+                        n_samples = 4
+                    else:
+                        n_samples = max(4, min(16, int(d_span / 0.025) + 1))
+
+                    spline_samples = _catmull_rom_centripetal_segment(p0, p1, p2, p3, n_samples=n_samples)
+
+                    start_step = 0 if i == 0 else 1
+                    for s_idx in range(start_step, len(spline_samples)):
+                        s, raw_pos = spline_samples[s_idx]
+                        lerp_norm = [(1.0 - s) * n1[k] + s * n2[k] for k in range(3)]
+                        unit_norm = _normalize(lerp_norm)
+
+                        sagitta_lift = min(0.0035, 4.0 * s * (1.0 - s) * (d_span * d_span) / (8.0 * 0.07))
+                        skin_clearance = 0.0012
+                        total_lift = sagitta_lift + skin_clearance
+
+                        if s_idx == 0:
+                            final_pos = [round(x, 6) for x in p1]
+                        elif s_idx == len(spline_samples) - 1:
+                            final_pos = [round(x, 6) for x in p2]
+                        else:
+                            final_pos = [round(raw_pos[k] + total_lift * unit_norm[k], 6) for k in range(3)]
+
+                        current_idx = len(branch_vertices)
+                        branch_vertices.append(final_pos)
+                        branch_normals.append([round(x, 5) for x in unit_norm])
+
+                        if i == 0 and s_idx == 0:
+                            point_indices[pt_curr_code] = current_idx
+                        elif s_idx == len(spline_samples) - 1:
+                            point_indices[pt_next_code] = current_idx
+
+                dom_region = branch_data[0][3] if branch_data else "general"
+                start_code = branch_data[0][0]
+                end_code = branch_data[-1][0]
+                seg_id = f"{channel_code}_{side}_b{b_idx+1}_{start_code}_{end_code}"
+
+                segments_out.append({
+                    "segment_id": seg_id,
+                    "branch_index": b_idx,
+                    "start_point": start_code,
+                    "end_point": end_code,
+                    "region": dom_region,
+                    "points": branch_points,
+                    "vertices": branch_vertices,
+                    "normals": branch_normals,
+                    "arc_length_mm": round(branch_length_mm, 2),
+                    "point_indices": point_indices,
+                })
+
+                total_length_mm += branch_length_mm
+                all_surface_vertices.extend(branch_vertices)
+                all_surface_normals.extend(branch_normals)
 
         res_path = {
             "side": side,

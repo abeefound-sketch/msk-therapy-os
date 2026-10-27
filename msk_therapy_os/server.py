@@ -148,6 +148,11 @@ from msk_therapy_os.points import (
     get_evidence_ledger,
     sanitize_backup_filename,
     get_safe_backup_path,
+    get_meridian_atlas_coverage_dashboard,
+    get_meridian_route_graph_data,
+    create_meridian_route_revision,
+    review_meridian_route_revision,
+    rollback_meridian_route_revision,
 )
 from msk_therapy_os.soap import (
     create_soap_note,
@@ -909,6 +914,13 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         "meridians": meridians_res,
                     })
 
+                elif path == "/api/atlas/meridians/coverage":
+                    self._send_json(get_meridian_atlas_coverage_dashboard(db))
+
+                elif path == "/api/atlas/meridians/route-graph":
+                    ch = query.get("channel_code", [None])[0]
+                    self._send_json(get_meridian_route_graph_data(db, channel_code=ch))
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
@@ -1619,6 +1631,79 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         })
                     except ValueError as ve:
                         self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+
+                elif path == "/api/atlas/meridians/revisions":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        rev_id = create_meridian_route_revision(
+                            db,
+                            channel_code=body["channel_code"],
+                            branch_id=body.get("branch_id", ""),
+                            revision_type=body["revision_type"],
+                            target_id=body["target_id"],
+                            old_state=body.get("old_state", {}),
+                            new_state=body.get("new_state", {}),
+                            clinical_justification=body.get("clinical_justification", "Clinical calibration"),
+                            author=body.get("author", "Clinical Specialist")
+                        )
+                        self._send_json({
+                            "status": "success",
+                            "revision_id": rev_id,
+                            "revision_status": "PENDING",
+                            "message": "Revision submitted for clinical peer review."
+                        }, status=HTTPStatus.CREATED)
+                    except KeyError as ke:
+                        self._send_json({"error": f"Missing required field: {ke}"}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+
+                elif path == "/api/atlas/meridians/revisions/review" or (path.startswith("/api/atlas/meridians/revisions/") and path.endswith("/review")):
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        if path != "/api/atlas/meridians/revisions/review":
+                            parts = path.strip("/").split("/")
+                            rev_id = int(parts[4])
+                        else:
+                            rev_id = int(body["revision_id"])
+
+                        res = review_meridian_route_revision(
+                            db,
+                            revision_id=rev_id,
+                            reviewer=body.get("reviewer", "Clinical Reviewer"),
+                            decision=body.get("decision", "APPROVED"),
+                            comments=body.get("comments", "")
+                        )
+                        self._send_json({"status": "success", "review": res})
+                    except (KeyError, ValueError) as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+
+                elif path == "/api/atlas/meridians/revisions/rollback" or (path.startswith("/api/atlas/meridians/revisions/") and path.endswith("/rollback")):
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        if path != "/api/atlas/meridians/revisions/rollback":
+                            parts = path.strip("/").split("/")
+                            rev_id = int(parts[4])
+                        else:
+                            rev_id = int(body["revision_id"])
+
+                        res = rollback_meridian_route_revision(
+                            db,
+                            revision_id=rev_id,
+                            author=body.get("author", "Clinical Specialist")
+                        )
+                        self._send_json({"status": "success", "rollback": res})
+                    except (KeyError, ValueError) as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
 
                 elif path == "/api/dien-chan/geometry/resolve":
                     if not isinstance(body, dict):
