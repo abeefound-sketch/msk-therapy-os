@@ -188,7 +188,7 @@ class GroundTruthObservation:
     # P9.14 Contract Extensions:
     subject_pseudonym: str = "SUBJ-ANON-0001"
     anatomical_point_code: Optional[str] = None
-    laterality: str = "right"
+    laterality: str = "bilateral"
     source_modality: GroundTruthModality = GroundTruthModality.BODYPARTS3D_DIGITAL_REFERENCE
     coordinate_frame: CoordinateFrame = CoordinateFrame.BP3D_CARTESIAN_METERS
     unit: MeasurementUnit = MeasurementUnit.METERS
@@ -467,19 +467,41 @@ def validate_observation_contract(
     if not coords or len(coords) != 3:
         raise ValueError("INVALID_COORDINATES: Coordinates must be a 3-element tuple.")
 
+    for val in coords:
+        if not isinstance(val, (int, float)) or math.isnan(val) or math.isinf(val):
+            raise ValueError(f"INVALID_COORDINATES: Coordinates contain non-finite value: {val}")
+
     scale = 0.001 if unit_val == "millimeters" else 1.0
     x_m, y_m, z_m = coords[0] * scale, coords[1] * scale, coords[2] * scale
     if not (-1.5 <= x_m <= 1.5 and -0.5 <= y_m <= 2.5 and -1.0 <= z_m <= 1.0):
         raise ValueError(f"ANATOMICAL_BOUNDING_BOX_VIOLATION: Coordinates ({x_m:.3f}, {y_m:.3f}, {z_m:.3f}) m outside human envelope.")
 
+    # 8.1 Anatomical Laterality Inversion Check
+    try:
+        norm_pos = transform_coordinates_to_bp3d(coords, frame=obs.coordinate_frame, unit=obs.unit)
+        x_bp3d = norm_pos[0]
+        # In BodyParts3D: +X is Right (> 0), -X is Left (< 0)
+        if lat == "left" and x_bp3d > 0.06:
+            raise ValueError(f"INVALID_LATERALITY: Laterality inversion detected. Observation marked 'left' but BP3D X coordinate is strongly positive ({x_bp3d:.4f} m).")
+        elif lat == "right" and x_bp3d < -0.06:
+            raise ValueError(f"INVALID_LATERALITY: Laterality inversion detected. Observation marked 'right' but BP3D X coordinate is strongly negative ({x_bp3d:.4f} m).")
+        elif lat == "midline" and abs(x_bp3d) > 0.03:
+            raise ValueError(f"INVALID_LATERALITY: Midline observation exceeded lateral tolerance ({abs(x_bp3d):.4f} m > 0.03 m).")
+    except ValueError as ve:
+        if "INVALID_LATERALITY" in str(ve):
+            raise
+
     # 9. Privacy Hard Stop & Authorization Gate (for non-synthetic datasets)
+    # LEGAL NOTICE: Technical verification of 18 HIPAA Safe Harbor identifiers is a required baseline,
+    # but does NOT alone constitute complete legal compliance under 45 CFR § 164.514 without an executed
+    # Data Use Agreement (DUA), institutional ethics/IRB approval, and clinical evaluation authorization.
     if not obs.synthetic_fixture and check_authorization:
         dua = str(obs.data_sharing_agreement_ref).strip()
-        if not dua or dua in ("NONE", "DUA-EXEMPT-SYNTHETIC"):
-            raise ValueError(f"UNAUTHORIZED_EXTERNAL_DATA: Real external observation requires valid data sharing agreement reference (got '{dua}').")
+        if not dua or dua in ("NONE", "DUA-EXEMPT-SYNTHETIC", "DUA-PENDING", "UNKNOWN"):
+            raise ValueError(f"UNAUTHORIZED_EXTERNAL_DATA: Real external observation requires valid executed data sharing agreement reference (got '{dua}').")
 
         ethics = str(obs.ethics_approval_or_exemption_ref).strip()
-        if not ethics or ethics in ("NONE", "IRB-EXEMPT-SYNTHETIC"):
+        if not ethics or ethics in ("NONE", "IRB-EXEMPT-SYNTHETIC", "IRB-PENDING", "UNKNOWN"):
             raise ValueError(f"UNAUTHORIZED_EXTERNAL_DATA: Real external observation requires valid ethics/IRB approval reference (got '{ethics}').")
 
         deid = obs.deidentification_method.value if hasattr(obs.deidentification_method, "value") else str(obs.deidentification_method)
@@ -507,12 +529,20 @@ def transform_coordinates_to_bp3d(
 ) -> Tuple[float, float, float]:
     """Transform external measurement coordinates into BodyParts3D canonical cartesian meters.
 
-    BodyParts3D coordinate convention:
+    BodyParts3D coordinate convention (Left-Handed System):
       +X: Right (lateral)
       +Y: Superior (cranial / up)
       +Z: Anterior (ventral / front)
     """
+    if len(coords) != 3:
+        raise ValueError(f"INVALID_COORDINATES: Expected 3-element tuple, got length {len(coords)}")
+    for val in coords:
+        if not isinstance(val, (int, float)) or math.isnan(val) or math.isinf(val):
+            raise ValueError(f"INVALID_COORDINATES: Coordinate values must be finite numbers, got {val}")
+
     unit_str = unit.value if hasattr(unit, "value") else str(unit)
+    if unit_str not in ("meters", "millimeters"):
+        raise ValueError(f"UNSUPPORTED_MEASUREMENT_UNIT: Unit '{unit_str}' is not supported.")
     scale = 0.001 if unit_str == "millimeters" else 1.0
     x, y, z = coords[0] * scale, coords[1] * scale, coords[2] * scale
 
@@ -529,6 +559,53 @@ def transform_coordinates_to_bp3d(
         # Neuro RAS: (+X Right, +Y Anterior, +Z Superior)
         # BP3D: X_bp3d = +X_ras, Y_bp3d = +Z_ras, Z_bp3d = +Y_ras
         return (round(x, 6), round(z, 6), round(y, 6))
+    else:
+        raise ValueError(f"UNSUPPORTED_COORDINATE_FRAME: Frame '{frame_str}' is not supported.")
+
+
+def transform_bp3d_to_coordinates(
+    coords: Tuple[float, float, float],
+    target_frame: Union[CoordinateFrame, str] = CoordinateFrame.BP3D_CARTESIAN_METERS,
+    target_unit: Union[MeasurementUnit, str] = MeasurementUnit.METERS,
+) -> Tuple[float, float, float]:
+    """Inverse transformation: Map BodyParts3D canonical cartesian meters into external coordinate frames.
+
+    Mathematical Inverses:
+      - BP3D: (+X Right, +Y Superior, +Z Anterior) in meters.
+      - DICOM LPS: (+X Left, +Y Posterior, +Z Superior).
+          X_lps = -X_bp3d
+          Y_lps = -Z_bp3d
+          Z_lps = +Y_bp3d
+      - Neuro RAS: (+X Right, +Y Anterior, +Z Superior).
+          X_ras = +X_bp3d
+          Y_ras = +Z_bp3d
+          Z_ras = +Y_bp3d
+      - Surface Scan / Local: Identity spatial axes.
+    """
+    if len(coords) != 3:
+        raise ValueError(f"INVALID_COORDINATES: Expected 3-element tuple, got length {len(coords)}")
+    for val in coords:
+        if not isinstance(val, (int, float)) or math.isnan(val) or math.isinf(val):
+            raise ValueError(f"INVALID_COORDINATES: Coordinate values must be finite numbers, got {val}")
+
+    unit_str = target_unit.value if hasattr(target_unit, "value") else str(target_unit)
+    if unit_str not in ("meters", "millimeters"):
+        raise ValueError(f"UNSUPPORTED_MEASUREMENT_UNIT: Unit '{unit_str}' is not supported.")
+
+    scale = 1000.0 if unit_str == "millimeters" else 1.0
+    x, y, z = coords[0], coords[1], coords[2]
+
+    frame_str = target_frame.value if hasattr(target_frame, "value") else str(target_frame)
+    if frame_str == CoordinateFrame.BP3D_CARTESIAN_METERS.value:
+        return (round(x * scale, 6), round(y * scale, 6), round(z * scale, 6))
+    elif frame_str in (CoordinateFrame.SURFACE_SCAN_MM.value, CoordinateFrame.ANATOMICAL_LOCAL_METERS.value):
+        return (round(x * scale, 6), round(y * scale, 6), round(z * scale, 6))
+    elif frame_str == CoordinateFrame.DICOM_LPS_MM.value:
+        # Inverse: X_lps = -X_bp3d, Y_lps = -Z_bp3d, Z_lps = +Y_bp3d
+        return (round(-x * scale, 6), round(-z * scale, 6), round(y * scale, 6))
+    elif frame_str == CoordinateFrame.NEURO_RAS_MM.value:
+        # Inverse: X_ras = +X_bp3d, Y_ras = +Z_bp3d, Z_ras = +Y_bp3d
+        return (round(x * scale, 6), round(z * scale, 6), round(y * scale, 6))
     else:
         raise ValueError(f"UNSUPPORTED_COORDINATE_FRAME: Frame '{frame_str}' is not supported.")
 
@@ -759,6 +836,8 @@ class IndependentAnatomicalValidator:
         quarantined_count = 0
         quarantined_records = []
 
+        batch_seen: Dict[Tuple[str, str], Tuple[float, float, float]] = {}
+
         for item in observations_raw:
             code = item.get("point_code") or item.get("anatomical_point_code", "UNKNOWN")
             subj = item.get("subject_pseudonym", "UNKNOWN")
@@ -788,19 +867,30 @@ class IndependentAnatomicalValidator:
                     is_authorized_for_clinical_eval=bool(item.get("is_authorized_for_clinical_eval", False)),
                 )
 
-                # 2. Check circularity
+                # 2. Check duplicate / conflicting measurements within batch or store
+                sub_key = (code, subj)
+                if sub_key in batch_seen:
+                    prev_pos = batch_seen[sub_key]
+                    diff_m = math.sqrt(sum((pos[k] - prev_pos[k])**2 for k in range(3)))
+                    if diff_m < 1e-6:
+                        raise ValueError(f"QUARANTINE_DUPLICATE_RECORD: Duplicate observation in batch for {code} on subject {subj}.")
+                    else:
+                        raise ValueError(f"QUARANTINE_CONFLICTING_MEASUREMENT: Conflicting observation in batch for {code} on subject {subj} (diff: {diff_m*1000:.2f}mm).")
+
+                # 3. Check circularity (< 0.1 micron identical to model prediction)
                 if not obs.synthetic_fixture:
                     pred_res = self.resolve_point_coordinate(code, side=obs.laterality)
                     if pred_res:
                         pred_pos = pred_res["canonical_position"]
                         dist = math.sqrt(sum((pos[k] - pred_pos[k])**2 for k in range(3)))
-                        if dist < 1e-6 and (dataset_id.startswith("SELF_") or obs.independent_source_id == "SRC-MODEL-PREDICTION"):
-                            raise ValueError(f"QUARANTINE_CIRCULAR_EVIDENCE: Observation is bit-for-bit identical to model prediction without independent origin.")
+                        if dist < 1e-6 and (dataset_id.startswith("SELF_") or "CIRCULAR" in dataset_id or obs.independent_source_id == "SRC-MODEL-PREDICTION"):
+                            raise ValueError(f"QUARANTINE_CIRCULAR_EVIDENCE: Observation is bit-for-bit identical to model prediction (< 0.1 mm residual) without independent origin.")
 
-                # 3. Validate contract
+                # 4. Validate contract
                 validate_observation_contract(obs, allowed_codes=allowed_codes, check_authorization=not obs.synthetic_fixture)
 
                 # Ingestion succeeded
+                batch_seen[sub_key] = pos
                 self._observations[(obs.point_code, obs.dataset_id)] = obs
                 ingested_count += 1
 
@@ -813,7 +903,7 @@ class IndependentAnatomicalValidator:
                     reason = QuarantineReason.QUARANTINE_UNAUTHORIZED_DATA
                 elif "INCOMPLETE_DEIDENTIFICATION" in err_msg:
                     reason = QuarantineReason.QUARANTINE_INCOMPLETE_DEIDENTIFICATION
-                elif "ANATOMICAL_BOUNDING_BOX_VIOLATION" in err_msg:
+                elif "ANATOMICAL_BOUNDING_BOX_VIOLATION" in err_msg or "INVALID_LATERALITY" in err_msg:
                     reason = QuarantineReason.QUARANTINE_OUT_OF_BOUNDS
                 elif "INVALID_SOURCE_CHECKSUM" in err_msg:
                     reason = QuarantineReason.QUARANTINE_CHECKSUM_MISMATCH
@@ -821,6 +911,10 @@ class IndependentAnatomicalValidator:
                     reason = QuarantineReason.QUARANTINE_UNSUPPORTED_FRAME
                 elif "QUARANTINE_CIRCULAR_EVIDENCE" in err_msg:
                     reason = QuarantineReason.QUARANTINE_CIRCULAR_EVIDENCE
+                elif "QUARANTINE_DUPLICATE_RECORD" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_DUPLICATE_RECORD
+                elif "QUARANTINE_CONFLICTING_MEASUREMENT" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_CONFLICTING_MEASUREMENT
 
                 q_rec = QuarantinedObservation(
                     point_code=code,

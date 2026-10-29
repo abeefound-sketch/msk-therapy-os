@@ -1,7 +1,7 @@
 {
   "milestone": "P9.13",
   "benchmark_type": "PHYSICAL_GPU_STRESS_AND_HARDENING",
-  "timestamp_utc": "2026-10-29T01:03:51Z",
+  "timestamp_utc": "2026-10-29T07:43:12Z",
   "hardware": {
     "vendor": "Google Inc. (Intel)",
     "renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
@@ -9,22 +9,22 @@
   },
   "orbit_stress_performance": {
     "framesEvaluated": 120,
-    "totalDurationMs": 2090.6,
-    "avgFps": 57.4,
-    "avgFrameTimeMs": 17.42,
-    "p95FrameTimeMs": 24,
-    "minFrameTimeMs": 11.4,
-    "maxFrameTimeMs": 29.3,
-    "avgRaycastMs": 0.005,
+    "totalDurationMs": 2780.3,
+    "avgFps": 43.16,
+    "avgFrameTimeMs": 23.17,
+    "p95FrameTimeMs": 32.8,
+    "minFrameTimeMs": 13.1,
+    "maxFrameTimeMs": 74.1,
+    "avgRaycastMs": 0.01,
     "contextLost": false
   },
   "channel_toggle_stress": {
     "channelsToggled": 14,
-    "totalDurationMs": 430.6,
-    "meanToggleMs": 30.76
+    "totalDurationMs": 433.2,
+    "meanToggleMs": 30.94
   },
   "raycasting_stress": {
-    "mean_latency_ms": 0.005,
+    "mean_latency_ms": 0.01,
     "target_max_ms": 5.0,
     "status": "PASS"
   },

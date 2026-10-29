@@ -603,3 +603,55 @@
 - **SHA-256 Checksum**: `475be4098da767c9cd228b53b6008153c4e9adb02bd3272cbf0322222e37d855`
 - **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
 - **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.
+
+### [ADMIN_RECOVERY] - 2026-10-29T07:12:48Z
+- **Timestamp**: `2026-10-29T07:12:48Z`
+- **Operator**: qa_lead
+- **Target Account**: admin (USR-ADMIN-01)
+- **Action**: Administrative password recovery and account unlock
+- **Reason**: P7 disaster recovery unlock verification
+
+### [EMERGENCY BREAK-GLASS] SQLite Restore Bypass - 2026-10-29T07:14:07Z
+- **Timestamp**: `2026-10-29T07:14:07Z`
+- **Event**: `DISASTER_RECOVERY_HMAC_BYPASS`
+- **Backup Source**: `C:\Users\tuanh\AppData\Local\Temp\tmpb3ayygxw\snapshot_disaster_recovery.sqlite3`
+- **SHA-256 Checksum**: `1844c5942ba168e089e3260e9b0b188812f84fcbee20c19b09b83d5d26620713`
+- **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
+- **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.
+
+### [ADMIN_RECOVERY] - 2026-10-29T07:52:05Z
+- **Timestamp**: `2026-10-29T07:52:05Z`
+- **Operator**: qa_lead
+- **Target Account**: admin (USR-ADMIN-01)
+- **Action**: Administrative password recovery and account unlock
+- **Reason**: P7 disaster recovery unlock verification
+
+### [ADMIN_RECOVERY] - 2026-10-29T07:53:27Z
+- **Timestamp**: `2026-10-29T07:53:27Z`
+- **Operator**: qa_lead
+- **Target Account**: admin (USR-ADMIN-01)
+- **Action**: Administrative password recovery and account unlock
+- **Reason**: P7 disaster recovery unlock verification
+
+### [EMERGENCY BREAK-GLASS] SQLite Restore Bypass - 2026-10-29T07:54:46Z
+- **Timestamp**: `2026-10-29T07:54:46Z`
+- **Event**: `DISASTER_RECOVERY_HMAC_BYPASS`
+- **Backup Source**: `C:\Users\tuanh\AppData\Local\Temp\tmprkm3bu3o\snapshot_disaster_recovery.sqlite3`
+- **SHA-256 Checksum**: `8468707d73c279dbfc4568ea94f57e132db9ff8c4d062e310a7a6b5728bd9afe`
+- **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
+- **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.
+
+### [ADMIN_RECOVERY] - 2026-10-29T07:57:58Z
+- **Timestamp**: `2026-10-29T07:57:58Z`
+- **Operator**: qa_lead
+- **Target Account**: admin (USR-ADMIN-01)
+- **Action**: Administrative password recovery and account unlock
+- **Reason**: P7 disaster recovery unlock verification
+
+### [EMERGENCY BREAK-GLASS] SQLite Restore Bypass - 2026-10-29T07:59:17Z
+- **Timestamp**: `2026-10-29T07:59:17Z`
+- **Event**: `DISASTER_RECOVERY_HMAC_BYPASS`
+- **Backup Source**: `C:\Users\tuanh\AppData\Local\Temp\tmp9bw0c5_4\snapshot_disaster_recovery.sqlite3`
+- **SHA-256 Checksum**: `6e163cb5bb246d0087e3a7466804474f9e456e6834f5fa7006c6f301663a7503`
+- **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
+- **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.

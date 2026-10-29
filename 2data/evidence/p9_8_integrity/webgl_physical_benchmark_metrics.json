@@ -1,9 +1,9 @@
 {
-  "fps": 50.5,
-  "frame_time_p50_ms": 19.7,
-  "frame_time_p95_ms": 25.7,
+  "fps": 58.9,
+  "frame_time_p50_ms": 16.9,
+  "frame_time_p95_ms": 24.1,
   "raycast_latency_avg_ms": 0,
-  "context_loss_restore_ms": 45.6,
+  "context_loss_restore_ms": 48.5,
   "context_restore_success": true,
   "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "gpu_vendor": "Google Inc. (Intel)",

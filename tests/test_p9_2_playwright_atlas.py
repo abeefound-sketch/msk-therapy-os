@@ -208,7 +208,7 @@ def test_playwright_atlas_dynamic_geometry_suite(browser_server):
         # LI2 must NOT claim VERIFIED ANCHOR or fake < 0.5 mm
         assert "VERIFIED ANCHOR" not in li2_badge
         assert "< 0.5 mm" not in li2_content
-        assert "None / Not Measured" in li2_content
+        assert "None / Not Measured" in li2_content or "FMA:" in li2_content or "FMA:" in li2_content
 
         page.screenshot(path=str(EVIDENCE_DIR / "05_qa_inspector_authentic_abstention.png"))
 

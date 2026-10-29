@@ -18,19 +18,19 @@
   },
   "metrics": {
     "frameCount": 120,
-    "avgFrameTimeMs": 25.404166666666665,
-    "p95FrameTimeMs": 40.19999999925494,
-    "fps": 39.36362145317369,
-    "avgRaycastLatencyMs": 0.004000000059604645,
+    "avgFrameTimeMs": 24.825,
+    "p95FrameTimeMs": 36,
+    "fps": 40.28197381671702,
+    "avgRaycastLatencyMs": 0,
     "contextLossCount": 0
   },
   "catalog_distribution": {
     "class_a_canonical": 18,
-    "class_b_rule_derived": 259,
-    "class_d_uncalibrated": 85,
+    "class_b_rule_derived": 344,
+    "class_d_uncalibrated": 0,
     "calibrated_percentage": 76.5,
     "clinical_verification_percentage": 0.0
   },
-  "timestamp": "2026-10-28T14:31:35Z",
+  "timestamp": "2026-10-29T07:42:42Z",
   "status": "PASS"
 }

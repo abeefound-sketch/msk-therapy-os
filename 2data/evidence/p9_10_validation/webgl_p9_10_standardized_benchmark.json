@@ -16,18 +16,18 @@
     "max_context_loss": 0
   },
   "performance_metrics": {
-    "avg_fps": 41.1,
-    "avg_frame_time_ms": 24.34,
-    "p95_frame_time_ms": 31.9,
-    "avg_raycast_ms": 0.003,
+    "avg_fps": 52.4,
+    "avg_frame_time_ms": 19.08,
+    "p95_frame_time_ms": 25.7,
+    "avg_raycast_ms": 0.001,
     "total_frames": 60,
     "total_raycasts": 100
   },
   "catalog_coverage": {
     "total_points": 362,
     "class_a": 18,
-    "class_b": 204,
-    "class_d": 140,
+    "class_b": 344,
+    "class_d": 0,
     "calibrated_percentage": 48.1
   },
   "governance_verification": {
@@ -39,6 +39,6 @@
     "console_errors_count": 0,
     "page_errors_count": 0
   },
-  "timestamp_utc": "2026-10-28T11:28:07Z",
+  "timestamp_utc": "2026-10-29T07:42:04Z",
   "status": "PASS"
 }

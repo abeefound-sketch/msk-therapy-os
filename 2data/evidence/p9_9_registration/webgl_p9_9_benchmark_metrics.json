@@ -10,24 +10,24 @@
     "max_texture_size": 16384
   },
   "performance_metrics": {
-    "avg_fps": 50.9,
-    "avg_frame_time_ms": 19.66,
-    "p95_frame_time_ms": 27.3,
-    "avg_raycast_ms": 0.002,
+    "avg_fps": 57,
+    "avg_frame_time_ms": 17.54,
+    "p95_frame_time_ms": 25.6,
+    "avg_raycast_ms": 0.001,
     "total_frames": 60,
     "total_raycasts": 100
   },
   "catalog_coverage": {
     "total_points": 362,
     "class_a": 18,
-    "class_b": 204,
-    "class_d": 140,
+    "class_b": 344,
+    "class_d": 0,
     "calibrated_percentage": 48.1
   },
   "browser_logs": {
     "console_errors_count": 0,
     "page_errors_count": 0
   },
-  "timestamp_utc": "2026-10-28T11:26:39Z",
+  "timestamp_utc": "2026-10-29T07:45:08Z",
   "status": "PASS"
 }
