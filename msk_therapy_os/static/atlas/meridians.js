@@ -2554,6 +2554,19 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
               <span>Tier 4 Clinical Trial: <strong style="color:#f87171;">0.0% (UNVERIFIED)</strong></span>
               <span>Pilot Cohorts: <strong style="color:#38bdf8;">3 Active</strong></span>
             </div>
+            <!-- P10.2 Interactive Validation & Audit Actions -->
+            <div style="display:flex; flex-direction:column; gap:3px; margin-top:4px; border-top:1px solid #1e293b; padding-top:4px;">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
+                <button type="button" id="btnRunValidationDryRun" style="background:#0284c7; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Chạy thử nghiệm toàn trình với dữ liệu giả lập">🚀 Chạy Dry Run</button>
+                <button type="button" id="btnExportEvidenceManifest" style="background:#0f766e; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Xuất báo cáo bằng chứng kiểm định">📥 Xuất Bằng Chứng</button>
+              </div>
+              <button type="button" id="btnToggleValidationDetails" style="background:#334155; color:#f8fafc; border:none; border-radius:3px; padding:2px 4px; font-size:8.5px; cursor:pointer;">📊 Xem Chi Tiết Kiểm Định P10.2</button>
+              <div id="p102ValidationDetailsContainer" style="display:none; flex-direction:column; gap:4px; background:#1e293b; padding:6px; border-radius:3px; font-size:9px; margin-top:2px;">
+                <div id="lblP102DryRunResult" style="color:#38bdf8; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px;"></div>
+                <div id="lblP102CohortStatus" style="color:#cbd5e1;">Đang tải danh sách cohort...</div>
+                <div id="lblP102MetricsSummary" style="color:#cbd5e1;"></div>
+              </div>
+            </div>
           </div>
 
           <!-- Channel Route Topology Inspector -->
@@ -3178,6 +3191,92 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
       btnRefCov.addEventListener('click', () => loadStudioCoverage());
     }
     loadStudioCoverage();
+
+        // --- P10.2 Validation Studio Actions ---
+    const btnDryRun = document.getElementById('btnRunValidationDryRun');
+    const btnExpEv = document.getElementById('btnExportEvidenceManifest');
+    const btnTglVal = document.getElementById('btnToggleValidationDetails');
+    const valContainer = document.getElementById('p102ValidationDetailsContainer');
+    const elDryRes = document.getElementById('lblP102DryRunResult');
+    const elCohorts = document.getElementById('lblP102CohortStatus');
+    const elMetrics = document.getElementById('lblP102MetricsSummary');
+
+    if (btnDryRun) {
+      btnDryRun.addEventListener('click', async () => {
+        btnDryRun.disabled = true;
+        btnDryRun.textContent = '⏳ Đang chạy...';
+        try {
+          const res = await fetch('/api/atlas/validation/dry-run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+          const data = await res.json();
+          if (elDryRes) {
+            elDryRes.style.display = 'block';
+            elDryRes.innerHTML = `<strong>Kết quả Dry Run:</strong> ${data.status}<br/>RMSE: ${data.overall_rmse_mm}mm • MAE: ${data.mae_mm}mm<br/><em>${data.scientific_invariant}</em>`;
+          }
+          if (valContainer) valContainer.style.display = 'flex';
+        } catch (e) {
+          if (elDryRes) {
+            elDryRes.style.display = 'block';
+            elDryRes.innerHTML = `<span style="color:#f43f5e;">Lỗi chạy Dry Run: ${e.message}</span>`;
+          }
+        } finally {
+          btnDryRun.disabled = false;
+          btnDryRun.textContent = '🚀 Chạy Dry Run';
+        }
+      });
+    }
+
+    if (btnExpEv) {
+      btnExpEv.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/atlas/validation/export-evidence');
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `P10_2_EVIDENCE_MANIFEST_${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        } catch (e) {
+          alert(`Lỗi xuất bằng chứng: ${e.message}`);
+        }
+      });
+    }
+
+    if (btnTglVal && valContainer) {
+      btnTglVal.addEventListener('click', async () => {
+        const isHidden = valContainer.style.display === 'none';
+        valContainer.style.display = isHidden ? 'flex' : 'none';
+        btnTglVal.textContent = isHidden ? '▲ Thu Gọn Kiểm Định' : '📊 Xem Chi Tiết Kiểm Định P10.2';
+        if (isHidden) {
+          try {
+            const [resCohorts, resMetrics] = await Promise.all([
+              fetch('/api/atlas/validation/pilot-cohorts/details'),
+              fetch('/api/atlas/validation/metrics/summary')
+            ]);
+            if (resCohorts.ok && elCohorts) {
+              const cData = await resCohorts.json();
+              const specs = cData.pilot_cohort_specifications || {};
+              elCohorts.innerHTML = `<strong>Cohorts Thử Nghiệm:</strong><br/>
+                • Cohort A (Bụng ST19-30): ${specs.cohort_a?.target_sample_size || 30} mẫu (CT)<br/>
+                • Cohort B (Tứ chi): ${specs.cohort_b?.target_sample_size || 25} mẫu (Scan/CT)<br/>
+                • Cohort C (Sọ cổ / Ấn Đường): ${specs.cohort_c?.target_sample_size || 30} mẫu (MRI)`;
+            }
+            if (resMetrics.ok && elMetrics) {
+              const mData = await resMetrics.json();
+              const sm = mData.summary_metrics || {};
+              elMetrics.innerHTML = `<strong>Thống Kê Đo Lường (Mô hình):</strong><br/>
+                • Bất đối xứng Trái/Phải: ${sm.left_right_asymmetry_mm || 0.0} mm<br/>
+                • Vector độ lệch (Bias): [${sm.bias_vector_mm ? sm.bias_vector_mm.join(', ') : '0, 0, 0'}] mm<br/>
+                • Trạng thái G14: <span style="color:#ef4444; font-weight:700;">BLOCKED_EXTERNAL_DATA</span>`;
+            }
+          } catch (err) {
+            console.warn('Lỗi tải chi tiết kiểm định:', err);
+          }
+        }
+      });
+    }
 
     window.__meridianStudio = {
       loadCoverage: loadStudioCoverage,

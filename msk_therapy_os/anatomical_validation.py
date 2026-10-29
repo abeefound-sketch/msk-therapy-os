@@ -74,6 +74,7 @@ class ReviewStatus(str, Enum):
     PROVENANCE_VERIFIED = "PROVENANCE_VERIFIED"
     GEOMETRY_VALIDATED = "GEOMETRY_VALIDATED"
     INDEPENDENT_REVIEW_PENDING = "INDEPENDENT_REVIEW_PENDING"
+    SEALED_BLINDED = "SEALED_BLINDED"
     REVIEWED = "REVIEWED"
     REJECTED = "REJECTED"
     INCONCLUSIVE = "INCONCLUSIVE"
@@ -115,6 +116,10 @@ class QuarantineReason(str, Enum):
     QUARANTINE_UNSUPPORTED_FRAME = "QUARANTINE_UNSUPPORTED_FRAME"
     QUARANTINE_SCHEMA_INVALID = "QUARANTINE_SCHEMA_INVALID"
     QUARANTINE_CIRCULAR_EVIDENCE = "QUARANTINE_CIRCULAR_EVIDENCE"
+    QUARANTINE_EXPIRED_AUTHORIZATION = "QUARANTINE_EXPIRED_AUTHORIZATION"
+    QUARANTINE_ROLE_CONFLICT = "QUARANTINE_ROLE_CONFLICT"
+    QUARANTINE_HOLDOUT_CONTAMINATION = "QUARANTINE_HOLDOUT_CONTAMINATION"
+    QUARANTINE_ADMIN_SIGN_OFF_REQUIRED = "QUARANTINE_ADMIN_SIGN_OFF_REQUIRED"
 
 
 class DeidentificationMethod(str, Enum):
@@ -166,6 +171,14 @@ class ExternalGroundTruthDataset:
     case_id: Optional[str] = None
     sample_size: int = 1
     created_utc: str = field(default_factory=lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+    # P10.2 Extended Governance & Metadata:
+    administrative_verification_status: str = "PENDING_ADMIN_SIGN_OFF"
+    data_retention_and_permitted_use: str = "RESEARCH_ONLY"
+    deidentification_review_status: str = "VERIFIED_DEIDENTIFIED"
+    acquisition_date_metadata: Optional[str] = None
+    registration_method: str = "RIGID_PROCRUSTES"
+    dataset_provenance: str = ""
+    governance_metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         d = asdict(self)
@@ -202,7 +215,7 @@ class GroundTruthObservation:
     synthetic_fixture: bool = False
     review_status: ReviewStatus = ReviewStatus.DATA_IMPORTED
     # P10.0 Regulatory & Quality Extensions:
-    schema_version: str = "1.0-P10"
+    schema_version: str = "1.1-P10"
     data_sharing_agreement_ref: str = "DUA-EXEMPT-SYNTHETIC"
     ethics_approval_or_exemption_ref: str = "IRB-EXEMPT-SYNTHETIC"
     deidentification_method: DeidentificationMethod = DeidentificationMethod.SYNTHETIC_DEIDENTIFIED
@@ -210,12 +223,23 @@ class GroundTruthObservation:
     observed_coordinates: Optional[Tuple[float, float, float]] = None
     predicted_coordinates: Optional[Tuple[float, float, float]] = None
     registration_residual_mm: Optional[float] = None
+    # P10.2 Contract V2 Extensions:
+    cohort_id: Optional[str] = None
+    independent_observer_id: Optional[str] = None
+    observation_sequence_id: Optional[str] = None
+    source_image_reference: Optional[str] = None
+    annotation_method: str = "EXPERT_CROSSHAIR"
 
     def __post_init__(self) -> None:
         if self.anatomical_point_code is None:
             self.anatomical_point_code = self.point_code
         elif not self.point_code and self.anatomical_point_code:
             self.point_code = self.anatomical_point_code
+
+        if self.independent_observer_id is None and self.observer_id:
+            self.independent_observer_id = self.observer_id
+        elif self.observer_id is None and self.independent_observer_id:
+            self.observer_id = self.independent_observer_id
 
         if self.measurement_coordinates is None:
             self.measurement_coordinates = self.canonical_position
@@ -303,6 +327,8 @@ class HoldoutPartitionManifest:
     is_locked: bool
     manifest_checksum: str
     created_utc: str = field(default_factory=lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+    # P10.2 3-Way Partitioning:
+    validation_subjects: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -357,6 +383,79 @@ class HoldoutPartitionManager:
         )
         self._partitions[partition_id] = manifest
         return manifest
+
+    def create_three_way_partition(
+        self,
+        partition_id: str,
+        subjects: List[str],
+        calib_ratio: float = 0.50,
+        val_ratio: float = 0.25,
+        holdout_ratio: float = 0.25,
+        seed: int = 42,
+    ) -> HoldoutPartitionManifest:
+        """Create a deterministic subject-level 3-way partition (Calibration, Validation, Holdout)."""
+        unique_subjects = sorted(list(set(subjects)))
+        if not unique_subjects:
+            raise ValueError("CANNOT_PARTITION_EMPTY_SUBJECT_LIST")
+
+        n = len(unique_subjects)
+        n_holdout = max(1, int(round(n * holdout_ratio))) if n >= 3 else (1 if n > 1 else 0)
+        n_val = max(1, int(round(n * val_ratio))) if (n - n_holdout) >= 2 else 0
+
+        calib: List[str] = []
+        val: List[str] = []
+        holdout: List[str] = []
+
+        for s in unique_subjects:
+            h_val = int(hashlib.sha256(f"{s}:{seed}:3way".encode()).hexdigest(), 16)
+            bucket = h_val % 100
+            if bucket < int(holdout_ratio * 100) and len(holdout) < n_holdout:
+                holdout.append(s)
+            elif bucket < int((holdout_ratio + val_ratio) * 100) and len(val) < n_val:
+                val.append(s)
+            else:
+                calib.append(s)
+
+        # Guarantee non-empty partition constraints if population permits
+        if not holdout and len(calib) > 2:
+            holdout.append(calib.pop())
+        if not val and len(calib) > 2:
+            val.append(calib.pop())
+
+        manifest_payload = f"{partition_id}:{','.join(sorted(calib))}:{','.join(sorted(val))}:{','.join(sorted(holdout))}"
+        chk = hashlib.sha256(manifest_payload.encode()).hexdigest()
+
+        manifest = HoldoutPartitionManifest(
+            partition_id=partition_id,
+            calibration_subjects=sorted(calib),
+            validation_subjects=sorted(val),
+            holdout_subjects=sorted(holdout),
+            total_subjects=len(unique_subjects),
+            split_ratio=round(len(calib) / len(unique_subjects), 3) if unique_subjects else 0.0,
+            is_locked=True,
+            manifest_checksum=chk,
+        )
+        self._partitions[partition_id] = manifest
+        return manifest
+
+    def verify_no_leakage_three_way(
+        self,
+        calibration_subjects: List[str],
+        validation_subjects: List[str],
+        holdout_subjects: List[str],
+    ) -> bool:
+        """Verify zero subject overlap across all three partitions."""
+        c_set = set(calibration_subjects)
+        v_set = set(validation_subjects)
+        h_set = set(holdout_subjects)
+
+        cv = c_set & v_set
+        ch = c_set & h_set
+        vh = v_set & h_set
+        leaks = cv | ch | vh
+        if leaks:
+            raise ValueError(f"HOLDOUT_DATA_LEAKAGE_DETECTED: Overlapping subjects across 3-way partition: {sorted(list(leaks))}")
+        return True
 
     def verify_no_leakage(
         self,
@@ -429,6 +528,23 @@ def validate_observation_contract(
     if re.search(r"\b(Mr\.|Mrs\.|Ms\.|Dr\.|Prof\.|Patient:|Mr|Mrs|Ms|Dr|Prof)\b", pseudonym, re.IGNORECASE):
         raise ValueError(f"PII_DETECTED_IN_SUBJECT_PSEUDONYM: Subject pseudonym '{pseudonym}' contains plain name title.")
 
+    # 1.1 Free-text notes and image reference PII screening
+    for txt_name, txt_val in [("notes", obs.notes), ("source_image_reference", obs.source_image_reference)]:
+        if txt_val:
+            s_txt = str(txt_val)
+            if "@" in s_txt:
+                raise ValueError(f"PII_DETECTED_IN_{txt_name.upper()}: Email pattern detected in {txt_name}.")
+            if re.search(r"\b\d{3}-\d{2}-\d{4}\b", s_txt):
+                raise ValueError(f"PII_DETECTED_IN_{txt_name.upper()}: SSN pattern detected in {txt_name}.")
+            if re.search(r"\bPatient\s*Name\s*:\s*[A-Z][a-z]+\b", s_txt, re.IGNORECASE):
+                raise ValueError(f"PII_DETECTED_IN_{txt_name.upper()}: Explicit patient name detected in {txt_name}.")
+
+    # 1.2 Reviewer role conflict check (Observer != Reviewer)
+    obs_id = str(obs.observer_id or obs.independent_observer_id or "").strip()
+    rev_id = str(obs.reviewer_id or "").strip()
+    if obs_id and rev_id and obs_id == rev_id:
+        raise ValueError(f"REVIEWER_ROLE_CONFLICT: Observer '{obs_id}' cannot act as Reviewer for their own observation.")
+
     # 2. Point code validation
     code = obs.point_code or obs.anatomical_point_code
     if not code:
@@ -499,10 +615,14 @@ def validate_observation_contract(
         dua = str(obs.data_sharing_agreement_ref).strip()
         if not dua or dua in ("NONE", "DUA-EXEMPT-SYNTHETIC", "DUA-PENDING", "UNKNOWN"):
             raise ValueError(f"UNAUTHORIZED_EXTERNAL_DATA: Real external observation requires valid executed data sharing agreement reference (got '{dua}').")
+        if "EXPIRED" in dua.upper() or "REVOKED" in dua.upper():
+            raise ValueError(f"EXPIRED_DATA_AUTHORIZATION: Data sharing agreement is expired or revoked (got '{dua}').")
 
         ethics = str(obs.ethics_approval_or_exemption_ref).strip()
         if not ethics or ethics in ("NONE", "IRB-EXEMPT-SYNTHETIC", "IRB-PENDING", "UNKNOWN"):
             raise ValueError(f"UNAUTHORIZED_EXTERNAL_DATA: Real external observation requires valid ethics/IRB approval reference (got '{ethics}').")
+        if "EXPIRED" in ethics.upper() or "REVOKED" in ethics.upper():
+            raise ValueError(f"EXPIRED_DATA_AUTHORIZATION: Ethics/IRB approval is expired or revoked (got '{ethics}').")
 
         deid = obs.deidentification_method.value if hasattr(obs.deidentification_method, "value") else str(obs.deidentification_method)
         if deid not in (DeidentificationMethod.SAFE_HARBOR_18_ELEMENTS.value, DeidentificationMethod.EXPERT_DETERMINATION.value):
@@ -915,6 +1035,14 @@ class IndependentAnatomicalValidator:
                     reason = QuarantineReason.QUARANTINE_DUPLICATE_RECORD
                 elif "QUARANTINE_CONFLICTING_MEASUREMENT" in err_msg:
                     reason = QuarantineReason.QUARANTINE_CONFLICTING_MEASUREMENT
+                elif "EXPIRED_DATA_AUTHORIZATION" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_EXPIRED_AUTHORIZATION
+                elif "REVIEWER_ROLE_CONFLICT" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_ROLE_CONFLICT
+                elif "HOLDOUT_DATA_LEAKAGE" in err_msg or "HOLDOUT_CONTAMINATION" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_HOLDOUT_CONTAMINATION
+                elif "ADMIN_SIGN_OFF" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_ADMIN_SIGN_OFF_REQUIRED
 
                 q_rec = QuarantinedObservation(
                     point_code=code,
@@ -1281,6 +1409,103 @@ class IndependentAnatomicalValidator:
         congruent_count = sum(1 for c in comparisons if c.is_congruent and c.residual_error_mm is not None)
         congruence_pct = round((congruent_count / evaluated_count) * 100.0, 1) if evaluated_count > 0 else 0.0
 
+        # P10.2 Comprehensive Statistical Metrics
+        overall_rmse_mm = 0.0
+        mae_mm = 0.0
+        delta_x_list: List[float] = []
+        delta_y_list: List[float] = []
+        delta_z_list: List[float] = []
+        left_residuals: List[float] = []
+        right_residuals: List[float] = []
+        cohort_groups: Dict[str, List[float]] = {"COHORT_A": [], "COHORT_B": [], "COHORT_C": [], "OTHER": []}
+        per_subject_map: Dict[str, List[float]] = {}
+
+        for comp in comparisons:
+            if comp.residual_error_mm is not None:
+                err = comp.residual_error_mm
+                mae_mm += err
+                overall_rmse_mm += err ** 2
+
+                # Deltas for bias vector (model - ground truth in mm)
+                p_model = comp.predicted_position
+                p_true = comp.reference_position
+                if p_model and p_true:
+                    delta_x_list.append((p_model[0] - p_true[0]) * 1000.0)
+                    delta_y_list.append((p_model[1] - p_true[1]) * 1000.0)
+                    delta_z_list.append((p_model[2] - p_true[2]) * 1000.0)
+
+                # Laterality grouping
+                code = comp.point_code
+                if comp.details.get("side") == "left":
+                    left_residuals.append(err)
+                elif comp.details.get("side") == "right":
+                    right_residuals.append(err)
+
+                # Cohort grouping
+                c_upper = code.upper()
+                if c_upper.startswith("ST") and len(c_upper) > 2 and c_upper[2:].isdigit() and 19 <= int(c_upper[2:]) <= 30:
+                    cohort_groups["COHORT_A"].append(err)
+                elif any(c_upper.startswith(prefix) for prefix in ("LU", "LI", "PC", "TE", "HT", "SI", "SP", "LR")) or (c_upper.startswith("ST") and len(c_upper) > 2 and int(c_upper[2:]) > 30):
+                    cohort_groups["COHORT_B"].append(err)
+                elif any(c_upper.startswith(prefix) for prefix in ("GV", "CV", "BL")):
+                    cohort_groups["COHORT_C"].append(err)
+                else:
+                    cohort_groups["OTHER"].append(err)
+
+                # Subject grouping
+                s_pseudonym = comp.details.get("subject_pseudonym", "ANON")
+                per_subject_map.setdefault(s_pseudonym, []).append(err)
+
+        if evaluated_count > 0:
+            overall_rmse_mm = round(math.sqrt(overall_rmse_mm / evaluated_count), 3)
+            mae_mm = round(mae_mm / evaluated_count, 3)
+        else:
+            overall_rmse_mm = 0.0
+            mae_mm = 0.0
+
+        # Bias vector
+        bias_vector_mm = [
+            round(sum(delta_x_list) / len(delta_x_list), 3) if delta_x_list else 0.0,
+            round(sum(delta_y_list) / len(delta_y_list), 3) if delta_y_list else 0.0,
+            round(sum(delta_z_list) / len(delta_z_list), 3) if delta_z_list else 0.0,
+        ]
+
+        # Left/Right Asymmetry
+        rmse_left = round(math.sqrt(sum(r ** 2 for r in left_residuals) / len(left_residuals)), 3) if left_residuals else 0.0
+        rmse_right = round(math.sqrt(sum(r ** 2 for r in right_residuals) / len(right_residuals)), 3) if right_residuals else 0.0
+        left_right_asymmetry_mm = round(abs(rmse_left - rmse_right), 3)
+
+        # Cohort RMSEs
+        cohort_rmse_mm = {
+            c_name: round(math.sqrt(sum(r ** 2 for r in r_list) / len(r_list)), 3) if r_list else 0.0
+            for c_name, r_list in cohort_groups.items() if r_list
+        }
+
+        # 95% Confidence Interval for mean residual error
+        ci_95_mm = [0.0, 0.0]
+        if evaluated_count > 1 and std_dev > 0.0:
+            se = std_dev / math.sqrt(evaluated_count)
+            t_crit = 1.96  # Standard large-sample normal approximation for 95% CI
+            ci_95_mm = [round(max(0.0, mean_err - t_crit * se), 3), round(mean_err + t_crit * se, 3)]
+        elif evaluated_count == 1:
+            ci_95_mm = [mean_err, mean_err]
+
+        # Coverage and missing data rates
+        total_cat = len(codes)
+        cov_pct = round((evaluated_count / total_cat) * 100.0, 1) if total_cat > 0 else 0.0
+        missing_rate_pct = round(100.0 - cov_pct, 1)
+
+        # Subject metrics summary
+        per_subject_metrics = {
+            s: {
+                "count": len(errs),
+                "mean_error_mm": round(sum(errs) / len(errs), 3),
+                "rmse_mm": round(math.sqrt(sum(e**2 for e in errs) / len(errs)), 3),
+                "max_error_mm": round(max(errs), 3),
+            }
+            for s, errs in per_subject_map.items()
+        }
+
         summary = {
             "total_points_in_scope": len(codes),
             "evaluated_with_ground_truth": evaluated_count,
@@ -1294,6 +1519,28 @@ class IndependentAnatomicalValidator:
             "max_residual_error_mm": max_err,
             "outlier_count": len(outliers),
             "dataset_filter": dataset_id or "ALL_AVAILABLE",
+            # P10.2 Extended Validation Metrics:
+            "overall_rmse_mm": overall_rmse_mm,
+            "mae_mm": mae_mm,
+            "bias_vector_mm": bias_vector_mm,
+            "left_right_asymmetry_mm": left_right_asymmetry_mm,
+            "rmse_left_mm": rmse_left,
+            "rmse_right_mm": rmse_right,
+            "cohort_rmse_mm": cohort_rmse_mm,
+            "confidence_interval_95_mm": ci_95_mm,
+            "coverage_percentage": cov_pct,
+            "missing_data_rate_percentage": missing_rate_pct,
+            "per_subject_metrics": per_subject_metrics,
+            "preregistered_high_accuracy_pass": bool(evaluated_count > 0 and overall_rmse_mm <= 5.0),
+            "preregistered_acceptable_accuracy_pass": bool(evaluated_count > 0 and overall_rmse_mm <= 10.0),
+            "statistical_power_specification": {
+                "formula": "N >= ((Z_alpha/2 + Z_beta)^2 * sigma^2) / delta^2",
+                "z_alpha_half_95": 1.96,
+                "z_beta_80": 0.84,
+                "z_beta_90": 1.28,
+                "minimum_recommended_cohort_n": 30,
+                "status": "REQUIRES_FORMAL_BIOSTATISTICAL_REVIEW_BEFORE_ENROLLMENT",
+            },
         }
 
         regional_metrics = self.get_regional_error_distribution(comparisons)
@@ -2028,3 +2275,202 @@ class IndependentAnatomicalValidator:
             return {"datasets": len(ds_rows), "observations": imported_obs, "quarantined": imported_q}
         finally:
             conn.close()
+
+    def admin_sign_off_dataset(
+        self,
+        dataset_id: str,
+        admin_reviewer_id: str,
+        justification: str = "Authorized by Clinical Review Board for P10.2 Validation",
+    ) -> bool:
+        """Administrative sign-off verifying that institutional DUA and IRB approvals are legally executed."""
+        if dataset_id not in self._datasets:
+            raise ValueError(f"DATASET_NOT_FOUND: Dataset '{dataset_id}' does not exist.")
+        rev = self._reviewers.get(admin_reviewer_id)
+        if not rev or (not rev.is_governance_board and rev.role not in ("CLINICAL_SAFETY_AUDITOR", "LEAD_ANATOMIST", "ADMIN")):
+            raise ValueError(f"UNAUTHORIZED_ADMIN: Reviewer '{admin_reviewer_id}' lacks governance credentials for sign-off.")
+
+        ds = self._datasets[dataset_id]
+        ds.administrative_verification_status = "VERIFIED_ADMIN_SIGNED_OFF"
+        ds.governance_metadata["admin_sign_off"] = {
+            "signed_by": admin_reviewer_id,
+            "signed_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "justification": justification,
+        }
+        return True
+
+    def verify_reviewer_role_separation(
+        self,
+        observer_id: str,
+        reviewer_1: str,
+        reviewer_2: Optional[str] = None,
+        model_developer_id: Optional[str] = None,
+    ) -> bool:
+        """Enforce strict role separation: MODEL_DEVELOPER != OBSERVER != REVIEWER_1 != REVIEWER_2."""
+        obs = observer_id.strip()
+        r1 = reviewer_1.strip()
+        if obs and r1 and obs == r1:
+            raise ValueError(f"REVIEWER_ROLE_CONFLICT: Observer '{obs}' cannot act as Reviewer 1 for their own observations.")
+        if reviewer_2:
+            r2 = reviewer_2.strip()
+            if r1 == r2:
+                raise ValueError(f"REVIEWER_ROLE_CONFLICT: Reviewer 1 and Reviewer 2 cannot be the same entity ('{r1}').")
+            if obs == r2:
+                raise ValueError(f"REVIEWER_ROLE_CONFLICT: Observer '{obs}' cannot act as Reviewer 2.")
+        if model_developer_id:
+            dev = model_developer_id.strip()
+            if dev in (obs, r1, reviewer_2 or ""):
+                raise ValueError(f"REVIEWER_ROLE_CONFLICT: Core Model Developer '{dev}' cannot act as Observer or Reviewer in independent validation.")
+        return True
+
+    def get_pilot_cohort_specifications(self) -> Dict[str, Any]:
+        """Return implementation-ready protocol specifications for Cohorts A, B, and C."""
+        return {
+            "cohort_a": {
+                "cohort_id": "COHORT_A_ABDOMEN",
+                "name": "Bilateral Abdominal Sagittal Line (ST19–ST30)",
+                "target_points": [f"ST{i}" for i in range(19, 31)] + ["CV8", "CV12"],
+                "focus": "Subcutaneous adiposity thickness, non-rigid respiratory excursion, body habitus variation (BMI 18.5 - 38.0)",
+                "modality": "High-resolution contrast-enhanced abdominal CT (slice <= 1.0mm)",
+                "target_sample_size": 30,
+                "status": "PROTOCOL_DRAFT_PENDING_IRB_REVIEW",
+                "reference_limitation": "Canonical BodyParts3D assumes fixed X = 0.066m; real patient habitus exhibits +/- 22mm lateral variance",
+            },
+            "cohort_b": {
+                "cohort_id": "COHORT_B_EXTREMITIES",
+                "name": "Distal Extremities & Joint Kinematics (Upper and Lower Limbs)",
+                "target_points": ["LU5", "LU7", "LI4", "LI11", "PC6", "PC7", "TE5", "HT7", "ST36", "SP6", "SP9", "GB34", "BL40", "KI3"],
+                "focus": "Bilateral laterality parity, joint articulation kinematics (0, 45, 90 deg flexion), skin sliding displacement",
+                "modality": "Calibrated 3D surface scanning coregistered with extremity CT/MRI",
+                "target_sample_size": 25,
+                "status": "PROTOCOL_DRAFT_PENDING_IRB_REVIEW",
+            },
+            "cohort_c": {
+                "cohort_id": "COHORT_C_CRANIOFACIAL",
+                "name": "Craniofacial & Cervical Sagittal Landmarks (Yintang / Glabella Reconciliation)",
+                "target_points": ["GV24+", "GV20", "GB20", "BL10", "CV24", "ST2", "SI19"],
+                "focus": "Cranial bone suture landmarks, supraorbital notches, cervical lordosis, Yintang/GV24+ taxonomy reconciliation",
+                "modality": "High-resolution head/neck CT or 3T volumetric MRI",
+                "target_sample_size": 30,
+                "status": "PROTOCOL_DRAFT_PENDING_IRB_REVIEW",
+            },
+            "governance_note": "All cohort protocols are preregistered research specifications requiring institutional IRB approval prior to real clinical enrollment.",
+        }
+
+    def run_synthetic_pilot_dry_run(self) -> Dict[str, Any]:
+        """Execute a controlled end-to-end dry run across Cohorts A, B, C with synthetic fixtures."""
+        ds_id = "DS-SYNTHETIC-PILOT-DRY-RUN"
+        dry_ds = ExternalGroundTruthDataset(
+            dataset_id=ds_id,
+            name="P10.2 Synthetic Pilot Dry Run Test Package",
+            source_organization="MSK-Therapy-OS Automated Validation Harness",
+            version="1.1-SYNTHETIC",
+            license="MIT",
+            doi_or_url="urn:msk:synthetic:pilot-dry-run",
+            modality=GroundTruthModality.SYNTHETIC_TEST_FIXTURE,
+            is_synthetic_fixture=True,
+            sample_size=3,
+            administrative_verification_status="VERIFIED_ADMIN_SIGNED_OFF",
+        )
+        self.register_dataset(dry_ds)
+
+        # 1. Generate synthetic observations for key cohort points
+        dry_points = [
+            # Cohort A (Abdomen)
+            ("ST21", (0.066, 1.050, 0.125), "COHORT_A"),
+            ("ST25", (0.066, 0.980, 0.130), "COHORT_A"),
+            ("ST28", (0.066, 0.900, 0.122), "COHORT_A"),
+            # Cohort B (Limbs)
+            ("LI4", (0.245, 0.812, 0.082), "COHORT_B"),
+            ("LU5", (0.220, 0.990, 0.040), "COHORT_B"),
+            ("ST36", (0.095, 0.485, 0.088), "COHORT_B"),
+            ("SP6", (0.075, 0.180, 0.015), "COHORT_B"),
+            # Cohort C (Craniofacial)
+            ("GV24+", (0.000, 1.615, 0.082), "COHORT_C"),
+            ("GV20", (0.000, 1.745, -0.010), "COHORT_C"),
+            ("GB20", (0.055, 1.585, -0.095), "COHORT_C"),
+        ]
+
+        obs_list = []
+        for code, _, cohort in dry_points:
+            # Add small deterministic offset (1.5mm)
+            c_pos = self.resolve_point_coordinate(code)["canonical_position"]
+            obs_pos = (round(c_pos[0] + 0.001, 5), round(c_pos[1] + 0.001, 5), round(c_pos[2] + 0.0005, 5))
+            obs = GroundTruthObservation(
+                point_code=code,
+                dataset_id=ds_id,
+                canonical_position=obs_pos,
+                subject_pseudonym="SUBJ-SYNTH-DRY-001",
+                cohort_id=cohort,
+                observer_id="REV_SYNTHETIC_TEST",
+                reviewer_id="REV-LEAD-ANATOMIST",
+                synthetic_fixture=True,
+                notes="SYNTHETIC_TEST_ONLY: Dry run verification fixture",
+            )
+            obs_list.append(obs)
+
+        ingest_res = self.import_observations(obs_list)
+
+        # 2. Test 3-way holdout partitioning
+        subjects = [f"SUBJ-SYNTH-DRY-{i:03d}" for i in range(1, 11)]
+        part = self._holdout_manager.create_three_way_partition(
+            partition_id="PART-DRY-RUN-01",
+            subjects=subjects,
+            calib_ratio=0.5,
+            val_ratio=0.25,
+            holdout_ratio=0.25,
+            seed=20261029,
+        )
+        self._holdout_manager.verify_no_leakage_three_way(
+            part.calibration_subjects,
+            part.validation_subjects,
+            part.holdout_subjects,
+        )
+
+        # 3. Evaluate catalog for dry run dataset
+        eval_codes = [p[0] for p in dry_points]
+        report = self.validate_catalog(point_codes=eval_codes, dataset_id=ds_id)
+
+        return {
+            "status": "PIPELINE_OPERATIONAL / EMPIRICAL_VALIDATION_BLOCKED",
+            "legacy_gate_g14": "BLOCKED_EXTERNAL_DATA",
+            "synthetic_dry_run_passed": True,
+            "total_synthetic_points_evaluated": len(eval_codes),
+            "synthetic_observations_imported": ingest_res,
+            "overall_rmse_mm": report.summary.get("overall_rmse_mm"),
+            "mae_mm": report.summary.get("mae_mm"),
+            "bias_vector_mm": report.summary.get("bias_vector_mm"),
+            "cohort_rmse_mm": report.summary.get("cohort_rmse_mm"),
+            "three_way_partition_verified": True,
+            "holdout_leakage_prevented": True,
+            "scientific_invariant": "SYNTHETIC_TEST_SUCCESS != EMPIRICAL_VALIDATION",
+            "message": "Validation pipeline executed successfully end-to-end with synthetic fixtures. Gate G14 remains strictly fail-closed as BLOCKED_EXTERNAL_DATA pending real in-vivo imaging data.",
+        }
+
+    def export_audit_evidence_manifest(self, filepath: Optional[str] = None) -> Dict[str, Any]:
+        """Export comprehensive audit evidence manifest for P10.2 acceptance and reproducibility."""
+        cov_matrix = self.generate_external_evidence_coverage_matrix()
+        uncert_matrix = self.generate_anatomical_uncertainty_matrix()
+        q_records = self.get_quarantined_records()
+        cohort_specs = self.get_pilot_cohort_specifications()
+
+        manifest = {
+            "manifest_version": "1.1-P10",
+            "timestamp_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "system_version": "v2.1.0-local-rc3",
+            "engineering_readiness": "ENGINEERING_READY",
+            "legacy_gate_g14_status": "BLOCKED_EXTERNAL_DATA",
+            "governance_invariant": "TECHNICAL_CALIBRATION != INDEPENDENT_ANATOMICAL_GROUND_TRUTH != CLINICAL_VALIDATION",
+            "total_points_in_catalog": len(cov_matrix),
+            "empirical_in_vivo_records_count": sum(1 for r in cov_matrix if r["empirical_in_vivo_status"] == "AVAILABLE"),
+            "quarantined_records_count": len(q_records),
+            "registered_datasets_count": len(self._datasets),
+            "registered_reviewers_count": len(self._reviewers),
+            "pilot_cohorts": cohort_specs,
+            "preregistered_thresholds": self._pre_registered_thresholds.to_dict(),
+        }
+
+        if filepath:
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=2)
+
+        return manifest

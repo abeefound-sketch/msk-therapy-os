@@ -1072,6 +1072,33 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         "cohort_c_cranial_cervical": c_c,
                     })
 
+                elif path == "/api/atlas/validation/pilot-cohorts/details":
+                    validator = get_anatomical_validator()
+                    specs = validator.get_pilot_cohort_specifications()
+                    self._send_json({
+                        "status": "success",
+                        "pilot_cohort_specifications": specs,
+                    })
+
+                elif path == "/api/atlas/validation/metrics/summary":
+                    validator = get_anatomical_validator()
+                    dataset_id = query.get("dataset_id", [None])[0]
+                    rep = validator.validate_catalog(dataset_id=dataset_id)
+                    self._send_json({
+                        "status": "success",
+                        "summary_metrics": rep.summary,
+                        "regional_metrics": rep.regional_metrics,
+                        "is_synthetic_evaluation": rep.is_synthetic_evaluation,
+                    })
+
+                elif path == "/api/atlas/validation/export-evidence":
+                    validator = get_anatomical_validator()
+                    manifest = validator.export_audit_evidence_manifest()
+                    self._send_json({
+                        "status": "success",
+                        "evidence_manifest": manifest,
+                    })
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
@@ -1975,6 +2002,51 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         self._send_json({"status": "success", "partition": part.to_dict()}, status=HTTPStatus.CREATED)
                     except ValueError as ve:
                         self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/holdout/three-way-split":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        p_id = body.get("partition_id", "default_3way")
+                        subjs = body.get("subjects", [])
+                        calib_r = float(body.get("calib_ratio", 0.5))
+                        val_r = float(body.get("val_ratio", 0.25))
+                        hold_r = float(body.get("holdout_ratio", 0.25))
+                        seed = int(body.get("seed", 42))
+                        part = validator._holdout_manager.create_three_way_partition(
+                            p_id, subjs, calib_ratio=calib_r, val_ratio=val_r, holdout_ratio=hold_r, seed=seed
+                        )
+                        self._send_json({"status": "success", "partition": part.to_dict()}, status=HTTPStatus.CREATED)
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/admin/sign-off":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        ds_id = body.get("dataset_id")
+                        rev_id = body.get("admin_reviewer_id", "REV-CLINICAL-AUDITOR")
+                        just = body.get("justification", "Authorized by Clinical Review Board for P10.2 Validation")
+                        validator.admin_sign_off_dataset(ds_id, admin_reviewer_id=rev_id, justification=just)
+                        self._send_json({"status": "success", "dataset_id": ds_id, "signed_off": True})
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/dry-run":
+                    try:
+                        validator = get_anatomical_validator()
+                        res = validator.run_synthetic_pilot_dry_run()
+                        self._send_json(res, status=HTTPStatus.OK)
                     except Exception as e:
                         self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
