@@ -120,6 +120,22 @@ class QuarantineReason(str, Enum):
     QUARANTINE_ROLE_CONFLICT = "QUARANTINE_ROLE_CONFLICT"
     QUARANTINE_HOLDOUT_CONTAMINATION = "QUARANTINE_HOLDOUT_CONTAMINATION"
     QUARANTINE_ADMIN_SIGN_OFF_REQUIRED = "QUARANTINE_ADMIN_SIGN_OFF_REQUIRED"
+    # P10.3 DICOM & Adjudication Quarantine Reasons:
+    QUARANTINE_UNSUPPORTED_TRANSFER_SYNTAX = "QUARANTINE_UNSUPPORTED_TRANSFER_SYNTAX"
+    QUARANTINE_BURNED_IN_IDENTIFIERS_RISK = "QUARANTINE_BURNED_IN_IDENTIFIERS_RISK"
+    QUARANTINE_MALFORMED_DICOM = "QUARANTINE_MALFORMED_DICOM"
+    QUARANTINE_MULTIFRAME_UNSUPPORTED = "QUARANTINE_MULTIFRAME_UNSUPPORTED"
+    QUARANTINE_PHI_IN_DICOM_HEADER = "QUARANTINE_PHI_IN_DICOM_HEADER"
+    QUARANTINE_ADJUDICATION_REQUIRED = "QUARANTINE_ADJUDICATION_REQUIRED"
+
+
+class G14ScientificGateState(str, Enum):
+    """Explicit scientific gate states for Gate G14."""
+    BLOCKED_EXTERNAL_DATA = "BLOCKED_EXTERNAL_DATA"
+    PENDING_GOVERNANCE_APPROVAL = "PENDING_GOVERNANCE_APPROVAL"
+    PENDING_INDEPENDENT_REVIEW = "PENDING_INDEPENDENT_REVIEW"
+    EMPIRICAL_EVIDENCE_READY = "EMPIRICAL_EVIDENCE_READY"
+    EMPIRICAL_VALIDATION_FAILED = "EMPIRICAL_VALIDATION_FAILED"
 
 
 class DeidentificationMethod(str, Enum):
@@ -329,6 +345,11 @@ class HoldoutPartitionManifest:
     created_utc: str = field(default_factory=lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
     # P10.2 3-Way Partitioning:
     validation_subjects: List[str] = field(default_factory=list)
+    # P10.3 Holdout Cryptographic Locking & Site Isolation:
+    locked_by: Optional[str] = None
+    locked_sha256: Optional[str] = None
+    is_holdout_evaluated: bool = False
+    site_id: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -470,6 +491,65 @@ class HoldoutPartitionManager:
 
     def get_partition(self, partition_id: str) -> Optional[HoldoutPartitionManifest]:
         return self._partitions.get(partition_id)
+
+    def lock_holdout_partition(self, partition_id: str, admin_reviewer_id: str) -> HoldoutPartitionManifest:
+        """Cryptographically lock the holdout partition to prevent modifications."""
+        p = self._partitions.get(partition_id)
+        if not p:
+            raise ValueError(f"PARTITION_NOT_FOUND: Partition '{partition_id}' does not exist.")
+        if p.is_holdout_evaluated:
+            raise ValueError(f"HOLDOUT_ALREADY_EVALUATED: Cannot re-lock partition '{partition_id}' after evaluation.")
+        
+        # Compute SHA-256 over sorted holdout subjects
+        hash_payload = f"{partition_id}:{','.join(sorted(p.holdout_subjects))}:{admin_reviewer_id}"
+        p.locked_sha256 = hashlib.sha256(hash_payload.encode()).hexdigest()
+        p.locked_by = admin_reviewer_id
+        p.is_locked = True
+        return p
+
+    def mark_holdout_evaluated(self, partition_id: str) -> None:
+        """Mark holdout as evaluated. Freezes partition against any subsequent modification."""
+        p = self._partitions.get(partition_id)
+        if p:
+            p.is_holdout_evaluated = True
+
+    def create_site_level_partition(
+        self,
+        partition_id: str,
+        site_subject_map: Dict[str, List[str]],
+        holdout_site_id: str,
+    ) -> HoldoutPartitionManifest:
+        """Create a site-level external holdout partition where an entire clinical site is held out."""
+        if holdout_site_id not in site_subject_map:
+            raise ValueError(f"SITE_NOT_FOUND: Holdout site '{holdout_site_id}' not in site_subject_map.")
+        
+        holdout_subjects = sorted(list(site_subject_map[holdout_site_id]))
+        other_subjects: List[str] = []
+        for s_id, subjs in site_subject_map.items():
+            if s_id != holdout_site_id:
+                other_subjects.extend(subjs)
+        
+        other_unique = sorted(list(set(other_subjects)))
+        half = len(other_unique) // 2
+        calib_subjects = other_unique[:half]
+        val_subjects = other_unique[half:]
+        
+        manifest_payload = f"{partition_id}:{','.join(calib_subjects)}:{','.join(val_subjects)}:{','.join(holdout_subjects)}"
+        chk = hashlib.sha256(manifest_payload.encode()).hexdigest()
+        
+        manifest = HoldoutPartitionManifest(
+            partition_id=partition_id,
+            calibration_subjects=calib_subjects,
+            validation_subjects=val_subjects,
+            holdout_subjects=holdout_subjects,
+            total_subjects=len(calib_subjects) + len(val_subjects) + len(holdout_subjects),
+            split_ratio=round(len(calib_subjects) / (len(other_unique) + len(holdout_subjects)), 3),
+            is_locked=True,
+            manifest_checksum=chk,
+            site_id=holdout_site_id,
+        )
+        self._partitions[partition_id] = manifest
+        return manifest
 
 
 @dataclass
@@ -1495,6 +1575,33 @@ class IndependentAnatomicalValidator:
         cov_pct = round((evaluated_count / total_cat) * 100.0, 1) if total_cat > 0 else 0.0
         missing_rate_pct = round(100.0 - cov_pct, 1)
 
+        # IQR Outliers
+        iqr_val = 0.0
+        q1_val = 0.0
+        q3_val = 0.0
+        iqr_outliers_count = 0
+        if evaluated_count >= 4:
+            q1_idx = evaluated_count // 4
+            q3_idx = (3 * evaluated_count) // 4
+            q1_val = sorted_res[q1_idx]
+            q3_val = sorted_res[q3_idx]
+            iqr_val = round(q3_val - q1_val, 3)
+            iqr_fence = q3_val + 1.5 * iqr_val
+            iqr_outliers_count = sum(1 for r in sorted_res if r > iqr_fence)
+
+        # Intra-cluster correlation (ICC) approximation across subjects
+        icc_approx = 0.0
+        n_eff = float(evaluated_count)
+        if len(per_subject_map) > 1 and evaluated_count > len(per_subject_map):
+            subj_means = [sum(errs) / len(errs) for errs in per_subject_map.values()]
+            grand_mean = sum(residuals) / len(residuals)
+            var_between = sum((sm - grand_mean)**2 for sm in subj_means) / (len(per_subject_map) - 1)
+            var_total = std_dev**2 if std_dev > 0 else 1.0
+            icc_approx = round(min(1.0, max(0.0, var_between / (var_total + 1e-9))), 3)
+            avg_m = evaluated_count / len(per_subject_map)
+            design_effect = 1.0 + (avg_m - 1.0) * icc_approx
+            n_eff = round(evaluated_count / design_effect, 1)
+
         # Subject metrics summary
         per_subject_metrics = {
             s: {
@@ -1509,6 +1616,14 @@ class IndependentAnatomicalValidator:
         summary = {
             "total_points_in_scope": len(codes),
             "evaluated_with_ground_truth": evaluated_count,
+            "independent_subjects_count": len(per_subject_map),
+            "total_observations_count": evaluated_count,
+            "q1_residual_error_mm": q1_val,
+            "q3_residual_error_mm": q3_val,
+            "iqr_residual_error_mm": iqr_val,
+            "iqr_outliers_count": iqr_outliers_count,
+            "intra_cluster_correlation_icc": icc_approx,
+            "effective_sample_size_n_eff": n_eff,
             "ground_truth_unavailable_count": unavail_count,
             "congruent_count": congruent_count,
             "congruence_percentage": congruence_pct,
@@ -2474,3 +2589,274 @@ class IndependentAnatomicalValidator:
                 json.dump(manifest, f, indent=2)
 
         return manifest
+
+    def adjudicate_inter_observer_disagreement(
+        self,
+        point_code: str,
+        dataset_id: str,
+        adjudicator_id: str,
+        resolved_position: Tuple[float, float, float],
+        rationale: str,
+    ) -> Dict[str, Any]:
+        """Third-reviewer adjudication when two reviewers disagree beyond clinical tolerance."""
+        key = (point_code, dataset_id)
+        if key not in self._observations:
+            raise ValueError(f"OBSERVATION_NOT_FOUND: Point '{point_code}' in dataset '{dataset_id}' does not exist.")
+        
+        adj_rev = self._reviewers.get(adjudicator_id)
+        if not adj_rev or adj_rev.role not in ("LEAD_ANATOMIST", "SENIOR_RADIOLOGIST", "CLINICAL_SAFETY_AUDITOR"):
+            raise ValueError(f"UNAUTHORIZED_ADJUDICATOR: Reviewer '{adjudicator_id}' lacks clinical qualifications to arbitrate disputes.")
+
+        obs = self._observations[key]
+        if adjudicator_id in (obs.observer_id or "", obs.reviewer_id or ""):
+            raise ValueError(f"ROLE_CONFLICT: Adjudicator '{adjudicator_id}' cannot be an original observer or primary reviewer.")
+
+        orig_pos = obs.canonical_position
+        obs.canonical_position = resolved_position
+        obs.review_status = ReviewStatus.REVIEWED
+        
+        adjudication_entry = {
+            "adjudicator_id": adjudicator_id,
+            "adjudicated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "original_position": list(orig_pos),
+            "resolved_position": list(resolved_position),
+            "discrepancy_distance_mm": round(math.sqrt(sum((a - b)**2 for a, b in zip(orig_pos, resolved_position))) * 1000.0, 3),
+            "rationale": rationale,
+        }
+        obs.notes += f" | ADJUDICATION: {json.dumps(adjudication_entry)}"
+        
+        # Clear matching quarantine entry if present
+        self._quarantined_records = [
+            q for q in self._quarantined_records
+            if not (q.point_code == point_code and q.dataset_id == dataset_id and q.reason == QuarantineReason.QUARANTINE_ADJUDICATION_REQUIRED)
+        ]
+        
+        return {
+            "status": "ADJUDICATION_RESOLVED",
+            "point_code": point_code,
+            "dataset_id": dataset_id,
+            "adjudicator_id": adjudicator_id,
+            "resolved_position": list(resolved_position),
+            "adjudication_entry": adjudication_entry,
+        }
+
+    def compute_subject_bootstrap_ci(
+        self,
+        point_codes: Optional[List[str]] = None,
+        dataset_id: Optional[str] = None,
+        n_bootstraps: int = 1000,
+        seed: int = 42,
+    ) -> Dict[str, Any]:
+        """Compute subject-level bootstrap 95% Confidence Intervals for RMSE and MAE."""
+        import random
+        # Group residuals across all observations matching scope
+        subject_residuals: Dict[str, List[float]] = {}
+        for (code, d_id), obs in self._observations.items():
+            if dataset_id is not None and d_id != dataset_id:
+                continue
+            if point_codes is not None and code not in point_codes:
+                continue
+            pred_res = self.resolve_point_coordinate(code)
+            if not pred_res:
+                continue
+            pred_pos = pred_res["canonical_position"]
+            obs_pos = obs.canonical_position
+            err_mm = math.sqrt(sum((p - o)**2 for p, o in zip(pred_pos, obs_pos))) * 1000.0
+            s_id = obs.subject_pseudonym or "ANON"
+            subject_residuals.setdefault(s_id, []).append(err_mm)
+        
+        unique_subjects = sorted(list(subject_residuals.keys()))
+        n_subj = len(unique_subjects)
+        
+        all_res = [e for errs in subject_residuals.values() for e in errs]
+        point_rmse = round(math.sqrt(sum(e**2 for e in all_res) / len(all_res)), 3) if all_res else 0.0
+        point_mae = round(sum(all_res) / len(all_res), 3) if all_res else 0.0
+
+        if n_subj < 3:
+            return {
+                "status": "INSUFFICIENT_SUBJECTS_FOR_BOOTSTRAP",
+                "message": f"Only {n_subj} independent subjects available. Minimum 3 required for cluster bootstrap.",
+                "overall_rmse_mm": point_rmse,
+                "mae_mm": point_mae,
+                "independent_subjects_count": n_subj,
+            }
+        
+        rng = random.Random(seed)
+        boot_rmse: List[float] = []
+        boot_mae: List[float] = []
+        
+        for _ in range(n_bootstraps):
+            sampled_subjects = [rng.choice(unique_subjects) for _ in range(n_subj)]
+            sampled_residuals: List[float] = []
+            for s in sampled_subjects:
+                sampled_residuals.extend(subject_residuals[s])
+            
+            if sampled_residuals:
+                r_rmse = math.sqrt(sum(e**2 for e in sampled_residuals) / len(sampled_residuals))
+                r_mae = sum(sampled_residuals) / len(sampled_residuals)
+                boot_rmse.append(r_rmse)
+                boot_mae.append(r_mae)
+        
+        boot_rmse.sort()
+        boot_mae.sort()
+        
+        idx_low = int(0.025 * len(boot_rmse))
+        idx_high = int(0.975 * len(boot_rmse))
+        
+        rmse_ci_95 = [round(boot_rmse[idx_low], 3), round(boot_rmse[idx_high], 3)]
+        mae_ci_95 = [round(boot_mae[idx_low], 3), round(boot_mae[idx_high], 3)]
+        
+        return {
+            "status": "BOOTSTRAP_COMPUTED",
+            "n_bootstraps": n_bootstraps,
+            "seed": seed,
+            "independent_subjects_count": n_subj,
+            "point_estimate_rmse_mm": point_rmse,
+            "bootstrap_rmse_ci_95_mm": rmse_ci_95,
+            "point_estimate_mae_mm": point_mae,
+            "bootstrap_mae_ci_95_mm": mae_ci_95,
+            "skewness_warning": (rmse_ci_95[1] - point_rmse) > 1.5 * (point_rmse - rmse_ci_95[0]) if (point_rmse - rmse_ci_95[0]) > 0 else False,
+        }
+
+    def evaluate_g14_scientific_gate(self) -> Dict[str, Any]:
+        """Rigorously evaluate Gate G14 across all prerequisite governance, data, and accuracy rules."""
+        blockers: List[str] = []
+        
+        # 1. External Real Datasets Check
+        real_datasets = [
+            ds for ds in self._datasets.values()
+            if not ds.is_synthetic_fixture and ds.dataset_id != "DS-BP3D-FJ2810"
+        ]
+        if not real_datasets:
+            blockers.append("No independent in-vivo patient imaging datasets registered (all datasets are synthetic fixtures or canonical BodyParts3D).")
+            return {
+                "gate_id": "G14",
+                "gate_state": G14ScientificGateState.BLOCKED_EXTERNAL_DATA.value,
+                "is_unlocked": False,
+                "blockers": blockers,
+                "scientific_invariant": "SYNTHETIC_TEST_SUCCESS != EMPIRICAL_VALIDATION",
+                "message": "Gate G14 remains strictly fail-closed as BLOCKED_EXTERNAL_DATA. No patient imaging data present.",
+            }
+
+        # 2. Governance & IRB/DUA Check
+        current_date = time.strftime("%Y-%m-%d", time.gmtime())
+        for ds in real_datasets:
+            if ds.administrative_verification_status != "VERIFIED_ADMIN_SIGNED_OFF":
+                blockers.append(f"Dataset '{ds.dataset_id}' lacks administrative sign-off by Clinical Review Board.")
+            gov = ds.governance_metadata or {}
+            exp_date = gov.get("authorization_expiration_date")
+            if not exp_date or exp_date < current_date:
+                blockers.append(f"Dataset '{ds.dataset_id}' DUA/IRB authorization is missing or expired ({exp_date}).")
+            if ds.deidentification_review_status != "VERIFIED_DEIDENTIFIED":
+                blockers.append(f"Dataset '{ds.dataset_id}' de-identification has not been independently verified.")
+
+        if blockers:
+            return {
+                "gate_id": "G14",
+                "gate_state": G14ScientificGateState.PENDING_GOVERNANCE_APPROVAL.value,
+                "is_unlocked": False,
+                "blockers": blockers,
+                "scientific_invariant": "TECHNICAL_CALIBRATION != INDEPENDENT_ANATOMICAL_GROUND_TRUTH",
+                "message": "Gate G14 blocked pending institutional governance, IRB, or DUA approvals.",
+            }
+
+        # 3. Independent Review, Quarantine, and Holdout Lock Check
+        active_quarantine = len(self._quarantined_records)
+        if active_quarantine > 0:
+            blockers.append(f"{active_quarantine} observations currently held in quarantine.")
+        
+        # Check holdout partition
+        holdout_locked = any(p.is_locked for p in self._holdout_manager._partitions.values())
+        if not holdout_locked:
+            blockers.append("Subject-level holdout partition is not locked with cryptographic checksum.")
+
+        if blockers:
+            return {
+                "gate_id": "G14",
+                "gate_state": G14ScientificGateState.PENDING_INDEPENDENT_REVIEW.value,
+                "is_unlocked": False,
+                "blockers": blockers,
+                "scientific_invariant": "INDEPENDENT_ANATOMICAL_GROUND_TRUTH != CLINICAL_VALIDATION",
+                "message": "Gate G14 blocked pending independent review completion, dispute adjudication, or holdout locking.",
+            }
+
+        # 4. Sample Size Check
+        unique_real_subjects = set()
+        for obs in self._observations.values():
+            if obs.dataset_id in [d.dataset_id for d in real_datasets]:
+                unique_real_subjects.add(obs.subject_pseudonym)
+        
+        if len(unique_real_subjects) < 43:
+            blockers.append(f"Sample size {len(unique_real_subjects)} is insufficient. Power analysis requires N >= 43 independent subjects.")
+            return {
+                "gate_id": "G14",
+                "gate_state": G14ScientificGateState.PENDING_INDEPENDENT_REVIEW.value,
+                "is_unlocked": False,
+                "blockers": blockers,
+                "message": "Gate G14 blocked due to insufficient statistical sample size.",
+            }
+
+        # 5. Evaluate Holdout Partition Accuracy Thresholds
+        holdout_report = self.validate_catalog()
+        c_rmse = holdout_report.summary.get("cohort_rmse_mm", {})
+        c_a_rmse = c_rmse.get("COHORT_A", 999.0)
+        c_b_rmse = c_rmse.get("COHORT_B", 999.0)
+        c_c_rmse = c_rmse.get("COHORT_C", 999.0)
+
+        if c_a_rmse > 10.0 or c_b_rmse > 10.0 or c_c_rmse > 5.0:
+            return {
+                "gate_id": "G14",
+                "gate_state": G14ScientificGateState.EMPIRICAL_VALIDATION_FAILED.value,
+                "is_unlocked": False,
+                "cohort_rmse_mm": c_rmse,
+                "blockers": [f"Holdout RMSE exceeded threshold: Cohort A ({c_a_rmse} > 10mm), Cohort B ({c_b_rmse} > 10mm), or Cohort C ({c_c_rmse} > 5mm)"],
+                "message": "Gate G14 evaluation failed empirical accuracy thresholds on holdout partition.",
+            }
+
+        return {
+            "gate_id": "G14",
+            "gate_state": G14ScientificGateState.EMPIRICAL_EVIDENCE_READY.value,
+            "is_unlocked": True,
+            "cohort_rmse_mm": c_rmse,
+            "overall_rmse_mm": holdout_report.summary.get("overall_rmse_mm"),
+            "blockers": [],
+            "message": "Gate G14 criteria fully met with independently verified external empirical ground truth.",
+        }
+
+    def get_dicom_adapter(self) -> Any:
+        """Return lazily instantiated DicomIntakeAdapter."""
+        if not hasattr(self, "_dicom_adapter") or self._dicom_adapter is None:
+            from msk_therapy_os.dicom_intake import DicomIntakeAdapter
+            self._dicom_adapter = DicomIntakeAdapter()
+        return self._dicom_adapter
+
+    def preflight_dicom_file(self, file_path: str) -> Dict[str, Any]:
+        """Execute preflight DICOM inspection on a single file."""
+        adapter = self.get_dicom_adapter()
+        res = adapter.inspect_file(file_path)
+        if not res.passed_screening:
+            adapter.quarantine_file(res)
+            for qr in res.quarantine_reasons:
+                q_reason_enum = QuarantineReason(qr.value) if qr.value in [r.value for r in QuarantineReason] else QuarantineReason.QUARANTINE_SCHEMA_INVALID
+                self._quarantined_records.append(
+                    QuarantinedObservation(
+                        point_code="DICOM_INTAKE",
+                        dataset_id="DS-DICOM-UNAPPROVED",
+                        subject_pseudonym=res.patient_id or "UNKNOWN",
+                        reason=q_reason_enum,
+                        details="; ".join(res.quarantine_details),
+                        raw_payload=res.to_dict(),
+                    )
+                )
+        return res.to_dict()
+
+    def preflight_dicom_directory(self, dir_path: str) -> List[Dict[str, Any]]:
+        """Execute preflight DICOM inspection on an entire directory."""
+        adapter = self.get_dicom_adapter()
+        results = adapter.inspect_directory(dir_path)
+        out = []
+        for res in results:
+            if not res.passed_screening:
+                adapter.quarantine_file(res)
+            out.append(res.to_dict())
+        return out

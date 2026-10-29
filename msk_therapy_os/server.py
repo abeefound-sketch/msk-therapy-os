@@ -1099,6 +1099,26 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         "evidence_manifest": manifest,
                     })
 
+                elif path == "/api/atlas/validation/quarantine/list":
+                    validator = get_anatomical_validator()
+                    q_obs = [r.to_dict() for r in validator.get_quarantined_records()]
+                    adapter = validator.get_dicom_adapter()
+                    q_dicom = adapter.get_quarantine_records()
+                    self._send_json({
+                        "status": "success",
+                        "quarantined_observations": q_obs,
+                        "quarantined_dicom": q_dicom,
+                        "total_quarantined": len(q_obs) + len(q_dicom),
+                    })
+
+                elif path == "/api/atlas/validation/scientific-gate/status":
+                    validator = get_anatomical_validator()
+                    gate_status = validator.evaluate_g14_scientific_gate()
+                    self._send_json({
+                        "status": "success",
+                        "gate_evaluation": gate_status,
+                    })
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
@@ -2047,6 +2067,90 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         validator = get_anatomical_validator()
                         res = validator.run_synthetic_pilot_dry_run()
                         self._send_json(res, status=HTTPStatus.OK)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/dicom/preflight":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    f_path = body.get("file_path")
+                    d_path = body.get("directory_path")
+                    validator = get_anatomical_validator()
+                    try:
+                        if f_path:
+                            res = validator.preflight_dicom_file(f_path)
+                            self._send_json({"status": "success", "result": res})
+                        elif d_path:
+                            res = validator.preflight_dicom_directory(d_path)
+                            self._send_json({"status": "success", "results": res, "total_files": len(res)})
+                        else:
+                            self._send_json({"error": "file_path or directory_path required"}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/adjudicate":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    pt_code = body.get("point_code")
+                    ds_id = body.get("dataset_id")
+                    adj_id = body.get("adjudicator_id")
+                    res_pos = body.get("resolved_position")
+                    rationale = body.get("rationale", "")
+                    if not (pt_code and ds_id and adj_id and res_pos and len(res_pos) == 3):
+                        self._send_json({"error": "point_code, dataset_id, adjudicator_id, and resolved_position [x,y,z] required"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        adj_res = validator.adjudicate_inter_observer_disagreement(
+                            point_code=pt_code,
+                            dataset_id=ds_id,
+                            adjudicator_id=adj_id,
+                            resolved_position=tuple(res_pos),
+                            rationale=rationale,
+                        )
+                        self._send_json(adj_res, status=HTTPStatus.OK)
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/bootstrap-metrics":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    pt_codes = body.get("point_codes")
+                    ds_id = body.get("dataset_id")
+                    n_boot = int(body.get("n_bootstraps", 1000))
+                    seed = int(body.get("seed", 42))
+                    try:
+                        validator = get_anatomical_validator()
+                        b_res = validator.compute_subject_bootstrap_ci(
+                            point_codes=pt_codes,
+                            dataset_id=ds_id,
+                            n_bootstraps=n_boot,
+                            seed=seed,
+                        )
+                        self._send_json(b_res, status=HTTPStatus.OK)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/holdout/lock":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    part_id = body.get("partition_id")
+                    admin_id = body.get("admin_reviewer_id")
+                    if not part_id or not admin_id:
+                        self._send_json({"error": "partition_id and admin_reviewer_id required"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        manifest = validator._holdout_manager.lock_holdout_partition(part_id, admin_id)
+                        self._send_json({"status": "success", "manifest": manifest.to_dict()}, status=HTTPStatus.OK)
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
                     except Exception as e:
                         self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
