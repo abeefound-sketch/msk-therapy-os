@@ -1,0 +1,41 @@
+{
+  "milestone": "P9.12_TRANCHE_3",
+  "timestamp": "2026-10-28T15:47:08Z",
+  "hardware": {
+    "gpu": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (Intel)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "max_texture_size": 16384
+  },
+  "catalog_distribution": {
+    "total_points": 362,
+    "class_a_canonical": 18,
+    "class_b_rule_derived": 344,
+    "class_d_uncalibrated": 0,
+    "calibrated_percentage": 100.0,
+    "tier_4_clinical_percentage": 0.0
+  },
+  "performance_benchmark": {
+    "average_fps": 59.9,
+    "target_fps_floor": 30.0,
+    "fps_pass": true,
+    "p95_frame_time_ms": 20.3,
+    "p95_target_ceiling_ms": 38.0,
+    "p95_pass": true,
+    "avg_raycast_ms": 0.01,
+    "raycast_target_ceiling_ms": 5.0,
+    "raycast_pass": true,
+    "context_loss_detected": false
+  },
+  "console_errors_count": 0,
+  "page_errors_count": 0,
+  "evidence_screenshots": [
+    "01_p912_t3_axial_paraspinal_spine_alignment.png",
+    "02_p912_t3_thoracic_abdominal_st_ki_sp_grid.png",
+    "03_p912_t3_gb_flank_intercostal_topology.png",
+    "04_p912_t3_distal_extremity_hand_points.png",
+    "05_p912_t3_distal_extremity_foot_points.png",
+    "06_p912_t3_qa_studio_100pct_calibrated.png",
+    "07_p912_t3_standardized_intel_hd5500_benchmark.png"
+  ]
+}

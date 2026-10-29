@@ -1,0 +1,36 @@
+{
+  "milestone": "P9.12_TRANCHE_2",
+  "device": "Intel(R) HD Graphics 5500",
+  "hardware": {
+    "vendor": "Google Inc. (Intel)",
+    "renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "maxTextureSize": 16384,
+    "maxRenderbufferSize": 16384,
+    "maxViewportDims": [
+      32767,
+      32767
+    ],
+    "aliasedLineWidthRange": [
+      1,
+      1
+    ]
+  },
+  "metrics": {
+    "frameCount": 120,
+    "avgFrameTimeMs": 25.404166666666665,
+    "p95FrameTimeMs": 40.19999999925494,
+    "fps": 39.36362145317369,
+    "avgRaycastLatencyMs": 0.004000000059604645,
+    "contextLossCount": 0
+  },
+  "catalog_distribution": {
+    "class_a_canonical": 18,
+    "class_b_rule_derived": 259,
+    "class_d_uncalibrated": 85,
+    "calibrated_percentage": 76.5,
+    "clinical_verification_percentage": 0.0
+  },
+  "timestamp": "2026-10-28T14:31:35Z",
+  "status": "PASS"
+}

@@ -1,0 +1,219 @@
+point_code,meridian_code,name_en,region,priority_score,priority_tier,p911_status,skeletal_landmark_quality,rule_completeness,anatomical_risk,remediation_rationale
+GB35,GB,Yangjiao,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+GB36,GB,Waiqiu,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+GB37,GB,Guangming,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+GB38,GB,Yangfu,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+GB39,GB,Xuanzhong,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+GB40,GB,Qiuxu,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+HT4,HT,Lingdao,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+HT5,HT,Tongli,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+HT6,HT,Yinxi,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LI6,LI,Pianli,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LI7,LI,Wenliu,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LI8,LI,Xialian,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LI9,LI,Shanglian,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LI10,LI,Shousanli,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LR2,LR,Xingjian,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LR4,LR,Zhongfeng,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LR5,LR,Ligou,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LR6,LR,Zhongdu,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+LR7,LR,Xiguan,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+PC4,PC,Ximen,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+PC5,PC,Jianshi,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+SI4,SI,Wangu,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+SI5,SI,Yanggu,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+SI6,SI,Yanglao,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+SI7,SI,Zhizheng,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+TE4,TE,Yangchi,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+TE6,TE,Zhigou,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+TE7,TE,Huizong,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+TE8,TE,Sanyangluo,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+TE9,TE,Sidu,,0.0,PHASE_1_REMEDIATED,REMEDIATED_P9_11_ELEVATED_TO_CLASS_B,HIGH_CONFIDENCE_PALPABLE,COMPLETE_WHO_2008,MINIMAL_STANDARDIZED,Elevated to Class B via parametric WHO 2008 B-cun rule and BodyParts3D FJ2810 skeletal anchoring
+GB31,GB,Fengshi,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB32,GB,Zhongdu,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB33,GB,Xiyangguan,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB41,GB,Zulinqi,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB42,GB,Diwuhui,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB43,GB,Xiaxi,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB44,GB,Zuqiaoyin,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+HT2,HT,Qingling,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+HT8,HT,Shaofu,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+HT9,HT,Shaochong,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+KI8,KI,Jiaoxin,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+KI9,KI,Zhubin,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI2,LI,Erjian,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI3,LI,Sanjian,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI12,LI,Zhouliao,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI13,LI,Shouwuli,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LR9,LR,Yinbao,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+PC2,PC,Tianquan,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+PC8,PC,Laogong,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+PC9,PC,Zhongchong,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI2,SI,Qiangu,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SP11,SP,Jimen,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST32,ST,Futu,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST33,ST,Yinshi,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST34,ST,Liangqiu,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST42,ST,Chongyang,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST43,ST,Xiangu,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST44,ST,Neiting,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST45,ST,Lidui,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE2,TE,Yemen,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE3,TE,Zhongzhu,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE10,TE,Tianjing,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE11,TE,Qinglengyuan,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE12,TE,Xiaoluo,,0.0,P9.11_PHASE_1_EXTREMITIES,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+CV1,CV,Huiyin,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+CV23,CV,Lianquan,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+CV24,CV,Chengjiang,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV1,GV,Changqiang,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV2,GV,Yaoshu,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV3,GV,Yaoyangguan,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV5,GV,Xuanshu,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV6,GV,Jizhong,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV7,GV,Zhongshu,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV8,GV,Jinsuo,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV9,GV,Zhiyang,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV10,GV,Lingtai,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV11,GV,Shendao,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV12,GV,Shenzhu,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV13,GV,Taodao,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV17,GV,Naohu,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV18,GV,Qiangjian,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV19,GV,Houding,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV21,GV,Qianding,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV22,GV,Xinhui,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV23,GV,Shangxing,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV24+,GV,Yintang,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV24,GV,Shenting,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV25,GV,Suliao,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV26,GV,Shuigou,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV27,GV,Duiduan,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GV28,GV,Yinjiao,,0.0,P9.11_PHASE_2_MIDLINE_AXIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL16,BL,Dushu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL17,BL,Geshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL18,BL,Ganshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL19,BL,Danshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL20,BL,Pishu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL21,BL,Weishu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL22,BL,Sanjiaoshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL24,BL,Qihaishu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL26,BL,Guanyuanshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL27,BL,Xiaochangshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL28,BL,Pangguangshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL29,BL,Zhonglvshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL30,BL,Baihuanshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL31,BL,Shangliao,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL32,BL,Ciliao,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL33,BL,Zhongliao,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL34,BL,Xialiao,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL35,BL,Huiyang,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL36,BL,Chengfu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL51,BL,Huangmen,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL53,BL,Baohuang,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB22,GB,Yuanye,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB23,GB,Zhejin,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB24,GB,Riyue,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB25,GB,Jingmen,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB26,GB,Daimai,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB27,GB,Wushu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB28,GB,Weidao,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB29,GB,Juliao,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+KI25,KI,Shencang,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+KI26,KI,Yuzhong,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LR10,LR,Zuwuli,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LR11,LR,Yinlian,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LR12,LR,Jimai,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+PC1,PC,Tianchi,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI12,SI,Bingfeng,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI13,SI,Quyuan,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI14,SI,Jianwaishu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI15,SI,Jianzhongshu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI17,SI,Tianrong,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SP12,SP,Chongmen,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SP13,SP,Fushe,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SP17,SP,Shidou,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SP18,SP,Tianxi,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SP19,SP,Xiongxiang,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST10,ST,Shuitu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST11,ST,Qishe,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST13,ST,Qihu,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST14,ST,Kufang,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST15,ST,Wuyi,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST16,ST,Yingchuang,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST17,ST,Ruzhong,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST18,ST,Rugen,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST19,ST,Burong,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST20,ST,Chengman,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST21,ST,Liangmen,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST22,ST,Guanmen,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST23,ST,Taiyi,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST24,ST,Huaroumen,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST26,ST,Wailing,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST27,ST,Daju,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST28,ST,Shuidao,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST29,ST,Guilai,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST30,ST,Qichong,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST31,ST,Biguan,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE15,TE,Tianliao,,0.0,P9.11_PHASE_3_PARASPINAL_AND_TRUNK,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL3,BL,Meichong,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL4,BL,Qucha,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL5,BL,Wuchu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL6,BL,Chengguang,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL7,BL,Tongtian,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL8,BL,Luoque,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL9,BL,Yuzhen,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL37,BL,Yinmen,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL38,BL,Fuxi,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL39,BL,Weiyang,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL55,BL,Heyang,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL56,BL,Chengjin,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL57,BL,Chengshan,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL58,BL,Feiyang,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL59,BL,Fuyang,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL60,BL,Kunlun,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL61,BL,Pucan,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL62,BL,Shenmai,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL63,BL,Jinmen,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL64,BL,Jinggu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL65,BL,Shugu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL66,BL,Zutonggu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+BL67,BL,Zhiyin,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB3,GB,Shangguan,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB4,GB,Hanyan,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB5,GB,Xuanlu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB6,GB,Xuanli,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB7,GB,Qubin,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB9,GB,Tianchong,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB10,GB,Fubai,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB11,GB,Touqiaoyin,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB12,GB,Wangu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB13,GB,Benshen,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB15,GB,Toulinqi,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB16,GB,Muchuang,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB17,GB,Zhengying,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB18,GB,Chengling,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+GB19,GB,Naokong,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+HT1,HT,Jiquan,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI14,LI,Binao,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI16,LI,Jugu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI17,LI,Tianding,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI18,LI,Futu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+LI19,LI,Kouheliao,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI9,SI,Jianzhen,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI10,SI,Naoshu,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI16,SI,Tianchuang,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SI18,SI,Quanliao,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+SP20,SP,Zhourong,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST2,ST,Sibai,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST3,ST,Juliao,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST5,ST,Daying,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST6,ST,Jiache,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+ST7,ST,Xiaguan,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE13,TE,Naohui,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE16,TE,Tianyou,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE18,TE,Chimai,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE19,TE,Luxi,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE20,TE,Jiaosun,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE21,TE,Ermen,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation
+TE22,TE,Erheliao,,0.0,P9.11_PHASE_4_CRANIAL_AND_FACIAL,DEFERRED_P9_12,MEDIUM,PARTIAL,MODERATE,Requires pelvic/thoracic/cranial high-resolution CT segmentation

@@ -1,0 +1,33 @@
+{
+  "milestone": "P9.9 High-Resolution Foot & Wrist Skeletal Registration",
+  "physical_hardware": {
+    "cpu": "Intel(R) Core(TM) i7-5600U CPU @ 2.60GHz",
+    "gpu": "Intel(R) HD Graphics 5500 (Broadwell GT2)",
+    "driver_model": "D3D11 / ANGLE",
+    "gl_vendor": "Google Inc. (Intel)",
+    "gl_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "gl_version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "max_texture_size": 16384
+  },
+  "performance_metrics": {
+    "avg_fps": 50.9,
+    "avg_frame_time_ms": 19.66,
+    "p95_frame_time_ms": 27.3,
+    "avg_raycast_ms": 0.002,
+    "total_frames": 60,
+    "total_raycasts": 100
+  },
+  "catalog_coverage": {
+    "total_points": 362,
+    "class_a": 18,
+    "class_b": 204,
+    "class_d": 140,
+    "calibrated_percentage": 48.1
+  },
+  "browser_logs": {
+    "console_errors_count": 0,
+    "page_errors_count": 0
+  },
+  "timestamp_utc": "2026-10-28T11:26:39Z",
+  "status": "PASS"
+}

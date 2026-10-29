@@ -2512,21 +2512,47 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; text-align:center;">
               <div style="background:#0f172a; padding:3px; border-radius:3px; border-top:2px solid #10b981;">
-                <div style="color:#94a3b8; font-size:8.5px;">Class A (Audited)</div>
-                <strong id="lblCovClassA" style="color:#10b981; font-size:11px;">18</strong>
+                <div style="color:#94a3b8; font-size:8.5px;">Class A (Anchors)</div>
+                <strong id="lblCovClassA" style="color:#10b981; font-size:11px;">--</strong>
               </div>
               <div style="background:#0f172a; padding:3px; border-radius:3px; border-top:2px solid #38bdf8;">
                 <div style="color:#94a3b8; font-size:8.5px;">Class B (Rules)</div>
-                <strong id="lblCovClassB" style="color:#38bdf8; font-size:11px;">52</strong>
+                <strong id="lblCovClassB" style="color:#38bdf8; font-size:11px;">--</strong>
               </div>
               <div style="background:#0f172a; padding:3px; border-radius:3px; border-top:2px solid #f59e0b;">
                 <div style="color:#94a3b8; font-size:8.5px;">Class D (Legacy)</div>
-                <strong id="lblCovClassD" style="color:#f59e0b; font-size:11px;">292</strong>
+                <strong id="lblCovClassD" style="color:#f59e0b; font-size:11px;">--</strong>
               </div>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:9px; color:#cbd5e1; margin-top:2px;">
-              <span>Verified Rate: <strong id="lblCovVerifiedPct" style="color:#34d399;">19.3%</strong></span>
+              <span>Calibrated (A+B): <strong id="lblCovVerifiedPct" style="color:#34d399;" title="100% technical calibration under WHO 2008 rules. Non-invasive educational reference only; not clinical verification.">--%</strong> (--% Audited)</span>
               <span>Spline Residual: <strong style="color:#10b981;">0.000 mm</strong></span>
+            </div>
+          </div>
+
+          <!-- P10.0 Independent Ground-Truth & Empirical Validation Governance Panel -->
+          <div style="background:#0f172a; border:1px solid #334155; padding:6px; border-radius:4px; display:flex; flex-direction:column; gap:4px; font-size:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="color:#38bdf8; font-weight:600;">Independent Ground-Truth Validation:</span>
+              <span id="lblEmpiricalStatus" style="background:#dc2626; color:#ffffff; padding:1px 5px; border-radius:3px; font-size:8px; font-weight:700;">BLOCKED_EXTERNAL_DATA</span>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; text-align:center;">
+              <div style="background:#1e293b; padding:3px; border-radius:3px;">
+                <div style="color:#94a3b8; font-size:8px;">Empirical In-Vivo Data</div>
+                <strong id="lblEmpiricalCoverage" style="color:#f87171; font-size:10.5px;">0.0% (0 / 362)</strong>
+              </div>
+              <div style="background:#1e293b; padding:3px; border-radius:3px;">
+                <div style="color:#94a3b8; font-size:8px;">Governance State</div>
+                <strong id="lblEngReadiness" style="color:#34d399; font-size:10.5px;">ENGINEERING_READY</strong>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:8.5px; color:#cbd5e1; margin-top:1px;">
+              <span>Independent Review: <strong id="lblReviewStatus" style="color:#f59e0b;">INDEPENDENT_REVIEW_PENDING</strong></span>
+              <span>Quarantined: <strong id="lblQuarantineCount" style="color:#94a3b8;">0 records</strong></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:8.5px; color:#cbd5e1; margin-top:1px;">
+              <span>Tier 4 Clinical Trial: <strong style="color:#f87171;">0.0% (UNVERIFIED)</strong></span>
+              <span>Pilot Cohorts: <strong style="color:#38bdf8;">3 Active</strong></span>
             </div>
           </div>
 
@@ -3044,19 +3070,58 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     async function loadStudioCoverage() {
       try {
         const res = await fetch('/api/atlas/meridians/coverage');
-        if (!res.ok) return;
-        const data = await res.json();
-        const dist = data.class_distribution || {};
         const elA = document.getElementById('lblCovClassA');
         const elB = document.getElementById('lblCovClassB');
         const elD = document.getElementById('lblCovClassD');
         const elPct = document.getElementById('lblCovVerifiedPct');
-        if (elA) elA.textContent = dist.CLASS_A ?? 18;
-        if (elB) elB.textContent = dist.CLASS_B ?? 52;
-        if (elD) elD.textContent = dist.CLASS_D ?? 292;
-        if (elPct) elPct.textContent = `${data.verified_percentage ?? 19.3}%`;
+
+        if (!res.ok) {
+          if (elA) elA.textContent = '--';
+          if (elB) elB.textContent = '--';
+          if (elD) elD.textContent = '--';
+          if (elPct) elPct.textContent = 'UNAVAILABLE';
+          return;
+        }
+        const data = await res.json();
+        const dist = data.class_distribution || {};
+        if (elA) elA.textContent = (dist.CLASS_A !== undefined) ? dist.CLASS_A : '--';
+        if (elB) elB.textContent = (dist.CLASS_B !== undefined) ? dist.CLASS_B : '--';
+        if (elD) elD.textContent = (dist.CLASS_D !== undefined) ? dist.CLASS_D : '--';
+        if (elPct) {
+          if (data.verified_percentage !== undefined) {
+            elPct.textContent = `${data.verified_percentage}% (${data.independently_verified_percentage ?? 0.0}% Audited)`;
+          } else {
+            elPct.textContent = 'UNAVAILABLE';
+          }
+        }
+        try {
+          const resIndep = await fetch('/api/atlas/validation/independent-coverage');
+          if (resIndep.ok) {
+            const dataIndep = await resIndep.json();
+            const elEmpStatus = document.getElementById('lblEmpiricalStatus');
+            const elEmpCov = document.getElementById('lblEmpiricalCoverage');
+            const elEngReady = document.getElementById('lblEngReadiness');
+            if (elEmpStatus) elEmpStatus.textContent = dataIndep.empirical_in_vivo_status;
+            if (elEmpCov) elEmpCov.textContent = `${dataIndep.empirical_in_vivo_ground_truth_percentage}% (${dataIndep.empirical_in_vivo_ground_truth_count} / ${dataIndep.total_points})`;
+            if (elEngReady) elEngReady.textContent = dataIndep.ingestion_governance_state || dataIndep.engineering_readiness;
+            const elQ = document.getElementById('lblQuarantineCount');
+            if (elQ && dataIndep.quarantined_observations_count !== undefined) {
+              elQ.textContent = `${dataIndep.quarantined_observations_count} records`;
+            }
+          }
+        } catch (eIndep) {
+          // Non-blocking in offline mock
+        }
       } catch (err) {
         console.warn('Failed to load meridian studio coverage:', err);
+        const elA = document.getElementById('lblCovClassA');
+        const elB = document.getElementById('lblCovClassB');
+        const elD = document.getElementById('lblCovClassD');
+        const elPct = document.getElementById('lblCovVerifiedPct');
+        if (elA) elA.textContent = '--';
+        if (elB) elB.textContent = '--';
+        if (elD) elD.textContent = '--';
+        if (elPct) elPct.textContent = 'UNAVAILABLE';
       }
     }
 
@@ -3112,6 +3177,12 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     if (btnRefCov) {
       btnRefCov.addEventListener('click', () => loadStudioCoverage());
     }
+    loadStudioCoverage();
+
+    window.__meridianStudio = {
+      loadCoverage: loadStudioCoverage,
+      loadTopology: loadStudioTopology,
+    };
 
     const selStudioCh = document.getElementById('selStudioChannel');
     if (selStudioCh) {

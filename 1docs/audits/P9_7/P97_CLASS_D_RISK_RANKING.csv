@@ -1,0 +1,243 @@
+rank,point_code,channel,name_en,name_zh,risk_tier,primary_anatomical_hazard,remediation_priority,p97_status,remediation_decision_rationale
+1,BL16,BL,Dushu,督俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+2,BL17,BL,Geshu,膈俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+3,BL18,BL,Ganshu,肝俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+4,BL19,BL,Danshu,胆俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+5,BL20,BL,Pishu,脾俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+6,BL21,BL,Weishu,胃俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+7,BL22,BL,Sanjiaoshu,三焦俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+8,BL24,BL,Qihaishu,气海俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+9,BL26,BL,Guanyuanshu,关元俞,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+10,GB22,GB,Yuanye,渊腋,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+11,GB23,GB,Zhejin,辄筋,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+12,GB24,GB,Riyue,日月,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+13,KI25,KI,Shencang,神藏,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,DEFERRED_CLASS_D,Femoral neurovascular proximity or costoclavicular rib angle congestion; deferred until higher mesh resolution.
+14,KI26,KI,Yuzhong,彧中,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,DEFERRED_CLASS_D,Femoral neurovascular proximity or costoclavicular rib angle congestion; deferred until higher mesh resolution.
+15,SP17,SP,Shidou,食窦,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+16,SP18,SP,Tianxi,天溪,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+17,SP19,SP,Xiongxiang,胸乡,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+18,SP20,SP,Zhourong,周荣,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+19,ST11,ST,Qishe,气舍,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+20,ST13,ST,Qihu,气户,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+21,ST14,ST,Kufang,库房,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+22,ST15,ST,Wuyi,屋翳,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+23,ST16,ST,Yingchuang,膺窗,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+24,ST17,ST,Ruzhong,乳中,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+25,ST18,ST,Rugen,乳根,CRITICAL,Pneumothorax / Pleural puncture / CNS trauma,P1,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+26,BL51,BL,Huangmen,肓门,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+27,CV1,CV,Huiyin,会阴,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+28,CV3,CV,Zhongji,中极,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+29,CV5,CV,Shimen,石门,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+30,CV6,CV,Qihai,气海,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+31,CV7,CV,Yinjiao,阴交,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+32,CV9,CV,Shuifen,水分,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+33,CV10,CV,Xiawan,下脘,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+34,CV11,CV,Jianli,建里,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+35,CV13,CV,Shangwan,上脘,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+36,CV14,CV,Juque,巨阙,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+37,CV15,CV,Jiuwei,鸠尾,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+38,GB25,GB,Jingmen,京门,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+39,GB26,GB,Daimai,带脉,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+40,GB27,GB,Wushu,五枢,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+41,GB28,GB,Weidao,维道,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+42,SP12,SP,Chongmen,冲门,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,DEFERRED_CLASS_D,Femoral neurovascular proximity or costoclavicular rib angle congestion; deferred until higher mesh resolution.
+43,SP13,SP,Fushe,府舍,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,DEFERRED_CLASS_D,Femoral neurovascular proximity or costoclavicular rib angle congestion; deferred until higher mesh resolution.
+44,ST19,ST,Burong,不容,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+45,ST20,ST,Chengman,承满,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+46,ST21,ST,Liangmen,梁门,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+47,ST22,ST,Guanmen,关门,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+48,ST23,ST,Taiyi,太乙,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+49,ST24,ST,Huaroumen,滑肉门,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+50,ST26,ST,Wailing,外陵,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+51,ST27,ST,Daju,大巨,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+52,ST28,ST,Shuidao,水道,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+53,ST29,ST,Guilai,归来,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+54,ST30,ST,Qichong,气冲,HIGH,Peritoneal penetration / Abdominal visceral puncture,P2,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+55,BL53,BL,Baohuang,胞肓,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+56,GB3,GB,Shangguan,上关,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+57,GB12,GB,Wangu,完骨,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+58,GB29,GB,Juliao,居髎,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+59,GB31,GB,Fengshi,风市,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+60,HT1,HT,Jiquan,极泉,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+61,LR9,LR,Yinbao,阴包,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+62,LR10,LR,Zuwuli,足五里,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+63,LR11,LR,Yinlian,阴廉,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+64,LR12,LR,Jimai,急脉,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+65,SI16,SI,Tianchuang,天窗,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+66,SI17,SI,Tianrong,天容,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+67,SI18,SI,Quanliao,颧髎,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+68,SP11,SP,Jimen,箕门,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+69,ST10,ST,Shuitu,水突,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+70,ST31,ST,Biguan,髀关,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+71,ST32,ST,Futu,伏兔,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+72,ST33,ST,Yinshi,阴市,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+73,ST34,ST,Liangqiu,梁丘,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+74,ST41,ST,Jiexi,解溪,MODERATE,Neurovascular injury / Joint capsule irritation,P3,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+75,ST42,ST,Chongyang,冲阳,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+76,TE18,TE,Chimai,瘛脉,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+77,TE19,TE,Luxi,颅息,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+78,TE20,TE,Jiaosun,角孙,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+79,TE21,TE,Ermen,耳门,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+80,TE22,TE,Erheliao,耳和髎,MODERATE,Neurovascular injury / Joint capsule irritation,P3,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+81,BL3,BL,Meichong,眉冲,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+82,BL4,BL,Qucha,曲差,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+83,BL5,BL,Wuchu,五处,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+84,BL6,BL,Chengguang,承光,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+85,BL7,BL,Tongtian,通天,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+86,BL8,BL,Luoque,络却,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+87,BL9,BL,Yuzhen,玉枕,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+88,BL27,BL,Xiaochangshu,小肠俞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+89,BL28,BL,Pangguangshu,膀胱俞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+90,BL29,BL,Zhonglvshu,中膂俞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+91,BL30,BL,Baihuanshu,白环俞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+92,BL31,BL,Shangliao,上髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+93,BL32,BL,Ciliao,次髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+94,BL33,BL,Zhongliao,中髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+95,BL34,BL,Xialiao,下髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+96,BL35,BL,Huiyang,会阳,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+97,BL36,BL,Chengfu,承扶,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+98,BL37,BL,Yinmen,殷门,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+99,BL38,BL,Fuxi,浮郄,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+100,BL39,BL,Weiyang,委阳,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+101,BL55,BL,Heyang,合阳,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+102,BL56,BL,Chengjin,承筋,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+103,BL57,BL,Chengshan,承山,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+104,BL58,BL,Feiyang,飞扬,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+105,BL59,BL,Fuyang,跗阳,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+106,BL60,BL,Kunlun,昆仑,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+107,BL61,BL,Pucan,仆参,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+108,BL62,BL,Shenmai,申脉,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+109,BL63,BL,Jinmen,金门,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+110,BL64,BL,Jinggu,京骨,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+111,BL65,BL,Shugu,束骨,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+112,BL66,BL,Zutonggu,足通谷,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+113,BL67,BL,Zhiyin,至阴,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+114,CV16,CV,Zhongting,中庭,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+115,CV18,CV,Yutang,玉堂,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+116,CV19,CV,Zigong,紫宫,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+117,CV20,CV,Huagai,华盖,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+118,CV21,CV,Xuanji,璇玑,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+119,CV23,CV,Lianquan,廉泉,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+120,CV24,CV,Chengjiang,承浆,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+121,GB4,GB,Hanyan,颔厌,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+122,GB5,GB,Xuanlu,悬颅,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+123,GB6,GB,Xuanli,悬厘,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+124,GB7,GB,Qubin,曲鬓,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+125,GB9,GB,Tianchong,天冲,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+126,GB10,GB,Fubai,浮白,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+127,GB11,GB,Touqiaoyin,头窍阴,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+128,GB13,GB,Benshen,本神,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+129,GB15,GB,Toulinqi,头临泣,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+130,GB16,GB,Muchuang,目窗,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+131,GB17,GB,Zhengying,正营,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+132,GB18,GB,Chengling,承灵,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+133,GB19,GB,Naokong,脑空,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+134,GB32,GB,Zhongdu,中渎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+135,GB33,GB,Xiyangguan,膝阳关,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+136,GB35,GB,Yangjiao,阳交,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+137,GB36,GB,Waiqiu,外丘,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+138,GB37,GB,Guangming,光明,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+139,GB38,GB,Yangfu,阳辅,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+140,GB39,GB,Xuanzhong,悬钟,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+141,GB40,GB,Qiuxu,丘墟,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+142,GB41,GB,Zulinqi,足临泣,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+143,GB42,GB,Diwuhui,地五会,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+144,GB43,GB,Xiaxi,侠溪,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+145,GB44,GB,Zuqiaoyin,足窍阴,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+146,GV1,GV,Changqiang,长强,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+147,GV2,GV,Yaoshu,腰俞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+148,GV3,GV,Yaoyangguan,腰阳关,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+149,GV5,GV,Xuanshu,悬枢,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+150,GV6,GV,Jizhong,脊中,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+151,GV7,GV,Zhongshu,中枢,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+152,GV8,GV,Jinsuo,筋缩,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+153,GV9,GV,Zhiyang,至阳,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+154,GV10,GV,Lingtai,灵台,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+155,GV11,GV,Shendao,神道,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+156,GV12,GV,Shenzhu,身柱,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+157,GV13,GV,Taodao,陶道,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+158,GV17,GV,Naohu,脑户,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+159,GV18,GV,Qiangjian,强间,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+160,GV19,GV,Houding,后顶,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+161,GV21,GV,Qianding,前顶,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+162,GV22,GV,Xinhui,囟会,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+163,GV23,GV,Shangxing,上星,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+164,GV24,GV,Shenting,神庭,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+165,GV24+,GV,Yintang,印堂,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+166,GV25,GV,Suliao,素髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+167,GV26,GV,Shuigou,水沟,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+168,GV27,GV,Duiduan,兑端,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+169,GV28,GV,Yinjiao,龈交,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+170,HT2,HT,Qingling,青灵,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+171,HT4,HT,Lingdao,灵道,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+172,HT5,HT,Tongli,通里,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+173,HT6,HT,Yinxi,阴郄,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+174,HT7,HT,Shenmen,神门,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+175,HT8,HT,Shaofu,少府,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+176,HT9,HT,Shaochong,少冲,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+177,KI2,KI,Rangu,然谷,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+178,KI4,KI,Dazhong,大钟,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+179,KI5,KI,Shuiquan,水泉,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+180,KI8,KI,Jiaoxin,交信,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+181,KI9,KI,Zhubin,筑宾,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+182,LI2,LI,Erjian,二间,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+183,LI3,LI,Sanjian,三间,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+184,LI6,LI,Pianli,偏历,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+185,LI7,LI,Wenliu,温溜,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+186,LI8,LI,Xialian,下廉,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+187,LI9,LI,Shanglian,上廉,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+188,LI10,LI,Shousanli,手三里,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+189,LI12,LI,Zhouliao,肘髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+190,LI13,LI,Shouwuli,手五里,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+191,LI14,LI,Binao,臂臑,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+192,LI16,LI,Jugu,巨骨,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+193,LI17,LI,Tianding,天鼎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+194,LI18,LI,Futu,扶突,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+195,LI19,LI,Kouheliao,口禾髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+196,LR2,LR,Xingjian,行间,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+197,LR4,LR,Zhongfeng,中封,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+198,LR5,LR,Ligou,蠡沟,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+199,LR6,LR,Zhongdu,中都,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+200,LR7,LR,Xiguan,膝关,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+201,PC1,PC,Tianchi,天池,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+202,PC2,PC,Tianquan,天泉,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+203,PC4,PC,Ximen,郄门,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+204,PC5,PC,Jianshi,间使,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+205,PC8,PC,Laogong,劳宫,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+206,PC9,PC,Zhongchong,中冲,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+207,SI2,SI,Qiangu,前谷,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+208,SI4,SI,Wangu,腕骨,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+209,SI5,SI,Yanggu,阳谷,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+210,SI6,SI,Yanglao,养老,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+211,SI7,SI,Zhizheng,支正,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+212,SI9,SI,Jianzhen,肩贞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+213,SI10,SI,Naoshu,臑俞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+214,SI12,SI,Bingfeng,秉风,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+215,SI13,SI,Quyuan,曲垣,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+216,SI14,SI,Jianwaishu,肩外俞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+217,SI15,SI,Jianzhongshu,肩中俞,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+218,ST2,ST,Sibai,四白,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+219,ST3,ST,Juliao,巨髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+220,ST5,ST,Daying,大迎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+221,ST6,ST,Jiache,颊车,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+222,ST7,ST,Xiaguan,下关,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+223,ST37,ST,Shangjuxu,上巨虚,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+224,ST38,ST,Tiaokou,条口,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+225,ST39,ST,Xiajuxu,下巨虚,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+226,ST40,ST,Fenglong,丰隆,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,ELEVATED_IN_P9_7,Authoritative bony landmark boundary and WHO proportional scaling successfully validated.
+227,ST43,ST,Xiangu,陷谷,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+228,ST44,ST,Neiting,内庭,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+229,ST45,ST,Lidui,厉兑,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+230,TE2,TE,Yemen,液门,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+231,TE3,TE,Zhongzhu,中渚,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+232,TE4,TE,Yangchi,阳池,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+233,TE6,TE,Zhigou,支沟,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+234,TE7,TE,Huizong,会宗,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+235,TE8,TE,Sanyangluo,三阳络,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+236,TE9,TE,Sidu,四渎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+237,TE10,TE,Tianjing,天井,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+238,TE11,TE,Qinglengyuan,清冷渊,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+239,TE12,TE,Xiaoluo,消泺,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+240,TE13,TE,Naohui,臑会,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+241,TE15,TE,Tianliao,天髎,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.
+242,TE16,TE,Tianyou,天牖,LOW,Distal limb subcutaneous / Minor muscle contusion,P4,RETAINED_CLASS_D,Scheduled for subsequent remediation milestones; non-invasive visualization only.

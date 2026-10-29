@@ -53,6 +53,7 @@ def browser_server(tmp_path_factory):
     server.server_close()
 
 
+@pytest.mark.playwright
 def test_playwright_atlas_dynamic_geometry_suite(browser_server):
     """Complete end-to-end interactive browser test suite."""
     console_errors = []

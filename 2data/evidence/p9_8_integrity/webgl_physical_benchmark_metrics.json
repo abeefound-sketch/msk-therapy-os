@@ -1,0 +1,17 @@
+{
+  "fps": 50.5,
+  "frame_time_p50_ms": 19.7,
+  "frame_time_p95_ms": 25.7,
+  "raycast_latency_avg_ms": 0,
+  "context_loss_restore_ms": 45.6,
+  "context_restore_success": true,
+  "gpu_renderer": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "gpu_vendor": "Google Inc. (Intel)",
+  "webgl_version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+  "max_texture_size": 16384,
+  "cpu_model": "Intel(R) Core(TM) i7-5600U CPU @ 2.60GHz",
+  "os": "Microsoft Windows 10 Pro (x64)",
+  "timestamp_iso": "2026-10-28T09:40:00Z",
+  "target_acceptance_fps": 30.0,
+  "benchmark_passed": true
+}

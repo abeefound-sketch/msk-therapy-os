@@ -45,6 +45,8 @@ class RegistrationTransform:
     status: str = "UNVERIFIED"
     source_name: str = ""
     rejection_reason: Optional[str] = None
+    is_reflection: bool = False
+    condition_number: float = 1.0
 
     def transform_point(self, p: Tuple[float, float, float]) -> Tuple[float, float, float]:
         """Apply transformation to a 3D coordinate vector."""
@@ -68,6 +70,8 @@ class RegistrationTransform:
             "status": self.status,
             "source_name": self.source_name,
             "rejection_reason": self.rejection_reason,
+            "is_reflection": self.is_reflection,
+            "condition_number": round(self.condition_number, 3),
         }
 
 
@@ -276,6 +280,7 @@ class AnatomicalRegistrationEngine:
         source_landmarks: Dict[str, Tuple[float, float, float]],
         target_landmarks: Optional[Dict[str, Tuple[float, float, float]]] = None,
         allow_scaling: bool = False,
+        allow_reflection: bool = False,
         source_name: str = "upstream",
         region: BodyRegion = BodyRegion.HEAD_NECK
     ) -> RegistrationTransform:
@@ -343,15 +348,20 @@ class AnatomicalRegistrationEngine:
         u, s_vals, vt = svd_3x3(h)
         v = mat3_transpose(vt)
 
-        # 6. Reflection test: det(V * U^T)
+        # 6. Reflection test: det(V * U^T) & condition number
         ut = mat3_transpose(u)
         v_ut = mat3_mult(v, ut)
         d = mat3_det(v_ut)
+        cond_num = (s_vals[0] / s_vals[2]) if s_vals[2] > 1e-12 else 1.0
 
-        # Proper rotation constraint
+        # Proper rotation constraint vs intentional reflection
         s_matrix = mat3_identity()
+        is_refl = False
         if d < 0.0:
-            s_matrix[2][2] = -1.0
+            if allow_reflection:
+                is_refl = True
+            else:
+                s_matrix[2][2] = -1.0
 
         r = mat3_mult(mat3_mult(v, s_matrix), ut)
 
@@ -377,6 +387,8 @@ class AnatomicalRegistrationEngine:
             translation_vector=t,
             scale=scale,
             source_name=source_name,
+            is_reflection=is_refl,
+            condition_number=cond_num,
         )
 
         # 9. Compute Residuals & Errors in Millimeters
@@ -449,3 +461,280 @@ class AnatomicalRegistrationEngine:
             "distance_to_landmark_mm": round(lm_dist, 2) if nearest_lm else None,
             "rejection_reason": transform.rejection_reason,
         }
+
+
+def calculate_umeyama_alignment(
+    source_landmarks: Union[Dict[str, Tuple[float, float, float]], List[Tuple[float, float, float]], List[List[float]]],
+    target_landmarks: Optional[Union[Dict[str, Tuple[float, float, float]], List[Tuple[float, float, float]], List[List[float]]]] = None,
+    allow_scaling: bool = False,
+    allow_reflection: bool = False,
+    source_name: str = "upstream",
+    region: BodyRegion = BodyRegion.HEAD_NECK,
+) -> RegistrationTransform:
+    """Convenience top-level function for Umeyama SVD alignment supporting dicts or lists of 3D points."""
+    engine = AnatomicalRegistrationEngine()
+    if isinstance(source_landmarks, list):
+        if not isinstance(target_landmarks, list):
+            raise ValueError("Target landmarks must also be a list when source is a list")
+        if len(source_landmarks) != len(target_landmarks):
+            raise ValueError("Source and target point sets must have identical cardinality")
+        if len(source_landmarks) < 3:
+            raise ValueError("At least 3 point correspondences required")
+        src_dict = {f"P{i}": (float(p[0]), float(p[1]), float(p[2])) for i, p in enumerate(source_landmarks)}
+        dst_dict = {f"P{i}": (float(p[0]), float(p[1]), float(p[2])) for i, p in enumerate(target_landmarks)}
+        return engine.calculate_umeyama_alignment(
+            src_dict, dst_dict, allow_scaling=allow_scaling, allow_reflection=allow_reflection,
+            source_name=source_name, region=region
+        )
+    return engine.calculate_umeyama_alignment(
+        source_landmarks, target_landmarks, allow_scaling=allow_scaling, allow_reflection=allow_reflection,
+        source_name=source_name, region=region
+    )
+
+
+# =============================================================================
+# P9.9 High-Resolution Skeletal Registration Engine
+# =============================================================================
+
+import hashlib
+import json
+import time
+from pathlib import Path
+
+
+@dataclass
+class SkeletalRegistrationReport:
+    """Report detailing skeletal registration metrics, residuals, and holdout validation."""
+    source_asset: str
+    target_frame: str
+    region: str
+    fitting_landmarks: List[str]
+    holdout_landmarks: List[str]
+    rms_fitting_error_mm: float
+    max_fitting_error_mm: float
+    rms_holdout_error_mm: float
+    max_holdout_error_mm: float
+    rotation_matrix: List[List[float]]
+    translation_vector: Tuple[float, float, float]
+    scale_factor: float
+    is_reflection: bool
+    status: str
+    provenance_hash: str
+    fitting_residuals_mm: Dict[str, float] = field(default_factory=dict)
+    holdout_residuals_mm: Dict[str, float] = field(default_factory=dict)
+    holdout_independence_status: str = "HOLDOUT_SAME_FRAME_CONSISTENCY"
+    condition_number: float = 1.0
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "source_asset": self.source_asset,
+            "target_frame": self.target_frame,
+            "region": self.region,
+            "fitting_landmarks": self.fitting_landmarks,
+            "holdout_landmarks": self.holdout_landmarks,
+            "rms_fitting_error_mm": round(self.rms_fitting_error_mm, 3),
+            "max_fitting_error_mm": round(self.max_fitting_error_mm, 3),
+            "rms_holdout_error_mm": round(self.rms_holdout_error_mm, 3),
+            "max_holdout_error_mm": round(self.max_holdout_error_mm, 3),
+            "rotation_matrix": [[round(v, 6) for v in row] for row in self.rotation_matrix],
+            "translation_vector": [round(v, 6) for v in self.translation_vector],
+            "scale_factor": round(self.scale_factor, 6),
+            "is_reflection": self.is_reflection,
+            "status": self.status,
+            "provenance_hash": self.provenance_hash,
+            "fitting_residuals_mm": {k: round(v, 3) for k, v in self.fitting_residuals_mm.items()},
+            "holdout_residuals_mm": {k: round(v, 3) for k, v in self.holdout_residuals_mm.items()},
+            "holdout_independence_status": self.holdout_independence_status,
+            "condition_number": round(self.condition_number, 3),
+        }
+
+
+class HighResolutionSkeletalRegistrar:
+    """High-resolution skeletal registration engine for distal extremities (foot & wrist).
+
+    Implements Procrustes/Umeyama alignment with independent holdout validation,
+    residual quantification, parity-aware sagittal reflection, and auditable manifest generation.
+    """
+
+    def __init__(self, landmark_registry: Optional[LandmarkRegistry] = None):
+        self.registry = landmark_registry or LandmarkRegistry()
+        self.engine = AnatomicalRegistrationEngine(self.registry)
+        self.reports: Dict[str, SkeletalRegistrationReport] = {}
+
+    def evaluate_holdout_error(
+        self,
+        transform: RegistrationTransform,
+        holdout_source: Dict[str, Tuple[float, float, float]],
+        holdout_target: Optional[Dict[str, Tuple[float, float, float]]] = None,
+    ) -> Tuple[float, float, Dict[str, float]]:
+        """Evaluate registration error on unseen holdout landmarks not used in transformation fitting."""
+        residuals: Dict[str, float] = {}
+        for k, src_pos in holdout_source.items():
+            tgt_pos = None
+            if holdout_target and k in holdout_target:
+                tgt_pos = holdout_target[k]
+            else:
+                lm = self.registry.get_landmark(k)
+                if lm:
+                    tgt_pos = lm.canonical_position
+
+            if tgt_pos is not None:
+                p_trans = transform.transform_point(src_pos)
+                dx = (p_trans[0] - tgt_pos[0]) * 1000.0
+                dy = (p_trans[1] - tgt_pos[1]) * 1000.0
+                dz = (p_trans[2] - tgt_pos[2]) * 1000.0
+                err = math.sqrt(dx * dx + dy * dy + dz * dz)
+                residuals[k] = err
+
+        if not residuals:
+            return 0.0, 0.0, {}
+
+        sq_errs = [e ** 2 for e in residuals.values()]
+        rms_err = math.sqrt(sum(sq_errs) / len(sq_errs))
+        max_err = max(residuals.values())
+        return rms_err, max_err, residuals
+
+    def register_foot_skeleton(
+        self,
+        source_landmarks: Dict[str, Tuple[float, float, float]],
+        holdout_landmarks: Optional[Dict[str, Tuple[float, float, float]]] = None,
+        target_landmarks: Optional[Dict[str, Tuple[float, float, float]]] = None,
+        side: str = "right",
+    ) -> Tuple[RegistrationTransform, SkeletalRegistrationReport]:
+        """Register foot skeletal landmarks against canonical frame with holdout verification."""
+        # Calculate Umeyama alignment on fitting landmarks
+        transform = self.engine.calculate_umeyama_alignment(
+            source_landmarks=source_landmarks,
+            target_landmarks=target_landmarks,
+            allow_scaling=False,
+            source_name="BodyParts3D_4.0_Foot_Bones",
+            region=BodyRegion.LOWER_EXTREMITY,
+        )
+
+        # Holdout validation
+        rms_holdout = 0.0
+        max_holdout = 0.0
+        holdout_residuals: Dict[str, float] = {}
+        holdout_keys: List[str] = []
+
+        if holdout_landmarks:
+            holdout_keys = list(holdout_landmarks.keys())
+            rms_holdout, max_holdout, holdout_residuals = self.evaluate_holdout_error(
+                transform, holdout_landmarks, target_landmarks
+            )
+
+        # Provenance hash
+        hash_payload = json.dumps({
+            "source": "BodyParts3D_4.0_Foot",
+            "side": side,
+            "matrix": transform.rotation_matrix,
+            "translation": transform.translation_vector,
+            "rms": transform.rms_error_mm,
+        }, sort_keys=True)
+        prov_hash = hashlib.sha256(hash_payload.encode("utf-8")).hexdigest()
+
+        status = "PASS" if transform.status == "VERIFIED_ANATOMICAL_ANCHOR" and rms_holdout <= 15.0 else "REJECTED"
+
+        report = SkeletalRegistrationReport(
+            source_asset="BodyParts3D_4.0_Foot_Bones (FJ3351, FJ3308, FJ3377, FJ3360, FJ3385, FJ3387, FJ3366)",
+            target_frame="BodyParts3D_FJ2810_Canonical",
+            region="FOOT_ANKLE",
+            fitting_landmarks=list(source_landmarks.keys()),
+            holdout_landmarks=holdout_keys,
+            rms_fitting_error_mm=transform.rms_error_mm,
+            max_fitting_error_mm=transform.max_error_mm,
+            rms_holdout_error_mm=rms_holdout,
+            max_holdout_error_mm=max_holdout,
+            rotation_matrix=transform.rotation_matrix,
+            translation_vector=transform.translation_vector,
+            scale_factor=transform.scale,
+            is_reflection=(mat3_det(transform.rotation_matrix) < 0),
+            status=status,
+            provenance_hash=prov_hash,
+            fitting_residuals_mm=transform.landmark_residuals_mm,
+            holdout_residuals_mm=holdout_residuals,
+        )
+
+        self.reports[f"foot_{side}"] = report
+        return transform, report
+
+    def register_wrist_skeleton(
+        self,
+        source_landmarks: Dict[str, Tuple[float, float, float]],
+        holdout_landmarks: Optional[Dict[str, Tuple[float, float, float]]] = None,
+        target_landmarks: Optional[Dict[str, Tuple[float, float, float]]] = None,
+        side: str = "right",
+    ) -> Tuple[RegistrationTransform, SkeletalRegistrationReport]:
+        """Register wrist skeletal landmarks against canonical frame with holdout verification."""
+        transform = self.engine.calculate_umeyama_alignment(
+            source_landmarks=source_landmarks,
+            target_landmarks=target_landmarks,
+            allow_scaling=False,
+            source_name="BodyParts3D_4.0_Wrist_Bones",
+            region=BodyRegion.UPPER_EXTREMITY,
+        )
+
+        rms_holdout = 0.0
+        max_holdout = 0.0
+        holdout_residuals: Dict[str, float] = {}
+        holdout_keys: List[str] = []
+
+        if holdout_landmarks:
+            holdout_keys = list(holdout_landmarks.keys())
+            rms_holdout, max_holdout, holdout_residuals = self.evaluate_holdout_error(
+                transform, holdout_landmarks, target_landmarks
+            )
+
+        hash_payload = json.dumps({
+            "source": "BodyParts3D_4.0_Wrist",
+            "side": side,
+            "matrix": transform.rotation_matrix,
+            "translation": transform.translation_vector,
+            "rms": transform.rms_error_mm,
+        }, sort_keys=True)
+        prov_hash = hashlib.sha256(hash_payload.encode("utf-8")).hexdigest()
+
+        status = "PASS" if transform.status == "VERIFIED_ANATOMICAL_ANCHOR" and rms_holdout <= 15.0 else "REJECTED"
+
+        report = SkeletalRegistrationReport(
+            source_asset="BodyParts3D_4.0_Wrist_Bones (FJ3349, FJ3391, FJ3383, FJ3382, FJ3390)",
+            target_frame="BodyParts3D_FJ2810_Canonical",
+            region="WRIST_CARPAL",
+            fitting_landmarks=list(source_landmarks.keys()),
+            holdout_landmarks=holdout_keys,
+            rms_fitting_error_mm=transform.rms_error_mm,
+            max_fitting_error_mm=transform.max_error_mm,
+            rms_holdout_error_mm=rms_holdout,
+            max_holdout_error_mm=max_holdout,
+            rotation_matrix=transform.rotation_matrix,
+            translation_vector=transform.translation_vector,
+            scale_factor=transform.scale,
+            is_reflection=(mat3_det(transform.rotation_matrix) < 0),
+            status=status,
+            provenance_hash=prov_hash,
+            fitting_residuals_mm=transform.landmark_residuals_mm,
+            holdout_residuals_mm=holdout_residuals,
+        )
+
+        self.reports[f"wrist_{side}"] = report
+        return transform, report
+
+    def generate_registration_manifest(
+        self,
+        output_path: Optional[Path] = None,
+    ) -> Dict[str, Any]:
+        """Produce auditable JSON manifest of all registered skeletal subsystems."""
+        manifest = {
+            "version": "P9.9",
+            "milestone": "P9.9 High-Resolution Foot & Wrist Skeletal Registration",
+            "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "subsystems": {k: r.to_dict() for k, r in self.reports.items()},
+            "overall_status": "PASS" if all(r.status == "PASS" for r in self.reports.values()) else "INCOMPLETE",
+        }
+
+        if output_path:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(output_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=2, ensure_ascii=False)
+
+        return manifest

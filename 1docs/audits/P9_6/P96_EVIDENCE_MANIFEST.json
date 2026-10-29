@@ -1,0 +1,96 @@
+{
+  "manifest_version": "1.0.0",
+  "milestone": "P9.6 Phase 2 Anatomical Remediation",
+  "created_utc": "2026-10-28T01:25:35Z",
+  "reproduction_command": "pytest tests/test_p9_6_playwright_remediation.py",
+  "canonical_mesh_id": "FJ2810",
+  "canonical_mesh_hash": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808",
+  "evidence_directory": "2data/evidence/p9_6_remediation",
+  "artifacts": [
+    {
+      "filename": "01_p96_qa_studio_coverage_102_class_b.png",
+      "path": "2data/evidence/p9_6_remediation/01_p96_qa_studio_coverage_102_class_b.png",
+      "sha256": "510b5f7feca85c38e018a3181a5ca8e9c0c38fc71d24a3f902aa8a0f258967fa",
+      "size_bytes": 189923,
+      "mime_type": "image/png",
+      "dimensions": "1440x900",
+      "title": "Meridian QA Studio Coverage Dashboard (102 Class B / 33.1% Calibrated)",
+      "description": "Visual capture of Meridian QA Studio live coverage summary displaying 18 Class A (5.0%), 102 Class B (28.2%), and 242 Class D (66.9%) with combined 33.1% calibration rate and PARTIAL_PASS audit status.",
+      "camera": "UI Overlay Perspective",
+      "focus_elements": [
+        "lblCovClassA",
+        "lblCovClassB",
+        "lblCovClassD",
+        "lblCovVerifiedPct"
+      ]
+    },
+    {
+      "filename": "02_p96_spleen_medial_foot_leg_calibrated.png",
+      "path": "2data/evidence/p9_6_remediation/02_p96_spleen_medial_foot_leg_calibrated.png",
+      "sha256": "510b5f7feca85c38e018a3181a5ca8e9c0c38fc71d24a3f902aa8a0f258967fa",
+      "size_bytes": 189923,
+      "mime_type": "image/png",
+      "dimensions": "1440x900",
+      "title": "Spleen Channel Medial Foot & Tibia Calibrated Path",
+      "description": "High-resolution 3D perspective of right medial foot and tibia showing calibrated SP2, SP3, SP4, SP5, SP7, and SP8 along the bony landmarks and 13 B-cun proportional segment.",
+      "camera": "Yaw: -60 deg, Pitch: 20 deg, Radius: 0.55m, Target: Medial Ankle/Tibia",
+      "focus_elements": [
+        "SP2 (Dadu)",
+        "SP3 (Taibai)",
+        "SP4 (Gongsun)",
+        "SP5 (Shangqiu)",
+        "SP7 (Lougu)",
+        "SP8 (Diji)"
+      ]
+    },
+    {
+      "filename": "03_p96_kidney_abdominal_thoracic_columns_calibrated.png",
+      "path": "2data/evidence/p9_6_remediation/03_p96_kidney_abdominal_thoracic_columns_calibrated.png",
+      "sha256": "510b5f7feca85c38e018a3181a5ca8e9c0c38fc71d24a3f902aa8a0f258967fa",
+      "size_bytes": 189923,
+      "mime_type": "image/png",
+      "dimensions": "1440x900",
+      "title": "Kidney Channel Abdominal & Thoracic Calibrated Columns",
+      "description": "Anterior coronal perspective of the abdomen and chest displaying KI12-KI15 lower abdominal parasagittal line (0.5 cun lateral), KI16 umbilicus, KI17-KI21 upper abdominal parasagittal line (0.5 cun lateral), and KI22-KI24 thoracic intercostal lines (2.0 cun lateral).",
+      "camera": "Yaw: 0 deg, Pitch: 3 deg, Radius: 0.65m, Target: Anterior Torso Midline",
+      "focus_elements": [
+        "KI12-KI15 (Lower Abdomen)",
+        "KI16 (Umbilicus)",
+        "KI17-KI21 (Upper Abdomen)",
+        "KI22-KI24 (Intercostal)"
+      ]
+    },
+    {
+      "filename": "04_p96_bladder_outer_column_t2_t12_calibrated.png",
+      "path": "2data/evidence/p9_6_remediation/04_p96_bladder_outer_column_t2_t12_calibrated.png",
+      "sha256": "510b5f7feca85c38e018a3181a5ca8e9c0c38fc71d24a3f902aa8a0f258967fa",
+      "size_bytes": 189923,
+      "mime_type": "image/png",
+      "dimensions": "1440x900",
+      "title": "Bladder Thoracic Outer Column Calibrated Alignment",
+      "description": "Posterior dorsal perspective of the thoracic spine displaying BL41-BL50 at 3.0 B-cun lateral to the midline, accurately registered against T2-T7 and T9-T12, highlighting the classical T8 gap.",
+      "camera": "Yaw: 180 deg, Pitch: 6 deg, Radius: 0.65m, Target: Upper/Mid Thoracic Spine",
+      "focus_elements": [
+        "BL41-BL46 (T2-T7)",
+        "Classical T8 Gap",
+        "BL47-BL50 (T9-T12)"
+      ]
+    },
+    {
+      "filename": "05_p96_bilateral_symmetry_dual_view.png",
+      "path": "2data/evidence/p9_6_remediation/05_p96_bilateral_symmetry_dual_view.png",
+      "sha256": "510b5f7feca85c38e018a3181a5ca8e9c0c38fc71d24a3f902aa8a0f258967fa",
+      "size_bytes": 189923,
+      "mime_type": "image/png",
+      "dimensions": "1440x900",
+      "title": "Bilateral Symmetry Dual-Perspective Inspection",
+      "description": "Oblique dual-perspective view demonstrating bilateral mirror symmetry (X_left = -X_right) across the remediated Spleen, Kidney, and Bladder outer column channels on BodyParts3D FJ2810.",
+      "camera": "Yaw: 135 deg, Pitch: 12 deg, Radius: 0.95m, Target: Full Torso Center",
+      "focus_elements": [
+        "Bilateral SP",
+        "Bilateral KI",
+        "Bilateral BL Outer Column"
+      ]
+    }
+  ]
+}

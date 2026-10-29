@@ -1,0 +1,74 @@
+{
+  "manifest_version": "1.0-P9.14",
+  "milestone": "P9.14",
+  "project": "MSK-Therapy-OS",
+  "created_utc": "2026-10-29T01:58:47Z",
+  "description": "Cryptographic SHA-256 evidence manifest for Milestone P9.14 independent anatomical ground-truth validation artifacts.",
+  "files": {
+    "P914_ADVERSARIAL_FALSIFICATION_REPORT.md": {
+      "sha256": "723014b70de0028277a4329dbc9457fc848881e0acd0812dae816a069ff28ce6",
+      "byte_size": 4751,
+      "relative_path": "1docs/audits/P9_14/P914_ADVERSARIAL_FALSIFICATION_REPORT.md"
+    },
+    "P914_BASELINE_RECONCILIATION.md": {
+      "sha256": "c2fe21089fdbac6cbcc38c8ebcf76892bd1eea01233f3ae34bf4ae0583b2f018",
+      "byte_size": 4277,
+      "relative_path": "1docs/audits/P9_14/P914_BASELINE_RECONCILIATION.md"
+    },
+    "P914_BILATERAL_VALIDATION_REPORT.md": {
+      "sha256": "7bab995782fde830997c793d9260cf0f90a14081cd464a9c4b1e094ba0a01d3e",
+      "byte_size": 4746,
+      "relative_path": "1docs/audits/P9_14/P914_BILATERAL_VALIDATION_REPORT.md"
+    },
+    "P914_CRANIAL_CERVICAL_VALIDATION_REPORT.md": {
+      "sha256": "d9150bec12d519da543e37beb1359861692da7f1e007f11ed49898175a375e02",
+      "byte_size": 4445,
+      "relative_path": "1docs/audits/P9_14/P914_CRANIAL_CERVICAL_VALIDATION_REPORT.md"
+    },
+    "P914_ENGINEERING_HANDOFF.md": {
+      "sha256": "17a80f37db907bb11b432e512d68ce4f0f45aa0f0ce438f2b968c3a3fbcf27c4",
+      "byte_size": 5395,
+      "relative_path": "1docs/audits/P9_14/P914_ENGINEERING_HANDOFF.md"
+    },
+    "P914_EXTERNAL_EVIDENCE_COVERAGE.csv": {
+      "sha256": "329324a7dca810907e7eb517fc3b60797176bbf86e1f80cc03de7e17883ebec5",
+      "byte_size": 46166,
+      "relative_path": "1docs/audits/P9_14/P914_EXTERNAL_EVIDENCE_COVERAGE.csv"
+    },
+    "P914_FINAL_ACCEPTANCE_MATRIX.md": {
+      "sha256": "51e45aef9256046a35576e9b9634a708a106978568ed00ab3ff9796157313fd3",
+      "byte_size": 6372,
+      "relative_path": "1docs/audits/P9_14/P914_FINAL_ACCEPTANCE_MATRIX.md"
+    },
+    "P914_FULL_REGRESSION_REPORT.md": {
+      "sha256": "6781abdda75caba5dca94d615cf5821f78cd8c99067241fe760f7c9939439dd1",
+      "byte_size": 4581,
+      "relative_path": "1docs/audits/P9_14/P914_FULL_REGRESSION_REPORT.md"
+    },
+    "P914_GROUND_TRUTH_DATA_CONTRACT.md": {
+      "sha256": "b9794a7a44e12b981de9aa469d0cdaed1ef35daf5936590b90ccd0dcf2fec123",
+      "byte_size": 7833,
+      "relative_path": "1docs/audits/P9_14/P914_GROUND_TRUTH_DATA_CONTRACT.md"
+    },
+    "P914_INDEPENDENT_VALIDATION_PROTOCOL.md": {
+      "sha256": "aa7d6e96992420f2a3017564fc61df74c0a09e82b964c509f3cd2fcf67afd0ae",
+      "byte_size": 5916,
+      "relative_path": "1docs/audits/P9_14/P914_INDEPENDENT_VALIDATION_PROTOCOL.md"
+    },
+    "P914_PRODUCTION_PERFORMANCE_REPORT.md": {
+      "sha256": "3e2160cd3c0814ea17217e83342a7b6f66ddd8c422cd4c762a53b73a201492ba",
+      "byte_size": 3821,
+      "relative_path": "1docs/audits/P9_14/P914_PRODUCTION_PERFORMANCE_REPORT.md"
+    },
+    "P914_ST19_ST30_ANATOMICAL_PILOT.md": {
+      "sha256": "c67a9875b3968e0e7cdfff713869fe6377601a87993660494382f8eb9ee13a2a",
+      "byte_size": 6257,
+      "relative_path": "1docs/audits/P9_14/P914_ST19_ST30_ANATOMICAL_PILOT.md"
+    },
+    "P914_UNCERTAINTY_ERROR_MATRIX.csv": {
+      "sha256": "fc3823be331a7ba57ea80aa20c6978b0cd4b77eff3593b7be80befe9a975ada8",
+      "byte_size": 58179,
+      "relative_path": "1docs/audits/P9_14/P914_UNCERTAINTY_ERROR_MATRIX.csv"
+    }
+  }
+}

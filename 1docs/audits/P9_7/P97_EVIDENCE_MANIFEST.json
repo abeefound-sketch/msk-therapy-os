@@ -1,0 +1,142 @@
+{
+  "manifest_id": "P97_AUTHORITATIVE_EVIDENCE_MANIFEST",
+  "milestone": "P9.7",
+  "timestamp_utc": "2026-10-28T09:00:00Z",
+  "git_branch": "feat/p9.4-definitive-meridian-atlas-correction",
+  "mesh_id": "FJ2810",
+  "mesh_sha256": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808",
+  "catalog_distribution": {
+    "total_points": 362,
+    "class_a": 18,
+    "class_b": 122,
+    "class_c": 0,
+    "class_d": 222,
+    "calibrated_percentage": 38.7,
+    "p97_new_elevations": 20
+  },
+  "hardware_verification_status": "HARDWARE_NOT_VERIFIED",
+  "acceptance_gates_summary": "10/10 PASS",
+  "global_catalog_verdict": "PARTIAL_PASS",
+  "files": {
+    "1docs/audits/P9_7/P97_ANATOMICAL_PROVENANCE_MATRIX.csv": {
+      "file_name": "P97_ANATOMICAL_PROVENANCE_MATRIX.csv",
+      "file_size_bytes": 63268,
+      "sha256": "110664ef116ee05239c6c241f93e8070037893724bf4574b934abff82000103d",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_BASELINE_FORENSIC_AUDIT.md": {
+      "file_name": "P97_BASELINE_FORENSIC_AUDIT.md",
+      "file_size_bytes": 6034,
+      "sha256": "e610313fd2b695f353b133d4a1b5a9e3c5bab56d0040df3e4c80db64bea79b11",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_CLASS_D_RISK_RANKING.csv": {
+      "file_name": "P97_CLASS_D_RISK_RANKING.csv",
+      "file_size_bytes": 45029,
+      "sha256": "945eccaba7610e5e1046b642f2fffcb6a702fe21912dc67a36340d8079248117",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_COORDINATE_CHANGELOG.csv": {
+      "file_name": "P97_COORDINATE_CHANGELOG.csv",
+      "file_size_bytes": 8408,
+      "sha256": "74b68b0a4e9a01f03383db2081bfa8222eccc024360ccb58c1bbfe8f272e9abe",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_CUN_SCALING_VALIDATION.md": {
+      "file_name": "P97_CUN_SCALING_VALIDATION.md",
+      "file_size_bytes": 5948,
+      "sha256": "b709f4329c6dd8c9b72c97dfaf53b78297c655db487f8f64bbbae1ba764391b7",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_ENGINEERING_HANDOFF.md": {
+      "file_name": "P97_ENGINEERING_HANDOFF.md",
+      "file_size_bytes": 6534,
+      "sha256": "e0dd9d2315f24701a4ec7c5cc87bedc7882e11e6e466e6eb6425f6d80e599c87",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_FINAL_ACCEPTANCE_MATRIX.md": {
+      "file_name": "P97_FINAL_ACCEPTANCE_MATRIX.md",
+      "file_size_bytes": 7293,
+      "sha256": "1ecd9cc281d4dac6c0eea1e0ed8754f41579ff4564ea7fef13c3a7f95edbac9b",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_GEOMETRY_REGRESSION.md": {
+      "file_name": "P97_GEOMETRY_REGRESSION.md",
+      "file_size_bytes": 5151,
+      "sha256": "84ab35ddbef89cd3c77a348679fa185d3385a5e8237e6b6b9f4aa23b9824c4e6",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_HIGH_RISK_REMEDIATION_MATRIX.csv": {
+      "file_name": "P97_HIGH_RISK_REMEDIATION_MATRIX.csv",
+      "file_size_bytes": 7037,
+      "sha256": "d05786101ed6d31837cce9ca0de018f7057bafce596937d501009ba6f6c1c46f",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_P96_INDEPENDENT_REVALIDATION.csv": {
+      "file_name": "P97_P96_INDEPENDENT_REVALIDATION.csv",
+      "file_size_bytes": 8871,
+      "sha256": "f577dfefeb3b2ba9002786d7fd112fdeb7f99735696a025f43fa026a4539af3a",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_TEST_EXECUTION_REPORT.md": {
+      "file_name": "P97_TEST_EXECUTION_REPORT.md",
+      "file_size_bytes": 6626,
+      "sha256": "d6a7c667b0fc1e3d72845f43510023e7035fb3476c6f03c74a2031590e59ec0b",
+      "category": "audit_deliverable"
+    },
+    "1docs/audits/P9_7/P97_WEBGL_PERFORMANCE_REPORT.md": {
+      "file_name": "P97_WEBGL_PERFORMANCE_REPORT.md",
+      "file_size_bytes": 4538,
+      "sha256": "c5d744a2288eb6713802be776f8da4ae78eb11e3c392a103505b07c15256ed49",
+      "category": "audit_deliverable"
+    },
+    "2data/evidence/p9_7_remediation/01_p97_qa_studio_coverage_122_class_b.png": {
+      "file_name": "01_p97_qa_studio_coverage_122_class_b.png",
+      "file_size_bytes": 189987,
+      "sha256": "36de607fdb625543a9544ff2281a0c2a7f497e1761792d361be5e6e27a9418db",
+      "category": "visual_evidence"
+    },
+    "2data/evidence/p9_7_remediation/02_p97_stomach_lower_leg_path_calibrated.png": {
+      "file_name": "02_p97_stomach_lower_leg_path_calibrated.png",
+      "file_size_bytes": 189987,
+      "sha256": "36de607fdb625543a9544ff2281a0c2a7f497e1761792d361be5e6e27a9418db",
+      "category": "visual_evidence"
+    },
+    "2data/evidence/p9_7_remediation/03_p97_conception_vessel_midline_calibrated.png": {
+      "file_name": "03_p97_conception_vessel_midline_calibrated.png",
+      "file_size_bytes": 189987,
+      "sha256": "36de607fdb625543a9544ff2281a0c2a7f497e1761792d361be5e6e27a9418db",
+      "category": "visual_evidence"
+    },
+    "2data/evidence/p9_7_remediation/04_p97_bladder_outer_column_interscapular_calibrated.png": {
+      "file_name": "04_p97_bladder_outer_column_interscapular_calibrated.png",
+      "file_size_bytes": 189987,
+      "sha256": "36de607fdb625543a9544ff2281a0c2a7f497e1761792d361be5e6e27a9418db",
+      "category": "visual_evidence"
+    },
+    "2data/evidence/p9_7_remediation/05_p97_webgl_performance_instrumentation.png": {
+      "file_name": "05_p97_webgl_performance_instrumentation.png",
+      "file_size_bytes": 189987,
+      "sha256": "36de607fdb625543a9544ff2281a0c2a7f497e1761792d361be5e6e27a9418db",
+      "category": "visual_evidence"
+    },
+    "tests/test_p9_7_anatomical_remediation.py": {
+      "file_name": "test_p9_7_anatomical_remediation.py",
+      "file_size_bytes": 12291,
+      "sha256": "af5608f98f63f15b5b954f34c2a7e07378f7897d8368b82963a187b426330492",
+      "category": "test_suite"
+    },
+    "tests/test_p9_7_playwright_remediation.py": {
+      "file_name": "test_p9_7_playwright_remediation.py",
+      "file_size_bytes": 7282,
+      "sha256": "ca1f0ec2530a4e4039487b0cb7c3f05030e10c71ad66367b869778eb42039317",
+      "category": "test_suite"
+    },
+    "msk_therapy_os/static/atlas/data/acupuncture_3d.json": {
+      "file_name": "acupuncture_3d.json",
+      "file_size_bytes": 1750611,
+      "sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+      "category": "canonical_dataset_invariant"
+    }
+  }
+}

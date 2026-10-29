@@ -123,6 +123,22 @@ WHO_BONE_SEGMENTS: Dict[str, BoneProportionalSegment] = {
     ),
 
     # -------------------------------------------------------------------------
+    # BACK & POSTERIOR TORSO
+    # -------------------------------------------------------------------------
+    "SEG_BACK_INTERSCAPULAR": BoneProportionalSegment(
+        segment_id="SEG_BACK_INTERSCAPULAR",
+        name_en="Interscapular Transverse Width (Medial Scapular Borders)",
+        name_zh="两肩胛骨内侧缘之间",
+        region=BodyRegion.TORSO,
+        axis=SegmentAxis.TRANSVERSE,
+        standard_bcun_units=6.0,
+        start_landmark_id="LM_SCAPULA_MEDIAL_BORDER_L",
+        end_landmark_id="LM_SCAPULA_MEDIAL_BORDER_R",
+        who_reference="WHO 2008 Standard, p. 13: Section 2.1.3 Back",
+        notes="Distance between the medial borders of the two scapulae is 6 B-cun (22.5 mm/cun on FJ2810).",
+    ),
+
+    # -------------------------------------------------------------------------
     # UPPER EXTREMITY
     # -------------------------------------------------------------------------
     "SEG_ARM_AXILLA_TO_ELBOW_R": BoneProportionalSegment(

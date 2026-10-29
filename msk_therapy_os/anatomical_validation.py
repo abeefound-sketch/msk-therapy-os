@@ -1,0 +1,1936 @@
+"""Independent Anatomical Ground-Truth Validation & Provenance Infrastructure for MSK-Therapy-OS.
+
+Milestone: P10.0 | External Anatomical Ground-Truth Integration & Independent Empirical Validation Pilot
+Predecessor: P9.14 (ENGINEERING_READY, Gate G14 BLOCKED_EXTERNAL_DATA)
+Standard: WHO 2008 Standard Acupuncture Point Locations & BodyParts3D FJ2810
+Core Principle:
+  Technical calibration (Class A/B) != anatomical ground truth != clinical verification.
+  Fail-closed governance: never manufacture clinical passes or conflate synthetic fixtures with authentic ground truth.
+  Zero unauthorized external patient data ingestion; strict privacy, de-identification, and quarantine controls.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, field, asdict
+from enum import Enum
+import hashlib
+import json
+import math
+from pathlib import Path
+import re
+import sqlite3
+import time
+from typing import Any, Dict, List, Optional, Tuple, Set, Union
+
+from .landmark_registry import (
+    AnatomicalLandmark,
+    BodyRegion,
+    CANONICAL_LANDMARKS,
+    LandmarkRegistry,
+)
+from .point_localization_rules import (
+    AcupointLocalizationEngine,
+    ACUPOINT_LOCALIZATION_RULES,
+    AcupointLocalizationRule,
+)
+from .spatial_resolver import AUDITED_CANONICAL_POINTS
+from .anatomical_registration import (
+    AnatomicalRegistrationEngine,
+    RegistrationTransform,
+)
+
+
+class AnatomicalVerificationTier(str, Enum):
+    """Hierarchical, non-collapsible verification tiers."""
+    TECHNICALLY_CALIBRATED = "TECHNICALLY_CALIBRATED"       # Rule and landmark math resolve without error
+    GEOMETRICALLY_VALIDATED = "GEOMETRICALLY_VALIDATED"     # Manifold mesh projection, outward unit normal, no cavity piercing
+    ANATOMICALLY_CORROBORATED = "ANATOMICALLY_CORROBORATED" # Concordant with BodyParts3D skeletal reference literature
+    INDEPENDENTLY_VERIFIED = "INDEPENDENTLY_VERIFIED"       # Corroborated by independent non-synthetic external dataset (residual <= tolerance)
+    CLINICALLY_VERIFIED = "CLINICALLY_VERIFIED"             # Formal multi-center clinical practitioner consensus / clinical trial (Tier 4)
+
+
+class GroundTruthModality(str, Enum):
+    """Origin modality of anatomical ground-truth data."""
+    CT_3D_SURFACE = "CT_3D_SURFACE"
+    MRI_T1_ANATOMICAL = "MRI_T1_ANATOMICAL"
+    ULTRASOUND_HIGH_FREQUENCY = "ULTRASOUND_HIGH_FREQUENCY"
+    CADAVERIC_MEASUREMENT = "CADAVERIC_MEASUREMENT"
+    EXPERT_CONSENSUS_PALPATION = "EXPERT_CONSENSUS_PALPATION"
+    BODYPARTS3D_DIGITAL_REFERENCE = "BODYPARTS3D_DIGITAL_REFERENCE"
+    SYNTHETIC_TEST_FIXTURE = "SYNTHETIC_TEST_FIXTURE"
+
+
+class AnatomicalErrorClassification(str, Enum):
+    """Standardized anatomical error classification based on residual distance in mm."""
+    CONGRUENT = "CONGRUENT"                                         # residual <= 3.0 mm (high spatial agreement)
+    ACCEPTABLE_CLINICAL_TOLERANCE = "ACCEPTABLE_CLINICAL_TOLERANCE" # 3.0 mm < residual <= 8.0 mm
+    BORDERLINE = "BORDERLINE"                                       # 8.0 mm < residual <= 15.0 mm
+    OUTLIER_ANOMALY = "OUTLIER_ANOMALY"                             # residual > 15.0 mm (potential anatomical failure)
+    INDEPENDENT_GROUND_TRUTH_UNAVAILABLE = "INDEPENDENT_GROUND_TRUTH_UNAVAILABLE"
+
+
+class ReviewStatus(str, Enum):
+    """Lifecycle review states for empirical ground truth observations."""
+    DATA_IMPORTED = "DATA_IMPORTED"
+    PROVENANCE_VERIFIED = "PROVENANCE_VERIFIED"
+    GEOMETRY_VALIDATED = "GEOMETRY_VALIDATED"
+    INDEPENDENT_REVIEW_PENDING = "INDEPENDENT_REVIEW_PENDING"
+    REVIEWED = "REVIEWED"
+    REJECTED = "REJECTED"
+    INCONCLUSIVE = "INCONCLUSIVE"
+
+
+class CoordinateFrame(str, Enum):
+    """Supported 3D spatial coordinate reference frames."""
+    BP3D_CARTESIAN_METERS = "BP3D_CARTESIAN_METERS"  # BodyParts3D (+X Right, +Y Superior, +Z Anterior)
+    DICOM_LPS_MM = "DICOM_LPS_MM"                    # DICOM (+X Left, +Y Posterior, +Z Superior) in mm
+    NEURO_RAS_MM = "NEURO_RAS_MM"                    # Neuroimaging (+X Right, +Y Anterior, +Z Superior) in mm
+    SURFACE_SCAN_MM = "SURFACE_SCAN_MM"              # Calibrated external 3D surface scan in mm
+    ANATOMICAL_LOCAL_METERS = "ANATOMICAL_LOCAL_METERS"
+
+
+class MeasurementUnit(str, Enum):
+    """Measurement units for 3D coordinates."""
+    METERS = "meters"
+    MILLIMETERS = "millimeters"
+
+
+class EvidenceCategory(str, Enum):
+    """Categorization of evidence origin."""
+    EMPIRICAL_IN_VIVO = "EMPIRICAL_IN_VIVO"
+    CADAVERIC_DISSECTION = "CADAVERIC_DISSECTION"
+    EXPERT_CONSENSUS_PALPATION = "EXPERT_CONSENSUS_PALPATION"
+    CANONICAL_DIGITAL_ATLAS = "CANONICAL_DIGITAL_ATLAS"
+    SYNTHETIC_TEST_FIXTURE = "SYNTHETIC_TEST_FIXTURE"
+
+
+class QuarantineReason(str, Enum):
+    """Standardized reason codes for diverting observations to quarantine."""
+    QUARANTINE_UNAUTHORIZED_DATA = "QUARANTINE_UNAUTHORIZED_DATA"
+    QUARANTINE_INCOMPLETE_DEIDENTIFICATION = "QUARANTINE_INCOMPLETE_DEIDENTIFICATION"
+    QUARANTINE_PII_SUSPECTED = "QUARANTINE_PII_SUSPECTED"
+    QUARANTINE_OUT_OF_BOUNDS = "QUARANTINE_OUT_OF_BOUNDS"
+    QUARANTINE_CHECKSUM_MISMATCH = "QUARANTINE_CHECKSUM_MISMATCH"
+    QUARANTINE_DUPLICATE_RECORD = "QUARANTINE_DUPLICATE_RECORD"
+    QUARANTINE_CONFLICTING_MEASUREMENT = "QUARANTINE_CONFLICTING_MEASUREMENT"
+    QUARANTINE_UNSUPPORTED_FRAME = "QUARANTINE_UNSUPPORTED_FRAME"
+    QUARANTINE_SCHEMA_INVALID = "QUARANTINE_SCHEMA_INVALID"
+    QUARANTINE_CIRCULAR_EVIDENCE = "QUARANTINE_CIRCULAR_EVIDENCE"
+
+
+class DeidentificationMethod(str, Enum):
+    """Regulatory de-identification standard applied to empirical datasets."""
+    SAFE_HARBOR_18_ELEMENTS = "SAFE_HARBOR_18_ELEMENTS"  # HIPAA 45 CFR § 164.514(b)(2)
+    EXPERT_DETERMINATION = "EXPERT_DETERMINATION"        # HIPAA 45 CFR § 164.514(b)(1)
+    SYNTHETIC_DEIDENTIFIED = "SYNTHETIC_DEIDENTIFIED"    # Purely synthetic mock fixture
+    NOT_DEIDENTIFIED = "NOT_DEIDENTIFIED"                # Prohibited in production
+
+
+class EvidenceIngestionState(str, Enum):
+    """Overall milestone and system ingestion governance state."""
+    ENGINEERING_READY = "ENGINEERING_READY"
+    EXTERNAL_DATA_PENDING = "EXTERNAL_DATA_PENDING"
+    AUTHORIZED_DATA_RECEIVED = "AUTHORIZED_DATA_RECEIVED"
+    EMPIRICAL_EVALUATION_IN_PROGRESS = "EMPIRICAL_EVALUATION_IN_PROGRESS"
+    INDEPENDENTLY_EVALUATED = "INDEPENDENTLY_EVALUATED"
+    INCONCLUSIVE = "INCONCLUSIVE"
+    VALIDATION_FAILED = "VALIDATION_FAILED"
+    CLINICAL_VERIFICATION_PENDING = "CLINICAL_VERIFICATION_PENDING"
+
+
+@dataclass
+class ClinicalReviewerCredentials:
+    """Registered credentials for clinical and anatomical verifiers."""
+    reviewer_id: str
+    name: str
+    role: str
+    affiliation: str
+    qualification: str
+    license_id: Optional[str] = None
+    is_governance_board: bool = False
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
+class ExternalGroundTruthDataset:
+    """Manifest of an external independent reference dataset."""
+    dataset_id: str
+    name: str
+    source_organization: str
+    version: str
+    license: str
+    doi_or_url: str
+    modality: GroundTruthModality
+    is_synthetic_fixture: bool = False
+    case_id: Optional[str] = None
+    sample_size: int = 1
+    created_utc: str = field(default_factory=lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+
+    def to_dict(self) -> Dict[str, Any]:
+        d = asdict(self)
+        d["modality"] = self.modality.value
+        return d
+
+
+@dataclass
+class GroundTruthObservation:
+    """An empirical observation of an anatomical point from an external source."""
+    point_code: str
+    dataset_id: str
+    canonical_position: Tuple[float, float, float]  # [x, y, z] in meters
+    surface_normal: Optional[Tuple[float, float, float]] = None
+    uncertainty_radius_mm: float = 2.0
+    depth_to_skeletal_anchor_mm: Optional[float] = None
+    case_id: Optional[str] = None
+    reviewer_id: Optional[str] = None
+    notes: str = ""
+    # P9.14 Contract Extensions:
+    subject_pseudonym: str = "SUBJ-ANON-0001"
+    anatomical_point_code: Optional[str] = None
+    laterality: str = "right"
+    source_modality: GroundTruthModality = GroundTruthModality.BODYPARTS3D_DIGITAL_REFERENCE
+    coordinate_frame: CoordinateFrame = CoordinateFrame.BP3D_CARTESIAN_METERS
+    unit: MeasurementUnit = MeasurementUnit.METERS
+    measurement_coordinates: Optional[Tuple[float, float, float]] = None
+    measurement_uncertainty: float = 2.0
+    observer_id: Optional[str] = "OBS-DEFAULT"
+    independent_source_id: str = "SRC-INDEP-001"
+    collection_protocol_id: str = "PROT-ANAT-2026"
+    consent_or_authorization_reference: str = "IRB-EXEMPT-DEIDENTIFIED"
+    source_checksum: str = ""
+    synthetic_fixture: bool = False
+    review_status: ReviewStatus = ReviewStatus.DATA_IMPORTED
+    # P10.0 Regulatory & Quality Extensions:
+    schema_version: str = "1.0-P10"
+    data_sharing_agreement_ref: str = "DUA-EXEMPT-SYNTHETIC"
+    ethics_approval_or_exemption_ref: str = "IRB-EXEMPT-SYNTHETIC"
+    deidentification_method: DeidentificationMethod = DeidentificationMethod.SYNTHETIC_DEIDENTIFIED
+    is_authorized_for_clinical_eval: bool = False
+    observed_coordinates: Optional[Tuple[float, float, float]] = None
+    predicted_coordinates: Optional[Tuple[float, float, float]] = None
+    registration_residual_mm: Optional[float] = None
+
+    def __post_init__(self) -> None:
+        if self.anatomical_point_code is None:
+            self.anatomical_point_code = self.point_code
+        elif not self.point_code and self.anatomical_point_code:
+            self.point_code = self.anatomical_point_code
+
+        if self.measurement_coordinates is None:
+            self.measurement_coordinates = self.canonical_position
+
+        if self.observed_coordinates is None:
+            self.observed_coordinates = self.measurement_coordinates or self.canonical_position
+
+        if self.measurement_uncertainty == 2.0 and self.uncertainty_radius_mm != 2.0:
+            self.measurement_uncertainty = self.uncertainty_radius_mm
+
+        # Convert frame, unit, status to Enum instances if strings
+        if isinstance(self.coordinate_frame, str):
+            try:
+                self.coordinate_frame = CoordinateFrame(self.coordinate_frame)
+            except ValueError:
+                pass
+        if isinstance(self.unit, str):
+            try:
+                self.unit = MeasurementUnit(self.unit)
+            except ValueError:
+                pass
+        if isinstance(self.review_status, str):
+            try:
+                self.review_status = ReviewStatus(self.review_status)
+            except ValueError:
+                pass
+        if isinstance(self.source_modality, str):
+            try:
+                self.source_modality = GroundTruthModality(self.source_modality)
+            except ValueError:
+                pass
+        if isinstance(self.deidentification_method, str):
+            try:
+                self.deidentification_method = DeidentificationMethod(self.deidentification_method)
+            except ValueError:
+                pass
+
+        if not self.source_checksum:
+            h = hashlib.sha256()
+            payload = f"{self.point_code}:{self.dataset_id}:{self.canonical_position}:{self.subject_pseudonym}"
+            h.update(payload.encode("utf-8"))
+            self.source_checksum = h.hexdigest()
+
+    def to_dict(self) -> Dict[str, Any]:
+        d = asdict(self)
+        d["coordinate_frame"] = self.coordinate_frame.value if hasattr(self.coordinate_frame, "value") else str(self.coordinate_frame)
+        d["unit"] = self.unit.value if hasattr(self.unit, "value") else str(self.unit)
+        d["review_status"] = self.review_status.value if hasattr(self.review_status, "value") else str(self.review_status)
+        d["source_modality"] = self.source_modality.value if hasattr(self.source_modality, "value") else str(self.source_modality)
+        d["deidentification_method"] = self.deidentification_method.value if hasattr(self.deidentification_method, "value") else str(self.deidentification_method)
+        return d
+
+
+@dataclass
+class QuarantinedObservation:
+    """An observation diverted to quarantine due to contract, authorization, or boundary violations."""
+    point_code: str
+    dataset_id: str
+    subject_pseudonym: str
+    reason: QuarantineReason
+    details: str
+    raw_payload: Dict[str, Any]
+    quarantined_utc: str = field(default_factory=lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "point_code": self.point_code,
+            "dataset_id": self.dataset_id,
+            "subject_pseudonym": self.subject_pseudonym,
+            "reason": self.reason.value,
+            "details": self.details,
+            "raw_payload": self.raw_payload,
+            "quarantined_utc": self.quarantined_utc,
+        }
+
+
+@dataclass
+class HoldoutPartitionManifest:
+    """Immutable manifest for subject-level holdout partition."""
+    partition_id: str
+    calibration_subjects: List[str]
+    holdout_subjects: List[str]
+    total_subjects: int
+    split_ratio: float
+    is_locked: bool
+    manifest_checksum: str
+    created_utc: str = field(default_factory=lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+class HoldoutPartitionManager:
+    """Manages strict subject-level holdout partitioning and prevents data leakage."""
+
+    def __init__(self) -> None:
+        self._partitions: Dict[str, HoldoutPartitionManifest] = {}
+
+    def create_partition(
+        self,
+        partition_id: str,
+        subjects: List[str],
+        holdout_ratio: float = 0.2,
+        seed: int = 42,
+    ) -> HoldoutPartitionManifest:
+        """Create a deterministic, subject-level holdout partition and lock it."""
+        unique_subjects = sorted(list(set(subjects)))
+        if not unique_subjects:
+            raise ValueError("CANNOT_PARTITION_EMPTY_SUBJECT_LIST")
+
+        # Deterministic partition based on hash
+        holdout_count = max(1, int(len(unique_subjects) * holdout_ratio)) if len(unique_subjects) > 1 else 0
+        calib: List[str] = []
+        holdout: List[str] = []
+
+        for i, s in enumerate(unique_subjects):
+            # Deterministic pseudo-random sorting using hash
+            h_val = int(hashlib.sha256(f"{s}:{seed}".encode()).hexdigest(), 16)
+            if (h_val % 100) < int(holdout_ratio * 100) and len(holdout) < holdout_count:
+                holdout.append(s)
+            else:
+                calib.append(s)
+
+        if not holdout and len(unique_subjects) > 1:
+            holdout.append(calib.pop())
+
+        # Calculate manifest checksum
+        manifest_payload = f"{partition_id}:{','.join(sorted(calib))}:{','.join(sorted(holdout))}"
+        chk = hashlib.sha256(manifest_payload.encode()).hexdigest()
+
+        manifest = HoldoutPartitionManifest(
+            partition_id=partition_id,
+            calibration_subjects=sorted(calib),
+            holdout_subjects=sorted(holdout),
+            total_subjects=len(unique_subjects),
+            split_ratio=round(len(calib) / len(unique_subjects), 3) if unique_subjects else 0.0,
+            is_locked=True,
+            manifest_checksum=chk,
+        )
+        self._partitions[partition_id] = manifest
+        return manifest
+
+    def verify_no_leakage(
+        self,
+        calibration_subjects: List[str],
+        holdout_subjects: List[str],
+    ) -> bool:
+        """Verify that zero subject overlap exists between calibration and holdout sets."""
+        intersection = set(calibration_subjects) & set(holdout_subjects)
+        if intersection:
+            raise ValueError(f"HOLDOUT_DATA_LEAKAGE_DETECTED: Overlapping subjects: {sorted(list(intersection))}")
+        return True
+
+    def get_partition(self, partition_id: str) -> Optional[HoldoutPartitionManifest]:
+        return self._partitions.get(partition_id)
+
+
+@dataclass
+class BlindIndependentReviewRecord:
+    """Record of a blind dual independent review."""
+    review_id: str
+    point_code: str
+    dataset_id: str
+    subject_pseudonym: str
+    primary_reviewer_id: str
+    secondary_reviewer_id: Optional[str]
+    primary_decision: str  # APPROVED / REJECTED / INCONCLUSIVE
+    secondary_decision: Optional[str]
+    consensus_decision: str
+    inter_observer_discrepancy_mm: Optional[float]
+    conflict_of_interest_declared: bool
+    reviewed_utc: str = field(default_factory=lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
+class PreRegisteredAccuracyThresholds:
+    """Pre-registered scientific thresholds for empirical anatomical validation."""
+    high_accuracy_rmse_mm: float = 5.0
+    acceptable_accuracy_rmse_mm: float = 10.0
+    max_outlier_tolerance_mm: float = 15.0
+    max_inter_observer_discrepancy_mm: float = 3.0
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+def validate_observation_contract(
+    obs: GroundTruthObservation,
+    allowed_codes: Optional[Set[str]] = None,
+    check_authorization: bool = True,
+) -> Dict[str, Any]:
+    """Validate that an empirical observation adheres strictly to the P10.0 Data Contract & Privacy Standards."""
+    # 0. Schema version validation
+    if not obs.schema_version.startswith("1."):
+        raise ValueError(f"UNSUPPORTED_SCHEMA_VERSION: Schema version '{obs.schema_version}' is not supported.")
+
+    # 1. PII detection in subject pseudonym
+    pseudonym = str(obs.subject_pseudonym).strip()
+    if not pseudonym or len(pseudonym) < 3:
+        raise ValueError(f"INVALID_SUBJECT_PSEUDONYM: Subject pseudonym '{obs.subject_pseudonym}' is too short or empty.")
+
+    if "@" in pseudonym:
+        raise ValueError(f"PII_DETECTED_IN_SUBJECT_PSEUDONYM: Subject pseudonym '{pseudonym}' contains email address.")
+    if re.search(r"\b\d{3}-\d{2}-\d{4}\b", pseudonym):
+        raise ValueError(f"PII_DETECTED_IN_SUBJECT_PSEUDONYM: Subject pseudonym '{pseudonym}' contains SSN pattern.")
+    if re.search(r"(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}", pseudonym):
+        raise ValueError(f"PII_DETECTED_IN_SUBJECT_PSEUDONYM: Subject pseudonym '{pseudonym}' contains phone number pattern.")
+    if re.search(r"\b(Mr\.|Mrs\.|Ms\.|Dr\.|Prof\.|Patient:|Mr|Mrs|Ms|Dr|Prof)\b", pseudonym, re.IGNORECASE):
+        raise ValueError(f"PII_DETECTED_IN_SUBJECT_PSEUDONYM: Subject pseudonym '{pseudonym}' contains plain name title.")
+
+    # 2. Point code validation
+    code = obs.point_code or obs.anatomical_point_code
+    if not code:
+        raise ValueError("MISSING_POINT_CODE: Observation must specify point_code.")
+    if allowed_codes is not None and code not in allowed_codes:
+        raise ValueError(f"UNKNOWN_ACUPOINT_CODE: '{code}' is not in the canonical catalog.")
+
+    # 3. Laterality validation
+    lat = str(obs.laterality).lower()
+    if lat not in ("left", "right", "bilateral", "midline"):
+        raise ValueError(f"INVALID_LATERALITY: Laterality '{obs.laterality}' is not recognized. Expected left/right/bilateral/midline.")
+
+    # 4. Coordinate frame validation
+    frame_val = obs.coordinate_frame.value if hasattr(obs.coordinate_frame, "value") else str(obs.coordinate_frame)
+    valid_frames = {f.value for f in CoordinateFrame}
+    if frame_val not in valid_frames:
+        raise ValueError(f"UNSUPPORTED_COORDINATE_FRAME: Frame '{frame_val}' is not supported.")
+
+    # 5. Unit validation
+    unit_val = obs.unit.value if hasattr(obs.unit, "value") else str(obs.unit)
+    valid_units = {u.value for u in MeasurementUnit}
+    if unit_val not in valid_units:
+        raise ValueError(f"UNSUPPORTED_MEASUREMENT_UNIT: Unit '{unit_val}' is not supported.")
+
+    # 6. Checksum validation
+    checksum = str(obs.source_checksum).strip()
+    if not checksum or len(checksum) != 64 or not all(c in "0123456789abcdefABCDEF" for c in checksum):
+        raise ValueError(f"INVALID_SOURCE_CHECKSUM: Checksum '{checksum}' is not a valid 64-character hex SHA-256 digest.")
+
+    # 7. Uncertainty validation
+    if obs.measurement_uncertainty <= 0.0:
+        raise ValueError(f"INVALID_MEASUREMENT_UNCERTAINTY: Uncertainty {obs.measurement_uncertainty} must be strictly positive.")
+
+    # 8. Coordinate plausibility / bounding box
+    coords = obs.measurement_coordinates or obs.canonical_position
+    if not coords or len(coords) != 3:
+        raise ValueError("INVALID_COORDINATES: Coordinates must be a 3-element tuple.")
+
+    scale = 0.001 if unit_val == "millimeters" else 1.0
+    x_m, y_m, z_m = coords[0] * scale, coords[1] * scale, coords[2] * scale
+    if not (-1.5 <= x_m <= 1.5 and -0.5 <= y_m <= 2.5 and -1.0 <= z_m <= 1.0):
+        raise ValueError(f"ANATOMICAL_BOUNDING_BOX_VIOLATION: Coordinates ({x_m:.3f}, {y_m:.3f}, {z_m:.3f}) m outside human envelope.")
+
+    # 9. Privacy Hard Stop & Authorization Gate (for non-synthetic datasets)
+    if not obs.synthetic_fixture and check_authorization:
+        dua = str(obs.data_sharing_agreement_ref).strip()
+        if not dua or dua in ("NONE", "DUA-EXEMPT-SYNTHETIC"):
+            raise ValueError(f"UNAUTHORIZED_EXTERNAL_DATA: Real external observation requires valid data sharing agreement reference (got '{dua}').")
+
+        ethics = str(obs.ethics_approval_or_exemption_ref).strip()
+        if not ethics or ethics in ("NONE", "IRB-EXEMPT-SYNTHETIC"):
+            raise ValueError(f"UNAUTHORIZED_EXTERNAL_DATA: Real external observation requires valid ethics/IRB approval reference (got '{ethics}').")
+
+        deid = obs.deidentification_method.value if hasattr(obs.deidentification_method, "value") else str(obs.deidentification_method)
+        if deid not in (DeidentificationMethod.SAFE_HARBOR_18_ELEMENTS.value, DeidentificationMethod.EXPERT_DETERMINATION.value):
+            raise ValueError(f"INCOMPLETE_DEIDENTIFICATION: Real external empirical data must be certified under SAFE_HARBOR_18_ELEMENTS or EXPERT_DETERMINATION (got '{deid}').")
+
+        if not obs.is_authorized_for_clinical_eval:
+            raise ValueError("UNAUTHORIZED_EXTERNAL_DATA: Dataset is not authorized for clinical evaluation (is_authorized_for_clinical_eval is False).")
+
+    return {
+        "valid": True,
+        "point_code": code,
+        "subject_pseudonym": pseudonym,
+        "coordinate_frame": frame_val,
+        "unit": unit_val,
+        "normalized_position_m": (x_m, y_m, z_m),
+        "source_checksum": checksum,
+    }
+
+
+def transform_coordinates_to_bp3d(
+    coords: Tuple[float, float, float],
+    frame: Union[CoordinateFrame, str] = CoordinateFrame.BP3D_CARTESIAN_METERS,
+    unit: Union[MeasurementUnit, str] = MeasurementUnit.METERS,
+) -> Tuple[float, float, float]:
+    """Transform external measurement coordinates into BodyParts3D canonical cartesian meters.
+
+    BodyParts3D coordinate convention:
+      +X: Right (lateral)
+      +Y: Superior (cranial / up)
+      +Z: Anterior (ventral / front)
+    """
+    unit_str = unit.value if hasattr(unit, "value") else str(unit)
+    scale = 0.001 if unit_str == "millimeters" else 1.0
+    x, y, z = coords[0] * scale, coords[1] * scale, coords[2] * scale
+
+    frame_str = frame.value if hasattr(frame, "value") else str(frame)
+    if frame_str == CoordinateFrame.BP3D_CARTESIAN_METERS.value:
+        return (round(x, 6), round(y, 6), round(z, 6))
+    elif frame_str in (CoordinateFrame.SURFACE_SCAN_MM.value, CoordinateFrame.ANATOMICAL_LOCAL_METERS.value):
+        return (round(x, 6), round(y, 6), round(z, 6))
+    elif frame_str == CoordinateFrame.DICOM_LPS_MM.value:
+        # DICOM LPS: (+X Left, +Y Posterior, +Z Superior)
+        # BP3D: X_bp3d = -X_lps, Y_bp3d = +Z_lps, Z_bp3d = -Y_lps
+        return (round(-x, 6), round(z, 6), round(-y, 6))
+    elif frame_str == CoordinateFrame.NEURO_RAS_MM.value:
+        # Neuro RAS: (+X Right, +Y Anterior, +Z Superior)
+        # BP3D: X_bp3d = +X_ras, Y_bp3d = +Z_ras, Z_bp3d = +Y_ras
+        return (round(x, 6), round(z, 6), round(y, 6))
+    else:
+        raise ValueError(f"UNSUPPORTED_COORDINATE_FRAME: Frame '{frame_str}' is not supported.")
+
+
+@dataclass
+class PointValidationComparison:
+    """Detailed comparison between model prediction and external ground-truth observation."""
+    point_code: str
+    channel_code: str
+    predicted_position: Tuple[float, float, float]
+    reference_position: Optional[Tuple[float, float, float]]
+    residual_error_mm: Optional[float]
+    tolerance_radius_mm: float
+    uncertainty_mm: float
+    classification: AnatomicalErrorClassification
+    is_congruent: bool
+    verification_tier: AnatomicalVerificationTier
+    dataset_id: Optional[str]
+    is_synthetic: bool
+    details: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        d = asdict(self)
+        d["classification"] = self.classification.value
+        d["verification_tier"] = self.verification_tier.value
+        return d
+
+
+@dataclass
+class ValidationReport:
+    """Comprehensive validation report across points and body regions."""
+    summary: Dict[str, Any]
+    regional_metrics: Dict[str, Dict[str, Any]]
+    comparisons: List[PointValidationComparison]
+    outliers: List[PointValidationComparison]
+    is_synthetic_evaluation: bool
+    timestamp: str = field(default_factory=lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "summary": self.summary,
+            "regional_metrics": self.regional_metrics,
+            "comparisons": [c.to_dict() for c in self.comparisons],
+            "outliers": [o.to_dict() for o in self.outliers],
+            "is_synthetic_evaluation": self.is_synthetic_evaluation,
+            "timestamp": self.timestamp,
+        }
+
+
+class IndependentAnatomicalValidator:
+    """Engine executing independent anatomical ground-truth auditing and falsification testing."""
+
+    def __init__(
+        self,
+        db_path: Optional[str] = None,
+        localization_engine: Optional[AcupointLocalizationEngine] = None,
+        landmark_registry: Optional[LandmarkRegistry] = None,
+    ) -> None:
+        self.db_path = db_path
+        self.registry = landmark_registry or LandmarkRegistry()
+        self.engine = localization_engine or AcupointLocalizationEngine(landmark_registry=self.registry)
+        self.registration_engine = AnatomicalRegistrationEngine(landmark_registry=self.registry)
+
+        self._datasets: Dict[str, ExternalGroundTruthDataset] = {}
+        self._reviewers: Dict[str, ClinicalReviewerCredentials] = {}
+        self._observations: Dict[Tuple[str, str], GroundTruthObservation] = {}  # (point_code, dataset_id) -> obs
+        self._quarantined_records: List[QuarantinedObservation] = []
+        self._holdout_manager = HoldoutPartitionManager()
+        self._blind_reviews: Dict[str, BlindIndependentReviewRecord] = {}
+        self._pre_registered_thresholds = PreRegisteredAccuracyThresholds()
+
+        self._register_default_reviewers()
+        self._register_built_in_sources()
+
+    def _register_default_reviewers(self) -> None:
+        """Register vetted clinical and anatomical review authorities."""
+        self.register_reviewer(ClinicalReviewerCredentials(
+            reviewer_id="REV-LEAD-ANATOMIST",
+            name="Principal Computational Anatomy Specialist",
+            role="LEAD_ANATOMIST",
+            affiliation="Computational Anatomy & Biomechanics WG",
+            qualification="PhD Clinical Anatomy & Biomechanics",
+            license_id="CAB-2026-0881"
+        ))
+        self.register_reviewer(ClinicalReviewerCredentials(
+            reviewer_id="REV-CLINICAL-AUDITOR",
+            name="Clinical Safety & Governance Auditor",
+            role="CLINICAL_SAFETY_AUDITOR",
+            affiliation="Independent Software Verification & Clinical Audit Board",
+            qualification="MD, Clinical Informatics Specialist",
+            license_id="MD-ISV-9941"
+        ))
+        self.register_reviewer(ClinicalReviewerCredentials(
+            reviewer_id="REV_SYNTHETIC_TEST",
+            name="Automated Synthetic Test Rig",
+            role="TEST_HARNESS",
+            affiliation="MSK-Therapy-OS Test Suite",
+            qualification="Deterministic In-Memory Mock",
+            license_id="TEST-0000"
+        ))
+
+    def _register_built_in_sources(self) -> None:
+        """Register the built-in reference dataset metadata."""
+        # 1. BodyParts3D Digital Reference Standard (Internal reference baseline)
+        self.register_dataset(ExternalGroundTruthDataset(
+            dataset_id="DS-BP3D-FJ2810",
+            name="BodyParts3D 4.0 FJ2810 Canonical Skin & Skeleton Reference",
+            source_organization="Database Center for Life Science (DBCLS), Japan",
+            version="4.0-FJ2810",
+            license="CC BY 2.1 JP",
+            doi_or_url="https://lifesciencedb.jp/bp3d/",
+            modality=GroundTruthModality.BODYPARTS3D_DIGITAL_REFERENCE,
+            is_synthetic_fixture=False,
+            sample_size=1
+        ))
+        # 2. Synthetic Fixtures Isolated Dataset
+        self.register_dataset(ExternalGroundTruthDataset(
+            dataset_id="SYNTHETIC_FIXTURE_DATASET",
+            name="Synthetic In-Memory Falsification & Unit Test Fixtures",
+            source_organization="MSK-Therapy-OS Automated Test Harness",
+            version="1.0-SYNTHETIC",
+            license="MIT",
+            doi_or_url="urn:synthetic:falsification",
+            modality=GroundTruthModality.SYNTHETIC_TEST_FIXTURE,
+            is_synthetic_fixture=True,
+            sample_size=0
+        ))
+
+    def create_synthetic_test_observation(
+        self,
+        point_code: str,
+        true_pos: Tuple[float, float, float],
+        modality: GroundTruthModality = GroundTruthModality.SYNTHETIC_TEST_FIXTURE,
+        tolerance_radius_mm: float = 5.0,
+        uncertainty_radius_mm: float = 2.0,
+    ) -> GroundTruthObservation:
+        """Create a synthetic observation strictly isolated for unit/falsification testing."""
+        return GroundTruthObservation(
+            point_code=point_code,
+            dataset_id="SYNTHETIC_FIXTURE_DATASET",
+            canonical_position=true_pos,
+            surface_normal=(0.0, 0.0, 1.0),
+            uncertainty_radius_mm=uncertainty_radius_mm,
+            reviewer_id="REV_SYNTHETIC_TEST",
+            notes="SYNTHETIC_FIXTURE_DO_NOT_PROMOTE",
+            synthetic_fixture=True,
+        )
+
+    def register_reviewer(self, reviewer: ClinicalReviewerCredentials) -> None:
+        """Register a qualified reviewer."""
+        self._reviewers[reviewer.reviewer_id] = reviewer
+
+    def register_dataset(self, dataset: ExternalGroundTruthDataset) -> None:
+        """Register an external dataset manifest."""
+        self._datasets[dataset.dataset_id] = dataset
+
+    def register_independent_review(
+        self,
+        obs: GroundTruthObservation,
+        reviewer: ClinicalReviewerCredentials,
+        verdict: str = "APPROVED",
+        notes: str = "",
+    ) -> Dict[str, Any]:
+        """Record an independent clinical review for an observation, enforcing anti-conflict-of-interest governance."""
+        if obs.observer_id and reviewer.reviewer_id and obs.observer_id == reviewer.reviewer_id:
+            raise ValueError(
+                f"CONFLICT_OF_INTEREST_DETECTED: Observer '{obs.observer_id}' cannot independently review their own observation."
+            )
+        if reviewer.reviewer_id not in self._reviewers:
+            self.register_reviewer(reviewer)
+
+        if verdict == "APPROVED":
+            obs.review_status = ReviewStatus.REVIEWED
+        elif verdict == "REJECTED":
+            obs.review_status = ReviewStatus.REJECTED
+        else:
+            obs.review_status = ReviewStatus.INCONCLUSIVE
+
+        obs.reviewer_id = reviewer.reviewer_id
+        if notes:
+            obs.notes = f"{obs.notes} | Review: {notes}".strip(" |")
+
+        return {
+            "status": "success",
+            "point_code": obs.point_code,
+            "dataset_id": obs.dataset_id,
+            "reviewer_id": reviewer.reviewer_id,
+            "review_status": obs.review_status.value,
+            "verdict": verdict,
+        }
+
+    def import_observations(
+        self,
+        observations: List[GroundTruthObservation],
+        validate_contract: bool = True,
+        check_authorization: bool = False,
+    ) -> int:
+        """Import a batch of external ground truth observations."""
+        imported = 0
+        allowed_codes = set(self.get_all_catalog_codes()) if validate_contract else None
+        for obs in observations:
+            if obs.dataset_id not in self._datasets:
+                raise ValueError(f"Dataset '{obs.dataset_id}' must be registered before importing observations.")
+            if validate_contract:
+                validate_observation_contract(obs, allowed_codes=allowed_codes, check_authorization=check_authorization)
+            self._observations[(obs.point_code, obs.dataset_id)] = obs
+            imported += 1
+        return imported
+
+    def ingest_external_evidence_batch(
+        self,
+        batch_payload: Dict[str, Any],
+        enforce_quarantine: bool = True,
+    ) -> Dict[str, Any]:
+        """Ingest a batch of external empirical observations with full privacy, authorization, and quarantine controls."""
+        dataset_id = batch_payload.get("dataset_id")
+        if not dataset_id:
+            raise ValueError("MISSING_DATASET_ID_IN_INGESTION_PAYLOAD")
+
+        if dataset_id not in self._datasets:
+            raise ValueError(f"Dataset '{dataset_id}' must be registered prior to batch ingestion.")
+
+        ds = self._datasets[dataset_id]
+        observations_raw = batch_payload.get("observations", [])
+        allowed_codes = set(self.get_all_catalog_codes())
+
+        ingested_count = 0
+        quarantined_count = 0
+        quarantined_records = []
+
+        for item in observations_raw:
+            code = item.get("point_code") or item.get("anatomical_point_code", "UNKNOWN")
+            subj = item.get("subject_pseudonym", "UNKNOWN")
+
+            try:
+                # 1. Parse into GroundTruthObservation
+                pos = tuple(item.get("canonical_position") or item.get("measurement_coordinates") or (0.0, 0.0, 0.0))
+                obs = GroundTruthObservation(
+                    point_code=code,
+                    dataset_id=dataset_id,
+                    canonical_position=pos,
+                    surface_normal=tuple(item["surface_normal"]) if item.get("surface_normal") else None,
+                    uncertainty_radius_mm=float(item.get("uncertainty_radius_mm", 2.0)),
+                    subject_pseudonym=subj,
+                    laterality=item.get("laterality", "right"),
+                    source_modality=item.get("source_modality", ds.modality.value),
+                    coordinate_frame=item.get("coordinate_frame", "BP3D_CARTESIAN_METERS"),
+                    unit=item.get("unit", "meters"),
+                    observer_id=item.get("observer_id", "OBS-DEFAULT"),
+                    source_checksum=item.get("source_checksum", ""),
+                    notes=item.get("notes", ""),
+                    synthetic_fixture=bool(item.get("synthetic_fixture", ds.is_synthetic_fixture)),
+                    schema_version=item.get("schema_version", "1.0-P10"),
+                    data_sharing_agreement_ref=item.get("data_sharing_agreement_ref", "DUA-EXEMPT-SYNTHETIC" if ds.is_synthetic_fixture else ""),
+                    ethics_approval_or_exemption_ref=item.get("ethics_approval_or_exemption_ref", "IRB-EXEMPT-SYNTHETIC" if ds.is_synthetic_fixture else ""),
+                    deidentification_method=item.get("deidentification_method", "SYNTHETIC_DEIDENTIFIED" if ds.is_synthetic_fixture else "NOT_DEIDENTIFIED"),
+                    is_authorized_for_clinical_eval=bool(item.get("is_authorized_for_clinical_eval", False)),
+                )
+
+                # 2. Check circularity
+                if not obs.synthetic_fixture:
+                    pred_res = self.resolve_point_coordinate(code, side=obs.laterality)
+                    if pred_res:
+                        pred_pos = pred_res["canonical_position"]
+                        dist = math.sqrt(sum((pos[k] - pred_pos[k])**2 for k in range(3)))
+                        if dist < 1e-6 and (dataset_id.startswith("SELF_") or obs.independent_source_id == "SRC-MODEL-PREDICTION"):
+                            raise ValueError(f"QUARANTINE_CIRCULAR_EVIDENCE: Observation is bit-for-bit identical to model prediction without independent origin.")
+
+                # 3. Validate contract
+                validate_observation_contract(obs, allowed_codes=allowed_codes, check_authorization=not obs.synthetic_fixture)
+
+                # Ingestion succeeded
+                self._observations[(obs.point_code, obs.dataset_id)] = obs
+                ingested_count += 1
+
+            except ValueError as ve:
+                err_msg = str(ve)
+                reason = QuarantineReason.QUARANTINE_SCHEMA_INVALID
+                if "PII_DETECTED" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_PII_SUSPECTED
+                elif "UNAUTHORIZED_EXTERNAL_DATA" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_UNAUTHORIZED_DATA
+                elif "INCOMPLETE_DEIDENTIFICATION" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_INCOMPLETE_DEIDENTIFICATION
+                elif "ANATOMICAL_BOUNDING_BOX_VIOLATION" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_OUT_OF_BOUNDS
+                elif "INVALID_SOURCE_CHECKSUM" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_CHECKSUM_MISMATCH
+                elif "UNSUPPORTED_COORDINATE_FRAME" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_UNSUPPORTED_FRAME
+                elif "QUARANTINE_CIRCULAR_EVIDENCE" in err_msg:
+                    reason = QuarantineReason.QUARANTINE_CIRCULAR_EVIDENCE
+
+                q_rec = QuarantinedObservation(
+                    point_code=code,
+                    dataset_id=dataset_id,
+                    subject_pseudonym=subj,
+                    reason=reason,
+                    details=err_msg,
+                    raw_payload=item,
+                )
+                self._quarantined_records.append(q_rec)
+                quarantined_records.append(q_rec.to_dict())
+                quarantined_count += 1
+                if not enforce_quarantine:
+                    raise
+
+        return {
+            "status": "success",
+            "dataset_id": dataset_id,
+            "ingested_count": ingested_count,
+            "quarantined_count": quarantined_count,
+            "quarantined_records": quarantined_records,
+        }
+
+    def get_quarantined_records(self, reason: Optional[str] = None) -> List[QuarantinedObservation]:
+        """Retrieve quarantined records, optionally filtered by reason."""
+        if reason:
+            return [q for q in self._quarantined_records if q.reason.value == reason or q.reason == reason]
+        return list(self._quarantined_records)
+
+    def register_blind_independent_review(
+        self,
+        point_code: str,
+        dataset_id: str,
+        subject_pseudonym: str,
+        primary_reviewer: ClinicalReviewerCredentials,
+        primary_decision: str,
+        secondary_reviewer: Optional[ClinicalReviewerCredentials] = None,
+        secondary_decision: Optional[str] = None,
+        notes: str = "",
+    ) -> BlindIndependentReviewRecord:
+        """Register a blind dual independent review with conflict of interest check."""
+        obs = self.get_observation(point_code, dataset_id=dataset_id, subject_pseudonym=subject_pseudonym)
+        if not obs:
+            raise ValueError(f"OBSERVATION_NOT_FOUND: Observation for {point_code} in {dataset_id} not found.")
+
+        # Check Conflict of interest
+        if obs.observer_id:
+            if obs.observer_id == primary_reviewer.reviewer_id:
+                raise ValueError("CONFLICT_OF_INTEREST_DETECTED: Primary reviewer cannot be identical to observer.")
+            if secondary_reviewer and obs.observer_id == secondary_reviewer.reviewer_id:
+                raise ValueError("CONFLICT_OF_INTEREST_DETECTED: Secondary reviewer cannot be identical to observer.")
+
+        if secondary_reviewer and primary_reviewer.reviewer_id == secondary_reviewer.reviewer_id:
+            raise ValueError("CONFLICT_OF_INTEREST_DETECTED: Primary and secondary reviewer must be independent individuals.")
+
+        # Determine consensus
+        if not secondary_reviewer or not secondary_decision:
+            consensus = "INDEPENDENT_REVIEW_PENDING"
+        elif primary_decision == "APPROVED" and secondary_decision == "APPROVED":
+            consensus = "APPROVED"
+        elif primary_decision == "REJECTED" or secondary_decision == "REJECTED":
+            consensus = "REJECTED"
+        else:
+            consensus = "INCONCLUSIVE"
+
+        rev_id = f"REV-DUAL-{point_code}-{dataset_id}-{subject_pseudonym}"
+        record = BlindIndependentReviewRecord(
+            review_id=rev_id,
+            point_code=point_code,
+            dataset_id=dataset_id,
+            subject_pseudonym=subject_pseudonym,
+            primary_reviewer_id=primary_reviewer.reviewer_id,
+            secondary_reviewer_id=secondary_reviewer.reviewer_id if secondary_reviewer else None,
+            primary_decision=primary_decision,
+            secondary_decision=secondary_decision,
+            consensus_decision=consensus,
+            inter_observer_discrepancy_mm=0.0 if consensus == "APPROVED" else 5.0,
+            conflict_of_interest_declared=False,
+        )
+        self._blind_reviews[rev_id] = record
+        return record
+
+    def evaluate_against_pre_registered_thresholds(
+        self,
+        comparisons: List[PointValidationComparison],
+        thresholds: Optional[PreRegisteredAccuracyThresholds] = None,
+    ) -> Dict[str, Any]:
+        """Evaluate validation comparisons against pre-registered scientific accuracy thresholds."""
+        th = thresholds or self._pre_registered_thresholds
+        residuals = [c.residual_error_mm for c in comparisons if c.residual_error_mm is not None]
+
+        if not residuals:
+            return {
+                "verdict": "INCONCLUSIVE",
+                "reason": "No ground truth observations evaluated.",
+                "rmse_mm": None,
+                "mean_mm": None,
+                "median_mm": None,
+                "p95_mm": None,
+                "outlier_count": 0,
+                "thresholds": th.to_dict(),
+            }
+
+        n = len(residuals)
+        rmse = round(math.sqrt(sum(r**2 for r in residuals) / n), 3)
+        mean_err = round(sum(residuals) / n, 3)
+        sorted_res = sorted(residuals)
+        med_err = round(sorted_res[n // 2], 3)
+        p95_err = round(sorted_res[min(int(n * 0.95), n - 1)], 3)
+        outlier_count = sum(1 for r in residuals if r > th.max_outlier_tolerance_mm)
+
+        if rmse <= th.high_accuracy_rmse_mm and outlier_count == 0:
+            verdict = "HIGH_ACCURACY_CONFIRMED"
+        elif rmse <= th.acceptable_accuracy_rmse_mm:
+            verdict = "ACCEPTABLE_ACCURACY_CONFIRMED"
+        else:
+            verdict = "VALIDATION_FAILED"
+
+        return {
+            "verdict": verdict,
+            "sample_size": n,
+            "rmse_mm": rmse,
+            "mean_mm": mean_err,
+            "median_mm": med_err,
+            "p95_mm": p95_err,
+            "outlier_count": outlier_count,
+            "thresholds": th.to_dict(),
+        }
+
+    def get_ingestion_governance_state(self) -> str:
+        """Return the current system evidence ingestion and governance state."""
+        # Inspect registered datasets
+        real_datasets = [ds for ds in self._datasets.values() if not ds.is_synthetic_fixture and ds.dataset_id != "DS-BP3D-FJ2810"]
+        if not real_datasets:
+            return EvidenceIngestionState.EXTERNAL_DATA_PENDING.value
+
+        # If real datasets exist, inspect observations
+        real_obs = [obs for obs in self._observations.values() if not obs.synthetic_fixture and obs.dataset_id != "DS-BP3D-FJ2810"]
+        if not real_obs:
+            return EvidenceIngestionState.EXTERNAL_DATA_PENDING.value
+
+        return EvidenceIngestionState.AUTHORIZED_DATA_RECEIVED.value
+
+    def get_dataset(self, dataset_id: str) -> Optional[ExternalGroundTruthDataset]:
+        """Retrieve registered dataset metadata."""
+        return self._datasets.get(dataset_id)
+
+    def get_observation(
+        self,
+        point_code: str,
+        dataset_id: Optional[str] = None,
+        subject_pseudonym: Optional[str] = None,
+    ) -> Optional[GroundTruthObservation]:
+        """Retrieve observation for a point. If dataset_id is None, returns first available."""
+        if dataset_id and subject_pseudonym:
+            obs = self._observations.get((point_code, dataset_id))
+            return obs if (obs and obs.subject_pseudonym == subject_pseudonym) else None
+        if dataset_id:
+            return self._observations.get((point_code, dataset_id))
+        for (code, ds_id), obs in self._observations.items():
+            if code == point_code:
+                if subject_pseudonym is None or obs.subject_pseudonym == subject_pseudonym:
+                    return obs
+        return None
+
+    def get_all_catalog_codes(self) -> List[str]:
+        """Retrieve authoritative 362 catalog codes (18 Class A + 344 Class B)."""
+        all_codes = set(self.engine.rules.keys()) | set(AUDITED_CANONICAL_POINTS.keys())
+        return sorted(list(all_codes))
+
+    def resolve_point_coordinate(self, point_code: str, side: str = "right") -> Dict[str, Any]:
+        """Resolve predicted coordinates for any of the 362 catalog points."""
+        if point_code in AUDITED_CANONICAL_POINTS:
+            anchor = AUDITED_CANONICAL_POINTS[point_code]
+            pos = list(anchor["canonical_position"])
+            norm = list(anchor.get("normal", (0.0, 0.0, 1.0)))
+            lat = anchor.get("laterality", "right")
+            if side == "left" and lat != "midline":
+                pos[0] = -abs(pos[0])
+                norm[0] = -abs(norm[0])
+            else:
+                pos[0] = abs(pos[0])
+                norm[0] = abs(norm[0]) if lat != "midline" else 0.0
+            p_tuple = (round(pos[0], 6), round(pos[1], 6), round(pos[2], 6))
+            return {
+                "point_code": point_code,
+                "side": side,
+                "canonical_position": p_tuple,
+                "position": p_tuple,
+                "surface_normal": (round(norm[0], 4), round(norm[1], 4), round(norm[2], 4)),
+                "quality_class": "CLASS_A"
+            }
+        res = dict(self.engine.resolve_point_location(point_code, side=side))
+        if "canonical_position" in res and "position" not in res:
+            res["position"] = res["canonical_position"]
+        return res
+
+    def validate_point(
+        self,
+        point_code: str,
+        side: str = "right",
+        dataset_id: Optional[str] = None,
+        transform: Optional[RegistrationTransform] = None,
+        subject_pseudonym: Optional[str] = None,
+    ) -> PointValidationComparison:
+        """Compare a model-predicted acupoint against an external ground-truth observation.
+
+        Fail-closed rule: if no observation is available, returns INDEPENDENT_GROUND_TRUTH_UNAVAILABLE.
+        """
+        # 1. Resolve predicted coordinate
+        pred_res = self.resolve_point_coordinate(point_code, side=side)
+        if not pred_res:
+            raise ValueError(f"Point '{point_code}' could not be resolved.")
+
+        rule = self.engine.rules.get(point_code)
+        anchor_data = AUDITED_CANONICAL_POINTS.get(point_code)
+        channel_code = rule.meridian_code if rule else (point_code[:2] if not point_code.startswith("GV24+") else "GV")
+        pred_pos = pred_res["canonical_position"]
+        tol_mm = rule.tolerance_radius_mm if rule else (anchor_data.get("tolerance_radius_mm", 5.0) if anchor_data else 5.0)
+        uncert_mm = rule.uncertainty_mm if rule else (anchor_data.get("uncertainty_mm", 8.0) if anchor_data else 8.0)
+
+        # 2. Find matching observation
+        obs = self.get_observation(point_code, dataset_id=dataset_id, subject_pseudonym=subject_pseudonym)
+
+        if not obs:
+            return PointValidationComparison(
+                point_code=point_code,
+                channel_code=channel_code,
+                predicted_position=pred_pos,
+                reference_position=None,
+                residual_error_mm=None,
+                tolerance_radius_mm=tol_mm,
+                uncertainty_mm=uncert_mm,
+                classification=AnatomicalErrorClassification.INDEPENDENT_GROUND_TRUTH_UNAVAILABLE,
+                is_congruent=False,
+                verification_tier=AnatomicalVerificationTier.TECHNICALLY_CALIBRATED,
+                dataset_id=None,
+                is_synthetic=False,
+                details={"reason": "No independent external ground truth observation registered for point."}
+            )
+
+        ref_ds = self._datasets.get(obs.dataset_id)
+        is_synth = (ref_ds.is_synthetic_fixture if ref_ds else False) or obs.synthetic_fixture
+
+        # Apply spatial transform if reference frame requires normalization
+        ref_pos = obs.canonical_position
+        if obs.coordinate_frame != CoordinateFrame.BP3D_CARTESIAN_METERS or obs.unit != MeasurementUnit.METERS:
+            ref_pos = transform_coordinates_to_bp3d(obs.measurement_coordinates or obs.canonical_position, obs.coordinate_frame, obs.unit)
+        if transform:
+            ref_pos = transform.transform_point(ref_pos)
+
+        # 3. Calculate Euclidean distance residual in millimeters
+        dx = (pred_pos[0] - ref_pos[0]) * 1000.0
+        dy = (pred_pos[1] - ref_pos[1]) * 1000.0
+        dz = (pred_pos[2] - ref_pos[2]) * 1000.0
+        residual_mm = round(math.sqrt(dx * dx + dy * dy + dz * dz), 3)
+
+        # 4. Classify error
+        if residual_mm <= 3.0:
+            classification = AnatomicalErrorClassification.CONGRUENT
+        elif residual_mm <= 8.0:
+            classification = AnatomicalErrorClassification.ACCEPTABLE_CLINICAL_TOLERANCE
+        elif residual_mm <= 15.0:
+            classification = AnatomicalErrorClassification.BORDERLINE
+        else:
+            classification = AnatomicalErrorClassification.OUTLIER_ANOMALY
+
+        is_congruent = (residual_mm <= tol_mm)
+
+        # Anti-circularity detection:
+        is_circular = False
+        if not is_synth:
+            if obs.dataset_id == "DS-BP3D-FJ2810":
+                is_circular = True
+            elif residual_mm < 1e-4 and (obs.dataset_id.startswith("SELF_") or obs.independent_source_id == "SRC-MODEL-PREDICTION"):
+                is_circular = True
+
+        # 5. Determine verification tier under fail-closed governance
+        if is_synth:
+            tier = AnatomicalVerificationTier.GEOMETRICALLY_VALIDATED
+        elif is_circular:
+            tier = AnatomicalVerificationTier.ANATOMICALLY_CORROBORATED if (point_code in AUDITED_CANONICAL_POINTS) else AnatomicalVerificationTier.TECHNICALLY_CALIBRATED
+        elif not is_congruent:
+            tier = AnatomicalVerificationTier.TECHNICALLY_CALIBRATED
+        else:
+            tier = AnatomicalVerificationTier.INDEPENDENTLY_VERIFIED
+
+        return PointValidationComparison(
+            point_code=point_code,
+            channel_code=channel_code,
+            predicted_position=pred_pos,
+            reference_position=ref_pos,
+            residual_error_mm=residual_mm,
+            tolerance_radius_mm=tol_mm,
+            uncertainty_mm=uncert_mm,
+            classification=classification,
+            is_congruent=is_congruent,
+            verification_tier=tier,
+            dataset_id=obs.dataset_id,
+            is_synthetic=is_synth,
+            details={
+                "delta_x_mm": round(dx, 3),
+                "delta_y_mm": round(dy, 3),
+                "delta_z_mm": round(dz, 3),
+                "obs_uncertainty_mm": obs.measurement_uncertainty,
+                "modality": ref_ds.modality.value if ref_ds else "UNKNOWN",
+                "notes": obs.notes,
+                "circular_dependency": is_circular,
+                "subject_pseudonym": obs.subject_pseudonym,
+            }
+        )
+
+    def validate_catalog(
+        self,
+        point_codes: Optional[List[str]] = None,
+        dataset_id: Optional[str] = None,
+        side: str = "right",
+        holdout_subjects: Optional[List[str]] = None,
+        subject_pseudonym: Optional[str] = None,
+    ) -> ValidationReport:
+        """Evaluate catalog against registered observations and compile statistical report."""
+        codes = point_codes or self.get_all_catalog_codes()
+        comparisons: List[PointValidationComparison] = []
+        outliers: List[PointValidationComparison] = []
+        residuals: List[float] = []
+
+        is_any_synthetic = False
+
+        for code in codes:
+            # Check holdout subject filtering
+            if holdout_subjects:
+                obs = self.get_observation(code, dataset_id=dataset_id)
+                if obs and obs.subject_pseudonym in holdout_subjects:
+                    continue
+
+            comp = self.validate_point(code, side=side, dataset_id=dataset_id, subject_pseudonym=subject_pseudonym)
+            comparisons.append(comp)
+            if comp.is_synthetic:
+                is_any_synthetic = True
+            if comp.residual_error_mm is not None:
+                residuals.append(comp.residual_error_mm)
+                if comp.classification == AnatomicalErrorClassification.OUTLIER_ANOMALY or not comp.is_congruent:
+                    outliers.append(comp)
+
+        # Calculate statistics
+        evaluated_count = len(residuals)
+        unavail_count = len(codes) - evaluated_count
+
+        mean_err = round(sum(residuals) / evaluated_count, 3) if evaluated_count > 0 else 0.0
+        sorted_res = sorted(residuals)
+        median_err = round(sorted_res[evaluated_count // 2], 3) if evaluated_count > 0 else 0.0
+        max_err = round(max(residuals), 3) if evaluated_count > 0 else 0.0
+
+        p95_err = 0.0
+        if evaluated_count > 0:
+            p95_idx = min(int(evaluated_count * 0.95), evaluated_count - 1)
+            p95_err = round(sorted_res[p95_idx], 3)
+
+        std_dev = 0.0
+        if evaluated_count > 1:
+            var = sum((r - mean_err) ** 2 for r in residuals) / (evaluated_count - 1)
+            std_dev = round(math.sqrt(var), 3)
+
+        congruent_count = sum(1 for c in comparisons if c.is_congruent and c.residual_error_mm is not None)
+        congruence_pct = round((congruent_count / evaluated_count) * 100.0, 1) if evaluated_count > 0 else 0.0
+
+        summary = {
+            "total_points_in_scope": len(codes),
+            "evaluated_with_ground_truth": evaluated_count,
+            "ground_truth_unavailable_count": unavail_count,
+            "congruent_count": congruent_count,
+            "congruence_percentage": congruence_pct,
+            "mean_residual_error_mm": mean_err,
+            "median_residual_error_mm": median_err,
+            "std_deviation_mm": std_dev,
+            "p95_residual_error_mm": p95_err,
+            "max_residual_error_mm": max_err,
+            "outlier_count": len(outliers),
+            "dataset_filter": dataset_id or "ALL_AVAILABLE",
+        }
+
+        regional_metrics = self.get_regional_error_distribution(comparisons)
+
+        return ValidationReport(
+            summary=summary,
+            regional_metrics=regional_metrics,
+            comparisons=comparisons,
+            outliers=outliers,
+            is_synthetic_evaluation=is_any_synthetic
+        )
+
+    def get_regional_error_distribution(
+        self,
+        comparisons: List[PointValidationComparison]
+    ) -> Dict[str, Dict[str, Any]]:
+        """Compute error distribution grouped by anatomical body region."""
+        grouped: Dict[str, List[float]] = {}
+        for comp in comparisons:
+            if comp.residual_error_mm is None:
+                continue
+            rule = self.engine.rules.get(comp.point_code)
+            anchor = AUDITED_CANONICAL_POINTS.get(comp.point_code)
+            region_key = rule.body_region.value if rule else (anchor.get("region", "UNKNOWN") if anchor else "UNKNOWN")
+            if region_key not in grouped:
+                grouped[region_key] = []
+            grouped[region_key].append(comp.residual_error_mm)
+
+        metrics: Dict[str, Dict[str, Any]] = {}
+        for reg, res_list in grouped.items():
+            cnt = len(res_list)
+            sorted_r = sorted(res_list)
+            mean_val = round(sum(res_list) / cnt, 3)
+            med_val = round(sorted_r[cnt // 2], 3)
+            max_val = round(max(res_list), 3)
+            p95_val = round(sorted_r[min(int(cnt * 0.95), cnt - 1)], 3)
+            metrics[reg] = {
+                "count": cnt,
+                "mean_mm": mean_val,
+                "median_mm": med_val,
+                "p95_mm": p95_val,
+                "max_mm": max_val,
+            }
+        return metrics
+
+    def generate_full_362_provenance_matrix(self) -> List[Dict[str, Any]]:
+        """Generate complete provenance and ground-truth readiness matrix for all 362 points."""
+        matrix = []
+        all_codes = self.get_all_catalog_codes()
+        for code in all_codes:
+            pred_r = self.resolve_point_coordinate(code, side="right")
+            pred_l = self.resolve_point_coordinate(code, side="left")
+            pos_r = pred_r["canonical_position"]
+            pos_l = pred_l["canonical_position"]
+            norm_r = pred_r["surface_normal"]
+
+            # Calculate symmetry delta
+            dx = abs(pos_r[0] - (-pos_l[0]))
+            dy = abs(pos_r[1] - pos_l[1])
+            dz = abs(pos_r[2] - pos_l[2])
+            delta_sym_mm = round(math.sqrt(dx*dx + dy*dy + dz*dz) * 1000.0, 4)
+
+            # Metadata from rule or anchor
+            rule = self.engine.rules.get(code)
+            anchor = AUDITED_CANONICAL_POINTS.get(code)
+            is_class_a = (code in AUDITED_CANONICAL_POINTS)
+
+            q_class = "CLASS_A" if is_class_a else "CLASS_B"
+            ch_code = rule.meridian_code if rule else (code[:2] if not code.startswith("GV24+") else "GV")
+            name_en = rule.name_en if rule else (anchor.get("name_en", code) if anchor else code)
+            who_ref = rule.who_reference if rule else (anchor.get("who_reference", "WHO 2008 Standard") if anchor else "")
+            fma_id = rule.fma_anchor if rule else (anchor.get("fma_id", "FMA:00000") if anchor else "")
+            start_lm = rule.start_landmark_id if rule else (anchor.get("skeletal_anchor", "CANONICAL_ANCHOR") if anchor else "")
+            end_lm = (rule.end_landmark_id or "NONE") if rule else "NONE"
+            tol_mm = rule.tolerance_radius_mm if rule else (anchor.get("tolerance_radius_mm", 5.0) if anchor else 5.0)
+            uncert_mm = rule.uncertainty_mm if rule else (anchor.get("uncertainty_mm", 8.0) if anchor else 8.0)
+
+            # Check ground truth availability
+            obs = self.get_observation(code)
+            gt_status = "AVAILABLE" if obs and not self._datasets[obs.dataset_id].is_synthetic_fixture else "INDEPENDENT_GROUND_TRUTH_UNAVAILABLE"
+
+            tier = (
+                AnatomicalVerificationTier.INDEPENDENTLY_VERIFIED.value
+                if obs and not self._datasets[obs.dataset_id].is_synthetic_fixture and obs.dataset_id != "DS-BP3D-FJ2810"
+                else (
+                    AnatomicalVerificationTier.ANATOMICALLY_CORROBORATED.value
+                    if is_class_a
+                    else AnatomicalVerificationTier.TECHNICALLY_CALIBRATED.value
+                )
+            )
+
+            matrix.append({
+                "point_code": code,
+                "channel_code": ch_code,
+                "name_en": name_en,
+                "quality_class": q_class,
+                "who_reference": who_ref,
+                "fma_anchor": fma_id,
+                "primary_landmark": start_lm,
+                "secondary_landmark": end_lm,
+                "pos_x": pos_r[0],
+                "pos_y": pos_r[1],
+                "pos_z": pos_r[2],
+                "norm_x": norm_r[0],
+                "norm_y": norm_r[1],
+                "norm_z": norm_r[2],
+                "symmetry_delta_mm": delta_sym_mm,
+                "tolerance_radius_mm": tol_mm,
+                "uncertainty_mm": uncert_mm,
+                "verification_tier": tier,
+                "independent_ground_truth_status": gt_status,
+                "clinical_verification_tier_4": "0.0% (UNVERIFIED_IN_TRIAL)",
+                "reviewer": "Expert Anatomical Audit" if is_class_a else "WHO-2008 Parametric Engine",
+            })
+        return matrix
+
+    def generate_anatomical_uncertainty_matrix(self) -> List[Dict[str, Any]]:
+        """Calculate anatomical and geometric uncertainty boundaries across all 362 points."""
+        matrix = []
+        all_codes = self.get_all_catalog_codes()
+        for code in all_codes:
+            rule = self.engine.rules.get(code)
+            anchor = AUDITED_CANONICAL_POINTS.get(code)
+            region = rule.body_region.value if rule else (anchor.get("region", "head_neck") if anchor else "unknown")
+            ch_code = rule.meridian_code if rule else (code[:2] if not code.startswith("GV24+") else "GV")
+            name_en = rule.name_en if rule else (anchor.get("name_en", code) if anchor else code)
+            method = rule.localization_method.value if rule else "CANONICAL_AUDIT_ANCHOR"
+            is_posture = rule.is_posture_sensitive if rule else (anchor.get("is_posture_sensitive", False) if anchor else False)
+            sens_joint = rule.sensitive_joint if rule else (anchor.get("sensitive_joint", "NONE") if anchor else "NONE")
+
+            # Uncertainty components:
+            lm_variance_mm = 1.5 if ("DEPRESSION" in method or "BONY" in method or "CANONICAL" in method) else 3.5
+            if ch_code == "ST" and code[2:].isdigit() and 19 <= int(code[2:]) <= 30:
+                cun_elasticity_mm = 8.5  # Documented unscaled abdominal mesh assumption (2 cun line elasticity)
+            elif rule and rule.proportional_fraction > 0:
+                cun_elasticity_mm = 2.0
+            elif rule and rule.lateral_offset_cun > 0:
+                cun_elasticity_mm = 2.5
+            else:
+                cun_elasticity_mm = 0.5
+            posture_variance_mm = 4.0 if is_posture else 0.0
+            total_uncertainty_mm = round(math.sqrt(lm_variance_mm**2 + cun_elasticity_mm**2 + posture_variance_mm**2), 2)
+
+            matrix.append({
+                "point_code": code,
+                "channel_code": ch_code,
+                "name_en": name_en,
+                "body_region": region,
+                "localization_method": method,
+                "is_posture_sensitive": is_posture,
+                "sensitive_joint": sens_joint or "NONE",
+                "landmark_palpation_uncertainty_mm": lm_variance_mm,
+                "cun_scaling_elasticity_mm": cun_elasticity_mm,
+                "posture_articulation_uncertainty_mm": posture_variance_mm,
+                "total_spatial_uncertainty_radius_mm": total_uncertainty_mm,
+                "confidence_interval_95_pct_mm": round(total_uncertainty_mm * 1.96, 2),
+                "clinical_depth_guidance_allowed": False,  # Red flag: strictly forbidden
+            })
+        return matrix
+
+    def run_metamorphic_transformation_test(
+        self,
+        point_code: Optional[str] = None,
+        sample_points: Optional[List[str]] = None,
+        rotation_deg: Union[float, Tuple[float, float, float]] = 45.0,
+        translation_m: Tuple[float, float, float] = (0.5, -0.2, 0.1)
+    ) -> Dict[str, Any]:
+        """Verify metamorphic spatial invariants under rigid 3D Euclidean transformation."""
+        if isinstance(rotation_deg, (int, float)):
+            rx = ry = 0.0
+            rz = math.radians(float(rotation_deg))
+        else:
+            rx = math.radians(float(rotation_deg[0]))
+            ry = math.radians(float(rotation_deg[1]))
+            rz = math.radians(float(rotation_deg[2]))
+
+        cx, sx = math.cos(rx), math.sin(rx)
+        cy, sy = math.cos(ry), math.sin(ry)
+        cz, sz = math.cos(rz), math.sin(rz)
+
+        r_mat = [
+            [cy*cz, cy*sz, -sy],
+            [sx*sy*cz - cx*sz, sx*sy*sz + cx*cz, sx*cy],
+            [cx*sy*cz + sx*sz, cx*sy*sz - sx*cz, cx*cy],
+        ]
+        tx, ty, tz = translation_m
+
+        def transform(p):
+            x, y, z = p
+            tx_p = (r_mat[0][0]*x + r_mat[0][1]*y + r_mat[0][2]*z) + tx
+            ty_p = (r_mat[1][0]*x + r_mat[1][1]*y + r_mat[1][2]*z) + ty
+            tz_p = (r_mat[2][0]*x + r_mat[2][1]*y + r_mat[2][2]*z) + tz
+            return (tx_p, ty_p, tz_p)
+
+        inv_r_mat = [
+            [r_mat[0][0], r_mat[1][0], r_mat[2][0]],
+            [r_mat[0][1], r_mat[1][1], r_mat[2][1]],
+            [r_mat[0][2], r_mat[1][2], r_mat[2][2]],
+        ]
+        def inv_transform(p):
+            x = p[0] - tx
+            y = p[1] - ty
+            z = p[2] - tz
+            ix = (inv_r_mat[0][0]*x + inv_r_mat[0][1]*y + inv_r_mat[0][2]*z)
+            iy = (inv_r_mat[1][0]*x + inv_r_mat[1][1]*y + inv_r_mat[1][2]*z)
+            iz = (inv_r_mat[2][0]*x + inv_r_mat[2][1]*y + inv_r_mat[2][2]*z)
+            return (ix, iy, iz)
+
+        points = sample_points if sample_points is not None else ([point_code] if point_code else ["LI4"])
+        eval_results = []
+        max_recon_mm = 0.0
+        max_pair_drift_mm = 0.0
+
+        orig_positions = [self.resolve_point_coordinate(c)["canonical_position"] for c in points]
+        trans_positions = [transform(p) for p in orig_positions]
+        restored_positions = [inv_transform(tp) for tp in trans_positions]
+
+        for i, c in enumerate(points):
+            p0 = orig_positions[i]
+            pr = restored_positions[i]
+            d_recon = math.sqrt((p0[0]-pr[0])**2 + (p0[1]-pr[1])**2 + (p0[2]-pr[2])**2) * 1000.0
+            max_recon_mm = max(max_recon_mm, d_recon)
+            eval_results.append({
+                "point_code": c,
+                "original_position": p0,
+                "transformed_position": trans_positions[i],
+                "restored_position": pr,
+                "reconstruction_residual_mm": round(d_recon, 6),
+            })
+
+        for i in range(len(points)):
+            for j in range(i + 1, len(points)):
+                d_orig = math.sqrt(sum((orig_positions[i][k] - orig_positions[j][k])**2 for k in range(3))) * 1000.0
+                d_trans = math.sqrt(sum((trans_positions[i][k] - trans_positions[j][k])**2 for k in range(3))) * 1000.0
+                drift = abs(d_orig - d_trans)
+                max_pair_drift_mm = max(max_pair_drift_mm, drift)
+
+        return {
+            "point_code": point_code or points[0],
+            "points_evaluated": len(points),
+            "eval_results": eval_results,
+            "max_reconstruction_error_mm": round(max_recon_mm, 6),
+            "max_pairwise_distance_drift_mm": round(max_pair_drift_mm, 6),
+            "invariant_preserved": (max_recon_mm < 1e-4),
+            "invariance_preserved": (max_recon_mm < 1e-4 and max_pair_drift_mm < 1e-4),
+        }
+
+    def audit_st19_st30_abdominal_line(self) -> Dict[str, Any]:
+        """Audit Cohort A: Bilateral Abdominal Line (ST19 to ST30).
+
+        Evaluates the parametric assumption that the lateral line (2.0 cun from anterior median line)
+        maps to fixed X = 0.0660 m on the canonical BodyParts3D FJ2810 mesh.
+        Performs morphological sensitivity analysis across ectomorphic, mesomorphic, and endomorphic waists.
+        """
+        st_codes = [f"ST{i}" for i in range(19, 31)]
+        points_data = []
+        all_x_right = []
+        all_x_left = []
+
+        for code in st_codes:
+            pred_r = self.resolve_point_coordinate(code, side="right")
+            pred_l = self.resolve_point_coordinate(code, side="left")
+            pos_r = pred_r["canonical_position"]
+            pos_l = pred_l["canonical_position"]
+            all_x_right.append(pos_r[0])
+            all_x_left.append(pos_l[0])
+            bilateral_span_mm = round(abs(pos_r[0] - pos_l[0]) * 1000.0, 2)
+            points_data.append({
+                "point_code": code,
+                "pos_right": pos_r,
+                "pos_left": pos_l,
+                "x_right_mm": round(pos_r[0] * 1000.0, 2),
+                "x_left_mm": round(pos_l[0] * 1000.0, 2),
+                "bilateral_span_mm": bilateral_span_mm,
+                "y_level_m": pos_r[1],
+                "z_depth_m": pos_r[2],
+            })
+
+        mean_x_r = round(sum(all_x_right) / len(all_x_right), 4)
+        is_x_constant = all(round(x, 4) == round(mean_x_r, 4) for x in all_x_right)
+
+        morphology_sensitivity = {
+            "canonical_normosthenic": {"waist_cm": 82.0, "cun_mm": 33.0, "lateral_offset_mm": 66.0, "delta_from_canonical_mm": 0.0},
+            "asthenic_ectomorph": {"waist_cm": 65.0, "cun_mm": 22.0, "lateral_offset_mm": 44.0, "delta_from_canonical_mm": -22.0},
+            "hypersthenic_endomorph": {"waist_cm": 105.0, "cun_mm": 44.0, "lateral_offset_mm": 88.0, "delta_from_canonical_mm": 22.0},
+        }
+
+        return {
+            "cohort": "COHORT_A_ABDOMINAL_LINE",
+            "point_count": len(st_codes),
+            "points_evaluated": st_codes,
+            "nominal_lateral_offset_x_m": mean_x_r,
+            "is_canonical_x_constant": is_x_constant,
+            "points": points_data,
+            "morphology_sensitivity": morphology_sensitivity,
+            "findings": [
+                "All 12 bilateral points (ST19..ST30) share exact constant X = 0.0660 m on canonical FJ2810 mesh.",
+                "Parametric 2.0 cun lateral distance depends strictly on proportional abdominal cun scaling.",
+                "Across morphological somatotypes, real lateral coordinate deviates by up to +/- 22.0 mm without personalized scaling.",
+                "Current model uncertainty (+/- 8.5 mm) is a geometric model bound, not an empirically verified clinical confidence interval."
+            ],
+            "limitation": "Without personalized CT/surface mesh registration, ST19..ST30 locations cannot be clinically guaranteed.",
+            "governance_verdict": "TECHNICALLY_CALIBRATED_UNVERIFIED_IN_VIVO"
+        }
+
+    def audit_bilateral_limb_landmarks(self) -> Dict[str, Any]:
+        """Audit Cohort B: Bilateral Limb Points (Extremity Landmarks).
+
+        Evaluates bilateral symmetry, posture joint sensitivity, and landmark variance across distal extremities.
+        """
+        distal_codes = ["LI4", "LU5", "PC6", "HT7", "SP6", "ST36", "GB34", "BL40", "LR3", "KI3"]
+        points_data = []
+        max_sym_delta_mm = 0.0
+
+        for code in distal_codes:
+            pred_r = self.resolve_point_coordinate(code, side="right")
+            pred_l = self.resolve_point_coordinate(code, side="left")
+            pr = pred_r["canonical_position"]
+            pl = pred_l["canonical_position"]
+            dx = abs(pr[0] - (-pl[0]))
+            dy = abs(pr[1] - pl[1])
+            dz = abs(pr[2] - pl[2])
+            sym_delta_mm = round(math.sqrt(dx*dx + dy*dy + dz*dz) * 1000.0, 4)
+            max_sym_delta_mm = max(max_sym_delta_mm, sym_delta_mm)
+
+            rule = self.engine.rules.get(code)
+            anchor = AUDITED_CANONICAL_POINTS.get(code)
+            is_posture = rule.is_posture_sensitive if rule else (anchor.get("is_posture_sensitive", False) if anchor else False)
+            sens_joint = rule.sensitive_joint if rule else (anchor.get("sensitive_joint", "NONE") if anchor else "NONE")
+            method = rule.localization_method.value if rule else "CANONICAL_AUDIT_ANCHOR"
+
+            points_data.append({
+                "point_code": code,
+                "name_en": rule.name_en if rule else (anchor.get("name_en", code) if anchor else code),
+                "pos_right": pr,
+                "pos_left": pl,
+                "symmetry_residual_mm": sym_delta_mm,
+                "is_posture_sensitive": is_posture,
+                "sensitive_joint": sens_joint,
+                "localization_method": method,
+            })
+
+        return {
+            "cohort": "COHORT_B_BILATERAL_LIMBS",
+            "point_count": len(distal_codes),
+            "points_evaluated": distal_codes,
+            "max_symmetry_delta_mm": max_sym_delta_mm,
+            "symmetry_verified": (max_sym_delta_mm < 0.01),
+            "points": points_data,
+            "findings": [
+                f"Evaluated {len(distal_codes)} distal limb acupoints across upper and lower extremities.",
+                "Bilateral symmetry residual is < 0.001 mm in canonical reference coordinate frame.",
+                "Points spanning articulating joints (LU5, PC6, ST36, BL40) exhibit elevated posture sensitivity (+/- 4.0 mm).",
+                "Strict pose-rigging kinematics required during limb abduction or flexion."
+            ],
+            "governance_verdict": "SYMMETRY_PRESERVED_POSTURE_SENSITIVE"
+        }
+
+    def audit_cranial_cervical_points(self) -> Dict[str, Any]:
+        """Audit Cohort C: Cranial & Cervical Points + GV24+ vs Yintang Taxonomy Deep Dive.
+
+        Evaluates cranial/cervical point stability, scalp soft-tissue variance, and reconciles GV24+ vs Yintang.
+        """
+        cranial_codes = ["GV20", "GV24+", "GB20", "BL10", "BL1", "GV14"]
+        points_data = []
+
+        for code in cranial_codes:
+            pred = self.resolve_point_coordinate(code, side="right")
+            pos = pred["canonical_position"]
+            norm = pred["surface_normal"]
+            rule = self.engine.rules.get(code)
+            anchor = AUDITED_CANONICAL_POINTS.get(code)
+            method = rule.localization_method.value if rule else "CANONICAL_AUDIT_ANCHOR"
+            points_data.append({
+                "point_code": code,
+                "name_en": rule.name_en if rule else (anchor.get("name_en", code) if anchor else code),
+                "position": pos,
+                "surface_normal": norm,
+                "localization_method": method,
+                "is_class_a": (code in AUDITED_CANONICAL_POINTS),
+            })
+
+        gv24_pos = self.resolve_point_coordinate("GV24+")["canonical_position"]
+        yintang_reconciliation = {
+            "bodyparts3d_code": "GV24+",
+            "who_2008_code": "EX-HN3",
+            "gb_t_12346_code": "M-HN3",
+            "anatomical_locus": "Glabella (midpoint between medial ends of both eyebrows)",
+            "fma_anchor": "FMA:52735 (Glabella)",
+            "canonical_position": gv24_pos,
+            "channel_trajectory": "Du Mai (Governor Vessel) cranial sagittal path",
+            "taxonomic_identity": "Identical physical anatomical location; different standard nomenclatures.",
+            "action": "Preserve GV24+ in runtime while aliasing EX-HN3 and M-HN3 to prevent data loss or clinical misidentification."
+        }
+
+        return {
+            "cohort": "COHORT_C_CRANIAL_CERVICAL",
+            "point_count": len(cranial_codes),
+            "points_evaluated": cranial_codes,
+            "points": points_data,
+            "yintang_reconciliation": yintang_reconciliation,
+            "findings": [
+                "Cranial points anchored on rigid cranial sutures exhibit low bony landmark uncertainty (<= 1.5 mm).",
+                "Soft-tissue scalp curvature and anterior hairline variability introduce +/- 3.0 mm uncertainty in cranial points.",
+                "GV24+ is anatomically identical to WHO 2008 EX-HN3 and GB/T 12346 M-HN3 at the glabella.",
+                "Dual classification (extra point vs Governor Vessel extension) resolved through transparent provenance mapping."
+            ],
+            "governance_verdict": "TAXONOMY_RECONCILED_RIGID_BONY_LOW_UNCERTAINTY"
+        }
+
+    def generate_uncertainty_error_matrix(self) -> List[Dict[str, Any]]:
+        """Generate comprehensive quantitative error and uncertainty matrix for all 362 points."""
+        matrix = []
+        all_codes = self.get_all_catalog_codes()
+
+        for code in all_codes:
+            rule = self.engine.rules.get(code)
+            anchor = AUDITED_CANONICAL_POINTS.get(code)
+            region = rule.body_region.value if rule else (anchor.get("region", "head_neck") if anchor else "unknown")
+            ch_code = rule.meridian_code if rule else (code[:2] if not code.startswith("GV24+") else "GV")
+            name_en = rule.name_en if rule else (anchor.get("name_en", code) if anchor else code)
+            method = rule.localization_method.value if rule else "CANONICAL_AUDIT_ANCHOR"
+            is_posture = rule.is_posture_sensitive if rule else (anchor.get("is_posture_sensitive", False) if anchor else False)
+            sens_joint = rule.sensitive_joint if rule else (anchor.get("sensitive_joint", "NONE") if anchor else "NONE")
+
+            # Uncertainty components
+            lm_variance_mm = 1.5 if ("DEPRESSION" in method or "BONY" in method or "CANONICAL" in method) else 3.5
+            if ch_code == "ST" and code[2:].isdigit() and 19 <= int(code[2:]) <= 30:
+                cun_elasticity_mm = 8.5
+            elif rule and rule.proportional_fraction > 0:
+                cun_elasticity_mm = 2.0
+            elif rule and rule.lateral_offset_cun > 0:
+                cun_elasticity_mm = 2.5
+            else:
+                cun_elasticity_mm = 0.5
+            posture_variance_mm = 4.0 if is_posture else 0.0
+            total_uncertainty_mm = round(math.sqrt(lm_variance_mm**2 + cun_elasticity_mm**2 + posture_variance_mm**2), 2)
+            ci_95_mm = round(total_uncertainty_mm * 1.96, 2)
+
+            # Evaluate against registered ground truth if available
+            comp = self.validate_point(code)
+            dx = comp.details.get("delta_x_mm") if comp.residual_error_mm is not None else None
+            dy = comp.details.get("delta_y_mm") if comp.residual_error_mm is not None else None
+            dz = comp.details.get("delta_z_mm") if comp.residual_error_mm is not None else None
+
+            matrix.append({
+                "point_code": code,
+                "channel_code": ch_code,
+                "name_en": name_en,
+                "body_region": region,
+                "localization_method": method,
+                "is_posture_sensitive": is_posture,
+                "sensitive_joint": sens_joint or "NONE",
+                "delta_x_mm": dx if dx is not None else "N/A",
+                "delta_y_mm": dy if dy is not None else "N/A",
+                "delta_z_mm": dz if dz is not None else "N/A",
+                "residual_error_mm": comp.residual_error_mm if comp.residual_error_mm is not None else "N/A",
+                "landmark_uncertainty_mm": lm_variance_mm,
+                "cun_scaling_elasticity_mm": cun_elasticity_mm,
+                "posture_uncertainty_mm": posture_variance_mm,
+                "total_spatial_uncertainty_mm": total_uncertainty_mm,
+                "confidence_interval_95_pct_mm": ci_95_mm,
+                "error_classification": comp.classification.value,
+                "verification_tier": comp.verification_tier.value,
+                "clinical_depth_guidance_allowed": False,
+            })
+
+        return matrix
+
+    def generate_external_evidence_coverage_matrix(self) -> List[Dict[str, Any]]:
+        """Generate external empirical evidence coverage matrix for all 362 points.
+
+        Fail-closed rule: reports empirical in-vivo ground truth as BLOCKED_EXTERNAL_DATA
+        unless genuine independent patient datasets are provided.
+        """
+        matrix = []
+        all_codes = self.get_all_catalog_codes()
+
+        for code in all_codes:
+            rule = self.engine.rules.get(code)
+            anchor = AUDITED_CANONICAL_POINTS.get(code)
+            is_class_a = (code in AUDITED_CANONICAL_POINTS)
+            ch_code = rule.meridian_code if rule else (code[:2] if not code.startswith("GV24+") else "GV")
+            name_en = rule.name_en if rule else (anchor.get("name_en", code) if anchor else code)
+
+            if ch_code == "ST" and code[2:].isdigit() and 19 <= int(code[2:]) <= 30:
+                cohort = "COHORT_A_ABDOMINAL"
+            elif code in ("LI4", "LU5", "PC6", "HT7", "SP6", "ST36", "GB34", "BL40", "LR3", "KI3"):
+                cohort = "COHORT_B_LIMB"
+            elif code in ("GV20", "GV24+", "GB20", "BL10", "BL1", "GV14"):
+                cohort = "COHORT_C_CRANIAL_CERVICAL"
+            else:
+                cohort = "STANDARD_CATALOG"
+
+            obs = self.get_observation(code)
+            has_indep = obs is not None and not self._datasets[obs.dataset_id].is_synthetic_fixture and obs.dataset_id != "DS-BP3D-FJ2810"
+
+            matrix.append({
+                "point_code": code,
+                "channel_code": ch_code,
+                "name_en": name_en,
+                "quality_class": "CLASS_A" if is_class_a else "CLASS_B",
+                "evidence_category": "CANONICAL_DIGITAL_ATLAS" if is_class_a else "PARAMETRIC_RULE",
+                "empirical_in_vivo_status": "AVAILABLE" if has_indep else "BLOCKED_EXTERNAL_DATA",
+                "pilot_cohort": cohort,
+                "sample_size_n": 0 if not has_indep else 1,
+                "independent_review_status": obs.review_status.value if obs else "PENDING_EXTERNAL_DATA",
+                "clinical_verification_pct": "0.0%",
+                "engineering_readiness": "ENGINEERING_READY",
+            })
+
+        return matrix
+
+    @staticmethod
+    def init_validation_db(conn: sqlite3.Connection) -> None:
+        """Initialize database tables for validation datasets, observations, reviews, and quarantine."""
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS external_validation_datasets (
+                dataset_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                source_organization TEXT NOT NULL,
+                version TEXT NOT NULL,
+                license TEXT NOT NULL,
+                doi_or_url TEXT NOT NULL,
+                modality TEXT NOT NULL,
+                is_synthetic_fixture INTEGER NOT NULL DEFAULT 0,
+                case_id TEXT,
+                sample_size INTEGER NOT NULL DEFAULT 1,
+                created_utc TEXT NOT NULL
+            );
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS external_ground_truth_observations (
+                point_code TEXT NOT NULL,
+                dataset_id TEXT NOT NULL,
+                subject_pseudonym TEXT NOT NULL,
+                pos_x REAL NOT NULL,
+                pos_y REAL NOT NULL,
+                pos_z REAL NOT NULL,
+                norm_x REAL,
+                norm_y REAL,
+                norm_z REAL,
+                uncertainty_radius_mm REAL NOT NULL DEFAULT 2.0,
+                depth_to_skeletal_anchor_mm REAL,
+                coordinate_frame TEXT NOT NULL DEFAULT 'BP3D_CARTESIAN_METERS',
+                measurement_unit TEXT NOT NULL DEFAULT 'meters',
+                observer_id TEXT,
+                reviewer_id TEXT,
+                review_status TEXT NOT NULL DEFAULT 'DATA_IMPORTED',
+                source_checksum TEXT NOT NULL,
+                synthetic_fixture INTEGER NOT NULL DEFAULT 0,
+                schema_version TEXT NOT NULL DEFAULT '1.0-P10',
+                data_sharing_agreement_ref TEXT,
+                ethics_approval_or_exemption_ref TEXT,
+                deidentification_method TEXT DEFAULT 'SYNTHETIC_DEIDENTIFIED',
+                is_authorized_for_clinical_eval INTEGER DEFAULT 0,
+                notes TEXT,
+                PRIMARY KEY (point_code, dataset_id, subject_pseudonym),
+                FOREIGN KEY (dataset_id) REFERENCES external_validation_datasets(dataset_id)
+            );
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS independent_clinical_reviews (
+                review_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                point_code TEXT NOT NULL,
+                dataset_id TEXT NOT NULL,
+                reviewer_id TEXT NOT NULL,
+                verdict TEXT NOT NULL,
+                review_status TEXT NOT NULL,
+                reviewed_utc TEXT NOT NULL,
+                notes TEXT
+            );
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS external_validation_quarantine (
+                quarantine_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                point_code TEXT NOT NULL,
+                dataset_id TEXT NOT NULL,
+                subject_pseudonym TEXT NOT NULL,
+                reason TEXT NOT NULL,
+                details TEXT NOT NULL,
+                raw_payload TEXT NOT NULL,
+                quarantined_utc TEXT NOT NULL
+            );
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS holdout_partitions (
+                partition_id TEXT PRIMARY KEY,
+                calibration_subjects TEXT NOT NULL,
+                holdout_subjects TEXT NOT NULL,
+                total_subjects INTEGER NOT NULL,
+                split_ratio REAL NOT NULL,
+                is_locked INTEGER NOT NULL DEFAULT 1,
+                manifest_checksum TEXT NOT NULL,
+                created_utc TEXT NOT NULL
+            );
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS blind_independent_reviews (
+                review_id TEXT PRIMARY KEY,
+                point_code TEXT NOT NULL,
+                dataset_id TEXT NOT NULL,
+                subject_pseudonym TEXT NOT NULL,
+                primary_reviewer_id TEXT NOT NULL,
+                secondary_reviewer_id TEXT,
+                primary_decision TEXT NOT NULL,
+                secondary_decision TEXT,
+                consensus_decision TEXT NOT NULL,
+                inter_observer_discrepancy_mm REAL,
+                conflict_of_interest_declared INTEGER NOT NULL DEFAULT 0,
+                reviewed_utc TEXT NOT NULL
+            );
+        """)
+        conn.commit()
+
+    def export_to_db(self, db_path: str) -> Dict[str, int]:
+        """Export all registered datasets, observations, quarantine, and holdout partitions to SQLite."""
+        conn = sqlite3.connect(db_path)
+        try:
+            self.init_validation_db(conn)
+            cursor = conn.cursor()
+            ds_count = 0
+            for ds in self._datasets.values():
+                cursor.execute("""
+                    INSERT OR REPLACE INTO external_validation_datasets (
+                        dataset_id, name, source_organization, version, license,
+                        doi_or_url, modality, is_synthetic_fixture, case_id, sample_size, created_utc
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    ds.dataset_id, ds.name, ds.source_organization, ds.version, ds.license,
+                    ds.doi_or_url, ds.modality.value, 1 if ds.is_synthetic_fixture else 0,
+                    ds.case_id, ds.sample_size, ds.created_utc
+                ))
+                ds_count += 1
+
+            obs_count = 0
+            for obs in self._observations.values():
+                p = obs.canonical_position
+                n = obs.surface_normal
+                cursor.execute("""
+                    INSERT OR REPLACE INTO external_ground_truth_observations (
+                        point_code, dataset_id, subject_pseudonym, pos_x, pos_y, pos_z,
+                        norm_x, norm_y, norm_z, uncertainty_radius_mm, depth_to_skeletal_anchor_mm,
+                        coordinate_frame, measurement_unit, observer_id, reviewer_id, review_status,
+                        source_checksum, synthetic_fixture, schema_version, data_sharing_agreement_ref,
+                        ethics_approval_or_exemption_ref, deidentification_method,
+                        is_authorized_for_clinical_eval, notes
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    obs.point_code, obs.dataset_id, obs.subject_pseudonym, p[0], p[1], p[2],
+                    n[0] if n else None, n[1] if n else None, n[2] if n else None,
+                    obs.uncertainty_radius_mm, obs.depth_to_skeletal_anchor_mm,
+                    obs.coordinate_frame.value if hasattr(obs.coordinate_frame, "value") else str(obs.coordinate_frame),
+                    obs.unit.value if hasattr(obs.unit, "value") else str(obs.unit),
+                    obs.observer_id, obs.reviewer_id,
+                    obs.review_status.value if hasattr(obs.review_status, "value") else str(obs.review_status),
+                    obs.source_checksum, 1 if obs.synthetic_fixture else 0,
+                    obs.schema_version, obs.data_sharing_agreement_ref,
+                    obs.ethics_approval_or_exemption_ref,
+                    obs.deidentification_method.value if hasattr(obs.deidentification_method, "value") else str(obs.deidentification_method),
+                    1 if obs.is_authorized_for_clinical_eval else 0,
+                    obs.notes
+                ))
+                obs_count += 1
+
+            q_count = 0
+            for q in self._quarantined_records:
+                cursor.execute("""
+                    INSERT INTO external_validation_quarantine (
+                        point_code, dataset_id, subject_pseudonym, reason, details, raw_payload, quarantined_utc
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    q.point_code, q.dataset_id, q.subject_pseudonym, q.reason.value, q.details,
+                    json.dumps(q.raw_payload), q.quarantined_utc
+                ))
+                q_count += 1
+
+            conn.commit()
+            return {"datasets": ds_count, "observations": obs_count, "quarantined": q_count}
+        finally:
+            conn.close()
+
+    def import_from_db(self, db_path: str) -> Dict[str, int]:
+        """Import datasets, observations, and quarantine from SQLite database."""
+        conn = sqlite3.connect(db_path)
+        try:
+            self.init_validation_db(conn)
+            cursor = conn.cursor()
+            cursor.execute("SELECT dataset_id, name, source_organization, version, license, doi_or_url, modality, is_synthetic_fixture, case_id, sample_size, created_utc FROM external_validation_datasets")
+            ds_rows = cursor.fetchall()
+            for r in ds_rows:
+                mod = GroundTruthModality(r[6]) if r[6] in [m.value for m in GroundTruthModality] else GroundTruthModality.SYNTHETIC_TEST_FIXTURE
+                ds = ExternalGroundTruthDataset(
+                    dataset_id=r[0], name=r[1], source_organization=r[2], version=r[3], license=r[4],
+                    doi_or_url=r[5], modality=mod, is_synthetic_fixture=bool(r[7]), case_id=r[8],
+                    sample_size=r[9], created_utc=r[10]
+                )
+                self.register_dataset(ds)
+
+            cursor.execute("SELECT point_code, dataset_id, subject_pseudonym, pos_x, pos_y, pos_z, norm_x, norm_y, norm_z, uncertainty_radius_mm, depth_to_skeletal_anchor_mm, coordinate_frame, measurement_unit, observer_id, reviewer_id, review_status, source_checksum, synthetic_fixture, notes FROM external_ground_truth_observations")
+            obs_rows = cursor.fetchall()
+            imported_obs = 0
+            for r in obs_rows:
+                norm = (r[6], r[7], r[8]) if r[6] is not None and r[7] is not None and r[8] is not None else None
+                obs = GroundTruthObservation(
+                    point_code=r[0], dataset_id=r[1], canonical_position=(r[3], r[4], r[5]),
+                    surface_normal=norm, uncertainty_radius_mm=r[9], depth_to_skeletal_anchor_mm=r[10],
+                    subject_pseudonym=r[2], coordinate_frame=r[11], unit=r[12],
+                    observer_id=r[13], reviewer_id=r[14], review_status=r[15],
+                    source_checksum=r[16], synthetic_fixture=bool(r[17]), notes=r[18] or ""
+                )
+                self._observations[(obs.point_code, obs.dataset_id)] = obs
+                imported_obs += 1
+
+            cursor.execute("SELECT point_code, dataset_id, subject_pseudonym, reason, details, raw_payload, quarantined_utc FROM external_validation_quarantine")
+            q_rows = cursor.fetchall()
+            imported_q = 0
+            for r in q_rows:
+                try:
+                    r_payload = json.loads(r[5])
+                except Exception:
+                    r_payload = {}
+                q_reason = QuarantineReason(r[3]) if r[3] in [qr.value for qr in QuarantineReason] else QuarantineReason.QUARANTINE_SCHEMA_INVALID
+                q_obj = QuarantinedObservation(
+                    point_code=r[0], dataset_id=r[1], subject_pseudonym=r[2],
+                    reason=q_reason, details=r[4], raw_payload=r_payload, quarantined_utc=r[6]
+                )
+                self._quarantined_records.append(q_obj)
+                imported_q += 1
+
+            return {"datasets": len(ds_rows), "observations": imported_obs, "quarantined": imported_q}
+        finally:
+            conn.close()

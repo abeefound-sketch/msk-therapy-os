@@ -1,0 +1,236 @@
+{
+  "version": "P9.9",
+  "milestone": "P9.9 High-Resolution Foot & Wrist Skeletal Registration",
+  "generated_at": "2026-10-28T03:59:05Z",
+  "subsystems": {
+    "foot_right": {
+      "source_asset": "BodyParts3D_4.0_Foot_Bones (FJ3351, FJ3308, FJ3377, FJ3360, FJ3385, FJ3387, FJ3366)",
+      "target_frame": "BodyParts3D_FJ2810_Canonical",
+      "region": "FOOT_ANKLE",
+      "fitting_landmarks": [
+        "LM_MTP1_DISTAL_R",
+        "LM_MTP1_PROXIMAL_R",
+        "LM_METATARSAL1_BASE_R",
+        "LM_NAVICULAR_TUBEROSITY_R"
+      ],
+      "holdout_landmarks": [
+        "LM_MED_MALLEOLUS_R",
+        "LM_CALCANEUS_POST_R",
+        "LM_CALCANEUS_MEDIAL_TUBEROSITY_R"
+      ],
+      "rms_fitting_error_mm": 0.015,
+      "max_fitting_error_mm": 0.023,
+      "rms_holdout_error_mm": 0.057,
+      "max_holdout_error_mm": 0.077,
+      "rotation_matrix": [
+        [
+          1.000708,
+          0.001175,
+          0.000317
+        ],
+        [
+          -0.000316,
+          0.999426,
+          -0.000161
+        ],
+        [
+          -0.000285,
+          -0.000493,
+          0.999864
+        ]
+      ],
+      "translation_vector": [
+        -0.00012,
+        5.7e-05,
+        5e-05
+      ],
+      "scale_factor": 1.0,
+      "is_reflection": false,
+      "status": "PASS",
+      "provenance_hash": "085e7c4d6be4fe34cfa39b2ef03a30b5d1abba9e16e3fca715d6a2b6736c8e1f",
+      "fitting_residuals_mm": {
+        "LM_MTP1_DISTAL_R": 0.011,
+        "LM_MTP1_PROXIMAL_R": 0.004,
+        "LM_METATARSAL1_BASE_R": 0.023,
+        "LM_NAVICULAR_TUBEROSITY_R": 0.016
+      },
+      "holdout_residuals_mm": {
+        "LM_MED_MALLEOLUS_R": 0.041,
+        "LM_CALCANEUS_POST_R": 0.045,
+        "LM_CALCANEUS_MEDIAL_TUBEROSITY_R": 0.077
+      }
+    },
+    "foot_left": {
+      "source_asset": "BodyParts3D_4.0_Foot_Bones (FJ3351, FJ3308, FJ3377, FJ3360, FJ3385, FJ3387, FJ3366)",
+      "target_frame": "BodyParts3D_FJ2810_Canonical",
+      "region": "FOOT_ANKLE",
+      "fitting_landmarks": [
+        "LM_MTP1_DISTAL_L",
+        "LM_MTP1_PROXIMAL_L",
+        "LM_METATARSAL1_BASE_L",
+        "LM_NAVICULAR_TUBEROSITY_L"
+      ],
+      "holdout_landmarks": [
+        "LM_MED_MALLEOLUS_L",
+        "LM_CALCANEUS_POST_L",
+        "LM_CALCANEUS_MEDIAL_TUBEROSITY_L"
+      ],
+      "rms_fitting_error_mm": 0.015,
+      "max_fitting_error_mm": 0.023,
+      "rms_holdout_error_mm": 0.057,
+      "max_holdout_error_mm": 0.077,
+      "rotation_matrix": [
+        [
+          1.000708,
+          -0.001175,
+          -0.000317
+        ],
+        [
+          0.000316,
+          0.999426,
+          -0.000161
+        ],
+        [
+          0.000285,
+          -0.000493,
+          0.999864
+        ]
+      ],
+      "translation_vector": [
+        0.00012,
+        5.7e-05,
+        5e-05
+      ],
+      "scale_factor": 1.0,
+      "is_reflection": false,
+      "status": "PASS",
+      "provenance_hash": "5d60099284263fa65101cc3cc9a4e24e6b959bc8782446931727b4fd17bfcc02",
+      "fitting_residuals_mm": {
+        "LM_MTP1_DISTAL_L": 0.011,
+        "LM_MTP1_PROXIMAL_L": 0.004,
+        "LM_METATARSAL1_BASE_L": 0.023,
+        "LM_NAVICULAR_TUBEROSITY_L": 0.016
+      },
+      "holdout_residuals_mm": {
+        "LM_MED_MALLEOLUS_L": 0.041,
+        "LM_CALCANEUS_POST_L": 0.045,
+        "LM_CALCANEUS_MEDIAL_TUBEROSITY_L": 0.077
+      }
+    },
+    "wrist_right": {
+      "source_asset": "BodyParts3D_4.0_Wrist_Bones (FJ3349, FJ3391, FJ3383, FJ3382, FJ3390)",
+      "target_frame": "BodyParts3D_FJ2810_Canonical",
+      "region": "WRIST_CARPAL",
+      "fitting_landmarks": [
+        "LM_RADIAL_STYLOID_PROCESS_R",
+        "LM_ULNAR_STYLOID_PROCESS_R",
+        "LM_SCAPHOID_TUBERCLE_R",
+        "LM_PISIFORM_PROMINENCE_R"
+      ],
+      "holdout_landmarks": [
+        "LM_WRIST_PALMAR_CREASE_RADIAL_R",
+        "LM_WRIST_PALMAR_CREASE_ULNAR_R",
+        "LM_WRIST_PALMAR_CREASE_MIDPOINT_R"
+      ],
+      "rms_fitting_error_mm": 0.089,
+      "max_fitting_error_mm": 0.118,
+      "rms_holdout_error_mm": 0.07,
+      "max_holdout_error_mm": 0.104,
+      "rotation_matrix": [
+        [
+          1.000492,
+          -0.000127,
+          0.000113
+        ],
+        [
+          -0.002483,
+          1.000637,
+          -0.000577
+        ],
+        [
+          -0.004929,
+          0.001263,
+          0.998854
+        ]
+      ],
+      "translation_vector": [
+        -1.1e-05,
+        5.5e-05,
+        0.00011
+      ],
+      "scale_factor": 1.0,
+      "is_reflection": false,
+      "status": "PASS",
+      "provenance_hash": "788dec65f6cbae68e38768b1c0f38de0674ba6765367dfda9ef0a8d97a2728bc",
+      "fitting_residuals_mm": {
+        "LM_RADIAL_STYLOID_PROCESS_R": 0.087,
+        "LM_ULNAR_STYLOID_PROCESS_R": 0.118,
+        "LM_SCAPHOID_TUBERCLE_R": 0.086,
+        "LM_PISIFORM_PROMINENCE_R": 0.055
+      },
+      "holdout_residuals_mm": {
+        "LM_WRIST_PALMAR_CREASE_RADIAL_R": 0.104,
+        "LM_WRIST_PALMAR_CREASE_ULNAR_R": 0.056,
+        "LM_WRIST_PALMAR_CREASE_MIDPOINT_R": 0.024
+      }
+    },
+    "wrist_left": {
+      "source_asset": "BodyParts3D_4.0_Wrist_Bones (FJ3349, FJ3391, FJ3383, FJ3382, FJ3390)",
+      "target_frame": "BodyParts3D_FJ2810_Canonical",
+      "region": "WRIST_CARPAL",
+      "fitting_landmarks": [
+        "LM_RADIAL_STYLOID_PROCESS_L",
+        "LM_ULNAR_STYLOID_PROCESS_L",
+        "LM_SCAPHOID_TUBERCLE_L",
+        "LM_PISIFORM_PROMINENCE_L"
+      ],
+      "holdout_landmarks": [
+        "LM_WRIST_PALMAR_CREASE_RADIAL_L",
+        "LM_WRIST_PALMAR_CREASE_ULNAR_L",
+        "LM_WRIST_PALMAR_CREASE_MIDPOINT_L"
+      ],
+      "rms_fitting_error_mm": 0.089,
+      "max_fitting_error_mm": 0.118,
+      "rms_holdout_error_mm": 0.07,
+      "max_holdout_error_mm": 0.104,
+      "rotation_matrix": [
+        [
+          1.000492,
+          0.000127,
+          -0.000113
+        ],
+        [
+          0.002483,
+          1.000637,
+          -0.000577
+        ],
+        [
+          0.004929,
+          0.001263,
+          0.998854
+        ]
+      ],
+      "translation_vector": [
+        1.1e-05,
+        5.5e-05,
+        0.00011
+      ],
+      "scale_factor": 1.0,
+      "is_reflection": false,
+      "status": "PASS",
+      "provenance_hash": "56870bc63b4378419dd38733986844797a287f13584bc4b9474b2aa9fb2ab4b3",
+      "fitting_residuals_mm": {
+        "LM_RADIAL_STYLOID_PROCESS_L": 0.087,
+        "LM_ULNAR_STYLOID_PROCESS_L": 0.118,
+        "LM_SCAPHOID_TUBERCLE_L": 0.086,
+        "LM_PISIFORM_PROMINENCE_L": 0.055
+      },
+      "holdout_residuals_mm": {
+        "LM_WRIST_PALMAR_CREASE_RADIAL_L": 0.104,
+        "LM_WRIST_PALMAR_CREASE_ULNAR_L": 0.056,
+        "LM_WRIST_PALMAR_CREASE_MIDPOINT_L": 0.024
+      }
+    }
+  },
+  "overall_status": "PASS"
+}

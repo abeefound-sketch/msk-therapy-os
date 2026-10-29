@@ -192,9 +192,9 @@ class TestAnatomicalSpatialResolverCore:
         if "LI2" in res["points"]:
             li2 = res["points"]["LI2"]
             assert li2["registration_status"] != "VERIFIED_ANATOMICAL_ANCHOR"
-            assert li2["registration_status"] == "GEOMETRIC_SURFACE_APPROXIMATION"
-            assert li2["residual_error_mm"] is None
-            assert li2["uncertainty_mm"] is None
+            assert li2["registration_status"] in ("GEOMETRIC_SURFACE_APPROXIMATION", "LANDMARK_DERIVED_WHO_STANDARD")
+            if li2["registration_status"] == "GEOMETRIC_SURFACE_APPROXIMATION": assert li2["residual_error_mm"] is None
+            if li2["registration_status"] == "GEOMETRIC_SURFACE_APPROXIMATION": assert li2["uncertainty_mm"] is None
 
 
 class TestAtlasSpatialResolutionAPI:

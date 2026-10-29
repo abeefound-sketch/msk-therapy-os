@@ -1,0 +1,128 @@
+{
+  "milestone": "P9.13",
+  "title": "Independent Anatomical Validation, Ground-Truth Readiness & Production Hardening",
+  "timestamp_utc": "2026-10-29T08:10:00Z",
+  "head_commit": "fee639e",
+  "branch": "feat/p9.4-definitive-meridian-atlas-correction",
+  "total_artifacts": 23,
+  "acceptance_gates_passed": "12/12",
+  "regression_tests_passed": "589/589",
+  "physical_gpu_benchmarks_passed": "1/1",
+  "artifacts": [
+    {
+      "path": "1docs/audits/P9_13/P913_BASELINE_FORENSIC_AUDIT.md",
+      "size_bytes": 6829,
+      "sha256": "21c869cb69106b9ab5589ae4c280add3ca465248e7b1320695148a417961cfc0"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_INDEPENDENT_GROUND_TRUTH_AUDIT.md",
+      "size_bytes": 12586,
+      "sha256": "5773b3f533d7f6573bb58dc8f8e08bcaebd69126f8145d71433a66a3c8f57a7f"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_ANATOMICAL_VALIDATION_SPEC.md",
+      "size_bytes": 7851,
+      "sha256": "0cdeab70113dbcca72d0f0ebc1cb393af7739105e4e6336e45af1c544cb40d9a"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_362_POINT_PROVENANCE_MATRIX.csv",
+      "size_bytes": 142163,
+      "sha256": "15f1442991ee4360cb8dca509c647a39ae6be469734dabf36abb1075d2a2619b"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_ANATOMICAL_UNCERTAINTY_MATRIX.csv",
+      "size_bytes": 30607,
+      "sha256": "35c6a6b203dd77a0d671b6552d186b878114a40dda25500b5d62f381f4434b5e"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_FALSIFICATION_TEST_REPORT.md",
+      "size_bytes": 5656,
+      "sha256": "5af29be4e29a120c489e122a45488fcb956fa73482747880639423783be0ce6a"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_CLINICAL_GOVERNANCE_AUDIT.md",
+      "size_bytes": 5276,
+      "sha256": "9727ca72c06dec6672fb63b03eb4fcb00b88d85431d5edad125574ad1b2c723b"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_PRODUCTION_HARDENING_REPORT.md",
+      "size_bytes": 3984,
+      "sha256": "a8ffaeb043fd6511791931a6b26dc973023b7f26f850b7d0056f1e7f58f027b1"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_PHYSICAL_GPU_STRESS_BENCHMARK.md",
+      "size_bytes": 3657,
+      "sha256": "1e56dcf313144a088225a55454bd8b37b9a936e785ada15aa28c4453ec016a0e"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_FULL_REGRESSION_REPORT.md",
+      "size_bytes": 3565,
+      "sha256": "cdd7e581f60f6e6ddcc5c2c5f8ce27386d10775fb946db61df34739a0ab3c282"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_FINAL_ACCEPTANCE_MATRIX.md",
+      "size_bytes": 7129,
+      "sha256": "07bf65539980924acf0ddd0683af824bcc50f1ed5fba5afde4d16ba20ca42710"
+    },
+    {
+      "path": "1docs/audits/P9_13/P913_ENGINEERING_HANDOFF.md",
+      "size_bytes": 4593,
+      "sha256": "8ffa242c0d744ba74852404fc3cd20efea48ede865120eafa4747b5638f9369f"
+    },
+    {
+      "path": "p9_13_milestone_delivery_report.md",
+      "size_bytes": 9230,
+      "sha256": "c6ea4c567124ea5c09670d00db2d74a62c9980e599c48c0492b993b64526fef0"
+    },
+    {
+      "path": "2data/evidence/p9_13_validation/01_p913_stress_orbit_torso.png",
+      "size_bytes": 177329,
+      "sha256": "4d071b8bff1c532cb714eff29f9f3d0898170bbb8dc8af10ec81d8785d896bfa"
+    },
+    {
+      "path": "2data/evidence/p9_13_validation/02_p913_meridian_toggling_stress.png",
+      "size_bytes": 172254,
+      "sha256": "6a0320efbd5fcb721e2c7ea18dcdae9aff54cc40c24cacd774cd967fff2b212c"
+    },
+    {
+      "path": "2data/evidence/p9_13_validation/03_p913_qa_studio_hardened_dashboard.png",
+      "size_bytes": 201133,
+      "sha256": "4dda411024f135d82b9aa24ab028c9b9fbf7d83de8113ce96137a1c100a83d56"
+    },
+    {
+      "path": "2data/evidence/p9_13_validation/04_p913_webgl_context_recovery.png",
+      "size_bytes": 289493,
+      "sha256": "538dcf2b61daf3261761f65a4a6fcb2931e791f228d49fc76e0ec834f3a84845"
+    },
+    {
+      "path": "2data/evidence/p9_13_validation/webgl_p9_13_stress_benchmark.json",
+      "size_bytes": 1317,
+      "sha256": "4b958b9addddb25513380837eb78cede68100b4bb9efc5a44036e01126798702"
+    },
+    {
+      "path": "msk_therapy_os/anatomical_validation.py",
+      "size_bytes": 33323,
+      "sha256": "57400e878db0d460e8b62c43d747a1746125428914290c93095550dcd880cb2a"
+    },
+    {
+      "path": "tests/test_p9_13_falsification.py",
+      "size_bytes": 11565,
+      "sha256": "3fb98ccbb90ce6962edb32a889e1d2e71f54a750b2380006cde40d3725325acc"
+    },
+    {
+      "path": "tests/test_p9_13_anatomical_validation.py",
+      "size_bytes": 11841,
+      "sha256": "66e43bfd271fcdfb27963cd0a0740213a1eabba55ead92c074a3706e7df39e97"
+    },
+    {
+      "path": "tests/test_p9_13_production_hardening.py",
+      "size_bytes": 8324,
+      "sha256": "e6f4b5241629a024bf6a2255bcc1232676eed7289f7242dfe399da7ecde0b6f0"
+    },
+    {
+      "path": "tests/test_p9_13_playwright_stress.py",
+      "size_bytes": 14275,
+      "sha256": "d4eb8287a587ad0f0340e2308f9a5a751d78ba50683e45763cf2e3bb7df1e224"
+    }
+  ]
+}

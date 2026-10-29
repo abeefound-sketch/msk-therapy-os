@@ -54,6 +54,7 @@ def browser_server(tmp_path_factory):
     server.server_close()
 
 
+@pytest.mark.playwright
 def test_playwright_dien_chan_suite(browser_server):
     """Complete end-to-end interactive Playwright test suite for Dien Chan."""
     console_errors = []

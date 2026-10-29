@@ -1,0 +1,144 @@
+{
+  "milestone": "P9.8",
+  "title": "P9.8 Anatomical Ground Truth & Hardware Integrity Evidence Manifest",
+  "generated_timestamp_iso": "2026-10-28T09:45:00Z",
+  "total_manifest_entries": 27,
+  "dataset_sha256_invariant": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+  "files": [
+    {
+      "path": "1docs/audits/P9_8/P98_BASELINE_FORENSIC_AUDIT.md",
+      "file_size_bytes": 5363,
+      "sha256": "401e79aa51165323da8971c246fa46804f169d3ac281b39482a779dc11daafaa"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_LANDMARK_DEPENDENCY_GRAPH.json",
+      "file_size_bytes": 80107,
+      "sha256": "a1aace23f18845bbb3a35c9d2f89712f4cec38827da2d29b839c3598848e2af9"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_CIRCULAR_REFERENCE_REMEDIATION.md",
+      "file_size_bytes": 5176,
+      "sha256": "c3b3091034ebc4296bb44e4c0bfec7d725a8d97df7058f0511a9da6e94b8ea46"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_SCAPULAR_LANDMARK_VALIDATION.md",
+      "file_size_bytes": 3392,
+      "sha256": "626bc6f29b4b220f660689781a5177ac7b2cea00359c01cd736c16d49cca6ae6"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_CUN_SCALING_INDEPENDENT_AUDIT.md",
+      "file_size_bytes": 3877,
+      "sha256": "6eeafabad4d6e0fce2362b48c635c3f70cf4d6813eda059555a03e4a6e4d0435"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_CLASS_B_REVALIDATION_MATRIX.csv",
+      "file_size_bytes": 27252,
+      "sha256": "da20dafe082583b954704d281a9e09d08553082d730ca47570c257fa4cd50154"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_ACUPOINT_PROVENANCE_MATRIX.csv",
+      "file_size_bytes": 72395,
+      "sha256": "d878665f15af9a0a14c4b63e4ed9577a438608a00d6461421636b2965e504b3d"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_QUALITY_CLASS_CHANGELOG.csv",
+      "file_size_bytes": 56985,
+      "sha256": "ddc1fde8e4dd2fe92176a4a7be71761553787437eb4ae582f15f52caad08d9e4"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_QA_STUDIO_DYNAMIC_METRICS_AUDIT.md",
+      "file_size_bytes": 4010,
+      "sha256": "15be780d0c5fdff203aece2e39a4a75f0bf3e97ed4996b3b6fd705bcf42ee29b"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_TEST_SUITE_RECONCILIATION.md",
+      "file_size_bytes": 4116,
+      "sha256": "4fda27b94b4a39cc48da72bed3f6ea0f9f8da0718cd1f059a94fe59e206b47a4"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_PHYSICAL_GPU_ACCEPTANCE.md",
+      "file_size_bytes": 3560,
+      "sha256": "8e774191ed294da05dc58a1d63a848a1f895a766096e3b09da4fbedb49ebe6a3"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_GEOMETRY_REGRESSION.md",
+      "file_size_bytes": 2789,
+      "sha256": "7ea0d909178d9985d4a9c7b2802d48da072d6232fdd639eb889c61957f9aa654"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_FINAL_ACCEPTANCE_MATRIX.md",
+      "file_size_bytes": 3038,
+      "sha256": "5073638448523f93361eb00319d6bb97d4ca14d08bed61afdac6156dde407dbf"
+    },
+    {
+      "path": "1docs/audits/P9_8/P98_ENGINEERING_HANDOFF.md",
+      "file_size_bytes": 3584,
+      "sha256": "a82461f373746679323e30d9b72292ce096969c85c4ec3284ad256f2f92313b7"
+    },
+    {
+      "path": "2data/evidence/p9_8_integrity/01_p98_qa_studio_dynamic_coverage_118_class_b.png",
+      "file_size_bytes": 212196,
+      "sha256": "27ad5dc5179debe2d97af8ddc2b4f1410332ad1010bbba27eac5a405ad8bbaa0"
+    },
+    {
+      "path": "2data/evidence/p9_8_integrity/02_p98_spleen_circular_reference_quarantined_class_d.png",
+      "file_size_bytes": 153741,
+      "sha256": "4f2d625d6223eaf110bbd61724828209d567723b25bd1aa4d8c4195043b119de"
+    },
+    {
+      "path": "2data/evidence/p9_8_integrity/03_p98_scapular_interscapular_paraspinal_calibrated.png",
+      "file_size_bytes": 190524,
+      "sha256": "f04be3b98f48fd1e59e6cfbbd1df29fc9842fc49c6b5d7b2b518c697229cd35e"
+    },
+    {
+      "path": "2data/evidence/p9_8_integrity/04_p98_conception_vessel_midline_invariance.png",
+      "file_size_bytes": 205386,
+      "sha256": "2c225ab14d49ef43b02c0692ca7205a2ebcbb21ed042b08521841c7ca83c4db1"
+    },
+    {
+      "path": "2data/evidence/p9_8_integrity/05_p98_intel_hd5500_physical_hardware_benchmark.png",
+      "file_size_bytes": 204749,
+      "sha256": "0487761ae3c929fc96b82d4ce3c83c0e380f262831c1702ac0cadde18507ec0e"
+    },
+    {
+      "path": "2data/evidence/p9_8_integrity/webgl_physical_benchmark_metrics.json",
+      "file_size_bytes": 627,
+      "sha256": "30b65f85e69482437011964d1f5cc17839d061023a9f275f0efbfaa8fea51002"
+    },
+    {
+      "path": "msk_therapy_os/landmark_dependency_validator.py",
+      "file_size_bytes": 10639,
+      "sha256": "920740fd9527c79efbb9f96b082480f0540706747d8b39fa0d5f783d4dfa3499"
+    },
+    {
+      "path": "msk_therapy_os/landmark_registry.py",
+      "file_size_bytes": 41919,
+      "sha256": "3b5c7af26272d8313874f7df899cab04c706fb9d19c104dd7da254c8b716e408"
+    },
+    {
+      "path": "msk_therapy_os/point_localization_rules.py",
+      "file_size_bytes": 120650,
+      "sha256": "c404e66b291f70ca0060f9cbb1b8ff4912e00ab9d485c2401c41b1ba1f1ef9b5"
+    },
+    {
+      "path": "msk_therapy_os/static/atlas/meridians.js",
+      "file_size_bytes": 137186,
+      "sha256": "4c8136c3de9e1c9f34424f70722674367e5b3b7ff43ebae2b31f7a27c95abc21"
+    },
+    {
+      "path": "msk_therapy_os/static/atlas/data/acupuncture_3d.json",
+      "file_size_bytes": 1750611,
+      "sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df"
+    },
+    {
+      "path": "tests/test_p9_8_integrity_hardening.py",
+      "file_size_bytes": 11161,
+      "sha256": "e1ba3f1637da6b3d5f3aebf06420ff815af089d1e6f31877bea9c7a32f6f0e4e"
+    },
+    {
+      "path": "tests/test_p9_8_playwright_integrity.py",
+      "file_size_bytes": 14444,
+      "sha256": "6d31c7ad65f93e17779b648040bbc382cc08b82df4a45765dd23e05f16ad0dc5"
+    }
+  ]
+}

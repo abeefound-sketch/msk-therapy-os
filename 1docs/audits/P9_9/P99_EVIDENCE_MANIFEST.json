@@ -1,0 +1,188 @@
+{
+  "milestone": "P9.9 High-Resolution Foot & Wrist Skeletal Registration",
+  "generated_at": "2026-10-28T04:13:37Z",
+  "environment": {
+    "os": "Windows 10 Pro 64-bit",
+    "cpu": "Intel(R) Core(TM) i7-5600U CPU @ 2.60GHz",
+    "gpu": "Intel(R) HD Graphics 5500",
+    "python_version": "3.11.9"
+  },
+  "artifacts": [
+    {
+      "type": "EVIDENCE_ASSET",
+      "filename": "01_p99_qa_studio_coverage_126_class_b.png",
+      "relative_path": "2data/evidence/p9_9_registration/01_p99_qa_studio_coverage_126_class_b.png",
+      "size_bytes": 212157,
+      "sha256": "0673dd96824e523c62610615fc1ce4941301dcb38c57d68529c2c3660aef6f38",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "EVIDENCE_ASSET",
+      "filename": "02_p99_foot_medial_dequarantined_sp2_sp5.png",
+      "relative_path": "2data/evidence/p9_9_registration/02_p99_foot_medial_dequarantined_sp2_sp5.png",
+      "size_bytes": 151724,
+      "sha256": "a2fa7e943deb01e9a0dfe87eaaacc3649bcde7240bb803a76c0bbb3691712169",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "EVIDENCE_ASSET",
+      "filename": "03_p99_kidney_distal_foot_plantar_ki1_ki6.png",
+      "relative_path": "2data/evidence/p9_9_registration/03_p99_kidney_distal_foot_plantar_ki1_ki6.png",
+      "size_bytes": 152538,
+      "sha256": "00ead5d4f0029f93eb34cb30e7b9f95e3891eb981a7e9c2674c64511794267e1",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "EVIDENCE_ASSET",
+      "filename": "04_p99_wrist_palmar_crease_lu9_ht7_pc7.png",
+      "relative_path": "2data/evidence/p9_9_registration/04_p99_wrist_palmar_crease_lu9_ht7_pc7.png",
+      "size_bytes": 209055,
+      "sha256": "72fbbcbf99263712ed806c790a677b085b9dce8dcae3887ef7f40714ee55ef1c",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "EVIDENCE_ASSET",
+      "filename": "05_p99_webgl_hardware_benchmark_intel_hd5500.png",
+      "relative_path": "2data/evidence/p9_9_registration/05_p99_webgl_hardware_benchmark_intel_hd5500.png",
+      "size_bytes": 201801,
+      "sha256": "b1a77acd442a74cec6e962a82239a808aa55520354b944b7f4ced874a4e6cbd1",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "EVIDENCE_ASSET",
+      "filename": "p9_9_skeletal_registration_manifest.json",
+      "relative_path": "2data/evidence/p9_9_registration/p9_9_skeletal_registration_manifest.json",
+      "size_bytes": 6880,
+      "sha256": "4d13baddf57685e9daf4c68c56476da6f83a842120d014970776f5452ea47cb0",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "EVIDENCE_ASSET",
+      "filename": "webgl_p9_9_benchmark_metrics.json",
+      "relative_path": "2data/evidence/p9_9_registration/webgl_p9_9_benchmark_metrics.json",
+      "size_bytes": 1008,
+      "sha256": "b2517b5c79a15d5a3a191e1790335fab95daf5ea566989393439d875a3d685aa",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_ACUPOINT_PROVENANCE_MATRIX.csv",
+      "relative_path": "1docs/audits/P9_9/P99_ACUPOINT_PROVENANCE_MATRIX.csv",
+      "size_bytes": 63394,
+      "sha256": "2501a6d8a8d33409dd92abec8a5a46ff7bb8c386487a45c842e0b3779a4ea09b",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_ANATOMICAL_ASSET_SOURCE_AUDIT.md",
+      "relative_path": "1docs/audits/P9_9/P99_ANATOMICAL_ASSET_SOURCE_AUDIT.md",
+      "size_bytes": 9033,
+      "sha256": "3fd7703b5a75401d3253f959871916e83a8664c7b2eea6781b9e361b678ab1c4",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_ANATOMICAL_PROVENANCE_GRAPH.json",
+      "relative_path": "1docs/audits/P9_9/P99_ANATOMICAL_PROVENANCE_GRAPH.json",
+      "size_bytes": 82388,
+      "sha256": "99d782eaa86d5ddbb073a92d7ace5a865204df5f135e4a3ae4ed5e74952e1f5a",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_BASELINE_FORENSIC_AUDIT.md",
+      "relative_path": "1docs/audits/P9_9/P99_BASELINE_FORENSIC_AUDIT.md",
+      "size_bytes": 7566,
+      "sha256": "f9472786fb5d0c2dab55dbdf71a53ca0655834e215b1a082cd9d0b3300fd0e06",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_COORDINATE_CHANGELOG.csv",
+      "relative_path": "1docs/audits/P9_9/P99_COORDINATE_CHANGELOG.csv",
+      "size_bytes": 2181,
+      "sha256": "05af70edb57a778cc352022f0a81890174be0fda05902ef7379ce9fd505bd826",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_ENGINEERING_HANDOFF.md",
+      "relative_path": "1docs/audits/P9_9/P99_ENGINEERING_HANDOFF.md",
+      "size_bytes": 7092,
+      "sha256": "4ddb6fe6fad16c4deebbffd7ea4ad364f43872065ba0958213129403d5e50004",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_FINAL_ACCEPTANCE_MATRIX.md",
+      "relative_path": "1docs/audits/P9_9/P99_FINAL_ACCEPTANCE_MATRIX.md",
+      "size_bytes": 5602,
+      "sha256": "20c615906d507b40696d3cf39b598304fdc19d7d82831ef0e95534b5870c0350",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_FOOT_LANDMARK_DEQUARANTINE_AUDIT.md",
+      "relative_path": "1docs/audits/P9_9/P99_FOOT_LANDMARK_DEQUARANTINE_AUDIT.md",
+      "size_bytes": 4844,
+      "sha256": "7db73b7e524ac4c52ee645fec11e391c8c097675ada0cb0f647314d0453e4ce8",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_FULL_TEST_EXECUTION_REPORT.md",
+      "relative_path": "1docs/audits/P9_9/P99_FULL_TEST_EXECUTION_REPORT.md",
+      "size_bytes": 4496,
+      "sha256": "53f8ae9839cf2f18389ff7c7be8f7cdc6f073de23bcf9cddf78df72a6d7db592",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_HIGH_RES_SKELETAL_REGISTRATION_SPEC.md",
+      "relative_path": "1docs/audits/P9_9/P99_HIGH_RES_SKELETAL_REGISTRATION_SPEC.md",
+      "size_bytes": 5512,
+      "sha256": "c345afcef4ced22d4fd73ba13cb20ea5ea88d5e58f8e396db71aa05ae5ed546c",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_KIDNEY_DISTAL_FOOT_REMEDIATION.md",
+      "relative_path": "1docs/audits/P9_9/P99_KIDNEY_DISTAL_FOOT_REMEDIATION.md",
+      "size_bytes": 4935,
+      "sha256": "21c445cce60da3d1ac1bf5cee3feaaa9f88ebaa358bc29d3c2a9ae6dc5a064e9",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_QUALITY_CLASS_CHANGELOG.csv",
+      "relative_path": "1docs/audits/P9_9/P99_QUALITY_CLASS_CHANGELOG.csv",
+      "size_bytes": 1068,
+      "sha256": "7bdb7459013799605e71ab918315a14b67930c82e0697c64386ff4ed7943744c",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_REGISTRATION_ACCURACY_REPORT.md",
+      "relative_path": "1docs/audits/P9_9/P99_REGISTRATION_ACCURACY_REPORT.md",
+      "size_bytes": 3715,
+      "sha256": "6b8970b423f765efe2e7cb1c12ca3159740f9c53d69f20966a5324d6f2f246cc",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_WEBGL_HARDWARE_REGRESSION.md",
+      "relative_path": "1docs/audits/P9_9/P99_WEBGL_HARDWARE_REGRESSION.md",
+      "size_bytes": 2946,
+      "sha256": "568fc2e850e04581b559f8ec98cbbbe92e4415d17c8b216933f837178aa8c843",
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AUDIT_DOCUMENT",
+      "filename": "P99_WRIST_SKELETAL_REGISTRATION.md",
+      "relative_path": "1docs/audits/P9_9/P99_WRIST_SKELETAL_REGISTRATION.md",
+      "size_bytes": 4220,
+      "sha256": "0917bc9a8eff54d2cfddee89f846154e3de5df579832e68d0dd37dda1e49b143",
+      "status": "VERIFIED"
+    }
+  ]
+}

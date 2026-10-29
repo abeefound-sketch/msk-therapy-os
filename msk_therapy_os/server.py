@@ -96,14 +96,35 @@ from msk_therapy_os.anatomical_registration import AnatomicalRegistrationEngine
 from msk_therapy_os.cun_scaling import CunScalingEngine
 from msk_therapy_os.pose_rigging import PoseKinematicsEngine, GuardedSurfaceProjector
 from msk_therapy_os.spatial_resolver import AnatomicalSpatialResolver
+from msk_therapy_os.anatomical_validation import (
+    IndependentAnatomicalValidator,
+    ExternalGroundTruthDataset,
+    GroundTruthObservation,
+    GroundTruthModality,
+    validate_observation_contract,
+    ReviewStatus,
+    CoordinateFrame,
+    MeasurementUnit,
+    QuarantineReason,
+    DeidentificationMethod,
+    EvidenceIngestionState,
+    PreRegisteredAccuracyThresholds,
+)
 
 _cached_spatial_resolver = None
+_cached_anatomical_validator = None
 
 def get_spatial_resolver() -> AnatomicalSpatialResolver:
     global _cached_spatial_resolver
     if _cached_spatial_resolver is None:
         _cached_spatial_resolver = AnatomicalSpatialResolver()
     return _cached_spatial_resolver
+
+def get_anatomical_validator() -> IndependentAnatomicalValidator:
+    global _cached_anatomical_validator
+    if _cached_anatomical_validator is None:
+        _cached_anatomical_validator = IndependentAnatomicalValidator()
+    return _cached_anatomical_validator
 
 from msk_therapy_os.dien_chan.facial_registration import FacialRegistrationEngine
 from msk_therapy_os.dien_chan.db import (
@@ -921,6 +942,136 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     ch = query.get("channel_code", [None])[0]
                     self._send_json(get_meridian_route_graph_data(db, channel_code=ch))
 
+                elif path == "/api/atlas/validation/provenance":
+                    validator = get_anatomical_validator()
+                    ch = query.get("channel_code", [None])[0]
+                    matrix = validator.generate_full_362_provenance_matrix()
+                    if ch:
+                        matrix = [row for row in matrix if row.get("channel_code") == ch]
+                    self._send_json({
+                        "status": "success",
+                        "total_records": len(matrix),
+                        "provenance_matrix": matrix,
+                    })
+
+                elif path == "/api/atlas/validation/report":
+                    validator = get_anatomical_validator()
+                    dataset_id = query.get("dataset_id", [None])[0]
+                    rep = validator.validate_catalog(dataset_id=dataset_id)
+                    self._send_json({
+                        "status": "success",
+                        "validation_report": rep.to_dict(),
+                    })
+
+                elif path == "/api/atlas/validation/uncertainty":
+                    validator = get_anatomical_validator()
+                    ch = query.get("channel_code", [None])[0]
+                    matrix = validator.generate_anatomical_uncertainty_matrix()
+                    if ch:
+                        matrix = [row for row in matrix if row.get("channel_code") == ch]
+                    self._send_json({
+                        "status": "success",
+                        "total_records": len(matrix),
+                        "uncertainty_matrix": matrix,
+                    })
+
+                elif path == "/api/atlas/validation/datasets":
+                    validator = get_anatomical_validator()
+                    datasets = [ds.to_dict() for ds in validator._datasets.values()]
+                    self._send_json({
+                        "status": "success",
+                        "total_datasets": len(datasets),
+                        "datasets": datasets,
+                    })
+
+                elif path == "/api/atlas/validation/independent-coverage":
+                    validator = get_anatomical_validator()
+                    cov_matrix = validator.generate_external_evidence_coverage_matrix()
+                    total_pts = len(cov_matrix)
+                    available_count = sum(1 for r in cov_matrix if r["empirical_in_vivo_status"] == "AVAILABLE")
+                    class_a_count = sum(1 for r in cov_matrix if r["quality_class"] == "CLASS_A")
+                    class_b_count = sum(1 for r in cov_matrix if r["quality_class"] == "CLASS_B")
+                    q_count = len(validator.get_quarantined_records())
+                    self._send_json({
+                        "status": "success",
+                        "total_points": total_pts,
+                        "class_a_internal_anchors": class_a_count,
+                        "class_b_rule_derived": class_b_count,
+                        "empirical_in_vivo_ground_truth_count": available_count,
+                        "empirical_in_vivo_ground_truth_percentage": round((available_count / total_pts) * 100.0, 1),
+                        "empirical_in_vivo_status": "BLOCKED_EXTERNAL_DATA" if available_count == 0 else "PARTIALLY_AVAILABLE",
+                        "ingestion_governance_state": validator.get_ingestion_governance_state(),
+                        "engineering_readiness": "ENGINEERING_READY",
+                        "clinical_verification_tier_4": "0.0%",
+                        "quarantined_observations_count": q_count,
+                        "pre_registered_accuracy_thresholds": validator._pre_registered_thresholds.to_dict(),
+                        "governance_note": "Technical calibration is 100% (Class A/B); Empirical in-vivo patient validation requires external datasets (currently BLOCKED_EXTERNAL_DATA).",
+                        "pilot_cohorts": {
+                            "cohort_a_abdominal": "PILOT_SPECIFIED_UNSCALED_MESH_LIMITATION",
+                            "cohort_b_distal_limbs": "PILOT_SPECIFIED_SYMMETRY_PRESERVED",
+                            "cohort_c_cranial_cervical": "PILOT_SPECIFIED_YINTANG_RECONCILED",
+                        }
+                    })
+
+                elif path.startswith("/api/atlas/validation/evidence"):
+                    validator = get_anatomical_validator()
+                    code = None
+                    if path != "/api/atlas/validation/evidence":
+                        parts = path.strip("/").split("/")
+                        if len(parts) >= 5:
+                            code = parts[4]
+                    if not code:
+                        code = query.get("point_code", [None])[0]
+                    if not code:
+                        self._send_json({"error": "Missing point_code parameter or path component"}, status=HTTPStatus.BAD_REQUEST)
+                    else:
+                        dataset_id = query.get("dataset_id", [None])[0]
+                        try:
+                            comp = validator.validate_point(code, dataset_id=dataset_id)
+                            self._send_json({
+                                "status": "success",
+                                "comparison": comp.to_dict(),
+                            })
+                        except Exception as e:
+                            self._send_json({"error": str(e)}, status=HTTPStatus.NOT_FOUND)
+
+                elif path == "/api/atlas/validation/quarantine":
+                    validator = get_anatomical_validator()
+                    reason_filter = query.get("reason", [None])[0]
+                    q_records = validator.get_quarantined_records(reason=reason_filter)
+                    self._send_json({
+                        "status": "success",
+                        "total_quarantined": len(q_records),
+                        "quarantined_records": [q.to_dict() for q in q_records],
+                    })
+
+                elif path == "/api/atlas/validation/holdout/status":
+                    validator = get_anatomical_validator()
+                    part_id = query.get("partition_id", ["default"])[0]
+                    part = validator._holdout_manager.get_partition(part_id)
+                    if part:
+                        self._send_json({
+                            "status": "success",
+                            "partition": part.to_dict(),
+                        })
+                    else:
+                        self._send_json({
+                            "status": "not_found",
+                            "message": f"No partition with id '{part_id}' registered.",
+                        }, status=HTTPStatus.NOT_FOUND)
+
+                elif path == "/api/atlas/validation/pilot-cohorts":
+                    validator = get_anatomical_validator()
+                    c_a = validator.audit_st19_st30_abdominal_line()
+                    c_b = validator.audit_bilateral_limb_landmarks()
+                    c_c = validator.audit_cranial_cervical_points()
+                    self._send_json({
+                        "status": "success",
+                        "cohort_a_abdominal": c_a,
+                        "cohort_b_bilateral_limbs": c_b,
+                        "cohort_c_cranial_cervical": c_c,
+                    })
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
@@ -1704,6 +1855,128 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
                     except Exception as e:
                         self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+
+                elif path == "/api/atlas/validation/datasets":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        req_fields = ["dataset_id", "name", "source_organization", "version", "license", "doi_or_url"]
+                        for f in req_fields:
+                            if not body.get(f):
+                                self._send_json({"error": f"Missing required field: {f}"}, status=HTTPStatus.BAD_REQUEST)
+                                return
+
+                        modality_str = body.get("modality", "SYNTHETIC_TEST_FIXTURE")
+                        try:
+                            modality = GroundTruthModality(modality_str)
+                        except ValueError:
+                            self._send_json({"error": f"Invalid modality: {modality_str}"}, status=HTTPStatus.BAD_REQUEST)
+                            return
+
+                        ds = ExternalGroundTruthDataset(
+                            dataset_id=body["dataset_id"],
+                            name=body["name"],
+                            source_organization=body["source_organization"],
+                            version=body["version"],
+                            license=body["license"],
+                            doi_or_url=body["doi_or_url"],
+                            modality=modality,
+                            is_synthetic_fixture=bool(body.get("is_synthetic_fixture", False)),
+                            case_id=body.get("case_id"),
+                            sample_size=int(body.get("sample_size", 1)),
+                        )
+                        validator.register_dataset(ds)
+
+                        imported_count = 0
+                        if "observations" in body and isinstance(body["observations"], list):
+                            obs_list = []
+                            for o_dict in body["observations"]:
+                                pos = tuple(o_dict.get("canonical_position") or o_dict.get("measurement_coordinates") or (0.0, 0.0, 0.0))
+                                obs = GroundTruthObservation(
+                                    point_code=o_dict["point_code"],
+                                    dataset_id=ds.dataset_id,
+                                    canonical_position=pos,
+                                    surface_normal=tuple(o_dict["surface_normal"]) if o_dict.get("surface_normal") else None,
+                                    uncertainty_radius_mm=float(o_dict.get("uncertainty_radius_mm", 2.0)),
+                                    subject_pseudonym=o_dict.get("subject_pseudonym", "SUBJ-ANON-0001"),
+                                    coordinate_frame=o_dict.get("coordinate_frame", "BP3D_CARTESIAN_METERS"),
+                                    unit=o_dict.get("unit", "meters"),
+                                    observer_id=o_dict.get("observer_id", "OBS-DEFAULT"),
+                                    source_checksum=o_dict.get("source_checksum", ""),
+                                    notes=o_dict.get("notes", ""),
+                                )
+                                obs_list.append(obs)
+                            imported_count = validator.import_observations(obs_list, validate_contract=True)
+
+                        self._send_json({
+                            "status": "success",
+                            "dataset": ds.to_dict(),
+                            "imported_observations_count": imported_count,
+                        }, status=HTTPStatus.CREATED)
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/evaluate":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        dataset_id = body.get("dataset_id")
+                        point_codes = body.get("point_codes")
+                        side = body.get("side", "right")
+                        holdouts = body.get("holdout_subjects")
+                        subject = body.get("subject_pseudonym")
+
+                        report = validator.validate_catalog(
+                            point_codes=point_codes,
+                            dataset_id=dataset_id,
+                            side=side,
+                            holdout_subjects=holdouts,
+                            subject_pseudonym=subject,
+                        )
+                        self._send_json({
+                            "status": "success",
+                            "evaluation_report": report.to_dict(),
+                        })
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/ingest":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        res = validator.ingest_external_evidence_batch(body, enforce_quarantine=True)
+                        self._send_json(res, status=HTTPStatus.OK)
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/holdout/split":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        p_id = body.get("partition_id", "default")
+                        subjs = body.get("subjects", [])
+                        ratio = float(body.get("holdout_ratio", 0.2))
+                        seed = int(body.get("seed", 42))
+                        part = validator._holdout_manager.create_partition(p_id, subjs, holdout_ratio=ratio, seed=seed)
+                        self._send_json({"status": "success", "partition": part.to_dict()}, status=HTTPStatus.CREATED)
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
                 elif path == "/api/dien-chan/geometry/resolve":
                     if not isinstance(body, dict):

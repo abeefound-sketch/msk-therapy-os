@@ -14,3 +14,7 @@
 {"ts": 1792684345.8951008, "message": "reasoning effort nudge queued after shell error", "extra": {"call_id": "call_300289", "exit_code": 124}}
 {"ts": 1792684568.5476458, "message": "runtime nudge queued (reasoning effort)", "extra": {"signal": "A shell command failed (exit 2)."}}
 {"ts": 1792684568.5506015, "message": "reasoning effort nudge queued after shell error", "extra": {"call_id": "call_326832", "exit_code": 2}}
+{"ts": 1793116025.6372557, "message": "skill context refreshed (removed stale items)", "extra": {"removed": 1}}
+{"ts": 1793116025.6701927, "message": "micro-compact skipped (startup unfinished session tail)"}
+{"ts": 1793116278.3965194, "message": "runtime nudge queued (reasoning effort)", "extra": {"signal": "Reasoning effort has been xhigh for 5/6 consecutive requests."}}
+{"ts": 1793116328.7976513, "message": "reasoning effort downgraded after xhigh request budget", "extra": {"budget": 6, "attempted_request_count": 7}}

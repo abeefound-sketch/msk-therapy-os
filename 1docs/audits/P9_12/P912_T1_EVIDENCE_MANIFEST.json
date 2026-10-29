@@ -1,0 +1,119 @@
+{
+  "manifest_version": "1.0",
+  "milestone": "P9.12 Tranche 1 (Proximal Extremities & Limb Girdles)",
+  "timestamp_utc": "2026-10-28T08:21:23Z",
+  "auditor": "Principal Computational Anatomy Engineer & Independent Evidence Auditor",
+  "canonical_dataset_hash": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+  "canonical_mesh_hash": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808",
+  "catalog_distribution": {
+    "total_acupoints": 362,
+    "class_a_audited_anchors": 18,
+    "class_b_rule_derived": 204,
+    "class_c_quarantined": 0,
+    "class_d_uncalibrated": 140,
+    "calibrated_coverage_percentage": 61.3,
+    "clinical_tier_4_verified_count": 0,
+    "clinical_tier_4_verified_percentage": 0.0
+  },
+  "hardware_benchmark": {
+    "gpu": "Intel(R) HD Graphics 5500 (D3D11/ANGLE)",
+    "avg_fps": 30.9,
+    "p95_frame_time_ms": 35.5,
+    "avg_raycast_ms": 0.0,
+    "context_losses": 0
+  },
+  "files": {
+    "1docs/audits/P9_12/P912_T1_BASELINE_AUDIT.md": {
+      "sha256": "97b4935e93dca18466dea251295f9b07531add742f13938bcd12c4787527392c",
+      "size_bytes": 10622
+    },
+    "1docs/audits/P9_12/P912_T1_TARGET_48_MATRIX.csv": {
+      "sha256": "c9b467c07135a55faf6845c71874ae11b05ed7ef8c4705adc40594103b7cef63",
+      "size_bytes": 21305
+    },
+    "1docs/audits/P9_12/P912_T1_ANATOMICAL_RULES.md": {
+      "sha256": "04285dcb129a8ca7452130262284563352f473ec29a7bb1c34733fd9781b720c",
+      "size_bytes": 23047
+    },
+    "1docs/audits/P9_12/P912_T1_POINT_REMEDIATION_MATRIX.csv": {
+      "sha256": "d4e7a7803e568232f6c344f1b0c2c074a7ca19a150bfb512493770f851e21542",
+      "size_bytes": 23702
+    },
+    "1docs/audits/P9_12/P912_T1_GEOMETRY_AUDIT.md": {
+      "sha256": "57adffb20254fc00267aa3d60a09ab52d9c20b52fff7c79e7032a4336cc260ba",
+      "size_bytes": 8655
+    },
+    "1docs/audits/P9_12/P912_T1_REGISTRATION_VALIDATION.md": {
+      "sha256": "9dc22cfe3f105f06c1a82a18a0da59c3031be2754acef5a7f63bb1b0f0904dd2",
+      "size_bytes": 4247
+    },
+    "1docs/audits/P9_12/P912_T1_CLASSIFICATION_RECONCILIATION.csv": {
+      "sha256": "3b83bee80e7fe5009f97cafe9b1600d2d924a3f87558b40accfc4c0f727afaf4",
+      "size_bytes": 51119
+    },
+    "1docs/audits/P9_12/P912_T1_FULL_REGRESSION_REPORT.md": {
+      "sha256": "7d3ee55db55d5c6eb2ed135cf39d6f7465a9f58d3a8c139e77d4ec442cce78cb",
+      "size_bytes": 5719
+    },
+    "1docs/audits/P9_12/P912_T1_PHYSICAL_GPU_BENCHMARK.md": {
+      "sha256": "e98a5baa65f7af1c5b82823eb8c4bed996fda2fab9e18492a77ad77964f266e9",
+      "size_bytes": 3617
+    },
+    "1docs/audits/P9_12/P912_T1_FINAL_ACCEPTANCE_MATRIX.md": {
+      "sha256": "392fee54758b97338f83e406b3c8404f5a9efe18a634839b98b41bdb92c1e92b",
+      "size_bytes": 8036
+    },
+    "1docs/audits/P9_12/P912_T1_ENGINEERING_HANDOFF.md": {
+      "sha256": "e38b96215259de47e666e6538528b864d84a5fe60aaa7a364504e7e6d7596285",
+      "size_bytes": 6832
+    },
+    "2data/evidence/p9_12_tranche_1/01_p912_qa_studio_61pct_calibrated.png": {
+      "sha256": "d2e66566a4a540df1199e380553beecda237c3ad14f5e8cc0f6995330957ec04",
+      "size_bytes": 209849
+    },
+    "2data/evidence/p9_12_tranche_1/02_p912_thigh_hip_st_gb_bl_rules.png": {
+      "sha256": "54081494a7dd523e144177ae37fb0d97d88e22f578f6ff770a46eaca108f824d",
+      "size_bytes": 204421
+    },
+    "2data/evidence/p9_12_tranche_1/03_p912_shoulder_upper_arm_li_te_si_rules.png": {
+      "sha256": "2e75d4f59acc95e8ad922ca86866fd999202ca8f66d6419d0711006d36001ff0",
+      "size_bytes": 184365
+    },
+    "2data/evidence/p9_12_tranche_1/04_p912_crural_calf_bl_ki_rules.png": {
+      "sha256": "e41a65cea3ee6eca186c1fe482db0aa4d4b73592193e48ccff079a43b448bf16",
+      "size_bytes": 185137
+    },
+    "2data/evidence/p9_12_tranche_1/05_p912_standardized_intel_hd5500_benchmark.png": {
+      "sha256": "f67e49308f153a942c427b7582aa9fe16f109a58fcdf56d09105ccd033b31222",
+      "size_bytes": 200021
+    },
+    "2data/evidence/p9_12_tranche_1/webgl_p9_12_standardized_benchmark.json": {
+      "sha256": "c7e8edd95af5e1d072cf3ba6ba9d24b33112f7a0010f24706565298557f1e0c9",
+      "size_bytes": 1374
+    },
+    "msk_therapy_os/static/atlas/data/acupuncture_3d.json": {
+      "sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+      "size_bytes": 1750611
+    },
+    "2data/artifacts/fj2810_softened.bin": {
+      "sha256": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808",
+      "size_bytes": 853592
+    },
+    "msk_therapy_os/point_localization_rules.py": {
+      "sha256": "a31e290d01f7a299f0ef65f8816d391996b63a040b6510cc8382b31cbfaeb811",
+      "size_bytes": 192724
+    },
+    "msk_therapy_os/points.py": {
+      "sha256": "25b02056f7bb3a295a347869126922fb6f170cd5287b7a0aef6c405f31d16b6c",
+      "size_bytes": 111585
+    },
+    "tests/test_p9_12_tranche_1_remediation.py": {
+      "sha256": "1d8d32ae798802d626e5a1a694abf332bceca5291910ca6acfefcc82b0435aba",
+      "size_bytes": 13150
+    },
+    "tests/test_p9_12_playwright_benchmark.py": {
+      "sha256": "22c1e0055ccb5534992c502d640cce3e40827b9e8872ba50f456cad17605dfc9",
+      "size_bytes": 15836
+    }
+  }
+}

@@ -1,0 +1,363 @@
+point_code,channel,name_en,name_zh,name_vi,quality_class,primary_landmark,secondary_landmark,localization_method,fma_anchor,skeletal_structure,canonical_x,canonical_y,canonical_z,uncertainty_mm,tolerance_mm,who_standard_page
+BL1,BL,Jingming,睛明,,CLASS_B,LM_ORBIT_MEDIAL_CANTHUS_R,,JOINT_DEPRESSION,FMA:54170 (Medial Canthus Depression of Orbit),Medial orbital wall depression 0.1 B-cun superomedial to inner canthus,0,0,0,5.0,3.0,"WHO 2008, p. 112: Face, in the depression 0.1 B-cun superior and medial to the inner canthus of the eye."
+BL10,BL,Tianzhu,天柱,,CLASS_A,LM_C2_SPINE,,MUSCLE_BORDER,FMA:9164 (Lateral Trapezius C2 Level),Depression on lateral border of trapezius muscle level with C2,0,0,0,8.0,4.0,"WHO 2008, p. 117: Posterior neck, in depression lateral to m. trapezius, level with C2 spine, 1.3 B-cun lateral to midline."
+BL11,BL,Dazhu,大杼,,CLASS_A,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:9165 (T1 Spinous 1.5 cun lateral),1.5 B-cun lateral to inferior border of T1 spinous process,0,0,0,7.0,4.0,"WHO 2008, p. 117: Upper back, 1.5 B-cun lateral to posterior midline, level with inferior border of T1 spine."
+BL12,BL,Fengmen,风门,,CLASS_A,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:9166 (T2 Spinous 1.5 cun lateral),1.5 B-cun lateral to inferior border of T2 spinous process,0,0,0,7.0,4.0,"WHO 2008, p. 118: Upper back, 1.5 B-cun lateral to posterior midline, level with T2 spine."
+BL13,BL,Feishu,肺俞,,CLASS_A,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:9167 (T3 Spinous 1.5 cun lateral),1.5 B-cun lateral to inferior border of T3 spinous process,0,0,0,7.0,4.0,"WHO 2008, p. 119: Upper back, 1.5 B-cun lateral to posterior midline, level with T3 spine."
+BL14,BL,Jueyinshu,厥阴俞,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54183 (T4 Spinous Process 1.5 cun lateral),1.5 B-cun lateral to inferior border of T4 spinous process,0,0,0,7.0,4.0,"WHO 2008, p. 120: Upper back, 1.5 B-cun lateral to posterior midline, level with inferior border of T4 spinous process."
+BL15,BL,Xinshu,心俞,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54184 (T5 Spinous Process 1.5 cun lateral),1.5 B-cun lateral to inferior border of T5 spinous process,0,0,0,7.0,4.0,"WHO 2008, p. 121: Upper back, 1.5 B-cun lateral to posterior midline, level with inferior border of T5 spinous process."
+BL16,BL,Dushu,督俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL17,BL,Geshu,膈俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL18,BL,Ganshu,肝俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL19,BL,Danshu,胆俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL2,BL,Zanzhu,攒竹,,CLASS_B,LM_SUPRAORBITAL_NOTCH_R,,JOINT_DEPRESSION,FMA:54171 (Supraorbital Notch / Medial Eyebrow Depression),Frontal bone supraorbital margin notch at medial extremity of eyebrow,0,0,0,5.0,3.0,"WHO 2008, p. 113: Head, in the depression at the medial end of the eyebrow, directly superior to the inner canthus."
+BL20,BL,Pishu,脾俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL21,BL,Weishu,胃俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL22,BL,Sanjiaoshu,三焦俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL23,BL,Shenshu,肾俞,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54192 (L2 Spinous Process 1.5 cun lateral),1.5 B-cun lateral to inferior border of L2 spinous process,0,0,0,7.0,4.0,"WHO 2008, p. 127: Lumbar region, 1.5 B-cun lateral to posterior midline, level with inferior border of L2 spinous process."
+BL24,BL,Qihaishu,气海俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL25,BL,Dachangshu,大肠俞,,CLASS_B,LM_L4_SPINE,,PARASAGITTAL_LINE,FMA:54194 (L4 Spinous Process 1.5 cun lateral),1.5 B-cun lateral to inferior border of L4 spinous process,0,0,0,7.0,4.0,"WHO 2008, p. 128: Lumbar region, 1.5 B-cun lateral to posterior midline, level with inferior border of L4 spinous process (intercristal line)."
+BL26,BL,Guanyuanshu,关元俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL27,BL,Xiaochangshu,小肠俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL28,BL,Pangguangshu,膀胱俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL29,BL,Zhonglvshu,中膂俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL3,BL,Meichong,眉冲,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL30,BL,Baihuanshu,白环俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL31,BL,Shangliao,上髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL32,BL,Ciliao,次髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL33,BL,Zhongliao,中髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL34,BL,Xialiao,下髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL35,BL,Huiyang,会阳,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL36,BL,Chengfu,承扶,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL37,BL,Yinmen,殷门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL38,BL,Fuxi,浮郄,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL39,BL,Weiyang,委阳,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL4,BL,Qucha,曲差,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL40,BL,Weizhong,委中,,CLASS_A,LM_POPLITEAL_CREASE_R,,SKIN_CREASE,FMA:24294 (Popliteal Fossa Midpoint),Midpoint of popliteal crease between biceps femoris and semitendinosus,0,0,0,8.0,5.0,"WHO 2008, p. 138: Posterior knee, at midpoint of popliteal crease."
+BL41,BL,Fufen,附分,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54209 (T2 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T2 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 139: Upper back, 3 B-cun lateral to posterior midline, level with inferior border of T2 spinous process."
+BL42,BL,Pohu,魄户,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54210 (T3 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T3 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 139: Upper back, 3 B-cun lateral to posterior midline, level with inferior border of T3 spinous process."
+BL43,BL,Gaohuang,膏肓,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54211 (T4 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T4 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 140: Upper back, 3 B-cun lateral to posterior midline, level with inferior border of T4 spinous process."
+BL44,BL,Shentang,神堂,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54212 (T5 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T5 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 141: Upper back, 3 B-cun lateral to posterior midline, level with inferior border of T5 spinous process."
+BL45,BL,Yixi,譩譆,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54213 (T6 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T6 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 141: Upper back, 3 B-cun lateral to posterior midline, level with inferior border of T6 spinous process."
+BL46,BL,Geguan,膈关,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54214 (T7 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T7 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 142: Upper back, 3 B-cun lateral to posterior midline, level with inferior border of T7 spinous process."
+BL47,BL,Hunmen,魂门,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54215 (T9 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T9 spinous process (Note: T8 skipped per WHO 2008 standard),0,0,0,10.0,5.0,"WHO 2008, p. 142: Back, 3 B-cun lateral to posterior midline, level with inferior border of T9 spinous process."
+BL48,BL,Yanggang,阳纲,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54216 (T10 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T10 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 143: Back, 3 B-cun lateral to posterior midline, level with inferior border of T10 spinous process."
+BL49,BL,Yishe,意舍,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54217 (T11 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T11 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 143: Back, 3 B-cun lateral to posterior midline, level with inferior border of T11 spinous process."
+BL5,BL,Wuchu,五处,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL50,BL,Weicang,胃仓,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54218 (T12 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of T12 spinous process,0,0,0,10.0,5.0,"WHO 2008, p. 144: Back, 3 B-cun lateral to posterior midline, level with inferior border of T12 spinous process."
+BL51,BL,Huangmen,肓门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL52,BL,Zhishi,志室,,CLASS_B,LM_C7_SPINE,LM_L4_SPINE,PARASAGITTAL_LINE,FMA:54221 (L2 Spinous Process 3.0 cun lateral),3.0 B-cun lateral to inferior border of L2 spinous process,0,0,0,8.0,5.0,"WHO 2008, p. 147: Lumbar region, 3.0 B-cun lateral to posterior midline, level with inferior border of L2 spinous process."
+BL53,BL,Baohuang,胞肓,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL54,BL,Zhibian,秩边,,CLASS_B,LM_SACRAL_HIATUS,,PARASAGITTAL_LINE,FMA:54223 (Sacral Foramen 4 level 3.0 cun lateral),3.0 B-cun lateral to median sacral crest level with 4th sacral foramen,0,0,0,9.0,5.0,"WHO 2008, p. 148: Gluteal region, level with the 4th sacral foramen, 3.0 B-cun lateral to median sacral crest."
+BL55,BL,Heyang,合阳,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL56,BL,Chengjin,承筋,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL57,BL,Chengshan,承山,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL58,BL,Feiyang,飞扬,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL59,BL,Fuyang,跗阳,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL6,BL,Chengguang,承光,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL60,BL,Kunlun,昆仑,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL61,BL,Pucan,仆参,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL62,BL,Shenmai,申脉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL63,BL,Jinmen,金门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL64,BL,Jinggu,京骨,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL65,BL,Shugu,束骨,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL66,BL,Zutonggu,足通谷,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL67,BL,Zhiyin,至阴,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL7,BL,Tongtian,通天,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL8,BL,Luoque,络却,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+BL9,BL,Yuzhen,玉枕,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+CV1,CV,Huiyin,会阴,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+CV10,CV,Xiawan,下脘,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 2 cun superior to Umbilicus)",Anterior median line 2 B-cun superior to center of umbilicus,0,0,0,8.0,4.0,"WHO 2008, p. 255: Upper abdomen, on anterior median line, 2 B-cun superior to center of umbilicus."
+CV11,CV,Jianli,建里,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 3 cun superior to Umbilicus)",Anterior median line 3 B-cun superior to center of umbilicus,0,0,0,8.0,4.0,"WHO 2008, p. 255: Upper abdomen, on anterior median line, 3 B-cun superior to center of umbilicus."
+CV12,CV,Zhongwan,中脘,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,FMA:16902 (Linea Alba Upper Abdomen Midpoint),Midpoint between center of umbilicus and xiphisternal synchondrosis,0,0,0,6.0,4.0,"WHO 2008, p. 258: Anterior midline, 4 B-cun superior to center of umbilicus, midway to xiphisternal joint."
+CV13,CV,Shangwan,上脘,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 5 cun superior to Umbilicus)",Anterior median line 5 B-cun superior to center of umbilicus,0,0,0,8.0,4.0,"WHO 2008, p. 256: Upper abdomen, on anterior median line, 5 B-cun superior to center of umbilicus."
+CV14,CV,Juque,巨阙,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 6 cun superior to Umbilicus)",Anterior median line 6 B-cun superior to center of umbilicus (2 B-cun inferior to xiphisternal joint),0,0,0,8.0,4.0,"WHO 2008, p. 257: Upper abdomen, on anterior median line, 6 B-cun superior to center of umbilicus."
+CV15,CV,Jiuwei,鸠尾,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 7 cun superior to Umbilicus)",Anterior median line 1 B-cun inferior to xiphisternal synchondrosis (7 B-cun superior to umbilicus),0,0,0,8.0,4.0,"WHO 2008, p. 257: Upper abdomen, on anterior median line, 1 B-cun inferior to xiphisternal synchondrosis."
+CV16,CV,Zhongting,中庭,,CLASS_B,LM_XIPHOSTERNAL_JOINT,,LANDMARK_DEFINED,FMA:7482 (Xiphisternal Synchondrosis),Anterior median line at xiphisternal synchondrosis,0,0,0,6.0,3.0,"WHO 2008, p. 258: Anterior chest, on anterior median line, level with 5th intercostal space, at xiphisternal synchondrosis."
+CV17,CV,Danzhong,膻中,,CLASS_B,LM_JUGULAR_NOTCH,LM_XIPHOSTERNAL_JOINT,LANDMARK_DEFINED,FMA:16903 (Sternal Body 4th Intercostal),Midpoint of sternal body at 4th intercostal level,0,0,0,6.0,4.0,"WHO 2008, p. 260: Anterior midline, on sternum, level with 4th intercostal space, midway between nipples."
+CV18,CV,Yutang,玉堂,,CLASS_B,LM_STERNAL_ANGLE,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,"FMA:7485 (Body of Sternum, 3rd Intercostal Level)",Anterior median line of sternal body midway between sternal angle and xiphisternal joint,0,0,0,8.0,4.0,"WHO 2008, p. 259: Anterior chest, on anterior median line, level with 3rd intercostal space."
+CV19,CV,Zigong,紫宫,,CLASS_B,LM_STERNAL_ANGLE,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,"FMA:7485 (Body of Sternum, 2nd Intercostal Level)",Anterior median line of sternum 2nd intercostal space level (1/4 along sternal body),0,0,0,8.0,4.0,"WHO 2008, p. 259: Anterior chest, on anterior median line, level with 2nd intercostal space."
+CV2,CV,Qugu,曲骨,,CLASS_B,LM_PUBIC_SYMPHYSIS,,MIDLINE_REFERENCE,FMA:16900 (Pubic Symphysis Superior Border),Superior border of pubic symphysis on midline,0,0,0,5.0,3.0,"WHO 2008, p. 253: Anterior midline, superior border of pubic symphysis."
+CV20,CV,Huagai,华盖,,CLASS_B,LM_STERNAL_ANGLE,,LANDMARK_DEFINED,FMA:7481 (Sternal Angle / Manubriosternal Synchondrosis),Anterior median line at sternal angle (manubriosternal junction),0,0,0,6.0,3.0,"WHO 2008, p. 260: Anterior chest, on anterior median line, at junction of manubrium and body of sternum (sternal angle level)."
+CV21,CV,Xuanji,璇玑,,CLASS_B,LM_JUGULAR_NOTCH,LM_STERNAL_ANGLE,B_CUN_PROPORTIONAL,"FMA:7480 (Manubrium of Sternum, 1 cun inferior to Jugular Notch)",Anterior median line of sternal manubrium midway between jugular notch and sternal angle,0,0,0,7.0,3.0,"WHO 2008, p. 260: Anterior chest, on anterior median line, 1 B-cun inferior to jugular notch."
+CV22,CV,Tiantu,天突,,CLASS_A,LM_JUGULAR_NOTCH,,LANDMARK_DEFINED,FMA:16904 (Suprasternal Fossa Jugular Notch),Center of suprasternal fossa superior to jugular notch,0,0,0,5.0,3.0,"WHO 2008, p. 262: Anterior midline, suprasternal fossa, 0.5 B-cun superior to jugular notch."
+CV23,CV,Lianquan,廉泉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+CV24,CV,Chengjiang,承浆,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+CV3,CV,Zhongji,中极,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 4 cun inferior to Umbilicus)",Anterior median line 4 B-cun inferior to umbilicus (1 B-cun superior to pubic symphysis),0,0,0,7.0,3.0,"WHO 2008, p. 251: Lower abdomen, on anterior median line, 4 B-cun inferior to center of umbilicus (1 cun superior to pubic symphysis)."
+CV4,CV,Guanyuan,关元,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,B_CUN_PROPORTIONAL,FMA:16901 (Linea Alba Lower Abdomen 3 cun inferior),Linea alba 3 B-cun inferior to center of umbilicus,0,0,0,6.0,4.0,"WHO 2008, p. 254: Anterior midline, 3 B-cun inferior to center of umbilicus."
+CV5,CV,Shimen,石门,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 2 cun inferior to Umbilicus)",Anterior median line 2 B-cun inferior to center of umbilicus (3 B-cun superior to pubic symphysis),0,0,0,8.0,4.0,"WHO 2008, p. 252: Lower abdomen, on anterior median line, 2 B-cun inferior to center of umbilicus."
+CV6,CV,Qihai,气海,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 1.5 cun inferior to Umbilicus)",Anterior median line 1.5 B-cun inferior to center of umbilicus,0,0,0,8.0,4.0,"WHO 2008, p. 252: Lower abdomen, on anterior median line, 1.5 B-cun inferior to center of umbilicus."
+CV7,CV,Yinjiao,阴交,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 1 cun inferior to Umbilicus)",Anterior median line 1 B-cun inferior to center of umbilicus,0,0,0,8.0,4.0,"WHO 2008, p. 253: Lower abdomen, on anterior median line, 1 B-cun inferior to center of umbilicus."
+CV8,CV,Shenque,神阙,,CLASS_B,LM_UMBILICUS,,LANDMARK_DEFINED,FMA:14552 (Umbilicus Center),Center of umbilicus on linea alba,0,0,0,4.0,3.0,"WHO 2008, p. 256: Anterior midline, center of umbilicus."
+CV9,CV,Shuifen,水分,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,B_CUN_PROPORTIONAL,"FMA:19982 (Linea Alba, 1 cun superior to Umbilicus)",Anterior median line 1 B-cun superior to center of umbilicus,0,0,0,8.0,4.0,"WHO 2008, p. 254: Upper abdomen, on anterior median line, 1 B-cun superior to center of umbilicus."
+GB1,GB,Tongziliao,瞳子髎,,CLASS_B,LM_ORBIT_LATERAL_CANTHUS_R,,JOINT_DEPRESSION,FMA:54449 (Lateral Border of Orbit / Outer Canthus),Depression on lateral border of orbit 0.5 B-cun lateral to lateral canthus,0,0,0,6.0,3.0,"WHO 2008, p. 192: Head, in the depression 0.5 B-cun lateral to the outer canthus of the eye."
+GB10,GB,Fubai,浮白,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB11,GB,Touqiaoyin,头窍阴,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB12,GB,Wangu,完骨,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB13,GB,Benshen,本神,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB14,GB,Yangbai,阳白,,CLASS_B,LM_EYEBROW_MIDPOINT_R,LM_FRONTAL_ANGLE_HAIRLINE_R,B_CUN_PROPORTIONAL,FMA:54462 (Frontal Bone 1 cun superior to Midpoint of Eyebrow),Frontal bone 1 B-cun superior to midpoint of eyebrow on pupillary line,0,0,0,6.0,3.0,"WHO 2008, p. 200: Head, 1 B-cun superior to the midpoint of the eyebrow, directly superior to the pupil."
+GB15,GB,Toulinqi,头临泣,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB16,GB,Muchuang,目窗,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB17,GB,Zhengying,正营,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB18,GB,Chengling,承灵,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB19,GB,Naokong,脑空,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB2,GB,Tinghui,听会,,CLASS_B,LM_TRAGUS_INTERTRAGIC_R,,JOINT_DEPRESSION,FMA:54450 (Intertragic Notch Preauricular Depression),Depression anterior to intertragic notch of auricle and posterior to mandibular condyle,0,0,0,7.0,4.0,"WHO 2008, p. 193: Head, in the depression between the intertragic notch and the condylar process of the mandible."
+GB20,GB,Fengchi,风池,,CLASS_A,LM_INION,LM_MASTOID_R,MUSCLE_BORDER,FMA:9168 (Occipital Depression between Trapezius and SCM),Depression between trapezius and sternocleidomastoid below superior nuchal line,0,0,0,7.0,4.0,"WHO 2008, p. 209: Posterior neck, inferior to occipital bone, in depression between sternocleidomastoid and trapezius."
+GB21,GB,Jianjing,肩井,,CLASS_A,LM_C7_SPINE,LM_ACROMION_R,B_CUN_PROPORTIONAL,FMA:24081 (Trapezius Midpoint between C7 and Acromion),Highest point of trapezius muscle belly midway between C7 and acromion,0,0,0,7.0,4.0,"WHO 2008, p. 210: Shoulder, midpoint of line connecting spinous process of C7 with lateral end of acromion."
+GB22,GB,Yuanye,渊腋,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB23,GB,Zhejin,辄筋,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB24,GB,Riyue,日月,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB25,GB,Jingmen,京门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB26,GB,Daimai,带脉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB27,GB,Wushu,五枢,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB28,GB,Weidao,维道,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB29,GB,Juliao,居髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB3,GB,Shangguan,上关,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB30,GB,Huantiao,环跳,,CLASS_B,LM_GREATER_TROCHANTER_R,LM_SACRAL_HIATUS,B_CUN_PROPORTIONAL,FMA:54478 (Gluteal Junction Lateral 1/3 between Greater Trochanter and Sacral Hiatus),Gluteus maximus between prominence of greater trochanter and sacral hiatus,0,0,0,12.0,6.0,"WHO 2008, p. 210: Gluteal region, at the junction of the lateral 1/3 and medial 2/3 of the line connecting the greater trochanter with the sacral hiatus."
+GB31,GB,Fengshi,风市,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB32,GB,Zhongdu,中渎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB33,GB,Xiyangguan,膝阳关,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB34,GB,Yanglingquan,阳陵泉,,CLASS_B,LM_FIBULAR_HEAD_R,,JOINT_DEPRESSION,FMA:54482 (Fibular Head Anteroinferior Depression),Depression anterior and inferior to head of fibula,0,0,0,8.0,4.0,"WHO 2008, p. 213: Fibula, in the depression anterior and inferior to the head of the fibula."
+GB35,GB,Yangjiao,阳交,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB36,GB,Waiqiu,外丘,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB37,GB,Guangming,光明,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB38,GB,Yangfu,阳辅,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB39,GB,Xuanzhong,悬钟,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB4,GB,Hanyan,颔厌,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB40,GB,Qiuxu,丘墟,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB41,GB,Zulinqi,足临泣,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB42,GB,Diwuhui,地五会,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB43,GB,Xiaxi,侠溪,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB44,GB,Zuqiaoyin,足窍阴,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB5,GB,Xuanlu,悬颅,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB6,GB,Xuanli,悬厘,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB7,GB,Qubin,曲鬓,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GB8,GB,Shuaigu,率谷,,CLASS_B,LM_AURICULAR_APEX_R,LM_VERTEX_CROWN,B_CUN_PROPORTIONAL,FMA:54456 (Parietotemporal Scalp 1.5 cun superior to Auricular Apex),Parietotemporal scalp directly superior to auricular apex,0,0,0,8.0,4.0,"WHO 2008, p. 196: Head, directly superior to the auricular apex, 1.5 B-cun superior to the temporal hairline."
+GB9,GB,Tianchong,天冲,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV1,GV,Changqiang,长强,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV10,GV,Lingtai,灵台,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV11,GV,Shendao,神道,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV12,GV,Shenzhu,身柱,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV13,GV,Taodao,陶道,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV14,GV,Dazhui,大椎,,CLASS_A,LM_C7_SPINE,,LANDMARK_DEFINED,FMA:12525 (C7 Spinous Process Depression),Depression inferior to spinous process of C7,0,0,0,5.0,3.0,"WHO 2008, p. 235: Posterior midline, in depression inferior to spinous process of 7th cervical vertebra (C7)."
+GV15,GV,Yamen,哑门,,CLASS_A,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV16,GV,Fengfu,风府,,CLASS_A,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV17,GV,Naohu,脑户,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV18,GV,Qiangjian,强间,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV19,GV,Houding,后顶,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV2,GV,Yaoshu,腰俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV20,GV,Baihui,百会,,CLASS_B,LM_VERTEX_CROWN,,LANDMARK_DEFINED,FMA:46452 (Vertex Cranium Midline),Crown vertex at sagittal suture intersection,0,0,0,6.0,4.0,"WHO 2008, p. 238: Head, 5 B-cun superior to anterior hairline, at intersection of sagittal midline and connecting line of ear apexes."
+GV21,GV,Qianding,前顶,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV22,GV,Xinhui,囟会,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV23,GV,Shangxing,上星,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV24,GV,Shenting,神庭,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV24+,GV,Yintang,印堂,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV25,GV,Suliao,素髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV26,GV,Shuigou,水沟,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV27,GV,Duiduan,兑端,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV28,GV,Yinjiao,龈交,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV3,GV,Yaoyangguan,腰阳关,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV4,GV,Mingmen,命门,,CLASS_B,LM_L4_SPINE,LM_C7_SPINE,LANDMARK_DEFINED,FMA:12520 (L2 Spinous Process Depression),Depression inferior to spinous process of L2,0,0,0,6.0,4.0,"WHO 2008, p. 231: Posterior midline, in depression inferior to spinous process of 2nd lumbar vertebra (L2)."
+GV5,GV,Xuanshu,悬枢,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV6,GV,Jizhong,脊中,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV7,GV,Zhongshu,中枢,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV8,GV,Jinsuo,筋缩,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+GV9,GV,Zhiyang,至阳,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+HT1,HT,Jiquan,极泉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+HT2,HT,Qingling,青灵,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+HT3,HT,Shaohai,少海,,CLASS_A,LM_MED_EPICONDYLE_HUMERUS_R,LM_CUBITAL_CREASE_R,SKIN_CREASE,FMA:23441 (Medial Epicondyle Cubital Crease),Midpoint between medial epicondyle of humerus and medial end of cubital crease,0,0,0,7.0,4.0,"WHO 2008, p. 95: Anteromedial elbow, just anterior to medial epicondyle of humerus, level with cubital crease."
+HT4,HT,Lingdao,灵道,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+HT5,HT,Tongli,通里,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+HT6,HT,Yinxi,阴郄,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+HT7,HT,Shenmen,神门,,CLASS_B,LM_WRIST_PALMAR_CREASE_ULNAR_R,,SKIN_CREASE,FMA:24068 (Palmar Wrist Crease Ulnar Border FCU),Depression at palmar wrist crease on radial border of flexor carpi ulnaris tendon proximal to pisiform,0,0,0,5.0,3.0,"WHO 2008, p. 97: Anterior aspect of wrist, on palmar wrist crease, in depression on radial side of tendon of flexor carpi ulnaris."
+HT8,HT,Shaofu,少府,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+HT9,HT,Shaochong,少冲,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+KI1,KI,Yongquan,涌泉,,CLASS_B,LM_PLANTAR_METATARSAL_INTERVAL_R,,JOINT_DEPRESSION,FMA:24089 (Sole Plantar Depression Anterior 1/3),Plantar aponeurosis depression between 2nd and 3rd metatarsal shafts,0,0,0,6.0,4.0,"WHO 2008, p. 149: Sole of foot, in depression formed when foot is in plantar flexion, at junction of anterior 1/3 and posterior 2/3 of line from web between 2nd/3rd toes to heel."
+KI10,KI,Yingu,阴谷,,CLASS_B,LM_POPLITEAL_CREASE_R,LM_PATELLA_INFERIOR_R,TENDON_INTERVAL,FMA:24093 (Medial Popliteal Semitendinosus Interval),Depression between semitendinosus and semimembranosus tendons on popliteal crease,0,0,0,7.0,4.0,"WHO 2008, p. 156: Posteromedial knee, medial end of popliteal crease, between tendons of semitendinosus and semimembranosus."
+KI11,KI,Henggu,横骨,,CLASS_B,LM_PUBIC_SYMPHYSIS,,PARASAGITTAL_LINE,FMA:24094 (0.5 Cun Lateral to Pubic Symphysis),0.5 B-cun lateral to superior margin of pubic symphysis,0,0,0,8.0,4.0,"WHO 2008, p. 157: Lower abdomen, 0.5 B-cun lateral to anterior midline, level with superior border of pubic symphysis."
+KI12,KI,Dahe,大赫,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,PARASAGITTAL_LINE,"FMA:54261 (Lower Abdomen 4 cun inferior to Umbilicus, 0.5 cun lateral)","1 B-cun superior to superior border of pubic symphysis, 0.5 B-cun lateral to midline",0,0,0,6.0,3.0,"WHO 2008, p. 177: Lower abdomen, 4 B-cun inferior to center of umbilicus (1 cun superior to pubic symphysis), 0.5 B-cun lateral to anterior midline."
+KI13,KI,Qixue,气穴,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,PARASAGITTAL_LINE,"FMA:54262 (Lower Abdomen 3 cun inferior to Umbilicus, 0.5 cun lateral)","2 B-cun superior to superior border of pubic symphysis, 0.5 B-cun lateral to midline",0,0,0,6.0,3.0,"WHO 2008, p. 177: Lower abdomen, 3 B-cun inferior to center of umbilicus (2 cun superior to pubic symphysis), 0.5 B-cun lateral to anterior midline."
+KI14,KI,Siman,四满,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,PARASAGITTAL_LINE,"FMA:54263 (Lower Abdomen 2 cun inferior to Umbilicus, 0.5 cun lateral)","3 B-cun superior to superior border of pubic symphysis, 0.5 B-cun lateral to midline",0,0,0,6.0,3.0,"WHO 2008, p. 178: Lower abdomen, 2 B-cun inferior to center of umbilicus (3 cun superior to pubic symphysis), 0.5 B-cun lateral to anterior midline."
+KI15,KI,Zhongzhu,中注,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,PARASAGITTAL_LINE,"FMA:54264 (Lower Abdomen 1 cun inferior to Umbilicus, 0.5 cun lateral)","1 B-cun inferior to center of umbilicus, 0.5 B-cun lateral to anterior midline",0,0,0,6.0,3.0,"WHO 2008, p. 178: Lower abdomen, 1 B-cun inferior to center of umbilicus, 0.5 B-cun lateral to anterior midline."
+KI16,KI,Huangshu,肓俞,,CLASS_B,LM_UMBILICUS,,PARASAGITTAL_LINE,FMA:24095 (0.5 Cun Lateral to Umbilicus),0.5 B-cun lateral to umbilicus on rectus abdominis,0,0,0,8.0,4.0,"WHO 2008, p. 160: Middle abdomen, 0.5 B-cun lateral to center of umbilicus."
+KI17,KI,Shangqu,商曲,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,"FMA:54266 (Upper Abdomen 2 cun superior to Umbilicus, 0.5 cun lateral)","2 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline",0,0,0,6.0,3.0,"WHO 2008, p. 179: Upper abdomen, 2 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline."
+KI18,KI,Shiguan,石关,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,"FMA:54267 (Upper Abdomen 3 cun superior to Umbilicus, 0.5 cun lateral)","3 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline",0,0,0,6.0,3.0,"WHO 2008, p. 180: Upper abdomen, 3 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline."
+KI19,KI,Yindu,阴都,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,"FMA:54268 (Upper Abdomen 4 cun superior to Umbilicus, 0.5 cun lateral)","4 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline",0,0,0,6.0,3.0,"WHO 2008, p. 180: Upper abdomen, 4 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline."
+KI2,KI,Rangu,然谷,,CLASS_B,LM_NAVICULAR_TUBEROSITY_R,LM_METATARSAL1_BASE_R,LANDMARK_DEFINED,FMA:33862 (Navicular Tuberosity Anteroinferior),Depression anteroinferior to tuberosity of navicular bone along medial longitudinal arch,0,0,0,5.0,3.0,"WHO 2008, p. 150: Medial aspect of foot, in depression anteroinferior to tuberosity of navicular bone, at red-white border."
+KI20,KI,Futonggu,腹通谷,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,"FMA:54269 (Upper Abdomen 5 cun superior to Umbilicus, 0.5 cun lateral)","5 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline",0,0,0,6.0,3.0,"WHO 2008, p. 181: Upper abdomen, 5 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline."
+KI21,KI,Youmen,幽门,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,"FMA:54270 (Upper Abdomen 6 cun superior to Umbilicus, 0.5 cun lateral)","6 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline",0,0,0,6.0,3.0,"WHO 2008, p. 181: Upper abdomen, 6 B-cun superior to center of umbilicus, 0.5 B-cun lateral to anterior midline."
+KI22,KI,Bulang,步廊,,CLASS_B,LM_STERNAL_ANGLE,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,FMA:54271 (5th Intercostal Space 2.0 cun lateral to Midline),Fifth intercostal space 2 B-cun lateral to anterior midline,0,0,0,8.0,4.0,"WHO 2008, p. 182: Anterior chest, 5th intercostal space, 2 B-cun lateral to anterior midline."
+KI23,KI,Shenfeng,神封,,CLASS_B,LM_STERNAL_ANGLE,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,FMA:54272 (4th Intercostal Space 2.0 cun lateral to Midline),Fourth intercostal space 2 B-cun lateral to anterior midline,0,0,0,8.0,4.0,"WHO 2008, p. 182: Anterior chest, 4th intercostal space, 2 B-cun lateral to anterior midline."
+KI24,KI,Lingxu,灵墟,,CLASS_B,LM_STERNAL_ANGLE,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,FMA:54273 (3rd Intercostal Space 2.0 cun lateral to Midline),Third intercostal space 2 B-cun lateral to anterior midline,0,0,0,8.0,4.0,"WHO 2008, p. 183: Anterior chest, 3rd intercostal space, 2 B-cun lateral to anterior midline."
+KI25,KI,Shencang,神藏,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+KI26,KI,Yuzhong,彧中,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+KI27,KI,Shufu,俞府,,CLASS_B,LM_JUGULAR_NOTCH,LM_STERNAL_ANGLE,PARASAGITTAL_LINE,FMA:24096 (1st Intercostal 2 Cun Lateral to Midline),First intercostal space 2 B-cun lateral to anterior midline,0,0,0,8.0,4.0,"WHO 2008, p. 164: Anterior chest, in depression inferior to clavicle, 2 B-cun lateral to anterior midline."
+KI3,KI,Taixi,太溪,,CLASS_B,LM_MED_MALLEOLUS_R,LM_CALCANEUS_POST_R,JOINT_DEPRESSION,FMA:24090 (Medial Malleolus - Calcaneal Tendon Depression),Depression between medial malleolus and calcaneal tendon level with malleolar prominence,0,0,0,5.0,3.0,"WHO 2008, p. 151: Posteromedial ankle, depression between prominence of medial malleolus and calcaneal tendon."
+KI4,KI,Dazhong,大钟,,CLASS_B,LM_MED_MALLEOLUS_R,LM_CALCANEUS_MEDIAL_TUBEROSITY_R,LANDMARK_DEFINED,FMA:24091 (Posteroinferior to Medial Malleolus Anterior to Achilles),Depression posteroinferior to medial malleolus anterior to calcaneal tendon insertion,0,0,0,5.0,3.0,"WHO 2008, p. 151: Posteromedial ankle, posteroinferior to medial malleolus, in depression anterior to medial attachment of calcaneal tendon."
+KI5,KI,Shuiquan,水泉,,CLASS_B,LM_CALCANEUS_MEDIAL_TUBEROSITY_R,,LANDMARK_DEFINED,FMA:33857 (Medial Calcaneal Tuberosity Depression),Depression anterosuperior to medial process of calcaneal tuberosity 1 cun below Taixi KI3,0,0,0,5.0,3.0,"WHO 2008, p. 152: Medial aspect of foot, 1 B-cun directly inferior to KI3, in depression anterosuperior to medial process of calcaneal tuberosity."
+KI6,KI,Zhaohai,照海,,CLASS_B,LM_MED_MALLEOLUS_R,LM_CALCANEUS_MEDIAL_TUBEROSITY_R,JOINT_DEPRESSION,FMA:24091 (Depression Inferior to Medial Malleolus),Depression 1 B-cun directly inferior to medial malleolus,0,0,0,5.0,3.0,"WHO 2008, p. 153: Medial aspect of foot, in depression 1 B-cun inferior to prominence of medial malleolus."
+KI7,KI,Fuliu,复溜,,CLASS_B,LM_MED_MALLEOLUS_R,LM_PATELLA_INFERIOR_R,B_CUN_PROPORTIONAL,FMA:24092 (2 Cun Superior to Taixi Anterior to Achilles),Posteromedial aspect of shank 2 B-cun proximal to medial malleolus,0,0,0,7.0,4.0,"WHO 2008, p. 154: Posteromedial leg, 2 B-cun superior to KI3, anterior to calcaneal tendon."
+KI8,KI,Jiaoxin,交信,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+KI9,KI,Zhubin,筑宾,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI1,LI,Shangyang,商阳,,CLASS_B,LM_RADIAL_STYLOID_R,LM_WRIST_CREASE_PALMAR_R,LANDMARK_DEFINED,FMA:24076 (Radial Index Nail Corner),Radial corner of distal phalanx of 2nd digit,0,0,0,4.0,2.0,"WHO 2008, p. 33: Index finger, 0.1 B-cun proximal to radial corner of index nail."
+LI10,LI,Shousanli,手三里,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI11,LI,Quchi,曲池,,CLASS_B,LM_LAT_EPICONDYLE_HUMERUS_R,LM_CUBITAL_CREASE_R,SKIN_CREASE,FMA:24078 (Lateral Cubital Crease End),Midway between biceps tendon and lateral epicondyle of humerus,0,0,0,7.0,4.0,"WHO 2008, p. 38: Lateral elbow, midway between LU5 and lateral epicondyle of humerus, at lateral end of cubital crease."
+LI12,LI,Zhouliao,肘髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI13,LI,Shouwuli,手五里,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI14,LI,Binao,臂臑,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI15,LI,Jianyu,肩髃,,CLASS_A,LM_ACROMION_R,LM_AXILLARY_FOLD_ANT_R,JOINT_DEPRESSION,FMA:24079 (Acromion Anterior Depression),Depression anterior and inferior to lateral border of acromion,0,0,0,8.0,4.0,"WHO 2008, p. 40: Shoulder, in depression anterior and inferior to acromion when arm is abducted."
+LI16,LI,Jugu,巨骨,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI17,LI,Tianding,天鼎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI18,LI,Futu,扶突,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI19,LI,Kouheliao,口禾髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI2,LI,Erjian,二间,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI20,LI,Yingxiang,迎香,,CLASS_B,LM_GLABELLA,LM_C2_SPINE,LANDMARK_DEFINED,FMA:24080 (Nasolabial Groove Ala Nasi),Nasolabial sulcus lateral to alar groove of nose,0,0,0,5.0,3.0,"WHO 2008, p. 43: Face, in nasolabial groove, at level of midpoint of lateral border of ala nasi."
+LI3,LI,Sanjian,三间,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI4,LI,Hegu,合谷,,CLASS_A,LM_WRIST_CREASE_PALMAR_R,LM_RADIAL_STYLOID_R,LANDMARK_DEFINED,FMA:24075 (2nd Metacarpal Midpoint),Radial border of 2nd metacarpal bone midpoint,0,0,0,6.0,4.0,"WHO 2008, p. 35: Dorsum of hand, radial to midpoint of 2nd metacarpal bone."
+LI5,LI,Yangxi,阳溪,,CLASS_B,LM_RADIAL_STYLOID_R,LM_WRIST_CREASE_PALMAR_R,TENDON_INTERVAL,FMA:24077 (Anatomical Snuffbox),Anatomical snuffbox between EPL and EPB tendons,0,0,0,5.0,3.0,"WHO 2008, p. 35: Posterolateral wrist, in depression of anatomical snuffbox between tendons."
+LI6,LI,Pianli,偏历,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI7,LI,Wenliu,温溜,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI8,LI,Xialian,下廉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LI9,LI,Shanglian,上廉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR1,LR,Dadun,大敦,,CLASS_B,LM_MED_MALLEOLUS_R,LM_CALCANEUS_POST_R,LANDMARK_DEFINED,FMA:24106 (Great Toe Lateral Nail Bed),Lateral aspect of distal phalanx of 1st toe,0,0,0,5.0,3.0,"WHO 2008, p. 219: Lateral aspect of terminal phalanx of great toe, 0.1 B-cun proximal to lateral corner of nail."
+LR10,LR,Zuwuli,足五里,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR11,LR,Yinlian,阴廉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR12,LR,Jimai,急脉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR13,LR,Zhangmen,章门,,CLASS_B,LM_XIPHOSTERNAL_JOINT,LM_ASIS_R,LANDMARK_DEFINED,FMA:24111 (Free End of 11th Rib Flank),Inferior border of free end of 11th rib,0,0,0,12.0,6.0,"WHO 2008, p. 226: Lateral abdomen, directly inferior to free end of 11th rib."
+LR14,LR,Qimen,期门,,CLASS_B,LM_STERNAL_ANGLE,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,FMA:24112 (6th Intercostal Mammillary Line),Sixth intercostal space 4 B-cun lateral to anterior midline directly below nipple,0,0,0,10.0,5.0,"WHO 2008, p. 227: Anterior chest, 6th intercostal space, directly inferior to nipple, 4 B-cun lateral to anterior midline."
+LR2,LR,Xingjian,行间,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR3,LR,Taichong,太冲,,CLASS_B,LM_MED_MALLEOLUS_R,LM_CALCANEUS_POST_R,JOINT_DEPRESSION,FMA:24108 (1st and 2nd Metatarsal Junction Depression),Depression anterior to junction of 1st and 2nd metatarsal bases,0,0,0,7.0,4.0,"WHO 2008, p. 220: Dorsum of foot, in depression proximal to 1st interdigital space, between 1st and 2nd metatarsal bones."
+LR4,LR,Zhongfeng,中封,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR5,LR,Ligou,蠡沟,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR6,LR,Zhongdu,中都,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR7,LR,Xiguan,膝关,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LR8,LR,Ququan,曲泉,,CLASS_B,LM_POPLITEAL_CREASE_R,LM_PATELLA_INFERIOR_R,SKIN_CREASE,FMA:24110 (Medial Knee Popliteal Crease End),Medial aspect of knee anterior to semimembranosus/semitendinosus insertions,0,0,0,7.0,4.0,"WHO 2008, p. 223: Medial aspect of knee, in depression medial to medial epicondyle of femur, superior to medial end of popliteal crease."
+LR9,LR,Yinbao,阴包,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+LU1,LU,Zhongfu,中府,,CLASS_B,LM_JUGULAR_NOTCH,LM_STERNAL_ANGLE,PARASAGITTAL_LINE,FMA:24074 (1st Intercostal Space),First intercostal space lateral to infraclavicular fossa,0,0,0,10.0,5.0,"WHO 2008, p. 23: On anterior chest, 1st intercostal space, 6 B-cun lateral to anterior midline."
+LU10,LU,Yuji,鱼际,,CLASS_B,LM_WRIST_CREASE_PALMAR_R,LM_RADIAL_STYLOID_R,LANDMARK_DEFINED,FMA:24066 (1st Metacarpal Midpoint),Midpoint of 1st metacarpal bone radial border,0,0,0,6.0,3.0,"WHO 2008, p. 28: Palmar aspect of hand, midpoint of 1st metacarpal bone, at junction of red and white skin."
+LU11,LU,Shaoshang,少商,,CLASS_B,LM_RADIAL_STYLOID_R,LM_WRIST_CREASE_PALMAR_R,LANDMARK_DEFINED,FMA:24065 (Radial Thumb Nail Corner),Radial border of distal phalanx of thumb,0,0,0,4.0,2.0,"WHO 2008, p. 28: Distal phalanx of thumb, 0.1 B-cun proximal to radial corner of thumb nail."
+LU2,LU,Yunmen,云门,,CLASS_B,LM_JUGULAR_NOTCH,LM_ACROMION_R,JOINT_DEPRESSION,FMA:24073 (Infraclavicular Fossa),Infraclavicular fossa medial to coracoid process,0,0,0,8.0,4.0,"WHO 2008, p. 24: In infraclavicular fossa, medial to coracoid process, 6 B-cun lateral to midline."
+LU3,LU,Tianfu,天府,,CLASS_B,LM_AXILLARY_FOLD_ANT_R,LM_CUBITAL_CREASE_R,MUSCLE_BORDER,FMA:24072 (Lateral Biceps Brachii),Lateral border of biceps brachii muscle belly,0,0,0,12.0,5.0,"WHO 2008, p. 24: Anterolateral arm, lateral border of biceps brachii, 3 B-cun inferior to anterior axillary fold."
+LU4,LU,Xiabai,侠白,,CLASS_B,LM_AXILLARY_FOLD_ANT_R,LM_CUBITAL_CREASE_R,MUSCLE_BORDER,FMA:24071 (Lateral Biceps Brachii),Lateral border of biceps brachii muscle belly,0,0,0,12.0,5.0,"WHO 2008, p. 25: Anterolateral arm, lateral border of biceps brachii, 4 B-cun inferior to anterior axillary fold."
+LU5,LU,Chize,尺泽,,CLASS_A,LM_CUBITAL_CREASE_R,,SKIN_CREASE,FMA:24290 (Cubital Crease Radial to Biceps),Cubital crease radial to tendon of m. biceps brachii,0,0,0,8.0,4.0,"WHO 2008, p. 25: Anterior elbow, at cubital crease, in depression radial to biceps brachii tendon."
+LU6,LU,Kongzui,孔最,,CLASS_B,LM_WRIST_CREASE_PALMAR_R,LM_CUBITAL_CREASE_R,B_CUN_PROPORTIONAL,FMA:24070 (Anterior Forearm Radial),"Line connecting Chize LU5 and Taiyuan LU9, 7 cun proximal to wrist crease",0,0,0,10.0,5.0,"WHO 2008, p. 26: Anterolateral forearm, on line connecting LU5 and LU9, 7 B-cun superior to palmar wrist crease."
+LU7,LU,Lieque,列缺,,CLASS_B,LM_WRIST_CREASE_PALMAR_R,LM_RADIAL_STYLOID_R,LANDMARK_DEFINED,FMA:24069 (Radial Styloid Process),Groove proximal to styloid process of radius between brachioradialis and abductor pollicis longus,0,0,0,6.0,3.0,"WHO 2008, p. 26: Radial aspect of forearm, superior to styloid process of radius, 1.5 B-cun proximal to wrist crease."
+LU8,LU,Jingqu,经渠,,CLASS_B,LM_WRIST_CREASE_PALMAR_R,LM_CUBITAL_CREASE_R,TENDON_INTERVAL,FMA:24068 (Radial Artery Groove),Depression between radial styloid process and radial artery,0,0,0,6.0,3.0,"WHO 2008, p. 27: Anterior forearm, in depression between radial styloid process and radial artery, 1 B-cun proximal to wrist crease."
+LU9,LU,Taiyuan,太渊,,CLASS_B,LM_WRIST_PALMAR_CREASE_RADIAL_R,,SKIN_CREASE,FMA:24067 (Palmar Wrist Crease Radial),Palmar wrist crease radial depression lateral to flexor carpi radialis,0,0,0,5.0,3.0,"WHO 2008, p. 27: Palmar wrist crease, in depression between radial artery and abductor pollicis longus tendon."
+PC1,PC,Tianchi,天池,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+PC2,PC,Tianquan,天泉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+PC3,PC,Quze,曲泽,,CLASS_B,LM_CUBITAL_CREASE_R,LM_MED_EPICONDYLE_HUMERUS_R,SKIN_CREASE,FMA:24291 (Cubital Crease Medial to Biceps),Cubital crease medial to tendon of m. biceps brachii,0,0,0,8.0,4.0,"WHO 2008, p. 165: Anterior aspect of elbow, at cubital crease, in depression medial to biceps brachii tendon."
+PC4,PC,Ximen,郄门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+PC5,PC,Jianshi,间使,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+PC6,PC,Neiguan,内关,,CLASS_A,LM_WRIST_CREASE_PALMAR_R,LM_CUBITAL_CREASE_R,TENDON_INTERVAL,FMA:24292 (Palmaris Longus / FCR Interval 2 cun proximal),Between tendons of palmaris longus and flexor carpi radialis 2 B-cun proximal to palmar wrist crease,0,0,0,6.0,3.0,"WHO 2008, p. 167: Anterior forearm, between tendons of palmaris longus and flexor carpi radialis, 2 B-cun proximal to wrist crease."
+PC7,PC,Daling,大陵,,CLASS_B,LM_WRIST_PALMAR_CREASE_MIDPOINT_R,,SKIN_CREASE,FMA:24293 (Palmar Wrist Crease Midpoint),Palmar wrist crease midpoint between tendons,0,0,0,5.0,3.0,"WHO 2008, p. 168: Anterior aspect of wrist, midpoint of palmar wrist crease between tendons of palmaris longus and flexor carpi radialis."
+PC8,PC,Laogong,劳宫,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+PC9,PC,Zhongchong,中冲,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI1,SI,Shaoze,少泽,,CLASS_B,LM_WRIST_CREASE_PALMAR_R,LM_RADIAL_STYLOID_R,LANDMARK_DEFINED,FMA:24076 (Little Finger Ulnar Nail Bed),Ulnar side of distal phalanx of 5th digit,0,0,0,5.0,3.0,"WHO 2008, p. 101: Medial aspect of little finger, 0.1 B-cun proximal to ulnar corner of nail."
+SI10,SI,Naoshu,臑俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI11,SI,Tianzong,天宗,,CLASS_B,LM_ACROMION_R,LM_C7_SPINE,B_CUN_PROPORTIONAL,FMA:24080 (Scapular Infraspinous Fossa Center),Center of infraspinous fossa of scapula,0,0,0,10.0,5.0,"WHO 2008, p. 108: Scapular region, in depression in center of infraspinous fossa, forming equilateral triangle with SI9 and SI10."
+SI12,SI,Bingfeng,秉风,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI13,SI,Quyuan,曲垣,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI14,SI,Jianwaishu,肩外俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI15,SI,Jianzhongshu,肩中俞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI16,SI,Tianchuang,天窗,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI17,SI,Tianrong,天容,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI18,SI,Quanliao,颧髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI19,SI,Tinggong,听宫,,CLASS_B,LM_MASTOID_R,LM_GLABELLA,JOINT_DEPRESSION,FMA:24081 (Pre-auricular Depression Anterior to Tragus),Depression anterior to tragus when mouth is slightly opened,0,0,0,5.0,3.0,"WHO 2008, p. 112: Face, in depression between anterior border of tragus and posterior border of condylar process of mandible."
+SI2,SI,Qiangu,前谷,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI3,SI,Houxi,后溪,,CLASS_B,LM_WRIST_CREASE_PALMAR_R,LM_RADIAL_STYLOID_R,JOINT_DEPRESSION,FMA:24077 (5th Metacarpophalangeal Joint Depression),Ulnar border of hand proximal to 5th MCP head,0,0,0,6.0,4.0,"WHO 2008, p. 102: Dorsum of hand, in depression proximal to 5th metacarpophalangeal joint, on border of red and white skin."
+SI4,SI,Wangu,腕骨,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI5,SI,Yanggu,阳谷,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI6,SI,Yanglao,养老,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI7,SI,Zhizheng,支正,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SI8,SI,Xiaohai,小海,,CLASS_B,LM_MED_EPICONDYLE_HUMERUS_R,LM_CUBITAL_CREASE_R,JOINT_DEPRESSION,FMA:24078 (Ulnar Nerve Groove at Elbow),Ulnar sulcus between olecranon and medial epicondyle,0,0,0,7.0,4.0,"WHO 2008, p. 106: Posteromedial elbow, depression between olecranon of ulna and medial epicondyle of humerus."
+SI9,SI,Jianzhen,肩贞,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SP1,SP,Yinbai,隐白,,CLASS_B,LM_MED_MALLEOLUS_R,LM_CALCANEUS_POST_R,LANDMARK_DEFINED,FMA:24082 (Great Toe Medial Nail Bed),Medial aspect of terminal phalanx of great toe,0,0,0,5.0,3.0,"WHO 2008, p. 77: Medial aspect of great toe, 0.1 B-cun proximal to medial corner of nail."
+SP10,SP,Xuehai,血海,,CLASS_B,LM_PATELLA_INFERIOR_R,LM_GREATER_TROCHANTER_R,MUSCLE_BORDER,FMA:24086 (Vastus Medialis 2 Cun Superior to Patella),Bulge of vastus medialis 2 B-cun proximal to patellar base,0,0,0,9.0,5.0,"WHO 2008, p. 85: Anterior thigh, 2 B-cun superior to mediocranial border of patella on bulge of vastus medialis."
+SP11,SP,Jimen,箕门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SP12,SP,Chongmen,冲门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SP13,SP,Fushe,府舍,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SP14,SP,Fujie,腹结,,CLASS_B,LM_UMBILICUS,LM_PUBIC_SYMPHYSIS,PARASAGITTAL_LINE,"FMA:14557 (Lower Abdomen 1.3 cun inferior to Umbilicus, 4 cun lateral)",Lateral border of rectus abdominis 1.3 B-cun inferior to umbilicus level,0,0,0,8.0,4.0,"WHO 2008, p. 84: Lower abdomen, 1.3 B-cun inferior to center of umbilicus, 4 B-cun lateral to anterior midline."
+SP15,SP,Daheng,大横,,CLASS_B,LM_UMBILICUS,,PARASAGITTAL_LINE,FMA:24087 (Lateral Rectus Abdominis 4 Cun from Umbilicus),Lateral border of rectus abdominis level with umbilicus,0,0,0,12.0,6.0,"WHO 2008, p. 89: Anterior abdomen, 4 B-cun lateral to center of umbilicus on lateral border of rectus abdominis."
+SP16,SP,Fuai,腹哀,,CLASS_B,LM_UMBILICUS,LM_XIPHOSTERNAL_JOINT,PARASAGITTAL_LINE,"FMA:14556 (Upper Abdomen 3 cun superior to Umbilicus, 4 cun lateral)",Lateral border of rectus abdominis 3 B-cun superior to umbilicus level,0,0,0,8.0,4.0,"WHO 2008, p. 85: Upper abdomen, 3 B-cun superior to center of umbilicus, 4 B-cun lateral to anterior midline."
+SP17,SP,Shidou,食窦,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SP18,SP,Tianxi,天溪,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SP19,SP,Xiongxiang,胸乡,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SP2,SP,Dadu,大都,,CLASS_B,LM_MTP1_DISTAL_R,,JOINT_DEPRESSION,FMA:34426 (First Metatarsophalangeal Joint Distoinferior),Depression distal and inferior to 1st metatarsophalangeal joint,0,0,0,5.0,3.0,"WHO 2008, p. 77: Great toe, in depression distal and inferior to 1st metatarsophalangeal joint, at red-white border."
+SP20,SP,Zhourong,周荣,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+SP21,SP,Dabao,大包,,CLASS_B,LM_AXILLARY_FOLD_ANT_R,LM_ASIS_R,PARASAGITTAL_LINE,FMA:24088 (6th Intercostal Midaxillary Line),Sixth intercostal space on midaxillary line,0,0,0,12.0,6.0,"WHO 2008, p. 93: Lateral thoracic region, 6th intercostal space on midaxillary line."
+SP3,SP,Taibai,太白,,CLASS_B,LM_MTP1_PROXIMAL_R,,JOINT_DEPRESSION,FMA:34426 (First Metatarsophalangeal Joint Proximoinferior),Depression proximal and inferior to 1st metatarsophalangeal joint,0,0,0,5.0,3.0,"WHO 2008, p. 78: Medial foot, in depression proximal and inferior to 1st metatarsophalangeal joint, at red-white border."
+SP4,SP,Gongsun,公孙,,CLASS_B,LM_METATARSAL1_BASE_R,,LANDMARK_DEFINED,FMA:24497 (Base of First Metatarsal Bone Anteroinferior),Antero-inferior depression to base of 1st metatarsal bone,0,0,0,5.0,3.0,"WHO 2008, p. 78: Medial foot, antero-inferior to base of 1st metatarsal bone, at red-white border."
+SP5,SP,Shangqiu,商丘,,CLASS_B,LM_MED_MALLEOLUS_R,LM_NAVICULAR_TUBEROSITY_R,JOINT_DEPRESSION,FMA:33862 (Navicular Tuberosity Anteroinferior Depression),Depression midway between medial malleolus prominence and tuberosity of navicular bone,0,0,0,5.0,3.0,"WHO 2008, p. 79: Medial foot, in depression distal and inferior to medial malleolus, midway to tuberosity of navicular bone."
+SP6,SP,Sanyinjiao,三阴交,,CLASS_B,LM_MED_MALLEOLUS_R,LM_PATELLA_INFERIOR_R,B_CUN_PROPORTIONAL,FMA:24084 (Medial Tibial Border 3 Cun Proximal to Malleolus),Posterior border of tibia 3 B-cun superior to medial malleolus,0,0,0,8.0,4.0,"WHO 2008, p. 81: Medial aspect of leg, 3 B-cun superior to prominence of medial malleolus, in depression posterior to medial border of tibia."
+SP7,SP,Lougu,漏谷,,CLASS_B,LM_MED_MALLEOLUS_R,LM_TIBIA_MEDIAL_CONDYLE_R,B_CUN_PROPORTIONAL,FMA:24476 (Medial Tibial Border 6 cun superior to Medial Malleolus),"Posterior to medial border of tibia, 6/13 from medial malleolus to tibial medial condyle",0,0,0,8.0,4.0,"WHO 2008, p. 80: Tibial aspect of leg, posterior to medial border of tibia, 6 B-cun superior to prominence of medial malleolus."
+SP8,SP,Diji,地机,,CLASS_B,LM_MED_MALLEOLUS_R,LM_TIBIA_MEDIAL_CONDYLE_R,B_CUN_PROPORTIONAL,FMA:24476 (Medial Tibial Border 3 cun inferior to SP9),"Posterior to medial border of tibia, 10/13 from medial malleolus to tibial medial condyle",0,0,0,8.0,4.0,"WHO 2008, p. 80: Tibial aspect of leg, posterior to medial border of tibia, 3 B-cun inferior to SP9."
+SP9,SP,Yinlingquan,阴陵泉,,CLASS_B,LM_MED_MALLEOLUS_R,LM_PATELLA_INFERIOR_R,JOINT_DEPRESSION,FMA:24085 (Medial Tibial Condyle Depression),Depression inferior to medial condyle of tibia,0,0,0,8.0,4.0,"WHO 2008, p. 84: Medial aspect of leg, in depression between inferior border of medial condyle of tibia and medial border of tibia."
+ST1,ST,Chengqi,承泣,,CLASS_B,LM_INFRAORBITAL_MARGIN_R,,JOINT_DEPRESSION,FMA:54226 (Infraorbital Margin between Eyeball and Orbit),Infraorbital margin directly inferior to pupil,0,0,0,5.0,3.0,"WHO 2008, p. 50: Face, between eyeball and infraorbital margin, directly inferior to the pupil."
+ST10,ST,Shuitu,水突,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST11,ST,Qishe,气舍,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST12,ST,Quepen,缺盆,,CLASS_B,LM_CLAVICLE_MIDPOINT_R,,JOINT_DEPRESSION,FMA:54237 (Greater Supraclavicular Fossa 4 cun lateral to Midline),Greater supraclavicular fossa directly superior to midpoint of clavicle,0,0,0,7.0,4.0,"WHO 2008, p. 56: Supraclavicular fossa, superior to clavicle midpoint, 4 B-cun lateral to anterior midline."
+ST13,ST,Qihu,气户,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST14,ST,Kufang,库房,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST15,ST,Wuyi,屋翳,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST16,ST,Yingchuang,膺窗,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST17,ST,Ruzhong,乳中,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST18,ST,Rugen,乳根,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST19,ST,Burong,不容,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST2,ST,Sibai,四白,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST20,ST,Chengman,承满,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST21,ST,Liangmen,梁门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST22,ST,Guanmen,关门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST23,ST,Taiyi,太乙,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST24,ST,Huaroumen,滑肉门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST25,ST,Tianshu,天枢,,CLASS_B,LM_UMBILICUS,,PARASAGITTAL_LINE,FMA:54250 (Abdomen Transverse Umbilical Line 2 cun lateral),Rectus abdominis muscle 2 B-cun lateral to center of umbilicus,0,0,0,6.0,3.0,"WHO 2008, p. 62: Abdomen, 2 B-cun lateral to the center of the umbilicus."
+ST26,ST,Wailing,外陵,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST27,ST,Daju,大巨,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST28,ST,Shuidao,水道,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST29,ST,Guilai,归来,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST3,ST,Juliao,巨髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST30,ST,Qichong,气冲,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST31,ST,Biguan,髀关,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST32,ST,Futu,伏兔,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST33,ST,Yinshi,阴市,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST34,ST,Liangqiu,梁丘,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST35,ST,Dubi,犊鼻,,CLASS_A,LM_PATELLA_INFERIOR_R,,JOINT_DEPRESSION,FMA:24485 (Patellar Ligament Lateral Depression),Depression lateral to patellar ligament,0,0,0,7.0,4.0,"WHO 2008, p. 67: Anterior knee, in depression lateral to patellar ligament."
+ST36,ST,Zusanli,足三里,,CLASS_A,LM_PATELLA_INFERIOR_R,LM_LAT_MALLEOLUS_R,B_CUN_PROPORTIONAL,FMA:24486 (Tibialis Anterior Lateral to Crest 3 cun below Dubi),3 B-cun inferior to ST35 on m. tibialis anterior,0,0,0,8.0,5.0,"WHO 2008, p. 68: Anterior leg, 3 B-cun inferior to ST35, one fingerbreadth lateral to anterior crest of tibia."
+ST37,ST,Shangjuxu,上巨虚,,CLASS_B,LM_PATELLA_INFERIOR_R,LM_LAT_MALLEOLUS_R,B_CUN_PROPORTIONAL,"FMA:24478 (Anterolateral Leg, 6 cun inferior to ST35)",Anterolateral leg 6/16 along patella-lateral malleolus segment (6 B-cun inferior to ST35),0,0,0,8.0,4.0,"WHO 2008, p. 69: Anterior leg, 6 B-cun inferior to ST35, one fingerbreadth lateral to anterior border of tibia."
+ST38,ST,Tiaokou,条口,,CLASS_B,LM_PATELLA_INFERIOR_R,LM_LAT_MALLEOLUS_R,B_CUN_PROPORTIONAL,"FMA:24479 (Anterolateral Leg, 8 cun inferior to ST35)",Anterolateral leg midway (8/16) between ST35 and lateral malleolus,0,0,0,8.0,4.0,"WHO 2008, p. 70: Anterior leg, 8 B-cun inferior to ST35, one fingerbreadth lateral to anterior border of tibia."
+ST39,ST,Xiajuxu,下巨虚,,CLASS_B,LM_PATELLA_INFERIOR_R,LM_LAT_MALLEOLUS_R,B_CUN_PROPORTIONAL,"FMA:24480 (Anterolateral Leg, 9 cun inferior to ST35)",Anterolateral leg 9/16 along patella-lateral malleolus segment (9 B-cun inferior to ST35),0,0,0,8.0,4.0,"WHO 2008, p. 70: Anterior leg, 9 B-cun inferior to ST35, one fingerbreadth lateral to anterior border of tibia."
+ST4,ST,Dicang,地仓,,CLASS_B,LM_CHEILION_R,,LANDMARK_DEFINED,FMA:54229 (Oral Angle Cheilion 0.4 cun lateral),Facial expression muscular interval 0.4 B-cun lateral to labial commissure,0,0,0,5.0,3.0,"WHO 2008, p. 52: Face, 0.4 B-cun lateral to the corner of the mouth."
+ST40,ST,Fenglong,丰隆,,CLASS_B,LM_PATELLA_INFERIOR_R,LM_LAT_MALLEOLUS_R,PARASAGITTAL_LINE,"FMA:24481 (Anterolateral Leg, Lateral Tibialis Anterior, 8 cun inferior to ST35, 1 cun lateral)","Anterolateral leg 8/16 along leg segment, 1 fingerbreadth lateral to ST38",0,0,0,9.0,5.0,"WHO 2008, p. 71: Anterior leg, 8 B-cun inferior to ST35, one fingerbreadth (1 cun) lateral to ST38."
+ST41,ST,Jiexi,解溪,,CLASS_B,LM_LAT_MALLEOLUS_R,,JOINT_DEPRESSION,FMA:35186 (Anterior Ankle Joint Flexion Depression),Anterior ankle crease in depression between tendons at level of lateral malleolus tip,0,0,0,6.0,3.0,"WHO 2008, p. 71: Anterior ankle, in depression on center of anterior crease between extensor hallucis and digitorum longus tendons."
+ST42,ST,Chongyang,冲阳,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST43,ST,Xiangu,陷谷,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST44,ST,Neiting,内庭,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST45,ST,Lidui,厉兑,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST5,ST,Daying,大迎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST6,ST,Jiache,颊车,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST7,ST,Xiaguan,下关,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+ST8,ST,Touwei,头维,,CLASS_B,LM_FRONTAL_ANGLE_HAIRLINE_R,,LANDMARK_DEFINED,FMA:54233 (Frontal Angle of Hairline 0.5 cun superior),Frontal bone at corner of forehead 0.5 B-cun superior to frontal hairline angle,0,0,0,7.0,4.0,"WHO 2008, p. 54: Head, 0.5 B-cun superior to the frontal angle of hairline, 4.5 B-cun lateral to anterior midline."
+ST9,ST,Renying,人迎,,CLASS_B,LM_THYROID_CARTILAGE_PROMINENCE,,MUSCLE_BORDER,FMA:54234 (Anterior Border of Sternocleidomastoid at Laryngeal Prominence Level),Anterior border of sternocleidomastoid level with superior border of thyroid cartilage,0,0,0,7.0,4.0,"WHO 2008, p. 55: Anterior neck, level with laryngeal prominence, on anterior border of sternocleidomastoid muscle."
+TE1,TE,Guanchong,关冲,,CLASS_B,LM_WRIST_CREASE_PALMAR_R,LM_RADIAL_STYLOID_R,LANDMARK_DEFINED,FMA:24097 (Ring Finger Ulnar Nail Bed),Terminal phalanx of 4th digit ulnar side,0,0,0,5.0,3.0,"WHO 2008, p. 177: Medial aspect of 4th digit (ring finger), 0.1 B-cun proximal to ulnar corner of nail."
+TE10,TE,Tianjing,天井,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE11,TE,Qinglengyuan,清冷渊,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE12,TE,Xiaoluo,消泺,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE13,TE,Naohui,臑会,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE14,TE,Jianliao,肩髎,,CLASS_B,LM_ACROMION_R,,JOINT_DEPRESSION,FMA:24102 (Posterior Infraclavicular/Acromial Depression),Posterior depression below acromion when arm is abducted,0,0,0,8.0,4.0,"WHO 2008, p. 185: Shoulder girdle, depression posterior and inferior to lateral acromion."
+TE15,TE,Tianliao,天髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE16,TE,Tianyou,天牖,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE17,TE,Yifeng,翳风,,CLASS_B,LM_MASTOID_R,LM_C2_SPINE,JOINT_DEPRESSION,FMA:24103 (Depression Between Mastoid and Mandibular Angle),Depression posterior to ear lobe between mastoid and mandibular ramus,0,0,0,6.0,3.0,"WHO 2008, p. 187: Lateral neck, in depression between mastoid process and angle of mandible, posterior to ear lobe."
+TE18,TE,Chimai,瘛脉,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE19,TE,Luxi,颅息,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE2,TE,Yemen,液门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE20,TE,Jiaosun,角孙,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE21,TE,Ermen,耳门,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE22,TE,Erheliao,耳和髎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE23,TE,Sizhukong,丝竹空,,CLASS_B,LM_GLABELLA,LM_MASTOID_R,JOINT_DEPRESSION,FMA:24105 (Lateral Eyebrow Depression),Frontozygomatic suture depression at lateral extremity of eyebrow,0,0,0,5.0,3.0,"WHO 2008, p. 191: Face, in depression at lateral end of eyebrow."
+TE3,TE,Zhongzhu,中渚,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE4,TE,Yangchi,阳池,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE5,TE,Waiguan,外关,,CLASS_B,LM_WRIST_CREASE_PALMAR_R,LM_CUBITAL_CREASE_R,B_CUN_PROPORTIONAL,FMA:24100 (Dorsal Forearm 2 Cun Proximal to Wrist Crease),Interosseous space between radius and ulna 2 B-cun proximal to dorsal wrist crease,0,0,0,6.0,3.0,"WHO 2008, p. 180: Posterior forearm, between radius and ulna, 2 B-cun proximal to dorsal wrist crease."
+TE6,TE,Zhigou,支沟,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE7,TE,Huizong,会宗,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE8,TE,Sanyangluo,三阳络,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,
+TE9,TE,Sidu,四渎,,CLASS_D,,,LEGACY_SURFACE_RAYCAST,,,0,0,0,15.0,20.0,

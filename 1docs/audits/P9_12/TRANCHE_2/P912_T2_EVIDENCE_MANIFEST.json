@@ -1,0 +1,133 @@
+{
+  "manifest_version": "1.0",
+  "milestone": "P9.12 Tranche 2 (Cranial, Facial & Cervical Anatomical Remediation)",
+  "timestamp_utc": "2026-10-28T13:05:42Z",
+  "auditor": "Principal Computational Anatomy Engineer & Independent Evidence Auditor",
+  "canonical_dataset_hash": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+  "canonical_mesh_hash": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808",
+  "catalog_distribution": {
+    "total_acupoints": 362,
+    "class_a_audited_anchors": 18,
+    "class_b_rule_derived": 259,
+    "class_c_quarantined": 0,
+    "class_d_uncalibrated": 85,
+    "calibrated_coverage_percentage": 76.5,
+    "clinical_tier_4_verified_count": 0,
+    "clinical_tier_4_verified_percentage": 0.0
+  },
+  "hardware_benchmark": {
+    "gpu": "Intel(R) HD Graphics 5500 (D3D11/ANGLE)",
+    "avg_fps": 40.78,
+    "p95_frame_time_ms": 32.1,
+    "avg_raycast_ms": 0.0,
+    "context_losses": 0
+  },
+  "regression_testing": {
+    "total_tests": 546,
+    "passed": 546,
+    "failed": 0,
+    "pass_rate_percentage": 100.0
+  },
+  "files": {
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_BASELINE_FORENSIC_AUDIT.md": {
+      "sha256": "b9ad89748da81baa6271515e0c9be290ab2dc7f1827eef8552fe3d2044ebb8dd",
+      "size_bytes": 9976
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_TARGET_RECONCILIATION.csv": {
+      "sha256": "68c032270feca52adce4c7a9ca46443356404d2f2f3dd78073bcc9f8c3261a3c",
+      "size_bytes": 12024
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_ANATOMICAL_RULES.md": {
+      "sha256": "080b54a85d290715e5e7de6c187eb7e24580dca97e7d605a18cf5ea9ad30c545",
+      "size_bytes": 10861
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_POINT_REMEDIATION_MATRIX.csv": {
+      "sha256": "cd3ff19464834237ea815933c7abba7514bb08cbff7d9fffea9afd9e9919f0db",
+      "size_bytes": 27305
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_ANATOMICAL_GEOMETRY_AUDIT.md": {
+      "sha256": "8599afe4a0ad4488d7c73807c4f991ac2082dec0938cfa19d376271a8f7c2dc0",
+      "size_bytes": 3911
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_REGISTRATION_VALIDATION.md": {
+      "sha256": "00135b0cb6341fe6dc0698b2409b0345d955480490979bf8e25ffd09ddfe94ac",
+      "size_bytes": 2839
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_CLASSIFICATION_RECONCILIATION.csv": {
+      "sha256": "36e988f829c7f14bf81bc974903cf28c369a1776f64eddefe90d8b66c1adfac6",
+      "size_bytes": 129728
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_CLINICAL_SAFETY_AUDIT.md": {
+      "sha256": "63e1f033ffede853954526e7827cca50476eeacdff8618a2eb3d38210f516346",
+      "size_bytes": 4552
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_FULL_REGRESSION_REPORT.md": {
+      "sha256": "1af12bf546d4138359ff85b37a0abb682d92725c27175cc8598fc40c81bfc79f",
+      "size_bytes": 3296
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_PHYSICAL_GPU_BENCHMARK.md": {
+      "sha256": "ed8887972d710c52e1bc9af7aa59010b1d55202de8be5e086c5581fd1a08e9b5",
+      "size_bytes": 3328
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_FINAL_ACCEPTANCE_MATRIX.md": {
+      "sha256": "086a35d29bbcb99a0c98611c189aaa23d0756d7999df117772a920662802c8c6",
+      "size_bytes": 11743
+    },
+    "1docs/audits/P9_12/TRANCHE_2/P912_T2_ENGINEERING_HANDOFF.md": {
+      "sha256": "6a2c46a3f02a05008cd85816d1d29b8f07f49ff0b5099a8867153b6d47817d75",
+      "size_bytes": 8236
+    },
+    "2data/evidence/p9_12_tranche_2/01_p912_t2_cranial_gv_bl_alignment.png": {
+      "sha256": "79205120aeb23bd70096ef504aa9b70a07d9326f9f4de31daec9cac1b15a4617",
+      "size_bytes": 145801
+    },
+    "2data/evidence/p9_12_tranche_2/02_p912_t2_gb_temporal_auricular_topology.png": {
+      "sha256": "b4c8b6463798d8d7592d4ef8bd633ba43274bf8eaba72ac322e4aa6f72105b88",
+      "size_bytes": 145696
+    },
+    "2data/evidence/p9_12_tranche_2/03_p912_t2_facial_st_li_localization.png": {
+      "sha256": "302539bc8372a46ef4830f27c7418870f2698b10097f02558c75b8fd824f4019",
+      "size_bytes": 189394
+    },
+    "2data/evidence/p9_12_tranche_2/04_p912_t2_orbital_safety_boundaries.png": {
+      "sha256": "2e8a2650b94efa837a9b00a295815859001fabfa7abe3d768402082f232546d4",
+      "size_bytes": 186392
+    },
+    "2data/evidence/p9_12_tranche_2/05_p912_t2_cervical_si_te_st_transitions.png": {
+      "sha256": "3d0534d97c707bef6b6db6cddfd9075b6dd334be199028e7c20d7151acd7f8b2",
+      "size_bytes": 165750
+    },
+    "2data/evidence/p9_12_tranche_2/06_p912_t2_qa_studio_76pct_calibrated.png": {
+      "sha256": "c4b472dae0e36e5aaa739983e5e61493d8c2eee0b09255d064f683d7a95d65a9",
+      "size_bytes": 207798
+    },
+    "2data/evidence/p9_12_tranche_2/07_p912_t2_standardized_intel_hd5500_benchmark.png": {
+      "sha256": "71288c20f96bde7056e49fdef435c620b5bc5995639fbdd631e92cd7b38ed902",
+      "size_bytes": 152008
+    },
+    "2data/evidence/p9_12_tranche_2/webgl_p9_12_t2_standardized_benchmark.json": {
+      "sha256": "fe68f71dbe77778d3fadee155bf55dbc9aa30fb998861323aca4977db0fbab0f",
+      "size_bytes": 980
+    },
+    "msk_therapy_os/landmark_registry.py": {
+      "sha256": "ca8f8e0d9131a40dfed09a1e383a874d3f1beb01df6467c17f26fa878186119c",
+      "size_bytes": 132652
+    },
+    "msk_therapy_os/point_localization_rules.py": {
+      "sha256": "ea92b26605d5a6a3616e60871dbe0bc07da8a168b611f4c6656053884bd18c57",
+      "size_bytes": 289363
+    },
+    "msk_therapy_os/points.py": {
+      "sha256": "161abd5608660eb8692ca2ed2c049303ea6e7647ce65951e44cc1f303ec2dea9",
+      "size_bytes": 111585
+    },
+    "tests/test_p9_12_tranche_2_remediation.py": {
+      "sha256": "f3c2a44e972f28c6b9a8b0df5b2504184a697c04681f9b741f5f12e12f8b175c",
+      "size_bytes": 15872
+    },
+    "tests/test_p9_12_t2_playwright_benchmark.py": {
+      "sha256": "8c1980de60dd5e325f11f3aa0ec277a3f7d5572e10d7e6a827f5307a1eb4ebe2",
+      "size_bytes": 16320
+    }
+  }
+}

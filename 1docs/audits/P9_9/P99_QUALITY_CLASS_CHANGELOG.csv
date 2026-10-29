@@ -1,0 +1,9 @@
+point_code,predecessor_p98_class,current_p99_class,remediation_rationale,governance_status
+SP2,CLASS_D,CLASS_B,De-quarantined landmark LM_MTP1_DISTAL_R independently grounded from FJ3351,FORMALLY_ELEVATED
+SP3,CLASS_D,CLASS_B,De-quarantined landmark LM_MTP1_PROXIMAL_R independently grounded from FJ3351,FORMALLY_ELEVATED
+SP4,CLASS_D,CLASS_B,De-quarantined landmark LM_METATARSAL1_BASE_R independently grounded from FJ3351,FORMALLY_ELEVATED
+SP5,CLASS_D,CLASS_B,De-quarantined landmark LM_NAVICULAR_TUBEROSITY_R independently grounded from FJ3308,FORMALLY_ELEVATED
+KI2,CLASS_D,CLASS_B,New rule anchored to navicular tuberosity anteroinferior depression along medial arch,FORMALLY_ELEVATED
+KI4,CLASS_D,CLASS_B,New rule anchored posteroinferior to medial malleolus anterior to calcaneal tendon,FORMALLY_ELEVATED
+KI5,CLASS_D,CLASS_B,New rule anchored anterosuperior to medial process of calcaneal tuberosity,FORMALLY_ELEVATED
+HT7,CLASS_D,CLASS_B,New rule anchored to distal palmar wrist crease at radial border of FCU tendon proximal to pisiform,FORMALLY_ELEVATED

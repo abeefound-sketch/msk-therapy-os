@@ -50,6 +50,7 @@ def browser_server_p94(tmp_path_factory):
     server.server_close()
 
 
+@pytest.mark.playwright
 def test_playwright_p9_4_studio_evidence(browser_server_p94):
     """Capture real browser visual evidence and verify WebGL/SVG meridian studio rendering."""
     console_errors = []

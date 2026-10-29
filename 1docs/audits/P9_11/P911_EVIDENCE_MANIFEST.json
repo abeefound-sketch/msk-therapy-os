@@ -1,0 +1,172 @@
+{
+  "manifest_version": "1.0.0",
+  "milestone": "P9.11 Anatomical Ground-Truth Validation & Class D Remediation",
+  "timestamp_utc": "2026-10-28T07:07:45Z",
+  "repository_commit_head": "feat/p9.4-definitive-meridian-atlas-correction",
+  "canonical_invariants": {
+    "acupuncture_3d_json_sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+    "fj2810_softened_bin_sha256": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808"
+  },
+  "reconciled_catalog": {
+    "total_acupoints": 362,
+    "class_a_audited_canonical": 18,
+    "class_b_who_rule_derived": 156,
+    "class_c_geometric_interpolation": 0,
+    "class_d_uncalibrated_legacy": 188,
+    "calibrated_coverage_percentage": 48.1,
+    "clinically_verified_count": 0,
+    "clinically_verified_percentage": 0.0
+  },
+  "artifacts": [
+    {
+      "path": "msk_therapy_os/static/atlas/data/acupuncture_3d.json",
+      "sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+      "size_bytes": 1750611,
+      "purpose": "Canonical immutable 3D acupoint coordinates dataset"
+    },
+    {
+      "path": "2data/artifacts/fj2810_softened.bin",
+      "sha256": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808",
+      "size_bytes": 853592,
+      "purpose": "Canonical whole-body soft-tissue skin mesh (BodyParts3D 4.0 FJ2810)"
+    },
+    {
+      "path": "msk_therapy_os/point_localization_rules.py",
+      "sha256": "886d84e5a48f2f3af5395ff1cf37414cf167747de7c21431fc1e424dd35f485c",
+      "size_bytes": 151633,
+      "purpose": "WHO 2008 Standard Acupoint Localization Rules & Geometric Resolution Engine"
+    },
+    {
+      "path": "msk_therapy_os/points.py",
+      "sha256": "0540f512370cec25d91b3d3affb10d40d19f37ddc784531989920c0290265d4e",
+      "size_bytes": 111586,
+      "purpose": "Custom Acupoint Atlas & Interactive Point Authoring Repository & Services"
+    },
+    {
+      "path": "msk_therapy_os/landmark_registry.py",
+      "sha256": "496c9c3a8549bad12504da8230ab5f244f4937eb43f82d86bdfb712b7cabf72b",
+      "size_bytes": 62782,
+      "purpose": "Authoritative Anatomical Landmark Registry (FMA Anchored)"
+    },
+    {
+      "path": "msk_therapy_os/anatomical_registration.py",
+      "sha256": "e47277142e63fb6a1a8a961802c9b42d6ed4e4f96fdf99f83ca982651394e9af",
+      "size_bytes": 30213,
+      "purpose": "Umeyama SVD & Dual-Frame Skeletal-to-Skin Registration Engine"
+    },
+    {
+      "path": "msk_therapy_os/cun_scaling.py",
+      "sha256": "eb4333221a15104e15617c8a637c21f5231e307de8f2e0dc0a57e661bb2cba95",
+      "size_bytes": 18591,
+      "purpose": "WHO 2008 Proportional Bone Cun Scaling Engine"
+    },
+    {
+      "path": "msk_therapy_os/landmark_dependency_validator.py",
+      "sha256": "920740fd9527c79efbb9f96b082480f0540706747d8b39fa0d5f783d4dfa3499",
+      "size_bytes": 10639,
+      "purpose": "Non-circular landmark provenance and dependency cycle validator"
+    },
+    {
+      "path": "tests/test_p9_11_class_d_remediation.py",
+      "sha256": "03e35267c7f5149514070493f34156fd68184d0476f075432b58b6457591bff0",
+      "size_bytes": 10489,
+      "purpose": "P9.11 30-point bilateral resolution, parity, ordering, and reconciliation tests"
+    },
+    {
+      "path": "tests/test_p9_11_playwright_benchmark.py",
+      "sha256": "0d56e8e90182c5e069814960e0beba539aa7fd289776b790010990bae5a09836",
+      "size_bytes": 15679,
+      "purpose": "P9.11 physical Intel HD 5500 Playwright benchmark and evidence capture"
+    },
+    {
+      "path": "2data/evidence/p9_11_remediation/01_p911_qa_studio_48pct_calibrated.png",
+      "sha256": "e9870e9090b850579c9d96ece3725e8ac08e831e2fc339af2ecb82389125f5fe",
+      "size_bytes": 210031,
+      "purpose": "Screenshot 1: QA Studio Dynamic Coverage Dashboard showing 48.1% calibrated coverage"
+    },
+    {
+      "path": "2data/evidence/p9_11_remediation/02_p911_forearm_flexor_pc_ht_rules.png",
+      "sha256": "451575aa3757b5d68b4aa98334d667850c12bbdf3f0d8e5c1979d70ac4a3e1ae",
+      "size_bytes": 205446,
+      "purpose": "Screenshot 2: Forearm flexor compartment (PC4-PC5, HT4-HT6) rules and tendon intervals"
+    },
+    {
+      "path": "2data/evidence/p9_11_remediation/03_p911_forearm_extensor_li_te_si_rules.png",
+      "sha256": "4ffe6b3d9c7c3c40c029afee4e4e405f83af83400d00b54c9f6c09dd530ee98f",
+      "size_bytes": 190636,
+      "purpose": "Screenshot 3: Forearm extensor compartment (LI6-LI10, TE4-TE9, SI4-SI7) rules"
+    },
+    {
+      "path": "2data/evidence/p9_11_remediation/04_p911_crural_tibial_fibular_lr_gb_rules.png",
+      "sha256": "3c8a090e906cf12f99b835aad15f5af2aeaf1322be4aa15e7c440571e1e0df4c",
+      "size_bytes": 179059,
+      "purpose": "Screenshot 4: Crural tibial and fibular compartments (LR2, LR4-LR7, GB35-GB40) rules"
+    },
+    {
+      "path": "2data/evidence/p9_11_remediation/05_p911_standardized_intel_hd5500_benchmark.png",
+      "sha256": "e21f4c2dacad1ff1c6fcb23dd5af096ffb2ab9f5e4dab8a61d20a4e5b832bb51",
+      "size_bytes": 200154,
+      "purpose": "Screenshot 5: Physical Intel HD 5500 hardware execution benchmark under continuous rotation"
+    },
+    {
+      "path": "2data/evidence/p9_11_remediation/webgl_p9_11_standardized_benchmark.json",
+      "sha256": "72db0ba9ed959aeb6ce46cbe89ec44ad741700948061f72856be044e237c7276",
+      "size_bytes": 1362,
+      "purpose": "Standardized physical GPU benchmark JSON report on Intel HD 5500 silicon"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_BASELINE_FORENSIC_AUDIT.md",
+      "sha256": "ba4804d32b4bcf381084f90cdd42d5f8547ba679c812918dc6c820b361321568",
+      "size_bytes": 3948,
+      "purpose": "P9.11 Baseline forensic preflight audit and hash verification"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_INDEPENDENT_GROUND_TRUTH_AUDIT.md",
+      "sha256": "3b6c1b2d00889c76a9fd01df1961d4058adfbd77e914fef38cbe0249a0248a3c",
+      "size_bytes": 6655,
+      "purpose": "P9.11 Independent ground-truth audit and four-tier integrity separation"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_CLASS_D_PRIORITY_MATRIX.csv",
+      "sha256": "b9088977b7e13f2eb90b89f83d670c6e2345ec9038d955e5f06a7b7646caf67f",
+      "size_bytes": 36917,
+      "purpose": "Priority ranking and triage matrix for all 218 Class D points"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_POINT_REMEDIATION_MATRIX.csv",
+      "sha256": "55bec45a830e8ee7c1d9ee72828e17b7fb5f8163bff5252d917d315993f853fb",
+      "size_bytes": 13916,
+      "purpose": "Remediation matrix for all 30 elevated Class B points with WHO citations and deltas"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_REGISTRATION_VALIDATION.md",
+      "sha256": "32e2e5ec5bce8a5c62092769bc16e794301cb54531427e5e10666ef113b82810",
+      "size_bytes": 6469,
+      "purpose": "Numerical stability, condition numbers, and SVD reflection protection audit"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_ANATOMICAL_GEOMETRY_AUDIT.md",
+      "sha256": "3bad14ceca24cdf6c7a8b53181c7ddf4c0b07d8ed5b1f9eccb63853b4ea5e009",
+      "size_bytes": 11690,
+      "purpose": "Mesh geometry, tendon intervals, and B-cun proportional analysis of remediated points"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_CLASSIFICATION_RECONCILIATION.csv",
+      "sha256": "81264894b617861b1474f7ff61bb7bb2831403411d5a3c4d08b4bee9f213a281",
+      "size_bytes": 123852,
+      "purpose": "Reconciled catalog matrix for all 362 acupoints with quality class and tier"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_PHYSICAL_GPU_BENCHMARK.md",
+      "sha256": "39b7047142ecb072320037e22fe7d55a5ddeff7fcd7f52e655f34a5daebd13c0",
+      "size_bytes": 4991,
+      "purpose": "Physical Intel HD 5500 benchmark report and hardware acceptance"
+    },
+    {
+      "path": "1docs/audits/P9_11/P911_FULL_REGRESSION_REPORT.md",
+      "sha256": "209a06c014774c66b3e91975ca4cbf2448a59eff2b61e40d76eb3fbafff142c3",
+      "size_bytes": 6692,
+      "purpose": "Full regression test report covering all 427 tests across repository"
+    }
+  ]
+}

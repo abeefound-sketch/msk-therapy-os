@@ -1,0 +1,141 @@
+{
+  "milestone": "P9.12_TRANCHE_3",
+  "title": "Milestone P9.12 Tranche 3 Evidence Manifest & Cryptographic Checksums",
+  "timestamp": "2026-10-28T15:51:16Z",
+  "environment": {
+    "os": "Windows 10 x64",
+    "python": "3.11.9",
+    "pytest": "8.3.4",
+    "gpu": "Intel(R) HD Graphics 5500 (D3D11/ANGLE)"
+  },
+  "metrics_summary": {
+    "total_acupoints": 362,
+    "class_a_canonical": 18,
+    "class_b_rule_derived": 344,
+    "class_c_quarantined": 0,
+    "class_d_uncalibrated": 0,
+    "calibrated_percentage": 100.0,
+    "tier_4_clinical_percentage": 0.0,
+    "canonical_landmarks": 268,
+    "parametric_rules": 360,
+    "acceptance_gates_passed": "12/12"
+  },
+  "artifacts": {
+    "msk_therapy_os/landmark_registry.py": {
+      "size_bytes": 204988,
+      "sha256": "994f4f7dace9ac8139013e507e7d3e47656ed9a318bfd5a0665f486ed8cfa80c"
+    },
+    "msk_therapy_os/point_localization_rules.py": {
+      "size_bytes": 377301,
+      "sha256": "4bbafbd3d46e6c566afd5103b335735e02d01e3291b3151611cabd29c807726c"
+    },
+    "msk_therapy_os/points.py": {
+      "size_bytes": 111974,
+      "sha256": "cb061ad8714f475bac865ee335d49cb6d90c9cc65bd9630439ed5897d327d0f2"
+    },
+    "msk_therapy_os/spatial_resolver.py": {
+      "size_bytes": 36473,
+      "sha256": "d0e4ca0efd806405914351cfa192ad32d1a67b0cedda3ff8d5255707978012ae"
+    },
+    "msk_therapy_os/landmark_dependency_validator.py": {
+      "size_bytes": 10639,
+      "sha256": "920740fd9527c79efbb9f96b082480f0540706747d8b39fa0d5f783d4dfa3499"
+    },
+    "tests/test_p9_12_tranche_3_remediation.py": {
+      "size_bytes": 18374,
+      "sha256": "d8ae9158df6c97e940c646f28ee4fbdc6da1f8bd0df10b74f3cbbd61ca6696ce"
+    },
+    "tests/test_p9_12_t3_playwright_benchmark.py": {
+      "size_bytes": 18244,
+      "sha256": "599a71dffd712d7899420a80fd12a40b24bea0028b86600dc4f5b3fe94bc827a"
+    },
+    "p9_12_tranche_3_milestone_delivery_report.md": {
+      "size_bytes": 15496,
+      "sha256": "f96dd113ee1e8e3426ad852957f8056998fa2e2f02303ac33aa3f15c45ff60ea"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_BASELINE_FORENSIC_AUDIT.md": {
+      "size_bytes": 6377,
+      "sha256": "276e28af81fd216ddcd0c3cc21a9be03513c8edc4cb49c5883c57eb3b562579a"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_SCOPE_RECONCILIATION.csv": {
+      "size_bytes": 17446,
+      "sha256": "a584a9ae02669735b00720573a0aacc90791866b300237f629fe8f4eac3f1312"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_LANDMARK_REGISTRY_AUDIT.md": {
+      "size_bytes": 5821,
+      "sha256": "e28e74fd758ab47e68419e3115f5c5b1385115f6b6d271693aa10e8ef74ec387"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_ANATOMICAL_LOCALIZATION_RULES.md": {
+      "size_bytes": 6614,
+      "sha256": "ac63d7e032b1e06ac952f23f5b473c188f1bedc80f6c1cb09768e59ace5a2d67"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_POINT_REMEDIATION_MATRIX.csv": {
+      "size_bytes": 27066,
+      "sha256": "05ab729560453680e1472643709a92abb32957da4105d1482355bc9b961e727a"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_ANATOMICAL_GEOMETRY_AUDIT.md": {
+      "size_bytes": 5318,
+      "sha256": "50ae9649e618191b68c94d93c1b874cb54f912dc325c961a729eed6df9349eac"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_REGISTRATION_VALIDATION.md": {
+      "size_bytes": 4017,
+      "sha256": "bbf19d6cdd6eb5bfa3cc11ff9f86932d82d00aecd5ab7369e2426f2a10e63768"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_CLASSIFICATION_RECONCILIATION.csv": {
+      "size_bytes": 67725,
+      "sha256": "96d0946e5ede8da62f1ae4e465629548d505a87d92382c7d26b289dca35365dd"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_CLINICAL_SAFETY_BOUNDARIES.md": {
+      "size_bytes": 3513,
+      "sha256": "74c35e2fcb72837921b437a543ae7bb7531d680e33035394d072d58c5c413fd1"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_FULL_REGRESSION_REPORT.md": {
+      "size_bytes": 5298,
+      "sha256": "c897cbc59cc55ef35d4be80a65e8b92a5823981c24d5f819ef3b5caf08cc2b6a"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_PHYSICAL_GPU_BENCHMARK.md": {
+      "size_bytes": 4205,
+      "sha256": "8c35cc4892a187472e06061f9bed3d3846161d0e1061003212c7c15b029f67a1"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_FINAL_ACCEPTANCE_MATRIX.md": {
+      "size_bytes": 4120,
+      "sha256": "225dc39555daa45761e0ca2a2802b2cc99dcc1a09cb8ece0d999000c01e6df8b"
+    },
+    "1docs/audits/P9_12/TRANCHE_3/P912_T3_ENGINEERING_HANDOFF.md": {
+      "size_bytes": 4559,
+      "sha256": "61ad1d97827aec9f6362d1f377193b39e264eb923bc972c2c5c928ef05f0dbdc"
+    },
+    "2data/evidence/p9_12_tranche_3/webgl_p9_12_t3_standardized_benchmark.json": {
+      "size_bytes": 1366,
+      "sha256": "cce6d94ba6fa805e5525e5433b205bd2f905664c931db3759efe5f21ffaf78c5"
+    },
+    "2data/evidence/p9_12_tranche_3/01_p912_t3_axial_paraspinal_spine_alignment.png": {
+      "size_bytes": 194728,
+      "sha256": "39d35ee4d5904b139c6c056ba1cfca4eae8c3528ae56a4f206b4f518fd79f4a4"
+    },
+    "2data/evidence/p9_12_tranche_3/02_p912_t3_thoracic_abdominal_st_ki_sp_grid.png": {
+      "size_bytes": 205411,
+      "sha256": "7554fc73e539dfc4715e7421526f7ee9abb4a697dbce60dcd4fcf7df0af69ec2"
+    },
+    "2data/evidence/p9_12_tranche_3/03_p912_t3_gb_flank_intercostal_topology.png": {
+      "size_bytes": 157371,
+      "sha256": "5905db998ac1906b706e9637a0c601e06929ab43140755569128f7357c786f5b"
+    },
+    "2data/evidence/p9_12_tranche_3/04_p912_t3_distal_extremity_hand_points.png": {
+      "size_bytes": 181422,
+      "sha256": "edb6c91d3770a3c4beec6c50cb084446308fe21985f7d1f90184997e12bdcb09"
+    },
+    "2data/evidence/p9_12_tranche_3/05_p912_t3_distal_extremity_foot_points.png": {
+      "size_bytes": 178445,
+      "sha256": "1859902a862d0e9f2a1f1e006203252c2ffe45c4a74b8c7e339c08bc9d28bc96"
+    },
+    "2data/evidence/p9_12_tranche_3/06_p912_t3_qa_studio_100pct_calibrated.png": {
+      "size_bytes": 206496,
+      "sha256": "60facc86eda1276e3e38a11d7f9c5fb36d9885dd0802f8aef959b45a1f939bca"
+    },
+    "2data/evidence/p9_12_tranche_3/07_p912_t3_standardized_intel_hd5500_benchmark.png": {
+      "size_bytes": 192528,
+      "sha256": "57429585990addc35ec12e147700038fb24d018c15cadcd89791de00097e4198"
+    }
+  }
+}

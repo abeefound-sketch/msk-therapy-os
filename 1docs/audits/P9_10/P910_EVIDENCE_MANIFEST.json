@@ -1,0 +1,162 @@
+{
+  "milestone": "P9.10 Independent Anatomical Ground Truth Validation & Performance Acceptance Hardening",
+  "generated_utc": "2026-10-28T05:50:09Z",
+  "git_branch": "feat/p9.4-definitive-meridian-atlas-correction",
+  "physical_hardware": {
+    "cpu": "Intel(R) Core(TM) i7-5600U CPU @ 2.60GHz",
+    "gpu": "Intel(R) HD Graphics 5500",
+    "driver": "Direct3D 11 via ANGLE",
+    "os": "Windows 10 Pro 64-bit"
+  },
+  "catalog_counts": {
+    "total_points": 362,
+    "class_a": 18,
+    "class_b": 126,
+    "class_c": 0,
+    "class_d": 218,
+    "calibrated_coverage_percentage": 39.8,
+    "clinical_verification_percentage": 0.0
+  },
+  "artifacts": {
+    "msk_therapy_os/static/atlas/data/acupuncture_3d.json": {
+      "sha256": "47df1332187f7de3f3e08aaf3a4a42a761a312e4fff8c3a728e254d99e0520df",
+      "exists": true,
+      "bytes": 1750611
+    },
+    "2data/artifacts/fj2810_softened.bin": {
+      "sha256": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808",
+      "exists": true,
+      "bytes": 853592
+    },
+    "msk_therapy_os/anatomical_registration.py": {
+      "sha256": "e47277142e63fb6a1a8a961802c9b42d6ed4e4f96fdf99f83ca982651394e9af",
+      "exists": true,
+      "bytes": 30213
+    },
+    "msk_therapy_os/point_localization_rules.py": {
+      "sha256": "fffef19d2025fdde270db1ddd568aa899231ab76c04057d4fc4030b7492923d6",
+      "exists": true,
+      "bytes": 126138
+    },
+    "msk_therapy_os/points.py": {
+      "sha256": "dfee6263508e0800c973d613c57271958b638920b286a629acf16d74e8a44840",
+      "exists": true,
+      "bytes": 111476
+    },
+    "msk_therapy_os/static/atlas/app.js": {
+      "sha256": "7e0760894d84ce9bcbd0d8ed99364edf3dae2026a147557920d351a1e17636b6",
+      "exists": true,
+      "bytes": 55711
+    },
+    "msk_therapy_os/static/atlas/meridians.js": {
+      "sha256": "abaa5e1200b2f9588913a28f1f5b24d6e95acb2f456ec802fb61eed81ec07436",
+      "exists": true,
+      "bytes": 141146
+    },
+    "tests/test_p9_10_forensic_validation.py": {
+      "sha256": "4a04c2aaca213335ec14b75a7944ebddeec2fd83b6afe3e1251bcbdbb75c7398",
+      "exists": true,
+      "bytes": 10356
+    },
+    "tests/test_p9_10_playwright_benchmark.py": {
+      "sha256": "a0451c853d5c8dd3d9a59546973cc08d25fee27a28099a602940bbdb1f408f08",
+      "exists": true,
+      "bytes": 14986
+    },
+    "2data/evidence/p9_10_validation/01_p910_qa_studio_calibrated_governance.png": {
+      "sha256": "2f006827728372072cb6723aac14684ab567aa43cc88b722b1aff0445b63e731",
+      "exists": true,
+      "bytes": 209848
+    },
+    "2data/evidence/p9_10_validation/02_p910_foot_dequarantine_forensic_audit.png": {
+      "sha256": "71489e7031b92c717f92e70ee8f7ee9d4defe692b4caa82b6b4a208deed7495c",
+      "exists": true,
+      "bytes": 150348
+    },
+    "2data/evidence/p9_10_validation/03_p910_ki1_plantar_face_normal_mesh_alignment.png": {
+      "sha256": "e379d1b5489fdec00ab8d4dca6e9394aca804298291d4cef3419e94c2102572b",
+      "exists": true,
+      "bytes": 151482
+    },
+    "2data/evidence/p9_10_validation/04_p910_wrist_crease_tendon_dual_layer.png": {
+      "sha256": "69f411a220eb08a6fa70b49a17f98c635842809858677b25af7b611f65eef816",
+      "exists": true,
+      "bytes": 207088
+    },
+    "2data/evidence/p9_10_validation/05_p910_standardized_30fps_intel_hd5500_benchmark.png": {
+      "sha256": "7aad94fd564535af88a536bc49aa5ae11b3578fd676480f621ad62d4f8c1e39e",
+      "exists": true,
+      "bytes": 199911
+    },
+    "2data/evidence/p9_10_validation/webgl_p9_10_standardized_benchmark.json": {
+      "sha256": "84280d18cc847e2a37d34cf4acf2a7f03ed7c56a1001a3f57d679e97b4189f81",
+      "exists": true,
+      "bytes": 1351
+    },
+    "1docs/audits/P9_10/P910_BASELINE_FORENSIC_AUDIT.md": {
+      "sha256": "1c039b679d714e92097f69b4d8d5f99f177fc59d3b2b9ede57775f9a416ac70a",
+      "exists": true,
+      "bytes": 4272
+    },
+    "1docs/audits/P9_10/P910_13_POINT_INDEPENDENT_VALIDATION.csv": {
+      "sha256": "9dab2ba18ffaf408195c5a03254ccf24c0b2313fb3e01cff50d7b618677e2a5d",
+      "exists": true,
+      "bytes": 9233
+    },
+    "1docs/audits/P9_10/P910_REGISTRATION_ENGINE_FORENSIC_AUDIT.md": {
+      "sha256": "f8743f8a7a86aefa42881757e479b5229d4c4293670f5e3f74bcd4ee04530194",
+      "exists": true,
+      "bytes": 8103
+    },
+    "1docs/audits/P9_10/P910_GROUND_TRUTH_PROVENANCE_AUDIT.md": {
+      "sha256": "c2965f71351e2010ef22b5f158b198f4b9cccaeb963bbbf4727e474c0858efd3",
+      "exists": true,
+      "bytes": 6155
+    },
+    "1docs/audits/P9_10/P910_ANATOMICAL_DEPENDENCY_GRAPH.json": {
+      "sha256": "99d782eaa86d5ddbb073a92d7ace5a865204df5f135e4a3ae4ed5e74952e1f5a",
+      "exists": true,
+      "bytes": 82388
+    },
+    "1docs/audits/P9_10/P910_CLASSIFICATION_REVALIDATION.csv": {
+      "sha256": "eaf467c73be2e070e648c844fdeeec38205117d24d5159a4f283e3d4748eacc5",
+      "exists": true,
+      "bytes": 75163
+    },
+    "1docs/audits/P9_10/P910_QUALITY_CLAIM_GOVERNANCE.md": {
+      "sha256": "5b2d46859597fbfe6e0cb3d33aecbdd052573bd0fb61537dedb6287fea1692f8",
+      "exists": true,
+      "bytes": 6163
+    },
+    "1docs/audits/P9_10/P910_PHYSICAL_GPU_COMPARATIVE_BENCHMARK.md": {
+      "sha256": "5c156680ec7e38991cdfa3dfd39c27072e6b4b5d3dca3e91e0582d5c955ec434",
+      "exists": true,
+      "bytes": 6432
+    },
+    "1docs/audits/P9_10/P910_PERFORMANCE_REMEDIATION_REPORT.md": {
+      "sha256": "cc7d7d219a667b965461a13a85622b7dfa3405e4e8cdc46dfcb9aa65ae6fcbfe",
+      "exists": true,
+      "bytes": 5165
+    },
+    "1docs/audits/P9_10/P910_CLASS_D_NEXT_PHASE_PRIORITY.csv": {
+      "sha256": "c867c17e24f750c049041d92be8388482493c60bf0c6dbc7096937c22532545d",
+      "exists": true,
+      "bytes": 38335
+    },
+    "1docs/audits/P9_10/P910_FULL_REGRESSION_REPORT.md": {
+      "sha256": "ae8d9d5d4a729b480f04446458ff680d1a61297e16418f021aa4105a2af683c7",
+      "exists": true,
+      "bytes": 4272
+    },
+    "1docs/audits/P9_10/P910_FINAL_ACCEPTANCE_MATRIX.md": {
+      "sha256": "b99c8d1c9657375709d928e52135c860176121fa36943c678f19c5dfe7182c63",
+      "exists": true,
+      "bytes": 5120
+    },
+    "1docs/audits/P9_10/P910_ENGINEERING_HANDOFF.md": {
+      "sha256": "9be3e3e3c2c0056e0b5bc019263d45b23ab65903a5538b516109406b9c907d0d",
+      "exists": true,
+      "bytes": 6655
+    }
+  }
+}

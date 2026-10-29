@@ -1430,7 +1430,7 @@ def migrate_p9_4_meridian_atlas_tables(db: sqlite3.Connection) -> None:
         from msk_therapy_os.point_localization_rules import ACUPOINT_LOCALIZATION_RULES
         for r in ACUPOINT_LOCALIZATION_RULES.values():
             cursor.execute("""
-                INSERT OR IGNORE INTO acupoint_localization_rules
+                INSERT OR REPLACE INTO acupoint_localization_rules
                 (point_code, meridian_code, name_en, name_zh, name_vi, localization_method,
                  fma_anchor, body_region, who_reference, skeletal_structure, start_landmark_id,
                  end_landmark_id, proportional_fraction, lateral_offset_cun, transverse_segment_id,
@@ -1503,7 +1503,7 @@ def migrate_p9_4_meridian_atlas_tables(db: sqlite3.Connection) -> None:
                 ch_code = "".join([c for c in code if c.isalpha()])
 
             cursor.execute("""
-                INSERT OR IGNORE INTO anatomical_point_references
+                INSERT OR REPLACE INTO anatomical_point_references
                 (code, channel_code, name_en, name_zh, name_vi, canonical_x, canonical_y, canonical_z,
                  normal_x, normal_y, normal_z, quality_class, fma_id, fma_term, anatomical_region,
                  primary_landmark_id, rule_applied, distance_to_skin_mm, verified_by, notes)
@@ -1620,6 +1620,24 @@ def get_meridian_atlas_coverage_dashboard(db: sqlite3.Connection) -> Dict[str, A
     """)
     channels = []
     for row in cursor.fetchall():
+        ca = row[6] or 0
+        cb = row[7] or 0
+        cd = row[8] or 0
+        actual_pts = (ca + cb + cd)
+        ch_pts = actual_pts if actual_pts > 0 else (row[4] or 1)
+        ch_calibrated_rate = min(100.0, round(((ca + cb) / ch_pts) * 100.0, 1))
+        ch_indep_rate = min(100.0, round((ca / ch_pts) * 100.0, 1))
+        ch_derived_rate = min(100.0, round((cb / ch_pts) * 100.0, 1))
+
+        if ca > 0 and cd == 0:
+            r_status = "FULLY_VERIFIED_ANCHORS"
+        elif (ca + cb) > 0 and cd == 0:
+            r_status = "FULLY_RULE_DERIVED"
+        elif (ca + cb) > 0:
+            r_status = "PARTIALLY_CALIBRATED"
+        else:
+            r_status = "LEGACY_PENDING_CALIBRATION"
+
         channels.append({
             "channel_code": row[0],
             "name_en": row[1],
@@ -1627,21 +1645,54 @@ def get_meridian_atlas_coverage_dashboard(db: sqlite3.Connection) -> Dict[str, A
             "name_vi": row[3],
             "total_points": row[4],
             "total_branches": row[5],
-            "class_a_count": row[6] or 0,
-            "class_b_count": row[7] or 0,
-            "class_d_count": row[8] or 0,
-            "pass_rate": 100.0,
-            "route_status": "VERIFIED_CORRIDOR",
+            "class_a_count": ca,
+            "class_b_count": cb,
+            "class_d_count": cd,
+            "pass_rate": ch_calibrated_rate,
+            "independently_verified_rate": ch_indep_rate,
+            "rule_derived_rate": ch_derived_rate,
+            "route_status": r_status,
         })
+
+    indep_verified_pct = round((class_counts["CLASS_A"] / total_points) * 100.0, 1)
+    rule_derived_pct = round((class_counts["CLASS_B"] / total_points) * 100.0, 1)
+    legacy_uncalibrated_pct = round((class_counts["CLASS_D"] / total_points) * 100.0, 1)
+    combined_calibrated_pct = round(((class_counts["CLASS_A"] + class_counts["CLASS_B"]) / total_points) * 100.0, 1)
 
     return {
         "status": "success",
         "mesh_id": "FJ2810",
         "mesh_hash": "05b4923391bb7cfe1152a3102bb62167d54db701d6592755c7b73fc3fdfc3808",
         "total_points": total_points,
+        "standard_catalog_count": 361,
+        "extended_catalog_count": 1,
+        "extended_points": ["GV24+"],
         "class_distribution": class_counts,
         "class_percentages": percentages,
-        "verified_percentage": round(((class_counts["CLASS_A"] + class_counts["CLASS_B"]) / total_points) * 100.0, 1),
+        "verified_percentage": combined_calibrated_pct,
+        "calibrated_percentage": combined_calibrated_pct,
+        "independently_verified_count": class_counts["CLASS_A"],
+        "independently_verified_percentage": indep_verified_pct,
+        "rule_derived_count": class_counts["CLASS_B"],
+        "rule_derived_percentage": rule_derived_pct,
+        "uncalibrated_legacy_count": class_counts["CLASS_D"],
+        "uncalibrated_legacy_percentage": legacy_uncalibrated_pct,
+        "uncalibrated_count": class_counts["CLASS_D"],
+        "class_d_warning": (f"WARNING: {class_counts['CLASS_D']} Class D points remain uncalibrated legacy surface raycasts (uncertainty ±15-40mm). They are suitable for non-invasive educational reference only and MUST NOT be used for clinical depth or invasive procedure guidance." if class_counts['CLASS_D'] > 0 else "ZERO_UNCALIBRATED_POINTS: 0 Class D points remain uncalibrated legacy surface raycasts. Full catalog technically calibrated (100.0% Class A/B coverage). Visual and educational guidance only; strictly non-invasive; zero surgical depth claims."),
+        "governance_semantic_metadata": {
+            "class_a_definition": f"Independently audited canonical ground truth anchors ({class_counts['CLASS_A']} points, {indep_verified_pct}%)",
+            "class_b_definition": f"WHO 2008 standard parametric rule-derived coordinates ({class_counts['CLASS_B']} points, {rule_derived_pct}%)",
+            "class_d_definition": f"Uncalibrated legacy surface raycasts ({class_counts['CLASS_D']} points, {legacy_uncalibrated_pct}%)",
+            "calibrated_coverage_rate": combined_calibrated_pct,
+            "clinical_verification_status": "TECHNICAL_CALIBRATION_ONLY; formal independent clinical trial / clinical practitioner verification is a separate clinical governance tier and is NOT implied by Class A+B.",
+            "clinical_verification_count": 0,
+            "clinical_verification_percentage": 0.0,
+            "clinical_disclaimer": "Zero acupoints have undergone multi-center clinical practitioner consensus or clinical trial verification.",
+            "independent_ground_truth_status": "INDEPENDENT_GROUND_TRUTH_UNAVAILABLE",
+            "anatomical_falsification_status": "FALSIFICATION_FRAMEWORK_ACTIVE",
+            "standard_catalog_count": 361,
+            "extended_catalog_count": 1,
+        },
         "total_channels": len(channels),
         "channels": channels,
         "quality_assurance": {
@@ -1649,7 +1700,11 @@ def get_meridian_atlas_coverage_dashboard(db: sqlite3.Connection) -> Dict[str, A
             "skin_clearance_target_mm": 1.2,
             "cavity_crossing_count": 0,
             "verified_standard": "WHO 2008 Standard & BodyParts3D 4.0 FJ2810",
-            "audit_status": "P9.4_DEFINITIVE_VALIDATION_PASSED",
+            "audit_status": "P9.13_PRODUCTION_HARDENED",
+            "previous_audit_status": "P9.12_TRANCHE_3_FINAL",
+            "clinical_safety_notice": "Visual and educational guidance only. Strictly non-invasive; zero surgical depth claims.",
+            "clinical_verification_count": 0,
+            "clinical_verification_percentage": 0.0,
         },
     }
 

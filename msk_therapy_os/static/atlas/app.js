@@ -159,6 +159,11 @@
     // Activate skin layer when starting in surface mode (default)
     if (renderer.renderMode === 'surface') {
       catOn['skin'] = true;
+      // In surface mode, cull deep non-surface vessels to maintain >= 30 FPS on Intel HD 5500
+      catOn['artery'] = false;
+      catOn['vein'] = false;
+      catOn['nervous'] = false;
+      catOn['organ'] = false;
       renderer.setSkinOpacity(0.78);
     }
     applyVisibility();
@@ -1055,14 +1060,29 @@
     renderer.setRenderMode(mode);
     if (mode === 'surface') {
       catOn['skin'] = true;
+      catOn['artery'] = false;
+      catOn['vein'] = false;
+      catOn['nervous'] = false;
+      catOn['organ'] = false;
       renderer.setSkinOpacity(0.78);
       applyVisibility();
     } else if (mode === 'musculoskeletal') {
       catOn['skin'] = false;
+      catOn['bone'] = true;
+      catOn['muscle'] = true;
+      catOn['ligament'] = true;
+      catOn['cartilage'] = true;
+      catOn['fascia'] = true;
+      catOn['artery'] = true;
+      catOn['vein'] = true;
+      catOn['nervous'] = true;
+      catOn['organ'] = true;
       renderer.setSkinOpacity(0.0);
       applyVisibility();
     } else if (mode === 'comparative') {
       catOn['skin'] = true;
+      catOn['bone'] = true;
+      catOn['muscle'] = true;
       renderer.setSkinOpacity(0.85);
       applyVisibility();
     }

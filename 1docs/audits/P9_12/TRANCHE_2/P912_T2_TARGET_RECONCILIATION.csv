@@ -1,0 +1,76 @@
+point_code,channel,name_en,current_quality_class,verified_by,in_handoff_74,in_tranche_2_eligible,reconciliation_status,discrepancy_rationale
+GV14,GV,Dazhui,CLASS_A,Expert Anatomical Audit,YES,NO,ALREADY_CALIBRATED_CLASS_A,Predecessor audited canonical anchor; not eligible for re-remediation
+GV15,GV,Yamen,CLASS_A,Expert Anatomical Audit,YES,NO,ALREADY_CALIBRATED_CLASS_A,Predecessor audited canonical anchor; not eligible for re-remediation
+GV16,GV,Fengfu,CLASS_A,Expert Anatomical Audit,YES,NO,ALREADY_CALIBRATED_CLASS_A,Predecessor audited canonical anchor; not eligible for re-remediation
+GV17,GV,Naohu,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV18,GV,Qiangjian,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV19,GV,Houding,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV20,GV,Baihui,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+GV21,GV,Qianding,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV22,GV,Xinhui,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV23,GV,Shangxing,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV24,GV,Shenting,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV25,GV,Suliao,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV26,GV,Shuigou,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV27,GV,Duiduan,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GV28,GV,Yinjiao,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+CV22,CV,Tiantu,CLASS_A,Expert Anatomical Audit,YES,NO,ALREADY_CALIBRATED_CLASS_A,Predecessor audited canonical anchor; not eligible for re-remediation
+CV23,CV,Lianquan,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+CV24,CV,Chengjiang,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+BL1,BL,Jingming,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+BL2,BL,Zanzhu,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+BL3,BL,Meichong,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+BL4,BL,Qucha,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+BL5,BL,Wuchu,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+BL6,BL,Chengguang,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+BL7,BL,Tongtian,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+BL8,BL,Luoque,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+BL9,BL,Yuzhen,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+BL10,BL,Tianzhu,CLASS_A,Expert Anatomical Audit,YES,NO,ALREADY_CALIBRATED_CLASS_A,Predecessor audited canonical anchor; not eligible for re-remediation
+GB1,GB,Tongziliao,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+GB2,GB,Tinghui,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+GB3,GB,Shangguan,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB4,GB,Hanyan,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB5,GB,Xuanlu,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB6,GB,Xuanli,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB7,GB,Qubin,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB8,GB,Shuaigu,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+GB9,GB,Tianchong,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB10,GB,Fubai,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB11,GB,Touqiaoyin,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB12,GB,Wangu,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB13,GB,Benshen,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB14,GB,Yangbai,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+GB15,GB,Toulinqi,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB16,GB,Muchuang,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB17,GB,Zhengying,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB18,GB,Chengling,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB19,GB,Naokong,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+GB20,GB,Fengchi,CLASS_A,Expert Anatomical Audit,YES,NO,ALREADY_CALIBRATED_CLASS_A,Predecessor audited canonical anchor; not eligible for re-remediation
+ST1,ST,Chengqi,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+ST2,ST,Sibai,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+ST3,ST,Juliao,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+ST4,ST,Dicang,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+ST5,ST,Daying,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+ST6,ST,Jiache,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+ST7,ST,Xiaguan,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+ST9,ST,Renying,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+ST10,ST,Shuitu,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+ST11,ST,Qishe,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+SI16,SI,Tianchuang,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+SI17,SI,Tianrong,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+SI18,SI,Quanliao,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+SI19,SI,Tinggong,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+TE16,TE,Tianyou,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+TE17,TE,Yifeng,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+TE18,TE,Chimai,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+TE19,TE,Luxi,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+TE20,TE,Jiaosun,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+TE21,TE,Ermen,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+TE22,TE,Erheliao,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+TE23,TE,Sizhukong,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+LI17,LI,Tianding,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+LI18,LI,Futu,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+LI19,LI,Kouheliao,CLASS_D,Unverified Upstream,YES,YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2
+LI20,LI,Yingxiang,CLASS_B,WHO-2008 Parametric Engine,YES,NO,ALREADY_CALIBRATED_CLASS_B,Predecessor WHO 2008 parametric rule; already calibrated
+GV24+,GV,Yintang,CLASS_D,Unverified Upstream,NO (Catalog Extra Point),YES,ELIGIBLE_TRANCHE_2_REMEDIATION,Uncalibrated Class D cranial/facial/cervical point; target for P9.12 Tranche 2

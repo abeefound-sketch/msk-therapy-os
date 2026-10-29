@@ -1,0 +1,17 @@
+warning: CRLF will be replaced by LF in 4incidents/incident_log.md.
+The file will have its original line endings in your working directory
+diff --git a/4incidents/incident_log.md b/4incidents/incident_log.md
+index 96ae037..327c1d9 100644
+--- a/4incidents/incident_log.md
++++ b/4incidents/incident_log.md
+@@ -147,3 +147,10 @@
+ - **SHA-256 Checksum**: `5b21d47dfd721e3520519c96948f7e374a81b17204ce7ccc56a58106d4cb8b52`
+ - **Justification / Reason**: Disaster recovery exercise: root HSM key loss drill
+ - **Action Taken**: SQLite physical integrity and schema verified; database restored and re-signed with current active HMAC key.
++
++### [ADMIN_RECOVERY] - 2026-10-27T15:50:46Z
++- **Timestamp**: `2026-10-27T15:50:46Z`
++- **Operator**: qa_lead
++- **Target Account**: admin (USR-ADMIN-01)
++- **Action**: Administrative password recovery and account unlock
++- **Reason**: P7 disaster recovery unlock verification

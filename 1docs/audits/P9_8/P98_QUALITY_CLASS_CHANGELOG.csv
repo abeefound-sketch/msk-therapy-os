@@ -1,0 +1,363 @@
+code,name_en,channel,p94_class,p95_class,p96_class,p97_class,p98_class,p98_transition,remediation_justification
+LU1,Zhongfu,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU2,Yunmen,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU3,Tianfu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU4,Xiabai,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU5,Chize,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+LU6,Kongzui,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU7,Lieque,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU8,Jingqu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU9,Taiyuan,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU10,Yuji,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LU11,Shaoshang,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LI1,Shangyang,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LI2,Erjian,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI3,Sanjian,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI4,Hegu,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+LI5,Yangxi,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LI6,Pianli,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI7,Wenliu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI8,Xialian,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI9,Shanglian,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI10,Shousanli,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI11,Quchi,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LI12,Zhouliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI13,Shouwuli,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI14,Binao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI15,Jianyu,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+LI16,Jugu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI17,Tianding,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI18,Futu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI19,Kouheliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LI20,Yingxiang,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+ST1,Chengqi,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+ST2,Sibai,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST3,Juliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST4,Dicang,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+ST5,Daying,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST6,Jiache,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST7,Xiaguan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST8,Touwei,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+ST9,Renying,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+ST10,Shuitu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST11,Qishe,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST12,Quepen,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+ST13,Qihu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST14,Kufang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST15,Wuyi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST16,Yingchuang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST17,Ruzhong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST18,Rugen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST19,Burong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST20,Chengman,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST21,Liangmen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST22,Guanmen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST23,Taiyi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST24,Huaroumen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST25,Tianshu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+ST26,Wailing,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST27,Daju,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST28,Shuidao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST29,Guilai,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST30,Qichong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST31,Biguan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST32,Futu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST33,Yinshi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST34,Liangqiu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST35,Dubi,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+ST36,Zusanli,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+ST37,Shangjuxu,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+ST38,Tiaokou,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+ST39,Xiajuxu,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+ST40,Fenglong,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+ST41,Jiexi,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+ST42,Chongyang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST43,Xiangu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST44,Neiting,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+ST45,Lidui,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SP1,Yinbai,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SP2,Dadu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_D,DOWNGRADED_B_TO_D,"Quarantined circular landmark dependency (LM_MTP1_DISTAL_R, LM_MTP1_PROXIMAL_R, LM_METATARSAL1_BASE_R, LM_NAVICULAR_TUBEROSITY_R blocked due to 0.0mm residual against legacy coordinates). Fail-closed to Class D."
+SP3,Taibai,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_D,DOWNGRADED_B_TO_D,"Quarantined circular landmark dependency (LM_MTP1_DISTAL_R, LM_MTP1_PROXIMAL_R, LM_METATARSAL1_BASE_R, LM_NAVICULAR_TUBEROSITY_R blocked due to 0.0mm residual against legacy coordinates). Fail-closed to Class D."
+SP4,Gongsun,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_D,DOWNGRADED_B_TO_D,"Quarantined circular landmark dependency (LM_MTP1_DISTAL_R, LM_MTP1_PROXIMAL_R, LM_METATARSAL1_BASE_R, LM_NAVICULAR_TUBEROSITY_R blocked due to 0.0mm residual against legacy coordinates). Fail-closed to Class D."
+SP5,Shangqiu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_D,DOWNGRADED_B_TO_D,"Quarantined circular landmark dependency (LM_MTP1_DISTAL_R, LM_MTP1_PROXIMAL_R, LM_METATARSAL1_BASE_R, LM_NAVICULAR_TUBEROSITY_R blocked due to 0.0mm residual against legacy coordinates). Fail-closed to Class D."
+SP6,Sanyinjiao,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SP7,Lougu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+SP8,Diji,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+SP9,Yinlingquan,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SP10,Xuehai,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SP11,Jimen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SP12,Chongmen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SP13,Fushe,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SP14,Fujie,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+SP15,Daheng,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SP16,Fuai,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+SP17,Shidou,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SP18,Tianxi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SP19,Xiongxiang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SP20,Zhourong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SP21,Dabao,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+HT1,Jiquan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+HT2,Qingling,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+HT3,Shaohai,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+HT4,Lingdao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+HT5,Tongli,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+HT6,Yinxi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+HT7,Shenmen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+HT8,Shaofu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+HT9,Shaochong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI1,Shaoze,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SI2,Qiangu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI3,Houxi,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SI4,Wangu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI5,Yanggu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI6,Yanglao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI7,Zhizheng,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI8,Xiaohai,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SI9,Jianzhen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI10,Naoshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI11,Tianzong,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+SI12,Bingfeng,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI13,Quyuan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI14,Jianwaishu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI15,Jianzhongshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI16,Tianchuang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI17,Tianrong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI18,Quanliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+SI19,Tinggong,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL1,Jingming,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL2,Zanzhu,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL3,Meichong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL4,Qucha,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL5,Wuchu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL6,Chengguang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL7,Tongtian,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL8,Luoque,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL9,Yuzhen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL10,Tianzhu,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+BL11,Dazhu,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+BL12,Fengmen,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+BL13,Feishu,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+BL14,Jueyinshu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL15,Xinshu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL16,Dushu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL17,Geshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL18,Ganshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL19,Danshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL20,Pishu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL21,Weishu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL22,Sanjiaoshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL23,Shenshu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL24,Qihaishu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL25,Dachangshu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL26,Guanyuanshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL27,Xiaochangshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL28,Pangguangshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL29,Zhonglvshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL30,Baihuanshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL31,Shangliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL32,Ciliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL33,Zhongliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL34,Xialiao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL35,Huiyang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL36,Chengfu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL37,Yinmen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL38,Fuxi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL39,Weiyang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL40,Weizhong,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+BL41,Fufen,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL42,Pohu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL43,Gaohuang,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL44,Shentang,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL45,Yixi,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL46,Geguan,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL47,Hunmen,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL48,Yanggang,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL49,Yishe,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL50,Weicang,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+BL51,Huangmen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL52,Zhishi,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL53,Baohuang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL54,Zhibian,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+BL55,Heyang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL56,Chengjin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL57,Chengshan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL58,Feiyang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL59,Fuyang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL60,Kunlun,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL61,Pucan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL62,Shenmai,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL63,Jinmen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL64,Jinggu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL65,Shugu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL66,Zutonggu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+BL67,Zhiyin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+KI1,Yongquan,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+KI2,Rangu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+KI3,Taixi,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+KI4,Dazhong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+KI5,Shuiquan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+KI6,Zhaohai,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+KI7,Fuliu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+KI8,Jiaoxin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+KI9,Zhubin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+KI10,Yingu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+KI11,Henggu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+KI12,Dahe,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI13,Qixue,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI14,Siman,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI15,Zhongzhu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI16,Huangshu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+KI17,Shangqu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI18,Shiguan,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI19,Yindu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI20,Futonggu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI21,Youmen,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI22,Bulang,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI23,Shenfeng,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI24,Lingxu,,CLASS_D,CLASS_D,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,"P9.6 verified anatomical rule (tibial crest, intercostal, paraspinal calibrated with 22.5 mm/cun interscapular ratio)."
+KI25,Shencang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+KI26,Yuzhong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+KI27,Shufu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+PC1,Tianchi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+PC2,Tianquan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+PC3,Quze,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+PC4,Ximen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+PC5,Jianshi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+PC6,Neiguan,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+PC7,Daling,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+PC8,Laogong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+PC9,Zhongchong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE1,Guanchong,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+TE2,Yemen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE3,Zhongzhu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE4,Yangchi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE5,Waiguan,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+TE6,Zhigou,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE7,Huizong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE8,Sanyangluo,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE9,Sidu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE10,Tianjing,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE11,Qinglengyuan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE12,Xiaoluo,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE13,Naohui,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE14,Jianliao,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+TE15,Tianliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE16,Tianyou,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE17,Yifeng,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+TE18,Chimai,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE19,Luxi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE20,Jiaosun,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE21,Ermen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE22,Erheliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+TE23,Sizhukong,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GB1,Tongziliao,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GB2,Tinghui,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GB3,Shangguan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB4,Hanyan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB5,Xuanlu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB6,Xuanli,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB7,Qubin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB8,Shuaigu,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GB9,Tianchong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB10,Fubai,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB11,Touqiaoyin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB12,Wangu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB13,Benshen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB14,Yangbai,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GB15,Toulinqi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB16,Muchuang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB17,Zhengying,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB18,Chengling,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB19,Naokong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB20,Fengchi,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+GB21,Jianjing,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+GB22,Yuanye,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB23,Zhejin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB24,Riyue,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB25,Jingmen,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB26,Daimai,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB27,Wushu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB28,Weidao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB29,Juliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB30,Huantiao,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GB31,Fengshi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB32,Zhongdu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB33,Xiyangguan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB34,Yanglingquan,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GB35,Yangjiao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB36,Waiqiu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB37,Guangming,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB38,Yangfu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB39,Xuanzhong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB40,Qiuxu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB41,Zulinqi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB42,Diwuhui,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB43,Xiaxi,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GB44,Zuqiaoyin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR1,Dadun,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LR2,Xingjian,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR3,Taichong,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LR4,Zhongfeng,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR5,Ligou,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR6,Zhongdu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR7,Xiguan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR8,Ququan,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LR9,Yinbao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR10,Zuwuli,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR11,Yinlian,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR12,Jimai,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+LR13,Zhangmen,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+LR14,Qimen,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GV1,Changqiang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV2,Yaoshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV3,Yaoyangguan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV4,Mingmen,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GV5,Xuanshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV6,Jizhong,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV7,Zhongshu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV8,Jinsuo,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV9,Zhiyang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV10,Lingtai,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV11,Shendao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV12,Shenzhu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV13,Taodao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV14,Dazhui,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+GV15,Yamen,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+GV16,Fengfu,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+GV17,Naohu,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV18,Qiangjian,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV19,Houding,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV20,Baihui,,CLASS_B,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+GV21,Qianding,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV22,Xinhui,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV23,Shangxing,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV24,Shenting,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV24+,Yintang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV25,Suliao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV26,Shuigou,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV27,Duiduan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+GV28,Yinjiao,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+CV1,Huiyin,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+CV2,Qugu,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV3,Zhongji,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV4,Guanyuan,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV5,Shimen,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV6,Qihai,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV7,Yinjiao,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV8,Shenque,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV9,Shuifen,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV10,Xiawan,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV11,Jianli,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV12,Zhongwan,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV13,Shangwan,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV14,Juque,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV15,Jiuwei,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV16,Zhongting,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+CV17,Danzhong,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+CV18,Yutang,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+CV19,Zigong,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+CV20,Huagai,,CLASS_D,CLASS_B,CLASS_B,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.4/P9.5 canonical rule re-verified against BodyParts3D landmarks.
+CV21,Xuanji,,CLASS_D,CLASS_D,CLASS_D,CLASS_B,CLASS_B,REVALIDATED_CLASS_B,P9.7 skeletal boundary calibration (CV sternal/umbilical/pubic midline invariance; ST patellar-malleolar tibialis anterior path).
+CV22,Tiantu,,CLASS_A,CLASS_A,CLASS_A,CLASS_A,CLASS_A,NO_CHANGE,Canonical gold-standard palpation anchor verified against BodyParts3D 4.0 FJ2810 skeletal mesh.
+CV23,Lianquan,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.
+CV24,Chengjiang,,CLASS_D,CLASS_D,CLASS_D,CLASS_D,CLASS_D,RETAINED_CLASS_D,Legacy surface raycast. Suitable for educational reference only. Uncalibrated.

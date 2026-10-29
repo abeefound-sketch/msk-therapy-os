@@ -1,0 +1,3341 @@
+{
+  "node_count": 216,
+  "edge_count": 247,
+  "nodes": {
+    "LM_VERTEX_CROWN": {
+      "id": "LM_VERTEX_CROWN",
+      "type": "LANDMARK",
+      "name": "Vertex (Crown)",
+      "fma_id": "FMA:46452",
+      "position": [
+        0.0,
+        1.718,
+        -0.015
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_GLABELLA": {
+      "id": "LM_GLABELLA",
+      "type": "LANDMARK",
+      "name": "Glabella",
+      "fma_id": "FMA:52851",
+      "position": [
+        0.0,
+        1.625,
+        0.089
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_INION": {
+      "id": "LM_INION",
+      "type": "LANDMARK",
+      "name": "Inion (External Occipital Protuberance)",
+      "fma_id": "FMA:76624",
+      "position": [
+        0.0,
+        1.595,
+        -0.098
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_MASTOID_R": {
+      "id": "LM_MASTOID_R",
+      "type": "LANDMARK",
+      "name": "Right Mastoid Process (Apex)",
+      "fma_id": "FMA:52872",
+      "position": [
+        0.062,
+        1.574,
+        -0.042
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_MASTOID_L": {
+      "id": "LM_MASTOID_L",
+      "type": "LANDMARK",
+      "name": "Left Mastoid Process (Apex)",
+      "fma_id": "FMA:52872",
+      "position": [
+        -0.062,
+        1.574,
+        -0.042
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_C2_SPINE": {
+      "id": "LM_C2_SPINE",
+      "type": "LANDMARK",
+      "name": "C2 Spinous Process (Axis)",
+      "fma_id": "FMA:12520",
+      "position": [
+        0.0,
+        1.558,
+        -0.078
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_C7_SPINE": {
+      "id": "LM_C7_SPINE",
+      "type": "LANDMARK",
+      "name": "C7 Spinous Process (Vertebra Prominens)",
+      "fma_id": "FMA:12525",
+      "position": [
+        0.0,
+        1.478,
+        -0.092
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_JUGULAR_NOTCH": {
+      "id": "LM_JUGULAR_NOTCH",
+      "type": "LANDMARK",
+      "name": "Suprasternal / Jugular Notch",
+      "fma_id": "FMA:7542",
+      "position": [
+        0.0,
+        1.408,
+        0.052
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_STERNAL_ANGLE": {
+      "id": "LM_STERNAL_ANGLE",
+      "type": "LANDMARK",
+      "name": "Sternal Angle (Angle of Louis)",
+      "fma_id": "FMA:7547",
+      "position": [
+        0.0,
+        1.356,
+        0.082
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_XIPHOSTERNAL_JOINT": {
+      "id": "LM_XIPHOSTERNAL_JOINT",
+      "type": "LANDMARK",
+      "name": "Xiphosternal Synchondrosis",
+      "fma_id": "FMA:7503",
+      "position": [
+        0.0,
+        1.198,
+        0.098
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_UMBILICUS": {
+      "id": "LM_UMBILICUS",
+      "type": "LANDMARK",
+      "name": "Umbilicus",
+      "fma_id": "FMA:61584",
+      "position": [
+        0.0,
+        1.026,
+        0.112
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_PUBIC_SYMPHYSIS": {
+      "id": "LM_PUBIC_SYMPHYSIS",
+      "type": "LANDMARK",
+      "name": "Pubic Symphysis (Superior Border)",
+      "fma_id": "FMA:16950",
+      "position": [
+        0.0,
+        0.864,
+        0.088
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_ASIS_R": {
+      "id": "LM_ASIS_R",
+      "type": "LANDMARK",
+      "name": "Right Anterior Superior Iliac Spine (ASIS)",
+      "fma_id": "FMA:49465",
+      "position": [
+        0.132,
+        0.942,
+        0.075
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_ASIS_L": {
+      "id": "LM_ASIS_L",
+      "type": "LANDMARK",
+      "name": "Left Anterior Superior Iliac Spine (ASIS)",
+      "fma_id": "FMA:49465",
+      "position": [
+        -0.132,
+        0.942,
+        0.075
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_L4_SPINE": {
+      "id": "LM_L4_SPINE",
+      "type": "LANDMARK",
+      "name": "L4 Spinous Process (Intercristal Line)",
+      "fma_id": "FMA:13075",
+      "position": [
+        0.0,
+        1.032,
+        -0.082
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_ACROMION_R": {
+      "id": "LM_ACROMION_R",
+      "type": "LANDMARK",
+      "name": "Right Acromion (Lateral Extremity)",
+      "fma_id": "FMA:23260",
+      "position": [
+        0.188,
+        1.412,
+        -0.015
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_ACROMION_L": {
+      "id": "LM_ACROMION_L",
+      "type": "LANDMARK",
+      "name": "Left Acromion (Lateral Extremity)",
+      "fma_id": "FMA:23260",
+      "position": [
+        -0.188,
+        1.412,
+        -0.015
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_AXILLARY_FOLD_ANT_R": {
+      "id": "LM_AXILLARY_FOLD_ANT_R",
+      "type": "LANDMARK",
+      "name": "Right Anterior Axillary Fold (Apex)",
+      "fma_id": "FMA:322184",
+      "position": [
+        0.148,
+        1.332,
+        0.054
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_CUBITAL_CREASE_R": {
+      "id": "LM_CUBITAL_CREASE_R",
+      "type": "LANDMARK",
+      "name": "Right Cubital Crease (Midpoint)",
+      "fma_id": "FMA:24290",
+      "position": [
+        0.246,
+        1.082,
+        0.021
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_MED_EPICONDYLE_HUMERUS_R": {
+      "id": "LM_MED_EPICONDYLE_HUMERUS_R",
+      "type": "LANDMARK",
+      "name": "Right Medial Epicondyle of Humerus",
+      "fma_id": "FMA:23441",
+      "position": [
+        0.218,
+        1.088,
+        0.005
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_LAT_EPICONDYLE_HUMERUS_R": {
+      "id": "LM_LAT_EPICONDYLE_HUMERUS_R",
+      "type": "LANDMARK",
+      "name": "Right Lateral Epicondyle of Humerus",
+      "fma_id": "FMA:23442",
+      "position": [
+        0.272,
+        1.085,
+        0.008
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_WRIST_CREASE_PALMAR_R": {
+      "id": "LM_WRIST_CREASE_PALMAR_R",
+      "type": "LANDMARK",
+      "name": "Right Palmar Wrist Crease (Distal)",
+      "fma_id": "FMA:24292",
+      "position": [
+        0.285,
+        0.842,
+        0.042
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_RADIAL_STYLOID_R": {
+      "id": "LM_RADIAL_STYLOID_R",
+      "type": "LANDMARK",
+      "name": "Right Radial Styloid Process",
+      "fma_id": "FMA:23524",
+      "position": [
+        0.302,
+        0.852,
+        0.038
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_GREATER_TROCHANTER_R": {
+      "id": "LM_GREATER_TROCHANTER_R",
+      "type": "LANDMARK",
+      "name": "Right Greater Trochanter (Prominence)",
+      "fma_id": "FMA:32852",
+      "position": [
+        0.178,
+        0.855,
+        -0.012
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_PATELLA_INFERIOR_R": {
+      "id": "LM_PATELLA_INFERIOR_R",
+      "type": "LANDMARK",
+      "name": "Right Patella (Inferior Border / Apex)",
+      "fma_id": "FMA:24485",
+      "position": [
+        0.115,
+        0.468,
+        0.082
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_POPLITEAL_CREASE_R": {
+      "id": "LM_POPLITEAL_CREASE_R",
+      "type": "LANDMARK",
+      "name": "Right Popliteal Crease (Midpoint)",
+      "fma_id": "FMA:24294",
+      "position": [
+        0.114,
+        0.462,
+        -0.052
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_TIBIAL_TUBEROSITY_R": {
+      "id": "LM_TIBIAL_TUBEROSITY_R",
+      "type": "LANDMARK",
+      "name": "Right Tibial Tuberosity",
+      "fma_id": "FMA:35463",
+      "position": [
+        0.112,
+        0.432,
+        0.072
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_MED_MALLEOLUS_R": {
+      "id": "LM_MED_MALLEOLUS_R",
+      "type": "LANDMARK",
+      "name": "Right Medial Malleolus (Prominence)",
+      "fma_id": "FMA:35451",
+      "position": [
+        0.076,
+        0.082,
+        0.015
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_MED_MALLEOLUS_L": {
+      "id": "LM_MED_MALLEOLUS_L",
+      "type": "LANDMARK",
+      "name": "Left Medial Malleolus (Prominence)",
+      "fma_id": "FMA:24478",
+      "position": [
+        -0.076,
+        0.082,
+        0.015
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_LAT_MALLEOLUS_R": {
+      "id": "LM_LAT_MALLEOLUS_R",
+      "type": "LANDMARK",
+      "name": "Right Lateral Malleolus (Prominence)",
+      "fma_id": "FMA:35502",
+      "position": [
+        0.138,
+        0.074,
+        0.008
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_CALCANEUS_POST_R": {
+      "id": "LM_CALCANEUS_POST_R",
+      "type": "LANDMARK",
+      "name": "Right Calcaneus (Posterior Tuberosity)",
+      "fma_id": "FMA:24496",
+      "position": [
+        0.108,
+        0.024,
+        -0.068
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_CALCANEUS_POST_L": {
+      "id": "LM_CALCANEUS_POST_L",
+      "type": "LANDMARK",
+      "name": "Left Calcaneus (Posterior Tuberosity)",
+      "fma_id": "FMA:33857",
+      "position": [
+        -0.108,
+        0.024,
+        -0.068
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_ORBIT_LATERAL_CANTHUS_R": {
+      "id": "LM_ORBIT_LATERAL_CANTHUS_R",
+      "type": "LANDMARK",
+      "name": "Right Lateral Canthus (Outer Canthus)",
+      "fma_id": "FMA:54449",
+      "position": [
+        0.065,
+        1.625,
+        0.075
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_ORBIT_MEDIAL_CANTHUS_R": {
+      "id": "LM_ORBIT_MEDIAL_CANTHUS_R",
+      "type": "LANDMARK",
+      "name": "Right Medial Canthus (Inner Canthus)",
+      "fma_id": "FMA:54170",
+      "position": [
+        0.0135,
+        1.608,
+        0.075
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_SUPRAORBITAL_NOTCH_R": {
+      "id": "LM_SUPRAORBITAL_NOTCH_R",
+      "type": "LANDMARK",
+      "name": "Right Supraorbital Notch",
+      "fma_id": "FMA:54171",
+      "position": [
+        0.018,
+        1.624,
+        0.082
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_INFRAORBITAL_MARGIN_R": {
+      "id": "LM_INFRAORBITAL_MARGIN_R",
+      "type": "LANDMARK",
+      "name": "Right Infraorbital Margin (Pupillary Line)",
+      "fma_id": "FMA:54226",
+      "position": [
+        0.024,
+        1.602,
+        0.068
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_TRAGUS_INTERTRAGIC_R": {
+      "id": "LM_TRAGUS_INTERTRAGIC_R",
+      "type": "LANDMARK",
+      "name": "Right Intertragic Notch (Preauricular)",
+      "fma_id": "FMA:54450",
+      "position": [
+        0.068,
+        1.585,
+        0.045
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_AURICULAR_APEX_R": {
+      "id": "LM_AURICULAR_APEX_R",
+      "type": "LANDMARK",
+      "name": "Right Auricular Apex",
+      "fma_id": "FMA:54456",
+      "position": [
+        0.064,
+        1.635,
+        -0.012
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_EYEBROW_MIDPOINT_R": {
+      "id": "LM_EYEBROW_MIDPOINT_R",
+      "type": "LANDMARK",
+      "name": "Right Eyebrow Midpoint (Pupillary Line)",
+      "fma_id": "FMA:54462",
+      "position": [
+        0.042,
+        1.628,
+        0.072
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_FRONTAL_ANGLE_HAIRLINE_R": {
+      "id": "LM_FRONTAL_ANGLE_HAIRLINE_R",
+      "type": "LANDMARK",
+      "name": "Right Frontal Angle of Hairline",
+      "fma_id": "FMA:54233",
+      "position": [
+        0.062,
+        1.642,
+        0.042
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_CHEILION_R": {
+      "id": "LM_CHEILION_R",
+      "type": "LANDMARK",
+      "name": "Right Cheilion (Oral Commissure)",
+      "fma_id": "FMA:54229",
+      "position": [
+        0.032,
+        1.564,
+        0.078
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_THYROID_CARTILAGE_PROMINENCE": {
+      "id": "LM_THYROID_CARTILAGE_PROMINENCE",
+      "type": "LANDMARK",
+      "name": "Thyroid Cartilage Superior Prominence",
+      "fma_id": "FMA:54234",
+      "position": [
+        0.0,
+        1.502,
+        0.052
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_CLAVICLE_MIDPOINT_R": {
+      "id": "LM_CLAVICLE_MIDPOINT_R",
+      "type": "LANDMARK",
+      "name": "Right Clavicle Midpoint (Superior Border)",
+      "fma_id": "FMA:54237",
+      "position": [
+        0.094,
+        1.412,
+        0.038
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_SACRAL_HIATUS": {
+      "id": "LM_SACRAL_HIATUS",
+      "type": "LANDMARK",
+      "name": "Sacral Hiatus Midline",
+      "fma_id": "FMA:54478",
+      "position": [
+        0.0,
+        0.885,
+        -0.115
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_FIBULAR_HEAD_R": {
+      "id": "LM_FIBULAR_HEAD_R",
+      "type": "LANDMARK",
+      "name": "Right Fibular Head (Prominence)",
+      "fma_id": "FMA:54482",
+      "position": [
+        0.134,
+        0.442,
+        -0.015
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_MTP1_DISTAL_R": {
+      "id": "LM_MTP1_DISTAL_R",
+      "type": "LANDMARK",
+      "name": "First Metatarsophalangeal Joint Distoinferior Depression (Right)",
+      "fma_id": "FMA:34426",
+      "position": [
+        0.076,
+        0.025,
+        0.086
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_MTP1_PROXIMAL_R": {
+      "id": "LM_MTP1_PROXIMAL_R",
+      "type": "LANDMARK",
+      "name": "First Metatarsophalangeal Joint Proximoinferior Depression (Right)",
+      "fma_id": "FMA:34426",
+      "position": [
+        0.0775,
+        0.042,
+        0.062
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_METATARSAL1_BASE_R": {
+      "id": "LM_METATARSAL1_BASE_R",
+      "type": "LANDMARK",
+      "name": "First Metatarsal Base Anteroinferior Depression (Right)",
+      "fma_id": "FMA:24497",
+      "position": [
+        0.0755,
+        0.062,
+        0.042
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_NAVICULAR_TUBEROSITY_R": {
+      "id": "LM_NAVICULAR_TUBEROSITY_R",
+      "type": "LANDMARK",
+      "name": "Navicular Bone Tuberosity (Right)",
+      "fma_id": "FMA:33862",
+      "position": [
+        0.0582,
+        0.0536,
+        0.0078
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_MTP1_DISTAL_L": {
+      "id": "LM_MTP1_DISTAL_L",
+      "type": "LANDMARK",
+      "name": "First Metatarsophalangeal Joint Distoinferior Depression (Left)",
+      "fma_id": "FMA:34426",
+      "position": [
+        -0.076,
+        0.025,
+        0.086
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_MTP1_PROXIMAL_L": {
+      "id": "LM_MTP1_PROXIMAL_L",
+      "type": "LANDMARK",
+      "name": "First Metatarsophalangeal Joint Proximoinferior Depression (Left)",
+      "fma_id": "FMA:34426",
+      "position": [
+        -0.0775,
+        0.042,
+        0.062
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_METATARSAL1_BASE_L": {
+      "id": "LM_METATARSAL1_BASE_L",
+      "type": "LANDMARK",
+      "name": "First Metatarsal Base Anteroinferior Depression (Left)",
+      "fma_id": "FMA:24497",
+      "position": [
+        -0.0755,
+        0.062,
+        0.042
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_NAVICULAR_TUBEROSITY_L": {
+      "id": "LM_NAVICULAR_TUBEROSITY_L",
+      "type": "LANDMARK",
+      "name": "Navicular Bone Tuberosity (Left)",
+      "fma_id": "FMA:33862",
+      "position": [
+        -0.0582,
+        0.0536,
+        0.0078
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_CALCANEUS_MEDIAL_TUBEROSITY_R": {
+      "id": "LM_CALCANEUS_MEDIAL_TUBEROSITY_R",
+      "type": "LANDMARK",
+      "name": "Medial Process of Calcaneal Tuberosity (Right)",
+      "fma_id": "FMA:33857",
+      "position": [
+        0.038,
+        0.041,
+        -0.062
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_CALCANEUS_MEDIAL_TUBEROSITY_L": {
+      "id": "LM_CALCANEUS_MEDIAL_TUBEROSITY_L",
+      "type": "LANDMARK",
+      "name": "Medial Process of Calcaneal Tuberosity (Left)",
+      "fma_id": "FMA:33857",
+      "position": [
+        -0.038,
+        0.041,
+        -0.062
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_PLANTAR_METATARSAL_INTERVAL_R": {
+      "id": "LM_PLANTAR_METATARSAL_INTERVAL_R",
+      "type": "LANDMARK",
+      "name": "Plantar Inter-Metatarsal Depression 2-3 (Right)",
+      "fma_id": "FMA:24089",
+      "position": [
+        0.042,
+        0.012,
+        0.068
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_PLANTAR_METATARSAL_INTERVAL_L": {
+      "id": "LM_PLANTAR_METATARSAL_INTERVAL_L",
+      "type": "LANDMARK",
+      "name": "Plantar Inter-Metatarsal Depression 2-3 (Left)",
+      "fma_id": "FMA:24089",
+      "position": [
+        -0.042,
+        0.012,
+        0.068
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_RADIAL_STYLOID_PROCESS_R": {
+      "id": "LM_RADIAL_STYLOID_PROCESS_R",
+      "type": "LANDMARK",
+      "name": "Right Radial Styloid Process (Skeletal Tip)",
+      "fma_id": "FMA:23469",
+      "position": [
+        0.252,
+        0.812,
+        -0.026
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_RADIAL_STYLOID_PROCESS_L": {
+      "id": "LM_RADIAL_STYLOID_PROCESS_L",
+      "type": "LANDMARK",
+      "name": "Left Radial Styloid Process (Skeletal Tip)",
+      "fma_id": "FMA:23469",
+      "position": [
+        -0.252,
+        0.812,
+        -0.026
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_ULNAR_STYLOID_PROCESS_R": {
+      "id": "LM_ULNAR_STYLOID_PROCESS_R",
+      "type": "LANDMARK",
+      "name": "Right Ulnar Styloid Process (Skeletal Tip)",
+      "fma_id": "FMA:23471",
+      "position": [
+        0.218,
+        0.818,
+        -0.032
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_ULNAR_STYLOID_PROCESS_L": {
+      "id": "LM_ULNAR_STYLOID_PROCESS_L",
+      "type": "LANDMARK",
+      "name": "Left Ulnar Styloid Process (Skeletal Tip)",
+      "fma_id": "FMA:23471",
+      "position": [
+        -0.218,
+        0.818,
+        -0.032
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_SCAPHOID_TUBERCLE_R": {
+      "id": "LM_SCAPHOID_TUBERCLE_R",
+      "type": "LANDMARK",
+      "name": "Right Scaphoid Tubercle Prominence",
+      "fma_id": "FMA:23714",
+      "position": [
+        0.246,
+        0.796,
+        -0.018
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_SCAPHOID_TUBERCLE_L": {
+      "id": "LM_SCAPHOID_TUBERCLE_L",
+      "type": "LANDMARK",
+      "name": "Left Scaphoid Tubercle Prominence",
+      "fma_id": "FMA:23714",
+      "position": [
+        -0.246,
+        0.796,
+        -0.018
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_PISIFORM_PROMINENCE_R": {
+      "id": "LM_PISIFORM_PROMINENCE_R",
+      "type": "LANDMARK",
+      "name": "Right Pisiform Bone Prominence",
+      "fma_id": "FMA:23719",
+      "position": [
+        0.222,
+        0.798,
+        -0.022
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_PISIFORM_PROMINENCE_L": {
+      "id": "LM_PISIFORM_PROMINENCE_L",
+      "type": "LANDMARK",
+      "name": "Left Pisiform Bone Prominence",
+      "fma_id": "FMA:23719",
+      "position": [
+        -0.222,
+        0.798,
+        -0.022
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_WRIST_PALMAR_CREASE_RADIAL_R": {
+      "id": "LM_WRIST_PALMAR_CREASE_RADIAL_R",
+      "type": "LANDMARK",
+      "name": "Right Palmar Wrist Crease Radial End (LU9 Anchor)",
+      "fma_id": "FMA:24067",
+      "position": [
+        0.248,
+        0.794,
+        -0.015
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_WRIST_PALMAR_CREASE_RADIAL_L": {
+      "id": "LM_WRIST_PALMAR_CREASE_RADIAL_L",
+      "type": "LANDMARK",
+      "name": "Left Palmar Wrist Crease Radial End (LU9 Anchor)",
+      "fma_id": "FMA:24067",
+      "position": [
+        -0.248,
+        0.794,
+        -0.015
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_WRIST_PALMAR_CREASE_ULNAR_R": {
+      "id": "LM_WRIST_PALMAR_CREASE_ULNAR_R",
+      "type": "LANDMARK",
+      "name": "Right Palmar Wrist Crease Ulnar End (HT7 Anchor)",
+      "fma_id": "FMA:24068",
+      "position": [
+        0.22,
+        0.795,
+        -0.018
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_WRIST_PALMAR_CREASE_ULNAR_L": {
+      "id": "LM_WRIST_PALMAR_CREASE_ULNAR_L",
+      "type": "LANDMARK",
+      "name": "Left Palmar Wrist Crease Ulnar End (HT7 Anchor)",
+      "fma_id": "FMA:24068",
+      "position": [
+        -0.22,
+        0.795,
+        -0.018
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_WRIST_PALMAR_CREASE_MIDPOINT_R": {
+      "id": "LM_WRIST_PALMAR_CREASE_MIDPOINT_R",
+      "type": "LANDMARK",
+      "name": "Right Palmar Wrist Crease Midpoint (PC7 Anchor)",
+      "fma_id": "FMA:24293",
+      "position": [
+        0.234,
+        0.795,
+        -0.016
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_WRIST_PALMAR_CREASE_MIDPOINT_L": {
+      "id": "LM_WRIST_PALMAR_CREASE_MIDPOINT_L",
+      "type": "LANDMARK",
+      "name": "Left Palmar Wrist Crease Midpoint (PC7 Anchor)",
+      "fma_id": "FMA:24293",
+      "position": [
+        -0.234,
+        0.795,
+        -0.016
+      ],
+      "verification_status": "INDEPENDENT_SKELETAL_GROUNDED",
+      "is_blocked": false
+    },
+    "LM_TIBIA_MEDIAL_CONDYLE_R": {
+      "id": "LM_TIBIA_MEDIAL_CONDYLE_R",
+      "type": "LANDMARK",
+      "name": "Medial Condyle of Tibia Inferior Border (Right)",
+      "fma_id": "FMA:24476",
+      "position": [
+        0.029,
+        0.428,
+        -0.015
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_SCAPULA_MEDIAL_BORDER_R": {
+      "id": "LM_SCAPULA_MEDIAL_BORDER_R",
+      "type": "LANDMARK",
+      "name": "Medial Border of Scapula (Right)",
+      "fma_id": "FMA:23207",
+      "position": [
+        0.0675,
+        1.345,
+        -0.135
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LM_SCAPULA_MEDIAL_BORDER_L": {
+      "id": "LM_SCAPULA_MEDIAL_BORDER_L",
+      "type": "LANDMARK",
+      "name": "Medial Border of Scapula (Left)",
+      "fma_id": "FMA:23207",
+      "position": [
+        -0.0675,
+        1.345,
+        -0.135
+      ],
+      "verification_status": "CANONICAL_ANCHOR",
+      "is_blocked": false
+    },
+    "LU1": {
+      "id": "LU1",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhongfu",
+      "channel": "LU",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "LU2": {
+      "id": "LU2",
+      "type": "ACUPOINT_RULE",
+      "name": "Yunmen",
+      "channel": "LU",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "LU3": {
+      "id": "LU3",
+      "type": "ACUPOINT_RULE",
+      "name": "Tianfu",
+      "channel": "LU",
+      "method": "MUSCLE_BORDER",
+      "quality_class": "CLASS_B"
+    },
+    "LU4": {
+      "id": "LU4",
+      "type": "ACUPOINT_RULE",
+      "name": "Xiabai",
+      "channel": "LU",
+      "method": "MUSCLE_BORDER",
+      "quality_class": "CLASS_B"
+    },
+    "LU5": {
+      "id": "LU5",
+      "type": "ACUPOINT_RULE",
+      "name": "Chize",
+      "channel": "LU",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_A"
+    },
+    "LU6": {
+      "id": "LU6",
+      "type": "ACUPOINT_RULE",
+      "name": "Kongzui",
+      "channel": "LU",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "LU7": {
+      "id": "LU7",
+      "type": "ACUPOINT_RULE",
+      "name": "Lieque",
+      "channel": "LU",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "LU8": {
+      "id": "LU8",
+      "type": "ACUPOINT_RULE",
+      "name": "Jingqu",
+      "channel": "LU",
+      "method": "TENDON_INTERVAL",
+      "quality_class": "CLASS_B"
+    },
+    "LU9": {
+      "id": "LU9",
+      "type": "ACUPOINT_RULE",
+      "name": "Taiyuan",
+      "channel": "LU",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_B"
+    },
+    "LU10": {
+      "id": "LU10",
+      "type": "ACUPOINT_RULE",
+      "name": "Yuji",
+      "channel": "LU",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "LU11": {
+      "id": "LU11",
+      "type": "ACUPOINT_RULE",
+      "name": "Shaoshang",
+      "channel": "LU",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "LI1": {
+      "id": "LI1",
+      "type": "ACUPOINT_RULE",
+      "name": "Shangyang",
+      "channel": "LI",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "LI4": {
+      "id": "LI4",
+      "type": "ACUPOINT_RULE",
+      "name": "Hegu",
+      "channel": "LI",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_A"
+    },
+    "LI5": {
+      "id": "LI5",
+      "type": "ACUPOINT_RULE",
+      "name": "Yangxi",
+      "channel": "LI",
+      "method": "TENDON_INTERVAL",
+      "quality_class": "CLASS_B"
+    },
+    "LI11": {
+      "id": "LI11",
+      "type": "ACUPOINT_RULE",
+      "name": "Quchi",
+      "channel": "LI",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_A"
+    },
+    "LI15": {
+      "id": "LI15",
+      "type": "ACUPOINT_RULE",
+      "name": "Jianyu",
+      "channel": "LI",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_A"
+    },
+    "LI20": {
+      "id": "LI20",
+      "type": "ACUPOINT_RULE",
+      "name": "Yingxiang",
+      "channel": "LI",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "CV2": {
+      "id": "CV2",
+      "type": "ACUPOINT_RULE",
+      "name": "Qugu",
+      "channel": "CV",
+      "method": "MIDLINE_REFERENCE",
+      "quality_class": "CLASS_B"
+    },
+    "CV4": {
+      "id": "CV4",
+      "type": "ACUPOINT_RULE",
+      "name": "Guanyuan",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_A"
+    },
+    "CV8": {
+      "id": "CV8",
+      "type": "ACUPOINT_RULE",
+      "name": "Shenque",
+      "channel": "CV",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "CV12": {
+      "id": "CV12",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhongwan",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_A"
+    },
+    "CV17": {
+      "id": "CV17",
+      "type": "ACUPOINT_RULE",
+      "name": "Danzhong",
+      "channel": "CV",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_A"
+    },
+    "CV22": {
+      "id": "CV22",
+      "type": "ACUPOINT_RULE",
+      "name": "Tiantu",
+      "channel": "CV",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_A"
+    },
+    "GV4": {
+      "id": "GV4",
+      "type": "ACUPOINT_RULE",
+      "name": "Mingmen",
+      "channel": "GV",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_A"
+    },
+    "GV14": {
+      "id": "GV14",
+      "type": "ACUPOINT_RULE",
+      "name": "Dazhui",
+      "channel": "GV",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_A"
+    },
+    "GV20": {
+      "id": "GV20",
+      "type": "ACUPOINT_RULE",
+      "name": "Baihui",
+      "channel": "GV",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_A"
+    },
+    "BL10": {
+      "id": "BL10",
+      "type": "ACUPOINT_RULE",
+      "name": "Tianzhu",
+      "channel": "BL",
+      "method": "MUSCLE_BORDER",
+      "quality_class": "CLASS_A"
+    },
+    "BL11": {
+      "id": "BL11",
+      "type": "ACUPOINT_RULE",
+      "name": "Dazhu",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_A"
+    },
+    "BL12": {
+      "id": "BL12",
+      "type": "ACUPOINT_RULE",
+      "name": "Fengmen",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_A"
+    },
+    "BL13": {
+      "id": "BL13",
+      "type": "ACUPOINT_RULE",
+      "name": "Feishu",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_A"
+    },
+    "BL40": {
+      "id": "BL40",
+      "type": "ACUPOINT_RULE",
+      "name": "Weizhong",
+      "channel": "BL",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_A"
+    },
+    "ST35": {
+      "id": "ST35",
+      "type": "ACUPOINT_RULE",
+      "name": "Dubi",
+      "channel": "ST",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_A"
+    },
+    "ST36": {
+      "id": "ST36",
+      "type": "ACUPOINT_RULE",
+      "name": "Zusanli",
+      "channel": "ST",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_A"
+    },
+    "GB20": {
+      "id": "GB20",
+      "type": "ACUPOINT_RULE",
+      "name": "Fengchi",
+      "channel": "GB",
+      "method": "MUSCLE_BORDER",
+      "quality_class": "CLASS_A"
+    },
+    "GB21": {
+      "id": "GB21",
+      "type": "ACUPOINT_RULE",
+      "name": "Jianjing",
+      "channel": "GB",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_A"
+    },
+    "HT3": {
+      "id": "HT3",
+      "type": "ACUPOINT_RULE",
+      "name": "Shaohai",
+      "channel": "HT",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_A"
+    },
+    "HT7": {
+      "id": "HT7",
+      "type": "ACUPOINT_RULE",
+      "name": "Shenmen",
+      "channel": "HT",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_B"
+    },
+    "PC6": {
+      "id": "PC6",
+      "type": "ACUPOINT_RULE",
+      "name": "Neiguan",
+      "channel": "PC",
+      "method": "TENDON_INTERVAL",
+      "quality_class": "CLASS_A"
+    },
+    "PC3": {
+      "id": "PC3",
+      "type": "ACUPOINT_RULE",
+      "name": "Quze",
+      "channel": "PC",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_B"
+    },
+    "PC7": {
+      "id": "PC7",
+      "type": "ACUPOINT_RULE",
+      "name": "Daling",
+      "channel": "PC",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_B"
+    },
+    "SP1": {
+      "id": "SP1",
+      "type": "ACUPOINT_RULE",
+      "name": "Yinbai",
+      "channel": "SP",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "SP6": {
+      "id": "SP6",
+      "type": "ACUPOINT_RULE",
+      "name": "Sanyinjiao",
+      "channel": "SP",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "SP9": {
+      "id": "SP9",
+      "type": "ACUPOINT_RULE",
+      "name": "Yinlingquan",
+      "channel": "SP",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "SP10": {
+      "id": "SP10",
+      "type": "ACUPOINT_RULE",
+      "name": "Xuehai",
+      "channel": "SP",
+      "method": "MUSCLE_BORDER",
+      "quality_class": "CLASS_B"
+    },
+    "SP15": {
+      "id": "SP15",
+      "type": "ACUPOINT_RULE",
+      "name": "Daheng",
+      "channel": "SP",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "SP21": {
+      "id": "SP21",
+      "type": "ACUPOINT_RULE",
+      "name": "Dabao",
+      "channel": "SP",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "SI1": {
+      "id": "SI1",
+      "type": "ACUPOINT_RULE",
+      "name": "Shaoze",
+      "channel": "SI",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "SI3": {
+      "id": "SI3",
+      "type": "ACUPOINT_RULE",
+      "name": "Houxi",
+      "channel": "SI",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "SI8": {
+      "id": "SI8",
+      "type": "ACUPOINT_RULE",
+      "name": "Xiaohai",
+      "channel": "SI",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "SI11": {
+      "id": "SI11",
+      "type": "ACUPOINT_RULE",
+      "name": "Tianzong",
+      "channel": "SI",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "SI19": {
+      "id": "SI19",
+      "type": "ACUPOINT_RULE",
+      "name": "Tinggong",
+      "channel": "SI",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "KI1": {
+      "id": "KI1",
+      "type": "ACUPOINT_RULE",
+      "name": "Yongquan",
+      "channel": "KI",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "KI2": {
+      "id": "KI2",
+      "type": "ACUPOINT_RULE",
+      "name": "Rangu",
+      "channel": "KI",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "KI3": {
+      "id": "KI3",
+      "type": "ACUPOINT_RULE",
+      "name": "Taixi",
+      "channel": "KI",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "KI4": {
+      "id": "KI4",
+      "type": "ACUPOINT_RULE",
+      "name": "Dazhong",
+      "channel": "KI",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "KI5": {
+      "id": "KI5",
+      "type": "ACUPOINT_RULE",
+      "name": "Shuiquan",
+      "channel": "KI",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "KI6": {
+      "id": "KI6",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhaohai",
+      "channel": "KI",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "KI7": {
+      "id": "KI7",
+      "type": "ACUPOINT_RULE",
+      "name": "Fuliu",
+      "channel": "KI",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "KI10": {
+      "id": "KI10",
+      "type": "ACUPOINT_RULE",
+      "name": "Yingu",
+      "channel": "KI",
+      "method": "TENDON_INTERVAL",
+      "quality_class": "CLASS_B"
+    },
+    "KI11": {
+      "id": "KI11",
+      "type": "ACUPOINT_RULE",
+      "name": "Henggu",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI16": {
+      "id": "KI16",
+      "type": "ACUPOINT_RULE",
+      "name": "Huangshu",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI27": {
+      "id": "KI27",
+      "type": "ACUPOINT_RULE",
+      "name": "Shufu",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "TE1": {
+      "id": "TE1",
+      "type": "ACUPOINT_RULE",
+      "name": "Guanchong",
+      "channel": "TE",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "TE5": {
+      "id": "TE5",
+      "type": "ACUPOINT_RULE",
+      "name": "Waiguan",
+      "channel": "TE",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "TE14": {
+      "id": "TE14",
+      "type": "ACUPOINT_RULE",
+      "name": "Jianliao",
+      "channel": "TE",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "TE17": {
+      "id": "TE17",
+      "type": "ACUPOINT_RULE",
+      "name": "Yifeng",
+      "channel": "TE",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "TE23": {
+      "id": "TE23",
+      "type": "ACUPOINT_RULE",
+      "name": "Sizhukong",
+      "channel": "TE",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "LR1": {
+      "id": "LR1",
+      "type": "ACUPOINT_RULE",
+      "name": "Dadun",
+      "channel": "LR",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "LR3": {
+      "id": "LR3",
+      "type": "ACUPOINT_RULE",
+      "name": "Taichong",
+      "channel": "LR",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "LR8": {
+      "id": "LR8",
+      "type": "ACUPOINT_RULE",
+      "name": "Ququan",
+      "channel": "LR",
+      "method": "SKIN_CREASE",
+      "quality_class": "CLASS_B"
+    },
+    "LR13": {
+      "id": "LR13",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhangmen",
+      "channel": "LR",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "LR14": {
+      "id": "LR14",
+      "type": "ACUPOINT_RULE",
+      "name": "Qimen",
+      "channel": "LR",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "GB1": {
+      "id": "GB1",
+      "type": "ACUPOINT_RULE",
+      "name": "Tongziliao",
+      "channel": "GB",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "GB2": {
+      "id": "GB2",
+      "type": "ACUPOINT_RULE",
+      "name": "Tinghui",
+      "channel": "GB",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "GB8": {
+      "id": "GB8",
+      "type": "ACUPOINT_RULE",
+      "name": "Shuaigu",
+      "channel": "GB",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "GB14": {
+      "id": "GB14",
+      "type": "ACUPOINT_RULE",
+      "name": "Yangbai",
+      "channel": "GB",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "GB30": {
+      "id": "GB30",
+      "type": "ACUPOINT_RULE",
+      "name": "Huantiao",
+      "channel": "GB",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "GB34": {
+      "id": "GB34",
+      "type": "ACUPOINT_RULE",
+      "name": "Yanglingquan",
+      "channel": "GB",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "BL1": {
+      "id": "BL1",
+      "type": "ACUPOINT_RULE",
+      "name": "Jingming",
+      "channel": "BL",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "BL2": {
+      "id": "BL2",
+      "type": "ACUPOINT_RULE",
+      "name": "Zanzhu",
+      "channel": "BL",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "BL14": {
+      "id": "BL14",
+      "type": "ACUPOINT_RULE",
+      "name": "Jueyinshu",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL15": {
+      "id": "BL15",
+      "type": "ACUPOINT_RULE",
+      "name": "Xinshu",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL23": {
+      "id": "BL23",
+      "type": "ACUPOINT_RULE",
+      "name": "Shenshu",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL25": {
+      "id": "BL25",
+      "type": "ACUPOINT_RULE",
+      "name": "Dachangshu",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL52": {
+      "id": "BL52",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhishi",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL54": {
+      "id": "BL54",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhibian",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "ST1": {
+      "id": "ST1",
+      "type": "ACUPOINT_RULE",
+      "name": "Chengqi",
+      "channel": "ST",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "ST4": {
+      "id": "ST4",
+      "type": "ACUPOINT_RULE",
+      "name": "Dicang",
+      "channel": "ST",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "ST8": {
+      "id": "ST8",
+      "type": "ACUPOINT_RULE",
+      "name": "Touwei",
+      "channel": "ST",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "ST9": {
+      "id": "ST9",
+      "type": "ACUPOINT_RULE",
+      "name": "Renying",
+      "channel": "ST",
+      "method": "MUSCLE_BORDER",
+      "quality_class": "CLASS_B"
+    },
+    "ST12": {
+      "id": "ST12",
+      "type": "ACUPOINT_RULE",
+      "name": "Quepen",
+      "channel": "ST",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "ST25": {
+      "id": "ST25",
+      "type": "ACUPOINT_RULE",
+      "name": "Tianshu",
+      "channel": "ST",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "SP2": {
+      "id": "SP2",
+      "type": "ACUPOINT_RULE",
+      "name": "Dadu",
+      "channel": "SP",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "SP3": {
+      "id": "SP3",
+      "type": "ACUPOINT_RULE",
+      "name": "Taibai",
+      "channel": "SP",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "SP4": {
+      "id": "SP4",
+      "type": "ACUPOINT_RULE",
+      "name": "Gongsun",
+      "channel": "SP",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "SP5": {
+      "id": "SP5",
+      "type": "ACUPOINT_RULE",
+      "name": "Shangqiu",
+      "channel": "SP",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    },
+    "SP7": {
+      "id": "SP7",
+      "type": "ACUPOINT_RULE",
+      "name": "Lougu",
+      "channel": "SP",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "SP8": {
+      "id": "SP8",
+      "type": "ACUPOINT_RULE",
+      "name": "Diji",
+      "channel": "SP",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "SP14": {
+      "id": "SP14",
+      "type": "ACUPOINT_RULE",
+      "name": "Fujie",
+      "channel": "SP",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "SP16": {
+      "id": "SP16",
+      "type": "ACUPOINT_RULE",
+      "name": "Fuai",
+      "channel": "SP",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI12": {
+      "id": "KI12",
+      "type": "ACUPOINT_RULE",
+      "name": "Dahe",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI13": {
+      "id": "KI13",
+      "type": "ACUPOINT_RULE",
+      "name": "Qixue",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI14": {
+      "id": "KI14",
+      "type": "ACUPOINT_RULE",
+      "name": "Siman",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI15": {
+      "id": "KI15",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhongzhu",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI17": {
+      "id": "KI17",
+      "type": "ACUPOINT_RULE",
+      "name": "Shangqu",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI18": {
+      "id": "KI18",
+      "type": "ACUPOINT_RULE",
+      "name": "Shiguan",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI19": {
+      "id": "KI19",
+      "type": "ACUPOINT_RULE",
+      "name": "Yindu",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI20": {
+      "id": "KI20",
+      "type": "ACUPOINT_RULE",
+      "name": "Futonggu",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI21": {
+      "id": "KI21",
+      "type": "ACUPOINT_RULE",
+      "name": "Youmen",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI22": {
+      "id": "KI22",
+      "type": "ACUPOINT_RULE",
+      "name": "Bulang",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI23": {
+      "id": "KI23",
+      "type": "ACUPOINT_RULE",
+      "name": "Shenfeng",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "KI24": {
+      "id": "KI24",
+      "type": "ACUPOINT_RULE",
+      "name": "Lingxu",
+      "channel": "KI",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL41": {
+      "id": "BL41",
+      "type": "ACUPOINT_RULE",
+      "name": "Fufen",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL42": {
+      "id": "BL42",
+      "type": "ACUPOINT_RULE",
+      "name": "Pohu",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL43": {
+      "id": "BL43",
+      "type": "ACUPOINT_RULE",
+      "name": "Gaohuang",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL44": {
+      "id": "BL44",
+      "type": "ACUPOINT_RULE",
+      "name": "Shentang",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL45": {
+      "id": "BL45",
+      "type": "ACUPOINT_RULE",
+      "name": "Yixi",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL46": {
+      "id": "BL46",
+      "type": "ACUPOINT_RULE",
+      "name": "Geguan",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL47": {
+      "id": "BL47",
+      "type": "ACUPOINT_RULE",
+      "name": "Hunmen",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL48": {
+      "id": "BL48",
+      "type": "ACUPOINT_RULE",
+      "name": "Yanggang",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL49": {
+      "id": "BL49",
+      "type": "ACUPOINT_RULE",
+      "name": "Yishe",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "BL50": {
+      "id": "BL50",
+      "type": "ACUPOINT_RULE",
+      "name": "Weicang",
+      "channel": "BL",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "CV3": {
+      "id": "CV3",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhongji",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV5": {
+      "id": "CV5",
+      "type": "ACUPOINT_RULE",
+      "name": "Shimen",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV6": {
+      "id": "CV6",
+      "type": "ACUPOINT_RULE",
+      "name": "Qihai",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV7": {
+      "id": "CV7",
+      "type": "ACUPOINT_RULE",
+      "name": "Yinjiao",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV9": {
+      "id": "CV9",
+      "type": "ACUPOINT_RULE",
+      "name": "Shuifen",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV10": {
+      "id": "CV10",
+      "type": "ACUPOINT_RULE",
+      "name": "Xiawan",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV11": {
+      "id": "CV11",
+      "type": "ACUPOINT_RULE",
+      "name": "Jianli",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV13": {
+      "id": "CV13",
+      "type": "ACUPOINT_RULE",
+      "name": "Shangwan",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV14": {
+      "id": "CV14",
+      "type": "ACUPOINT_RULE",
+      "name": "Juque",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV15": {
+      "id": "CV15",
+      "type": "ACUPOINT_RULE",
+      "name": "Jiuwei",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV16": {
+      "id": "CV16",
+      "type": "ACUPOINT_RULE",
+      "name": "Zhongting",
+      "channel": "CV",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "CV18": {
+      "id": "CV18",
+      "type": "ACUPOINT_RULE",
+      "name": "Yutang",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV19": {
+      "id": "CV19",
+      "type": "ACUPOINT_RULE",
+      "name": "Zigong",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "CV20": {
+      "id": "CV20",
+      "type": "ACUPOINT_RULE",
+      "name": "Huagai",
+      "channel": "CV",
+      "method": "LANDMARK_DEFINED",
+      "quality_class": "CLASS_B"
+    },
+    "CV21": {
+      "id": "CV21",
+      "type": "ACUPOINT_RULE",
+      "name": "Xuanji",
+      "channel": "CV",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "ST37": {
+      "id": "ST37",
+      "type": "ACUPOINT_RULE",
+      "name": "Shangjuxu",
+      "channel": "ST",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "ST38": {
+      "id": "ST38",
+      "type": "ACUPOINT_RULE",
+      "name": "Tiaokou",
+      "channel": "ST",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "ST39": {
+      "id": "ST39",
+      "type": "ACUPOINT_RULE",
+      "name": "Xiajuxu",
+      "channel": "ST",
+      "method": "B_CUN_PROPORTIONAL",
+      "quality_class": "CLASS_B"
+    },
+    "ST40": {
+      "id": "ST40",
+      "type": "ACUPOINT_RULE",
+      "name": "Fenglong",
+      "channel": "ST",
+      "method": "PARASAGITTAL_LINE",
+      "quality_class": "CLASS_B"
+    },
+    "ST41": {
+      "id": "ST41",
+      "type": "ACUPOINT_RULE",
+      "name": "Jiexi",
+      "channel": "ST",
+      "method": "JOINT_DEPRESSION",
+      "quality_class": "CLASS_B"
+    }
+  },
+  "edges": [
+    {
+      "from": "LU1",
+      "to": "LM_JUGULAR_NOTCH",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU1",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LU2",
+      "to": "LM_JUGULAR_NOTCH",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU2",
+      "to": "LM_ACROMION_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LU3",
+      "to": "LM_AXILLARY_FOLD_ANT_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU3",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LU4",
+      "to": "LM_AXILLARY_FOLD_ANT_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU4",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LU5",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU6",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU6",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LU7",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU7",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LU8",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU8",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LU9",
+      "to": "LM_WRIST_PALMAR_CREASE_RADIAL_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU10",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU10",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LU11",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LU11",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LI1",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LI1",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LI4",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LI4",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LI5",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LI5",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LI11",
+      "to": "LM_LAT_EPICONDYLE_HUMERUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LI11",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LI15",
+      "to": "LM_ACROMION_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LI15",
+      "to": "LM_AXILLARY_FOLD_ANT_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LI20",
+      "to": "LM_GLABELLA",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LI20",
+      "to": "LM_C2_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV2",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV4",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV4",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV8",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV12",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV12",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV17",
+      "to": "LM_JUGULAR_NOTCH",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV17",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV22",
+      "to": "LM_JUGULAR_NOTCH",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GV4",
+      "to": "LM_L4_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GV4",
+      "to": "LM_C7_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "GV14",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GV20",
+      "to": "LM_VERTEX_CROWN",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL10",
+      "to": "LM_C2_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL11",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL11",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL12",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL12",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL13",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL13",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL40",
+      "to": "LM_POPLITEAL_CREASE_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST35",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST36",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST36",
+      "to": "LM_LAT_MALLEOLUS_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "GB20",
+      "to": "LM_INION",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GB20",
+      "to": "LM_MASTOID_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "GB21",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GB21",
+      "to": "LM_ACROMION_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "HT3",
+      "to": "LM_MED_EPICONDYLE_HUMERUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "HT3",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "HT7",
+      "to": "LM_WRIST_PALMAR_CREASE_ULNAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "PC6",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "PC6",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "PC3",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "PC3",
+      "to": "LM_MED_EPICONDYLE_HUMERUS_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "PC7",
+      "to": "LM_WRIST_PALMAR_CREASE_MIDPOINT_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP1",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP1",
+      "to": "LM_CALCANEUS_POST_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SP6",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP6",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SP9",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP9",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SP10",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP10",
+      "to": "LM_GREATER_TROCHANTER_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SP15",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP21",
+      "to": "LM_AXILLARY_FOLD_ANT_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP21",
+      "to": "LM_ASIS_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SI1",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SI1",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SI3",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SI3",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SI8",
+      "to": "LM_MED_EPICONDYLE_HUMERUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SI8",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SI11",
+      "to": "LM_ACROMION_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SI11",
+      "to": "LM_C7_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SI19",
+      "to": "LM_MASTOID_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SI19",
+      "to": "LM_GLABELLA",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI1",
+      "to": "LM_PLANTAR_METATARSAL_INTERVAL_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI2",
+      "to": "LM_NAVICULAR_TUBEROSITY_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI2",
+      "to": "LM_METATARSAL1_BASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI3",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI3",
+      "to": "LM_CALCANEUS_POST_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI4",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI4",
+      "to": "LM_CALCANEUS_MEDIAL_TUBEROSITY_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI5",
+      "to": "LM_CALCANEUS_MEDIAL_TUBEROSITY_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI6",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI6",
+      "to": "LM_CALCANEUS_MEDIAL_TUBEROSITY_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI7",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI7",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI10",
+      "to": "LM_POPLITEAL_CREASE_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI10",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI11",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI16",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI27",
+      "to": "LM_JUGULAR_NOTCH",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI27",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "TE1",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "TE1",
+      "to": "LM_RADIAL_STYLOID_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "TE5",
+      "to": "LM_WRIST_CREASE_PALMAR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "TE5",
+      "to": "LM_CUBITAL_CREASE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "TE14",
+      "to": "LM_ACROMION_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "TE17",
+      "to": "LM_MASTOID_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "TE17",
+      "to": "LM_C2_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "TE23",
+      "to": "LM_GLABELLA",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "TE23",
+      "to": "LM_MASTOID_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LR1",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LR1",
+      "to": "LM_CALCANEUS_POST_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LR3",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LR3",
+      "to": "LM_CALCANEUS_POST_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LR8",
+      "to": "LM_POPLITEAL_CREASE_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LR8",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LR13",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LR13",
+      "to": "LM_ASIS_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "LR14",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "LR14",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "GB1",
+      "to": "LM_ORBIT_LATERAL_CANTHUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GB2",
+      "to": "LM_TRAGUS_INTERTRAGIC_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GB8",
+      "to": "LM_AURICULAR_APEX_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GB8",
+      "to": "LM_VERTEX_CROWN",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "GB14",
+      "to": "LM_EYEBROW_MIDPOINT_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GB14",
+      "to": "LM_FRONTAL_ANGLE_HAIRLINE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "GB30",
+      "to": "LM_GREATER_TROCHANTER_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "GB30",
+      "to": "LM_SACRAL_HIATUS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "GB34",
+      "to": "LM_FIBULAR_HEAD_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL1",
+      "to": "LM_ORBIT_MEDIAL_CANTHUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL2",
+      "to": "LM_SUPRAORBITAL_NOTCH_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL14",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL14",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL15",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL15",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL23",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL23",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL25",
+      "to": "LM_L4_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL52",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL52",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL54",
+      "to": "LM_SACRAL_HIATUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST1",
+      "to": "LM_INFRAORBITAL_MARGIN_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST4",
+      "to": "LM_CHEILION_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST8",
+      "to": "LM_FRONTAL_ANGLE_HAIRLINE_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST9",
+      "to": "LM_THYROID_CARTILAGE_PROMINENCE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST12",
+      "to": "LM_CLAVICLE_MIDPOINT_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST25",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP2",
+      "to": "LM_MTP1_DISTAL_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP3",
+      "to": "LM_MTP1_PROXIMAL_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP4",
+      "to": "LM_METATARSAL1_BASE_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP5",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP5",
+      "to": "LM_NAVICULAR_TUBEROSITY_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SP7",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP7",
+      "to": "LM_TIBIA_MEDIAL_CONDYLE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SP8",
+      "to": "LM_MED_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP8",
+      "to": "LM_TIBIA_MEDIAL_CONDYLE_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SP14",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP14",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "SP16",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "SP16",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI12",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI12",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI13",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI13",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI14",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI14",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI15",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI15",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI17",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI17",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI18",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI18",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI19",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI19",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI20",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI20",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI21",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI21",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI22",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI22",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI23",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI23",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "KI24",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "KI24",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL41",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL41",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL42",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL42",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL43",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL43",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL44",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL44",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL45",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL45",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL46",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL46",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL47",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL47",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL48",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL48",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL49",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL49",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "BL50",
+      "to": "LM_C7_SPINE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "BL50",
+      "to": "LM_L4_SPINE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV3",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV3",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV5",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV5",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV6",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV6",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV7",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV7",
+      "to": "LM_PUBIC_SYMPHYSIS",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV9",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV9",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV10",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV10",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV11",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV11",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV13",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV13",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV14",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV14",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV15",
+      "to": "LM_UMBILICUS",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV15",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV16",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV18",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV18",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV19",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV19",
+      "to": "LM_XIPHOSTERNAL_JOINT",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "CV20",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV21",
+      "to": "LM_JUGULAR_NOTCH",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "CV21",
+      "to": "LM_STERNAL_ANGLE",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "ST37",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST37",
+      "to": "LM_LAT_MALLEOLUS_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "ST38",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST38",
+      "to": "LM_LAT_MALLEOLUS_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "ST39",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST39",
+      "to": "LM_LAT_MALLEOLUS_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "ST40",
+      "to": "LM_PATELLA_INFERIOR_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    },
+    {
+      "from": "ST40",
+      "to": "LM_LAT_MALLEOLUS_R",
+      "relationship": "ENDS_AT_LANDMARK"
+    },
+    {
+      "from": "ST41",
+      "to": "LM_LAT_MALLEOLUS_R",
+      "relationship": "STARTS_AT_LANDMARK"
+    }
+  ]
+}

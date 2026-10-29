@@ -1,0 +1,92 @@
+{
+  "milestone": "P10.0",
+  "title": "External Anatomical Ground-Truth Integration & Independent Empirical Validation Pilot",
+  "created_utc": "2026-10-29T02:41:21.941573+00:00",
+  "head_commit": "fee639e",
+  "branch": "feat/p9.4-definitive-meridian-atlas-correction",
+  "milestone_verdict": "ENGINEERING_READY / EMPIRICAL_VALIDATION_BLOCKED",
+  "acceptance_gates_summary": "14/15 PASS | 1 BLOCKED_EXTERNAL_DATA",
+  "total_files": 16,
+  "files": {
+    "P100_ADVERSARIAL_SECURITY_REPORT.md": {
+      "size_bytes": 4942,
+      "sha256": "0b84764ab8402e0042a801b7e0469a57e3e464ee7a63fa43df460e4c5e8c984c",
+      "relative_path": "1docs/audits/P10_0/P100_ADVERSARIAL_SECURITY_REPORT.md"
+    },
+    "P100_BASELINE_RECONCILIATION.md": {
+      "size_bytes": 5009,
+      "sha256": "06ae79769f1acef16c3d932a288be87f2a747e104983c04683d97bf62c62d9d5",
+      "relative_path": "1docs/audits/P10_0/P100_BASELINE_RECONCILIATION.md"
+    },
+    "P100_BLINDED_VALIDATION_PROTOCOL.md": {
+      "size_bytes": 5843,
+      "sha256": "b5b5c268506dc318bccd0df339ff0636e116a708eb40f4f62f835b42e4d8e57f",
+      "relative_path": "1docs/audits/P10_0/P100_BLINDED_VALIDATION_PROTOCOL.md"
+    },
+    "P100_ENGINEERING_HANDOFF.md": {
+      "size_bytes": 7073,
+      "sha256": "fcf917544407422d5ac39c7f58627a9368d39739cb7224249fae282d046e5032",
+      "relative_path": "1docs/audits/P10_0/P100_ENGINEERING_HANDOFF.md"
+    },
+    "P100_EXTERNAL_DATA_INGESTION_CONTRACT.md": {
+      "size_bytes": 9165,
+      "sha256": "def99b9bb02409881aa566191342495023a9e55fdbbe1c0bd54f71ee10261f9b",
+      "relative_path": "1docs/audits/P10_0/P100_EXTERNAL_DATA_INGESTION_CONTRACT.md"
+    },
+    "P100_EXTERNAL_EVIDENCE_COVERAGE.csv": {
+      "size_bytes": 46166,
+      "sha256": "329324a7dca810907e7eb517fc3b60797176bbf86e1f80cc03de7e17883ebec5",
+      "relative_path": "1docs/audits/P10_0/P100_EXTERNAL_EVIDENCE_COVERAGE.csv"
+    },
+    "P100_EXTERNAL_VALIDATION_READINESS_AUDIT.md": {
+      "size_bytes": 8488,
+      "sha256": "178b6e6052380e8c3b67eb37f5f4abdbf2cb80aa977a893ce105e5e46f35925a",
+      "relative_path": "1docs/audits/P10_0/P100_EXTERNAL_VALIDATION_READINESS_AUDIT.md"
+    },
+    "P100_FINAL_ACCEPTANCE_MATRIX.md": {
+      "size_bytes": 7116,
+      "sha256": "4c8883713ebf6e87d63309e0824e2382d933087cc7ec171624a6bf056341ac15",
+      "relative_path": "1docs/audits/P10_0/P100_FINAL_ACCEPTANCE_MATRIX.md"
+    },
+    "P100_FULL_REGRESSION_REPORT.md": {
+      "size_bytes": 6159,
+      "sha256": "b948fafdc29fb819280118043d2e2534d77e30dc365f84d6d639af996912879b",
+      "relative_path": "1docs/audits/P10_0/P100_FULL_REGRESSION_REPORT.md"
+    },
+    "P100_PERFORMANCE_BENCHMARK.md": {
+      "size_bytes": 3837,
+      "sha256": "6c085f96beb43f9b3131aaae382bda1e2ffcd5cdfe7e505f6112b2b2fd76e23f",
+      "relative_path": "1docs/audits/P10_0/P100_PERFORMANCE_BENCHMARK.md"
+    },
+    "P100_PRIVACY_AND_AUTHORIZATION_AUDIT.md": {
+      "size_bytes": 7341,
+      "sha256": "209c21551e3815edcea0e5e551ad3abb1c18d8eb0ae37903e5c4ed505ad89911",
+      "relative_path": "1docs/audits/P10_0/P100_PRIVACY_AND_AUTHORIZATION_AUDIT.md"
+    },
+    "P100_SUBJECT_HOLDOUT_AUDIT.md": {
+      "size_bytes": 5254,
+      "sha256": "48a68ed3baebc9ed0cc1439c3d1a4eba1ace52aa62ef01bc992b58b8ebc8b9da",
+      "relative_path": "1docs/audits/P10_0/P100_SUBJECT_HOLDOUT_AUDIT.md"
+    },
+    "P100_THREE_COHORT_PILOT_REPORT.md": {
+      "size_bytes": 8070,
+      "sha256": "d71c24dc1145008d07f8f760390aded8e16fd7109595507c3d0f0511026967e7",
+      "relative_path": "1docs/audits/P10_0/P100_THREE_COHORT_PILOT_REPORT.md"
+    },
+    "P100_UNCERTAINTY_ERROR_MATRIX.csv": {
+      "size_bytes": 58179,
+      "sha256": "fc3823be331a7ba57ea80aa20c6978b0cd4b77eff3593b7be80befe9a975ada8",
+      "relative_path": "1docs/audits/P10_0/P100_UNCERTAINTY_ERROR_MATRIX.csv"
+    },
+    "P100_UNCERTAINTY_ERROR_REPORT.md": {
+      "size_bytes": 5163,
+      "sha256": "3aa772f081790c1e2229942a9de3035216c16e766f9f58a7f2c40e78104d71ea",
+      "relative_path": "1docs/audits/P10_0/P100_UNCERTAINTY_ERROR_REPORT.md"
+    },
+    "p10_0_milestone_delivery_report.md": {
+      "size_bytes": 12125,
+      "sha256": "968caf0fe9e1f165c9a2362d891d074be2c1ab0e7657c4613eb34deb59e5609e",
+      "relative_path": "p10_0_milestone_delivery_report.md"
+    }
+  }
+}
