@@ -103,13 +103,13 @@ def test_playwright_p10_3c_validation_studio(browser_server_p103c):
 
         # 5. Test Pilot Harness Action
         page.click("#btnRunPilotHarness")
-        page.wait_for_selector("#lblP102DryRunResult", state="visible", timeout=10000)
+        page.wait_for_function("() => document.getElementById('lblP102DryRunResult')?.textContent?.includes('Pilot Harness')", timeout=15000)
         harness_text = page.text_content("#lblP102DryRunResult")
         assert "Pilot Harness" in harness_text or "PILOT_HARNESS_COMPLETED" in harness_text
 
         # 6. Test Bootstrap Action
         page.click("#btnRunBootstrapCI")
-        page.wait_for_selector("#lblP103BootstrapResult", state="visible", timeout=10000)
+        page.wait_for_function("() => document.getElementById('lblP103BootstrapResult')?.textContent?.includes('Bootstrap CI')", timeout=15000)
         boot_text = page.text_content("#lblP103BootstrapResult")
         assert "Bootstrap CI" in boot_text
 

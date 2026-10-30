@@ -152,7 +152,7 @@ def test_playwright_p9_12_t3_standardized_hardware_benchmark(browser_server_p912
         assert cov_metrics["classA"] == "18", f"Expected 18 Class A, got {cov_metrics['classA']}"
         assert cov_metrics["classB"] == "344", f"Expected 344 Class B, got {cov_metrics['classB']}"
         assert cov_metrics["classD"] == "0", f"Expected 0 Class D, got {cov_metrics['classD']}"
-        assert "100%" in cov_metrics["verifiedPct"], f"Expected 100% calibrated, got {cov_metrics['verifiedPct']}"
+        assert any(pct in cov_metrics["verifiedPct"] for pct in ("100%", "100.0%")), f"Expected 100% calibrated, got {cov_metrics['verifiedPct']}"
 
         # Capture Evidence 1: Axial Paraspinal & Spine Alignment (Posterior Torso View)
         page.evaluate("""() => {

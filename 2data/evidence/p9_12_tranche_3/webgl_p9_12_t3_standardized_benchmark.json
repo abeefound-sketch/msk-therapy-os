@@ -1,6 +1,6 @@
 {
   "milestone": "P9.12_TRANCHE_3",
-  "timestamp": "2026-10-29T07:42:59Z",
+  "timestamp": "2026-10-30T05:10:45Z",
   "hardware": {
     "gpu": "ANGLE (Intel, Intel(R) HD Graphics 5500 (0x00001616) Direct3D11 vs_5_0 ps_5_0, D3D11)",
     "vendor": "Google Inc. (Intel)",
@@ -16,13 +16,13 @@
     "tier_4_clinical_percentage": 0.0
   },
   "performance_benchmark": {
-    "average_fps": 37.46,
+    "average_fps": 39.33,
     "target_fps_floor": 30.0,
     "fps_pass": true,
-    "p95_frame_time_ms": 33.8,
+    "p95_frame_time_ms": 32.9,
     "p95_target_ceiling_ms": 38.0,
     "p95_pass": true,
-    "avg_raycast_ms": 0.01,
+    "avg_raycast_ms": 0,
     "raycast_target_ceiling_ms": 5.0,
     "raycast_pass": true,
     "context_loss_detected": false

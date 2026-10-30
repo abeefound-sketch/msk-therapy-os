@@ -16,10 +16,10 @@
     "max_context_loss": 0
   },
   "performance_metrics": {
-    "avg_fps": 52.4,
-    "avg_frame_time_ms": 19.08,
-    "p95_frame_time_ms": 25.7,
-    "avg_raycast_ms": 0.001,
+    "avg_fps": 42,
+    "avg_frame_time_ms": 23.83,
+    "p95_frame_time_ms": 31.1,
+    "avg_raycast_ms": 0.005,
     "total_frames": 60,
     "total_raycasts": 100
   },
@@ -39,6 +39,6 @@
     "console_errors_count": 0,
     "page_errors_count": 0
   },
-  "timestamp_utc": "2026-10-29T07:42:04Z",
+  "timestamp_utc": "2026-10-30T05:09:48Z",
   "status": "PASS"
 }

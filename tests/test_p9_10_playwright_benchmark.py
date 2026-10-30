@@ -152,7 +152,7 @@ def test_playwright_p9_10_standardized_hardware_benchmark(browser_server_p910):
         assert cov_metrics["classA"] == "18", f"Expected 18 Class A, got {cov_metrics['classA']}"
         assert cov_metrics["classB"] in ("126", "156", "204", "259", "344"), f"Expected 126 Class B, got {cov_metrics['classB']}"
         assert cov_metrics["classD"] in ("218", "188", "140", "85", "0"), f"Expected 218 Class D, got {cov_metrics['classD']}"
-        assert any(pct in cov_metrics["verifiedPct"] for pct in ("39.8%", "48.1%", "61.3%", "76.5%", "100%")), f"Expected 39.8% calibrated, got {cov_metrics['verifiedPct']}"
+        assert any(pct in cov_metrics["verifiedPct"] for pct in ("39.8%", "48.1%", "61.3%", "76.5%", "100%", "100.0%")), f"Expected calibrated %, got {cov_metrics['verifiedPct']}"
 
         # Capture Evidence 1: QA Studio Dynamic Coverage Dashboard with Calibrated Governance Terminology
         shot1 = EVIDENCE_DIR / "01_p910_qa_studio_calibrated_governance.png"

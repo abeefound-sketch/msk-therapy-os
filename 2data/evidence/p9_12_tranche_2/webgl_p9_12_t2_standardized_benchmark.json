@@ -18,10 +18,10 @@
   },
   "metrics": {
     "frameCount": 120,
-    "avgFrameTimeMs": 24.825,
-    "p95FrameTimeMs": 36,
-    "fps": 40.28197381671702,
-    "avgRaycastLatencyMs": 0,
+    "avgFrameTimeMs": 23.66333333333799,
+    "p95FrameTimeMs": 31,
+    "fps": 42.25947316522622,
+    "avgRaycastLatencyMs": 0.00400000000372529,
     "contextLossCount": 0
   },
   "catalog_distribution": {
@@ -31,6 +31,6 @@
     "calibrated_percentage": 76.5,
     "clinical_verification_percentage": 0.0
   },
-  "timestamp": "2026-10-29T07:42:42Z",
+  "timestamp": "2026-10-30T05:10:29Z",
   "status": "PASS"
 }

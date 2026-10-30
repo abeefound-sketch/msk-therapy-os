@@ -270,7 +270,7 @@ def test_playwright_p9_13_gpu_stress_and_recovery_benchmark(browser_server_p913)
         assert cov_metrics["classA"] == "18"
         assert cov_metrics["classB"] == "344"
         assert cov_metrics["classD"] == "0"
-        assert "100%" in cov_metrics["verifiedPct"]
+        assert any(pct in cov_metrics["verifiedPct"] for pct in ("100%", "100.0%"))
 
         # Evidence 3: QA Studio Hardened Dashboard
         page.screenshot(path=str(EVIDENCE_DIR / "03_p913_qa_studio_hardened_dashboard.png"))

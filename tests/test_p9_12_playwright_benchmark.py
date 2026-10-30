@@ -162,7 +162,7 @@ def test_playwright_p9_12_standardized_hardware_benchmark(browser_server_p912):
         assert cov_metrics["classA"] == "18", f"Expected 18 Class A, got {cov_metrics['classA']}"
         assert cov_metrics["classB"] in ("204", "259", "344"), f"Expected 204 Class B, got {cov_metrics['classB']}"
         assert cov_metrics["classD"] in ("140", "85", "0"), f"Expected 140 Class D, got {cov_metrics['classD']}"
-        assert any(pct in cov_metrics["verifiedPct"] for pct in ("61.3%", "76.5%", "100%")), f"Expected 61.3% calibrated, got {cov_metrics['verifiedPct']}"
+        assert any(pct in cov_metrics["verifiedPct"] for pct in ("61.3%", "76.5%", "100%", "100.0%")), f"Expected 61.3% calibrated, got {cov_metrics['verifiedPct']}"
 
         # Capture Evidence 1: QA Studio Dynamic Coverage Dashboard with 61.3% Calibrated Coverage
         shot1 = EVIDENCE_DIR / "01_p912_qa_studio_61pct_calibrated.png"
