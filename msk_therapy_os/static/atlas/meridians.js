@@ -2558,10 +2558,13 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
             <div style="display:flex; flex-direction:column; gap:3px; margin-top:4px; border-top:1px solid #1e293b; padding-top:4px;">
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
                 <button type="button" id="btnRunValidationDryRun" style="background:#0284c7; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Chạy thử nghiệm toàn trình với dữ liệu giả lập">🚀 Chạy Dry Run</button>
-                <button type="button" id="btnExportEvidenceManifest" style="background:#0f766e; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Xuất báo cáo bằng chứng kiểm định">📥 Xuất Bằng Chứng</button>
+                <button type="button" id="btnRunPilotHarness" style="background:#0369a1; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Chạy Harness Thử Nghiệm P10.3B (Cohorts A, B, C)">🔬 Pilot Harness</button>
               </div>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
+                <button type="button" id="btnExportEvidenceManifest" style="background:#0f766e; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Xuất báo cáo bằng chứng kiểm định">📥 Xuất Bằng Chứng</button>
                 <button type="button" id="btnCheckGateStatus" style="background:#7c3aed; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Kiểm tra trạng thái Cổng Khoa Học G14">🛡️ Cổng G14</button>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr; gap:4px;">
                 <button type="button" id="btnRunBootstrapCI" style="background:#d97706; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Tính toán Bootstrap 95% Confidence Interval">📐 Bootstrap CI</button>
               </div>
               <button type="button" id="btnToggleValidationDetails" style="background:#334155; color:#f8fafc; border:none; border-radius:3px; padding:2px 4px; font-size:8.5px; cursor:pointer;">📊 Xem Chi Tiết Kiểm Định P10.3</button>
@@ -3200,6 +3203,7 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
 
         // --- P10.3 Validation Studio Actions ---
     const btnDryRun = document.getElementById('btnRunValidationDryRun');
+    const btnPilotHarness = document.getElementById('btnRunPilotHarness');
     const btnExpEv = document.getElementById('btnExportEvidenceManifest');
     const btnGateStatus = document.getElementById('btnCheckGateStatus');
     const btnBootstrap = document.getElementById('btnRunBootstrapCI');
@@ -3287,6 +3291,33 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
         } finally {
           btnDryRun.disabled = false;
           btnDryRun.textContent = '🚀 Chạy Dry Run';
+        }
+      });
+    }
+
+    if (btnPilotHarness) {
+      btnPilotHarness.addEventListener('click', async () => {
+        btnPilotHarness.disabled = true;
+        btnPilotHarness.textContent = '⏳ Đang chạy...';
+        try {
+          const res = await fetch('/api/atlas/validation/pilot-harness/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+          const data = await res.json();
+          if (elDryRes) {
+            elDryRes.style.display = 'block';
+            elDryRes.innerHTML = `<strong>P10.3B Pilot Harness:</strong> ${data.status}<br/>` +
+              `<span>Điểm: ${data.total_points_evaluated} • Mẫu quan sát: ${data.total_observations_ingested}</span><br/>` +
+              `<span>Bootstrap RMSE: ${data.cluster_bootstrap_ci.point_estimate_rmse_mm}mm [${data.cluster_bootstrap_ci.bootstrap_rmse_ci_95_mm[0]}-${data.cluster_bootstrap_ci.bootstrap_rmse_ci_95_mm[1]}]</span><br/>` +
+              `<em>G14 Khóa Fail-Closed: ${data.gate_g14_fail_closed_verified ? 'XÁC NHẬN (BLOCKED)' : 'CẢNH BÁO'}</em>`;
+          }
+          if (valContainer) valContainer.style.display = 'flex';
+        } catch (e) {
+          if (elDryRes) {
+            elDryRes.style.display = 'block';
+            elDryRes.innerHTML = `<span style="color:#f43f5e;">Lỗi chạy Pilot Harness: ${e.message}</span>`;
+          }
+        } finally {
+          btnPilotHarness.disabled = false;
+          btnPilotHarness.textContent = '🔬 Pilot Harness';
         }
       });
     }

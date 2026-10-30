@@ -56,11 +56,13 @@ class DicomQuarantineReason(str, Enum):
     PHI_IN_BIRTH_DATE = "QUARANTINE_PHI_IN_BIRTH_DATE"
     PHI_IN_METADATA_HEADER = "QUARANTINE_PHI_IN_METADATA_HEADER"
     BURNED_IN_IDENTIFIERS_RISK = "QUARANTINE_BURNED_IN_IDENTIFIERS_RISK"
+    UNVERIFIED_PIXEL_DEIDENTIFICATION = "QUARANTINE_UNVERIFIED_PIXEL_DEIDENTIFICATION"
     CHECKSUM_INTEGRITY_MISMATCH = "QUARANTINE_CHECKSUM_INTEGRITY_MISMATCH"
     DUPLICATE_SOP_INSTANCE = "QUARANTINE_DUPLICATE_SOP_INSTANCE"
     MALFORMED_HEADER_STRUCTURE = "QUARANTINE_MALFORMED_HEADER_STRUCTURE"
     UNAPPROVED_SOURCE_ORGANIZATION = "QUARANTINE_UNAPPROVED_SOURCE_ORGANIZATION"
     ADMIN_AUTHORIZATION_REQUIRED = "QUARANTINE_ADMIN_AUTHORIZATION_REQUIRED"
+    PATH_TRAVERSAL_DETECTED = "QUARANTINE_PATH_TRAVERSAL_DETECTED"
 
 
 @dataclass
@@ -121,6 +123,9 @@ class DicomPreflightResult:
     image_position_patient: Optional[Tuple[float, float, float]] = None
     number_of_frames: int = 1
     burned_in_annotation: str = "UNKNOWN"
+    has_pixel_deidentification_certificate: bool = False
+    deidentification_certificate_id: Optional[str] = None
+    deidentification_method_description: Optional[str] = None
     quarantine_reasons: List[DicomQuarantineReason] = field(default_factory=list)
     quarantine_details: List[str] = field(default_factory=list)
     parsed_tags_count: int = 0
@@ -141,11 +146,55 @@ class DicomPreflightResult:
 
 
 class DicomHeaderParser:
-    """Safe, pure-Python standard library DICOM binary stream parser."""
+    """Safe, pure-Python standard library DICOM binary stream parser with adversarial hardening."""
 
     @staticmethod
-    def parse_file(file_path: str, max_bytes: int = 2 * 1024 * 1024) -> DicomPreflightResult:
-        """Parse DICOM preamble, File Meta Information, and top-level dataset elements."""
+    def parse_file(
+        file_path: str,
+        max_bytes: int = 2 * 1024 * 1024,
+        allowed_base_dir: Optional[str] = None,
+        require_pixel_certificate: bool = False,
+        pixel_certificate: Optional[Dict[str, Any]] = None,
+    ) -> DicomPreflightResult:
+        """Parse DICOM preamble, File Meta Information, and top-level dataset elements with security controls."""
+        # Path traversal guard
+        clean_path_parts = file_path.replace("\\", "/").split("/")
+        if ".." in clean_path_parts or "\x00" in file_path:
+            return DicomPreflightResult(
+                file_path=file_path,
+                sha256_hash="",
+                is_valid_dicom=False,
+                is_supported=False,
+                transfer_syntax_uid="UNKNOWN",
+                quarantine_reasons=[DicomQuarantineReason.PATH_TRAVERSAL_DETECTED],
+                quarantine_details=["Path contains traversal tokens ('..') or null characters."],
+            )
+
+        if allowed_base_dir:
+            real_base = os.path.realpath(allowed_base_dir)
+            real_file = os.path.realpath(file_path)
+            try:
+                if os.path.commonpath([real_base, real_file]) != real_base:
+                    return DicomPreflightResult(
+                        file_path=file_path,
+                        sha256_hash="",
+                        is_valid_dicom=False,
+                        is_supported=False,
+                        transfer_syntax_uid="UNKNOWN",
+                        quarantine_reasons=[DicomQuarantineReason.PATH_TRAVERSAL_DETECTED],
+                        quarantine_details=[f"File '{file_path}' resolves outside allowed directory '{allowed_base_dir}'."],
+                    )
+            except ValueError:
+                return DicomPreflightResult(
+                    file_path=file_path,
+                    sha256_hash="",
+                    is_valid_dicom=False,
+                    is_supported=False,
+                    transfer_syntax_uid="UNKNOWN",
+                    quarantine_reasons=[DicomQuarantineReason.PATH_TRAVERSAL_DETECTED],
+                    quarantine_details=[f"File '{file_path}' is on a distinct filesystem drive from '{allowed_base_dir}'."],
+                )
+
         if not os.path.exists(file_path):
             return DicomPreflightResult(
                 file_path=file_path,
@@ -205,6 +254,7 @@ class DicomHeaderParser:
         offset = 132
         transfer_syntax = DicomTransferSyntax.EXPLICIT_VR_LITTLE_ENDIAN.value
         elements: Dict[Tuple[int, int], DicomElement] = {}
+        has_malformed_length = False
 
         # First pass: Parse Group 0002 (File Meta Information - always Explicit VR Little Endian)
         try:
@@ -225,6 +275,11 @@ class DicomHeaderParser:
                     length = struct.unpack("<H", raw_bytes[offset+6:offset+8])[0]
                     val_offset = offset + 8
                     offset = val_offset + length
+
+                # Memory exhaustion & malformed length guard
+                if length == 0xFFFFFFFF or length > 10 * 1024 * 1024:
+                    has_malformed_length = True
+                    break
 
                 if val_offset + length > len(raw_bytes):
                     val_bytes = raw_bytes[val_offset:]
@@ -270,7 +325,8 @@ class DicomHeaderParser:
                     offset = val_offset + length
 
                 # Guard against undefined or massive lengths
-                if length == 0xFFFFFFFF or length > 50 * 1024 * 1024:
+                if length == 0xFFFFFFFF or length > 10 * 1024 * 1024:
+                    has_malformed_length = True
                     break
 
                 if val_offset + length > len(raw_bytes):
@@ -294,6 +350,10 @@ class DicomHeaderParser:
             transfer_syntax_uid=transfer_syntax,
             parsed_tags_count=len(elements),
         )
+
+        if has_malformed_length:
+            res.quarantine_reasons.append(DicomQuarantineReason.MALFORMED_HEADER_STRUCTURE)
+            res.quarantine_details.append("Element length tag is malformed (0xFFFFFFFF or exceeds 10MB limit).")
 
         # Transfer syntax validation
         if transfer_syntax not in SUPPORTED_TRANSFER_SYNTAXES:
@@ -387,6 +447,26 @@ class DicomHeaderParser:
                 f"Modality '{res.modality}' without explicit BurnedInAnnotation='NO' presents risk of burned-in patient names."
             )
 
+        # 4b. Mandatory Institutional Pixel De-identification Verification Policy
+        # Pure Python standard library cannot inspect pixel data for burned-in PHI.
+        # Even if BurnedInAnnotation == 'NO', an independent institutional certificate is required for empirical clearance.
+        if require_pixel_certificate:
+            if not pixel_certificate or not pixel_certificate.get("certificate_id") or not pixel_certificate.get("verified_by_institution"):
+                res.quarantine_reasons.append(DicomQuarantineReason.UNVERIFIED_PIXEL_DEIDENTIFICATION)
+                res.quarantine_details.append(
+                    "BurnedInAnnotation='NO' header is unverified without independent institutional de-identification certificate. "
+                    "Offline pure-Python engine requires explicit institutional sign-off for pixel privacy."
+                )
+                res.has_pixel_deidentification_certificate = False
+            else:
+                res.has_pixel_deidentification_certificate = True
+                res.deidentification_certificate_id = str(pixel_certificate.get("certificate_id"))
+                res.deidentification_method_description = str(pixel_certificate.get("method_description", "Certified Safe Harbor Pixel Masking"))
+        elif pixel_certificate and pixel_certificate.get("certificate_id") and pixel_certificate.get("verified_by_institution"):
+            res.has_pixel_deidentification_certificate = True
+            res.deidentification_certificate_id = str(pixel_certificate.get("certificate_id"))
+            res.deidentification_method_description = str(pixel_certificate.get("method_description", "Certified Safe Harbor Pixel Masking"))
+
         # 5. Filename screening
         filename = os.path.basename(file_path)
         if re.search(r"\b(Mr|Mrs|Ms|Dr)[._\s]+[A-Za-z]+", filename, re.IGNORECASE) or re.search(r"\b\d{3}-\d{2}-\d{4}\b", filename):
@@ -397,18 +477,47 @@ class DicomHeaderParser:
 
 
 class DicomIntakeAdapter:
-    """Manages secure offline intake, inspection, and catalog integration."""
+    """Manages secure offline intake, inspection, and catalog integration with security controls."""
 
-    def __init__(self, quarantine_dir: str = "data/quarantine/dicom"):
+    def __init__(self, quarantine_dir: str = "data/quarantine/dicom", allowed_base_dir: Optional[str] = None):
         self.quarantine_dir = quarantine_dir
+        self.allowed_base_dir = allowed_base_dir
         os.makedirs(self.quarantine_dir, exist_ok=True)
         self._ingested_sop_uids: Set[str] = set()
         self._ingested_hashes: Set[str] = set()
         self._quarantine_records: List[Dict[str, Any]] = []
+        self._pixel_certificates: Dict[str, Dict[str, Any]] = {}
 
-    def inspect_file(self, file_path: str) -> DicomPreflightResult:
+    def register_pixel_certificate(self, identifier: str, certificate: Dict[str, Any]) -> None:
+        """Register an independent institutional pixel de-identification certificate."""
+        self._pixel_certificates[identifier] = certificate
+
+    def inspect_file(
+        self,
+        file_path: str,
+        require_pixel_certificate: bool = False,
+        pixel_certificate: Optional[Dict[str, Any]] = None,
+    ) -> DicomPreflightResult:
         """Run standalone preflight inspection on a single local file."""
-        res = DicomHeaderParser.parse_file(file_path)
+        # Resolve certificate if registered
+        cert = pixel_certificate
+        res = DicomHeaderParser.parse_file(
+            file_path=file_path,
+            allowed_base_dir=self.allowed_base_dir,
+            require_pixel_certificate=require_pixel_certificate,
+            pixel_certificate=cert,
+        )
+
+        # If not passed in, check if certificate was preregistered by SOPInstanceUID or hash
+        if require_pixel_certificate and not res.has_pixel_deidentification_certificate:
+            registered_cert = self._pixel_certificates.get(res.sop_instance_uid) or self._pixel_certificates.get(res.sha256_hash)
+            if registered_cert and registered_cert.get("certificate_id") and registered_cert.get("verified_by_institution"):
+                # Clear the unverified quarantine reason
+                res.quarantine_reasons = [r for r in res.quarantine_reasons if r != DicomQuarantineReason.UNVERIFIED_PIXEL_DEIDENTIFICATION]
+                res.quarantine_details = [d for d in res.quarantine_details if "unverified without independent" not in d]
+                res.has_pixel_deidentification_certificate = True
+                res.deidentification_certificate_id = str(registered_cert.get("certificate_id"))
+                res.deidentification_method_description = str(registered_cert.get("method_description", "Certified Safe Harbor Pixel Masking"))
         
         # Check duplicate
         if res.sop_instance_uid and res.sop_instance_uid in self._ingested_sop_uids:
@@ -420,7 +529,7 @@ class DicomIntakeAdapter:
 
         return res
 
-    def inspect_directory(self, dir_path: str) -> List[DicomPreflightResult]:
+    def inspect_directory(self, dir_path: str, require_pixel_certificate: bool = False) -> List[DicomPreflightResult]:
         """Inspect all DICOM candidate files in a local directory."""
         results: List[DicomPreflightResult] = []
         if not os.path.exists(dir_path):
@@ -429,7 +538,7 @@ class DicomIntakeAdapter:
         for root, _, files in os.walk(dir_path):
             for fname in files:
                 fpath = os.path.join(root, fname)
-                res = self.inspect_file(fpath)
+                res = self.inspect_file(fpath, require_pixel_certificate=require_pixel_certificate)
                 results.append(res)
         return results
 

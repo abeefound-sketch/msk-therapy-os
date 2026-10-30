@@ -984,6 +984,17 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         "datasets": datasets,
                     })
 
+                elif path == "/api/atlas/validation/governance/audit-trail":
+                    validator = get_anatomical_validator()
+                    trail = validator.get_governance_audit_trail()
+                    is_chain_valid = validator.verify_governance_audit_chain()
+                    self._send_json({
+                        "status": "success",
+                        "total_entries": len(trail),
+                        "chain_integrity_valid": is_chain_valid,
+                        "audit_trail": trail,
+                    })
+
                 elif path == "/api/atlas/validation/independent-coverage":
                     validator = get_anatomical_validator()
                     cov_matrix = validator.generate_external_evidence_coverage_matrix()
@@ -2055,8 +2066,48 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         ds_id = body.get("dataset_id")
                         rev_id = body.get("admin_reviewer_id", "REV-CLINICAL-AUDITOR")
                         just = body.get("justification", "Authorized by Clinical Review Board for P10.2 Validation")
-                        validator.admin_sign_off_dataset(ds_id, admin_reviewer_id=rev_id, justification=just)
-                        self._send_json({"status": "success", "dataset_id": ds_id, "signed_off": True})
+                        token = body.get("governance_token")
+                        cosigner = body.get("cosigner_id")
+                        validator.admin_sign_off_dataset(
+                            ds_id,
+                            admin_reviewer_id=rev_id,
+                            justification=just,
+                            governance_token=token,
+                            cosigner_id=cosigner,
+                        )
+                        self._send_json({
+                            "status": "success",
+                            "dataset_id": ds_id,
+                            "signed_off": True,
+                            "cosigned_by": cosigner,
+                        })
+                    except ValueError as ve:
+                        self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/admin/revoke":
+                    if not isinstance(body, dict):
+                        self._send_json({"error": "Payload must be a JSON object"}, status=HTTPStatus.BAD_REQUEST)
+                        return
+                    try:
+                        validator = get_anatomical_validator()
+                        ds_id = body.get("dataset_id")
+                        rev_id = body.get("revoking_reviewer_id", "REV-CLINICAL-AUDITOR")
+                        reason = body.get("reason", "Revocation requested by Clinical Safety Auditor")
+                        token = body.get("governance_token")
+                        validator.revoke_dataset_authorization(
+                            ds_id,
+                            revoking_reviewer_id=rev_id,
+                            reason=reason,
+                            governance_token=token,
+                        )
+                        self._send_json({
+                            "status": "success",
+                            "dataset_id": ds_id,
+                            "revoked": True,
+                            "reason": reason,
+                        })
                     except ValueError as ve:
                         self._send_json({"error": str(ve)}, status=HTTPStatus.BAD_REQUEST)
                     except Exception as e:
@@ -2066,6 +2117,14 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     try:
                         validator = get_anatomical_validator()
                         res = validator.run_synthetic_pilot_dry_run()
+                        self._send_json(res, status=HTTPStatus.OK)
+                    except Exception as e:
+                        self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+                elif path == "/api/atlas/validation/pilot-harness/run":
+                    try:
+                        validator = get_anatomical_validator()
+                        res = validator.run_p10_3b_empirical_pilot_harness()
                         self._send_json(res, status=HTTPStatus.OK)
                     except Exception as e:
                         self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
