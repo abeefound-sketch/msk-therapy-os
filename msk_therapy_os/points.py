@@ -2167,7 +2167,12 @@ def get_backup_signing_key() -> bytes:
     key_file = target_dir / ".backup_hmac_key"
     if key_file.exists():
         try:
-            k = key_file.read_bytes().strip()
+            k = key_file.read_bytes()
+            if len(k.strip()) == 64:
+                try:
+                    return bytes.fromhex(k.strip().decode("ascii"))
+                except ValueError:
+                    pass
             if len(k) >= 16:
                 return k
         except Exception:

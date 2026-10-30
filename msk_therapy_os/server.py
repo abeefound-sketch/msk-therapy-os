@@ -209,6 +209,8 @@ MIME_TYPES = {
     ".png": "image/png",
     ".svg": "image/svg+xml",
     ".bin": "application/octet-stream",
+    ".glb": "model/gltf-binary",
+    ".gltf": "model/gltf+json",
 }
 
 
@@ -485,6 +487,15 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_text("static/index.html not found", status=HTTPStatus.NOT_FOUND)
             return
 
+        # P13 Education Studio Route
+        if path in ("/education", "/education/"):
+            edu_index = STATIC_DIR / "education" / "index.html"
+            if edu_index.exists():
+                self._send_text(edu_index.read_text(encoding="utf-8"), content_type="text/html; charset=utf-8")
+            else:
+                self._send_text("Education studio not installed", status=HTTPStatus.NOT_FOUND)
+            return
+
         # Serve static assets directly from STATIC_DIR (e.g. meridianEditor.js)
         if not path.startswith(("/api/", "/atlas/", "/data/")):
             static_file = (STATIC_DIR / path.lstrip("/")).resolve()
@@ -535,6 +546,12 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
 
         if path == "/api/status":
             self._send_json(self._atlas_status())
+            return
+
+        # P13 Interactive MSK Education Studio API
+        if path == "/api/education/shoulder-lesson":
+            from msk_therapy_os.biomechanics_adapter import get_shoulder_education_curriculum
+            self._send_json(get_shoulder_education_curriculum())
             return
 
         with open_db(self.db_path) as db:

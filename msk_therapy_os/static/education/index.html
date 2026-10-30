@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSK-Therapy-OS · Interactive Shoulder Biomechanics Education Studio</title>
+    <style>
+        :root {
+            --bg-dark: #0a101d;
+            --panel-bg: #0f172a;
+            --panel-border: #1e293b;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+            --danger: #f43f5e;
+            --warning: #fbbf24;
+            --success: #34d399;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Header */
+        header {
+            background: #090e17;
+            border-bottom: 1px solid var(--panel-border);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: none;
+            z-index: 20;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .header-brand h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+        }
+
+        .header-brand .sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-green { background: rgba(52, 211, 153, 0.15); color: var(--success); border: 1px solid rgba(52, 211, 153, 0.3); }
+        .badge-amber { background: rgba(251, 191, 36, 0.15); color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.3); }
+        .badge-red { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
+        .badge-neutral { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
+
+        .btn {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: #334155;
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .btn-accent {
+            background: #0284c7;
+            border-color: #38bdf8;
+            color: #fff;
+        }
+
+        .btn-accent:hover {
+            background: #0369a1;
+        }
+
+        /* 3-Column Studio Grid */
+        main {
+            display: grid;
+            grid-template-columns: 340px minmax(0, 1fr) 380px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Side Panels */
+        .panel {
+            background: var(--panel-bg);
+            border-right: 1px solid var(--panel-border);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .panel.right {
+            border-right: none;
+            border-left: 1px solid var(--panel-border);
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--panel-border);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            background: #0b1322;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .panel-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .panel-body::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        /* Stage Navigation Items */
+        .stage-nav-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            background: #111c2e;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .stage-nav-item:hover {
+            border-color: #334155;
+            background: #16243a;
+        }
+
+        .stage-nav-item.active {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .stage-nav-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .stage-nav-item.active .stage-nav-num {
+            background: var(--accent);
+            color: #041226;
+        }
+
+        .stage-nav-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        /* Stage Card */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        .card-text {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        /* 3D Viewport */
+        .viewport {
+            position: relative;
+            background: radial-gradient(circle at center, #111a2e 0%, #080d17 100%);
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .viewport-toolbar {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 6px 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #94a3b8;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .toolbar-btn:hover, .toolbar-btn.active {
+            color: #fff;
+            background: #334155;
+            border-color: #475569;
+        }
+
+        /* Biomechanics Simulator Controls */
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #283548;
+            font-size: 12px;
+        }
+
+        .metric-label {
+            color: #94a3b8;
+        }
+
+        .metric-val {
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .slider-group {
+            margin: 10px 0;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Evidence & Disclaimers */
+        .evidence-item {
+            list-style: none;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #cbd5e1;
+            padding: 6px 0;
+            border-bottom: 1px solid #223147;
+        }
+
+        .evidence-tag {
+            font-weight: 700;
+            color: var(--accent);
+            margin-right: 4px;
+        }
+
+        .evidence-desc {
+            font-size: 10.5px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .disclaimer-box {
+            background: rgba(244, 63, 94, 0.08);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #fca5a5;
+        }
+
+        .disclaimer-box strong {
+            color: #f87171;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Bottom Footer */
+        footer {
+            background: #060a12;
+            border-top: 1px solid var(--panel-border);
+            padding: 8px 20px;
+            font-size: 11px;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex: none;
+        }
+
+        footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Header -->
+    <header>
+        <div class="header-brand">
+            <h1 id="header-title">Tại sao giải cơ xong vai nhẹ hơn nhưng một thời gian sau vẫn đổ về trước?</h1>
+            <span class="sub" id="header-subtitle">MSK-Therapy-OS · 3D Musculoskeletal Education & Biomechanics Studio</span>
+        </div>
+        <div class="header-actions">
+            <span id="fps-badge" class="badge badge-green">60 FPS</span>
+            <span class="badge badge-neutral">G14: BLOCKED_EXTERNAL_DATA</span>
+            <button id="btn-lang-toggle" class="btn">EN / VI</button>
+            <a href="/atlas/" class="btn btn-accent">Trở về Atlas Lâm Sàng</a>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main>
+        <!-- Left Column: Lesson Modules & Curriculum -->
+        <section class="panel">
+            <div class="panel-header">
+                <span>Chương Trình Học (Curriculum)</span>
+                <span class="badge badge-neutral">P13 Biomechanics</span>
+            </div>
+            <div class="panel-body">
+                <div class="card">
+                    <div class="card-title" id="stage-title">1. Nghịch lý cốt lõi</div>
+                    <p class="card-text" id="stage-summary">
+                        Giải cơ bằng tay kích thích thụ thể cơ học giúp giảm trương lực và tăng tưới máu tạm thời, nhưng chưa tái lập thói quen vận động thần kinh hay phục hồi cân bằng cơ đối vận.
+                    </p>
+                </div>
+
+                <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">
+                    Các Giai Đoạn Phân Tích (6 Modules)
+                </div>
+                <div id="stage-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Rendered by shoulder_lab.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Center Column: 3D Anatomy Viewport -->
+        <section class="viewport">
+            <div class="viewport-toolbar">
+                <button id="btn-view-anterior" class="toolbar-btn active">Mặt Trước</button>
+                <button id="btn-view-posterior" class="toolbar-btn">Mặt Sau (Xương Bả Vai)</button>
+                <button id="btn-view-lateral" class="toolbar-btn">Mặt Bên</button>
+            </div>
+            <div id="canvas-container"></div>
+        </section>
+
+        <!-- Right Column: Interactive Biomechanical Posture Lab -->
+        <section class="panel right">
+            <div class="panel-header">
+                <span>Phòng Thí Nghiệm Cơ Sinh Học (Lab)</span>
+                <span class="badge badge-neutral">Mô Phỏng Tương Tác</span>
+            </div>
+            <div class="panel-body">
+                <!-- Posture Severity Slider -->
+                <div class="card">
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Mức Độ Đổ Vai (Rounded Shoulder)</span>
+                            <span id="posture-val-label" style="color: var(--accent);">65%</span>
+                        </div>
+                        <input id="posture-slider" type="range" min="0" max="100" value="65">
+                    </div>
+
+                    <div style="margin-top: 8px;">
+                        <div class="metric-row">
+                            <span class="metric-label">Độ nhô trước (Protraction):</span>
+                            <span class="metric-val" id="val-protraction">33.2°</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Nghiêng trước bả vai (Anterior Tilt):</span>
+                            <span class="metric-val" id="val-anterior-tilt">24.3°</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Xoay lên bả vai (Upward Rotation):</span>
+                            <span class="metric-val" id="val-upward-rot">6.9°</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scapulohumeral Rhythm Metric -->
+                <div class="card">
+                    <div class="card-title">Nhịp Bả Vai - Cánh Tay (2:1 Ratio)</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Tỷ lệ Cánh tay / Bả vai:</span>
+                        <span class="metric-val" id="val-rhythm-ratio">2.65 : 1</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Tình trạng chức năng:</span>
+                        <span id="val-rhythm-status" class="badge badge-amber">Giảm xoay lên</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Điểm cân bằng đối vận:</span>
+                        <span class="metric-val" id="val-reciprocal-score">35/100</span>
+                    </div>
+                </div>
+
+                <!-- Why Massage Alone Fails Card -->
+                <div class="card" style="border-left: 3px solid #f59e0b;">
+                    <div class="card-title" style="color: #f59e0b;">Tại sao chỉ giải cơ là chưa đủ?</div>
+                    <p class="card-text" style="font-size: 11.5px;">
+                        Massage giải phóng mạc cơ (Pec Minor, Upper Trap) làm dịu thụ thể đau và giảm độ căng tạm thời. Tuy nhiên, nếu không <strong>kích hoạt nhóm cơ đối kháng bị ức chế</strong> (Serratus Anterior, Lower Trapezius) và <strong>tái lập cảm thụ bản thể tư thế làm việc</strong>, vai sẽ tự động trượt về phía trước theo thói quen thần kinh cũ.
+                    </p>
+                </div>
+
+                <!-- Evidence Register -->
+                <div>
+                    <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">
+                        Tài Liệu Y Văn & Cơ Sở Khoa Học
+                    </div>
+                    <ul id="evidence-list" style="padding-left: 0;">
+                        <!-- Injected by shoulder_lab.js -->
+                    </ul>
+                </div>
+
+                <!-- Non-negotiable Disclaimers -->
+                <div class="disclaimer-box">
+                    <strong>Giới Hạn & Tuyên Bố Trách Nhiệm Khoa Học</strong>
+                    Mô phỏng mang tính giáo dục, không đại diện cho phép đo trên từng bệnh nhân cụ thể. Mô hình không thay thế chẩn đoán y khoa. Cổng nghiên cứu khoa học G14 duy trì trạng thái <code>BLOCKED_EXTERNAL_DATA</code>.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Footer -->
+    <footer>
+        <div>
+            Mô hình 3D: Dẫn xuất từ <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/" target="_blank">BodyParts3D</a> (DBCLS Japan) & <a href="https://www.z-anatomy.com/" target="_blank">Z-Anatomy</a> (CC BY-SA 2.1 JP).
+            Trình kết xuất: Three.js r160 (MIT License).
+        </div>
+        <div>
+            MSK-Therapy-OS · Milestone P13 · Offline Education Studio
+        </div>
+    </footer>
+
+    <!-- Import Map for Offline Three.js Modules -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/three.module.js",
+        "three/addons/controls/OrbitControls.js": "./vendor/three/OrbitControls.js",
+        "three/addons/loaders/GLTFLoader.js": "./vendor/three/loaders/GLTFLoader.js",
+        "three/addons/utils/BufferGeometryUtils.js": "./vendor/three/utils/BufferGeometryUtils.js"
+      }
+    }
+    </script>
+
+    <!-- Scripts (ES6 Module) -->
+    <script type="module">
+        import { AnatomyViewer } from './anatomy_viewer.js';
+        import { ShoulderLab } from './shoulder_lab.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const viewer = new AnatomyViewer('canvas-container', {
+                modelUrl: './models/anatomy.glb',
+                onLoadProgress: (pct, msg) => {
+                    console.log(`[P13] ${msg}`);
+                },
+                onLoadComplete: (res) => {
+                    console.log(`[P13] Anatomy Model Loaded: ${res.meshCount} meshes`);
+                    if (window.shoulderLab) {
+                        window.shoulderLab._renderStage(window.shoulderLab.currentStageId);
+                    }
+                },
+                onError: (err) => {
+                    console.error('[P13] Load error:', err);
+                }
+            });
+
+            // Immediately initialize UI and curriculum
+            window.anatomyViewer = viewer;
+            window.shoulderLab = new ShoulderLab(viewer);
+
+            // Asynchronously load 3D geometry
+            viewer.loadModel();
+        });
+    </script>
+</body>
+</html>
