@@ -2573,12 +2573,16 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
                 <button type="button" id="btnRunBootstrapCI" style="background:#d97706; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Tính toán Bootstrap 95% Confidence Interval">📐 Bootstrap CI</button>
                 <button type="button" id="btnCheckPilotReadiness" style="background:#059669; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Kiểm tra trạng thái Sẵn Sàng Pilot P10.5">📋 Pilot Readiness</button>
               </div>
+              <div style="display:grid; grid-template-columns: 1fr; gap:4px;">
+                <button type="button" id="btnP106PartnerDashboard" style="background:#4f46e5; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Bảng Điều Khiển Đối Tác & Quản Trị Phụ Thuộc P10.6">🌐 P10.6 Partner Readiness</button>
+              </div>
               <button type="button" id="btnToggleValidationDetails" style="background:#334155; color:#f8fafc; border:none; border-radius:3px; padding:2px 4px; font-size:8.5px; cursor:pointer;">📊 Xem Chi Tiết Kiểm Định P10.3</button>
               <div id="p102ValidationDetailsContainer" style="display:none; flex-direction:column; gap:4px; background:#1e293b; padding:6px; border-radius:3px; font-size:9px; margin-top:2px;">
                 <div id="lblP102DryRunResult" style="color:#38bdf8; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px;"></div>
                 <div id="lblP103GateStatusResult" style="color:#a78bfa; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px;"></div>
                 <div id="lblP103BootstrapResult" style="color:#fcd34d; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px;"></div>
                 <div id="lblP105PilotReadinessResult" style="color:#6ee7b7; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px; border-left:2px solid #10b981;"></div>
+                <div id="p106PartnerDashboardContainer" style="color:#e2e8f0; display:none; padding:4px; background:#0f172a; border-radius:3px; font-size:8.5px; border-left:2px solid #6366f1;"></div>
                 <div id="lblP102CohortStatus" style="color:#cbd5e1;">Đang tải danh sách cohort...</div>
                 <div id="lblP102MetricsSummary" style="color:#cbd5e1;"></div>
               </div>
@@ -3221,6 +3225,8 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     const elGateRes = document.getElementById('lblP103GateStatusResult');
     const elBootRes = document.getElementById('lblP103BootstrapResult');
     const elPilotRes = document.getElementById('lblP105PilotReadinessResult');
+    const btnP106Partner = document.getElementById('btnP106PartnerDashboard');
+    const elP106Container = document.getElementById('p106PartnerDashboardContainer');
     const elCohorts = document.getElementById('lblP102CohortStatus');
     const elMetrics = document.getElementById('lblP102MetricsSummary');
 
@@ -3247,6 +3253,79 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
         } finally {
           btnPilotReadiness.disabled = false;
           btnPilotReadiness.textContent = '📋 Pilot Readiness';
+        }
+      });
+    }
+
+    if (btnP106Partner) {
+      btnP106Partner.addEventListener('click', async () => {
+        btnP106Partner.disabled = true;
+        btnP106Partner.textContent = '⏳ Đang tải...';
+        try {
+          const res = await fetch('/api/atlas/validation/p10-6-dashboard');
+          const data = await res.json();
+          if (elP106Container) {
+            elP106Container.style.display = 'block';
+
+            const badgesHtml = `
+              <div style="display:flex; flex-wrap:wrap; gap:3px; margin-bottom:4px;">
+                <span style="background:#065f46; color:#6ee7b7; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">ENGINEERING_READY</span>
+                <span style="background:#1e3a8a; color:#93c5fd; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">PROTOCOL_DRAFT_READY</span>
+                <span style="background:#4c1d95; color:#c4b5fd; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">PARTNER_PACKAGE_PREPARED</span>
+                <span style="background:#78350f; color:#fde68a; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">INSTITUTIONAL_APPROVAL_PENDING</span>
+                <span style="background:#881337; color:#fecdd3; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">EMPIRICAL_DATA_UNAVAILABLE</span>
+                <span style="background:#7f1d1d; color:#fca5a5; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">EMPIRICAL_VALIDATION_BLOCKED</span>
+              </div>
+            `;
+
+            const gateHtml = `
+              <div style="background:#1e1b4b; padding:3px 5px; border-radius:2px; margin-bottom:4px; border-left:2px solid #818cf8;">
+                <strong>Cổng G14:</strong> <span style="color:#ef4444; font-weight:bold;">${data.scientific_gate_g14}</span> •
+                <span>Phạm vi: <strong style="color:#f59e0b;">${data.release_scope}</strong></span>
+              </div>
+            `;
+
+            const statsHtml = `
+              <div style="background:#0f172a; padding:3px 5px; border-radius:2px; margin-bottom:4px;">
+                <strong>Thiết Kế Mẫu Độc Lập (Oracle):</strong><br/>
+                • Sơ bộ (Pilot): N=85 (30 A / 25 B / 30 C) - Holdout Power tối thiểu: ${(data.statistical_scenarios.primary_accuracy_study_n85.minimum_subgroup_power * 100).toFixed(1)}%<br/>
+                • Mở rộng (Confirmatory): N=115 (40 A / 35 B / 40 C) - Holdout Power tối thiểu: ${(data.statistical_scenarios.expanded_accuracy_study_n115.minimum_subgroup_power * 100).toFixed(1)}%
+              </div>
+            `;
+
+            let partnersHtml = `<div style="display:flex; flex-direction:column; gap:3px;"><strong>Danh Sách Đối Tác Nghiên Cứu Đề Xuất (3 Ứng Viên):</strong>`;
+            for (const p of data.partner_candidates) {
+              partnersHtml += `
+                <div style="background:#1e293b; padding:3px 4px; border-radius:2px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:#60a5fa;">${p.name}</strong>
+                    <span style="background:#475569; color:#f1f5f9; padding:0 3px; border-radius:2px; font-size:7px;">${p.status}</span>
+                  </div>
+                  <div style="color:#94a3b8; font-size:8px;">
+                    Quy chuẩn: ${p.jurisdiction_law} • Phụ thuộc: 0/8 ĐÃ DUYỆT (8 Rào Cản Đang Chờ)
+                  </div>
+                </div>
+              `;
+            }
+            partnersHtml += `</div>`;
+
+            elP106Container.innerHTML = `
+              <div style="margin-bottom:3px; font-weight:bold; color:#a5b4fc; font-size:9.5px;">MSK-Therapy-OS P10.6 Quản Trị Sẵn Sàng Đối Tác:</div>
+              ${badgesHtml}
+              ${gateHtml}
+              ${statsHtml}
+              ${partnersHtml}
+            `;
+          }
+          if (valContainer) valContainer.style.display = 'flex';
+        } catch (e) {
+          if (elP106Container) {
+            elP106Container.style.display = 'block';
+            elP106Container.innerHTML = `<span style="color:#f43f5e;">Lỗi tải Dashboard P10.6: ${e.message}</span>`;
+          }
+        } finally {
+          btnP106Partner.disabled = false;
+          btnP106Partner.textContent = '🌐 P10.6 Partner Readiness';
         }
       });
     }

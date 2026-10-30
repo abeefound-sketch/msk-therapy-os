@@ -1167,6 +1167,85 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         ]
                     })
 
+                elif path == "/api/atlas/validation/p10-6-dashboard":
+                    validator = get_anatomical_validator()
+                    gate_status = validator.evaluate_g14_scientific_gate()
+
+                    from msk_therapy_os.statistical_oracle import (
+                        IndependentStatisticalOracle,
+                        OracleStudyScenario,
+                    )
+                    from msk_therapy_os.external_dependency_register import (
+                        ExternalDependencyRegistry,
+                    )
+
+                    reg = ExternalDependencyRegistry(getattr(self, "db_path", ":memory:"))
+                    for cid in ["INST-CHARITE-BERLIN", "INST-MGH-HARVARD", "INST-SNUH-SEOUL"]:
+                        if not reg.get_institutional_readiness_summary(cid)["total_dependencies_tracked"]:
+                            reg.initialize_standard_dependencies(cid)
+
+                    charite_summary = reg.get_institutional_readiness_summary("INST-CHARITE-BERLIN")
+                    mgh_summary = reg.get_institutional_readiness_summary("INST-MGH-HARVARD")
+                    snuh_summary = reg.get_institutional_readiness_summary("INST-SNUH-SEOUL")
+
+                    p45 = IndependentStatisticalOracle.evaluate_scenario(OracleStudyScenario.FEASIBILITY_PILOT)
+                    p85 = IndependentStatisticalOracle.evaluate_scenario(OracleStudyScenario.PRIMARY_ACCURACY_STUDY)
+                    p115 = IndependentStatisticalOracle.evaluate_scenario(OracleStudyScenario.EXPANDED_ACCURACY_STUDY)
+                    p150 = IndependentStatisticalOracle.evaluate_scenario(OracleStudyScenario.MULTI_SITE_VALIDATION)
+
+                    self._send_json({
+                        "status": "success",
+                        "milestone": "P10.6",
+                        "system_version": "v2.1.0-local-rc3",
+                        "release_scope": "ENGINEERING_RESEARCH_ONLY",
+                        "scientific_gate_g14": gate_status.get("gate_state", "BLOCKED_EXTERNAL_DATA"),
+                        "clinical_depth_guidance_allowed": False,
+                        "governance_readiness_states": {
+                            "ENGINEERING_READY": True,
+                            "PROTOCOL_DRAFT_READY": True,
+                            "PARTNER_PACKAGE_PREPARED": True,
+                            "INSTITUTIONAL_APPROVAL_PENDING": True,
+                            "EMPIRICAL_DATA_UNAVAILABLE": True,
+                            "EMPIRICAL_VALIDATION_BLOCKED": True,
+                        },
+                        "statistical_scenarios": {
+                            "feasibility_pilot_n45": p45,
+                            "primary_accuracy_study_n85": p85,
+                            "expanded_accuracy_study_n115": p115,
+                            "multi_site_validation_n150": p150,
+                        },
+                        "partner_candidates": [
+                            {
+                                "institution_id": "INST-CHARITE-BERLIN",
+                                "name": "Charité – Universitätsmedizin Berlin",
+                                "country": "Germany",
+                                "jurisdiction_law": "EU GDPR & German BDSG",
+                                "status": "CANDIDATE_UNCONFIRMED",
+                                "package_path": "1docs/audits/P10_6/partners/charite_berlin/",
+                                "readiness": charite_summary,
+                            },
+                            {
+                                "institution_id": "INST-MGH-HARVARD",
+                                "name": "Massachusetts General Hospital / Harvard",
+                                "country": "United States",
+                                "jurisdiction_law": "US HIPAA Safe Harbor & Common Rule",
+                                "status": "CANDIDATE_UNCONFIRMED",
+                                "package_path": "1docs/audits/P10_6/partners/mgh_harvard/",
+                                "readiness": mgh_summary,
+                            },
+                            {
+                                "institution_id": "INST-SNUH-SEOUL",
+                                "name": "Seoul National University Hospital",
+                                "country": "Republic of Korea",
+                                "jurisdiction_law": "ROK PIPA & Bioethics and Safety Act",
+                                "status": "CANDIDATE_UNCONFIRMED",
+                                "package_path": "1docs/audits/P10_6/partners/snuh_seoul/",
+                                "readiness": snuh_summary,
+                            },
+                        ],
+                        "active_blockers_count": 24,
+                    })
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
