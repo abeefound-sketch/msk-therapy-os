@@ -2536,6 +2536,11 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
               <span style="color:#38bdf8; font-weight:600;">Independent Ground-Truth Validation:</span>
               <span id="lblEmpiricalStatus" style="background:#dc2626; color:#ffffff; padding:1px 5px; border-radius:3px; font-size:8px; font-weight:700;">BLOCKED_EXTERNAL_DATA</span>
             </div>
+            <div style="display:flex; gap:3px; flex-wrap:wrap; margin-top:1px;">
+              <span id="badgeSynthetic" style="background:#334155; color:#94a3b8; padding:1px 4px; border-radius:2px; font-size:7.5px; font-weight:600;">[SYNTHETIC]</span>
+              <span id="badgeHoldoutLocked" style="background:#0369a1; color:#e0f2fe; padding:1px 4px; border-radius:2px; font-size:7.5px; font-weight:600;">[HOLDOUT LOCKED]</span>
+              <span id="badgeG14FailClosed" style="background:#991b1b; color:#fee2e2; padding:1px 4px; border-radius:2px; font-size:7.5px; font-weight:600;">[G14 FAIL-CLOSED]</span>
+            </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; text-align:center;">
               <div style="background:#1e293b; padding:3px; border-radius:3px;">
                 <div style="color:#94a3b8; font-size:8px;">Empirical In-Vivo Data</div>

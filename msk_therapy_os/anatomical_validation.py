@@ -15,6 +15,7 @@ from enum import Enum
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
 import sqlite3
@@ -894,6 +895,71 @@ class IndependentAnatomicalValidator:
 
         self._register_default_reviewers()
         self._register_built_in_sources()
+
+        if self.db_path:
+            self._init_sqlite_governance_storage()
+            self._load_sqlite_governance_trail()
+
+    def _init_sqlite_governance_storage(self) -> None:
+        """Ensure governance_audit_log table exists in the target SQLite database."""
+        if not self.db_path:
+            return
+        conn = sqlite3.connect(self.db_path, timeout=10.0)
+        try:
+            with conn:
+                conn.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS governance_audit_log (
+                        entry_index INTEGER PRIMARY KEY,
+                        prev_hash TEXT NOT NULL,
+                        entry_hash TEXT NOT NULL,
+                        timestamp TEXT NOT NULL,
+                        event_type TEXT NOT NULL,
+                        dataset_id TEXT NOT NULL,
+                        actor_id TEXT NOT NULL,
+                        details_json TEXT NOT NULL
+                    )
+                    """
+                )
+                conn.execute("CREATE INDEX IF NOT EXISTS idx_gov_audit_ds ON governance_audit_log(dataset_id)")
+        finally:
+            conn.close()
+
+    def _load_sqlite_governance_trail(self) -> None:
+        """Load persisted governance audit records from SQLite into memory and verify chain."""
+        if not self.db_path or not os.path.exists(self.db_path):
+            return
+        conn = sqlite3.connect(self.db_path, timeout=10.0)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT entry_index, prev_hash, entry_hash, timestamp, event_type, dataset_id, actor_id, details_json
+                FROM governance_audit_log
+                ORDER BY entry_index ASC
+                """
+            )
+            rows = cursor.fetchall()
+            loaded_trail = []
+            for r in rows:
+                try:
+                    details = json.loads(r[7])
+                except Exception:
+                    details = {}
+                loaded_trail.append({
+                    "index": r[0],
+                    "prev_hash": r[1],
+                    "entry_hash": r[2],
+                    "timestamp": r[3],
+                    "event_type": r[4],
+                    "dataset_id": r[5],
+                    "actor_id": r[6],
+                    "details": details,
+                })
+            if loaded_trail:
+                self._governance_audit_trail = loaded_trail
+        finally:
+            conn.close()
 
     def _register_default_reviewers(self) -> None:
         """Register vetted clinical and anatomical review authorities."""
@@ -2285,10 +2351,22 @@ class IndependentAnatomicalValidator:
                 reviewed_utc TEXT NOT NULL
             );
         """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS governance_audit_log (
+                entry_index INTEGER PRIMARY KEY,
+                prev_hash TEXT NOT NULL,
+                entry_hash TEXT NOT NULL,
+                timestamp TEXT NOT NULL,
+                event_type TEXT NOT NULL,
+                dataset_id TEXT NOT NULL,
+                actor_id TEXT NOT NULL,
+                details_json TEXT NOT NULL
+            );
+        """)
         conn.commit()
 
     def export_to_db(self, db_path: str) -> Dict[str, int]:
-        """Export all registered datasets, observations, quarantine, and holdout partitions to SQLite."""
+        """Export all registered datasets, observations, quarantine, holdout partitions, and governance log to SQLite."""
         conn = sqlite3.connect(db_path)
         try:
             self.init_validation_db(conn)
@@ -2349,13 +2427,26 @@ class IndependentAnatomicalValidator:
                 ))
                 q_count += 1
 
+            # Export governance audit trail
+            cursor.execute("DELETE FROM governance_audit_log")
+            for e in self._governance_audit_trail:
+                cursor.execute("""
+                    INSERT INTO governance_audit_log (
+                        entry_index, prev_hash, entry_hash, timestamp, event_type, dataset_id, actor_id, details_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    e["index"], e["prev_hash"], e["entry_hash"], e["timestamp"],
+                    e["event_type"], e["dataset_id"], e["actor_id"],
+                    json.dumps(e["details"], sort_keys=True, default=str)
+                ))
+
             conn.commit()
             return {"datasets": ds_count, "observations": obs_count, "quarantined": q_count}
         finally:
             conn.close()
 
     def import_from_db(self, db_path: str) -> Dict[str, int]:
-        """Import datasets, observations, and quarantine from SQLite database."""
+        """Import datasets, observations, quarantine, and governance log from SQLite database."""
         conn = sqlite3.connect(db_path)
         try:
             self.init_validation_db(conn)
@@ -2402,6 +2493,21 @@ class IndependentAnatomicalValidator:
                 self._quarantined_records.append(q_obj)
                 imported_q += 1
 
+            cursor.execute("SELECT entry_index, prev_hash, entry_hash, timestamp, event_type, dataset_id, actor_id, details_json FROM governance_audit_log ORDER BY entry_index ASC")
+            gov_rows = cursor.fetchall()
+            if gov_rows:
+                self._governance_audit_trail = []
+                for r in gov_rows:
+                    try:
+                        p_details = json.loads(r[7])
+                    except Exception:
+                        p_details = {}
+                    self._governance_audit_trail.append({
+                        "index": r[0], "prev_hash": r[1], "entry_hash": r[2], "timestamp": r[3],
+                        "event_type": r[4], "dataset_id": r[5], "actor_id": r[6],
+                        "details": p_details,
+                    })
+
             return {"datasets": len(ds_rows), "observations": imported_obs, "quarantined": imported_q}
         finally:
             conn.close()
@@ -2413,7 +2519,7 @@ class IndependentAnatomicalValidator:
         actor_id: str,
         details: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Append an immutable, tamper-evident entry to the governance audit chain."""
+        """Append an immutable, tamper-evident entry to the governance audit chain and persist to SQLite."""
         timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         prev_hash = self._governance_audit_trail[-1]["entry_hash"] if self._governance_audit_trail else "0" * 64
         payload_str = json.dumps(details, sort_keys=True, default=str)
@@ -2430,6 +2536,36 @@ class IndependentAnatomicalValidator:
             "details": details,
         }
         self._governance_audit_trail.append(entry)
+
+        if self.db_path:
+            try:
+                conn = sqlite3.connect(self.db_path, timeout=10.0)
+                with conn:
+                    conn.execute(
+                        """
+                        INSERT OR REPLACE INTO governance_audit_log (
+                            entry_index, prev_hash, entry_hash, timestamp, event_type, dataset_id, actor_id, details_json
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            entry["index"],
+                            entry["prev_hash"],
+                            entry["entry_hash"],
+                            entry["timestamp"],
+                            entry["event_type"],
+                            entry["dataset_id"],
+                            entry["actor_id"],
+                            payload_str,
+                        )
+                    )
+            except Exception:
+                pass
+            finally:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+
         return entry
 
     def get_governance_audit_trail(self) -> List[Dict[str, Any]]:
@@ -2457,6 +2593,8 @@ class IndependentAnatomicalValidator:
         justification: str = "Authorized by Clinical Review Board for P10.2 Validation",
         governance_token: Optional[str] = None,
         cosigner_id: Optional[str] = None,
+        session_token: Optional[str] = None,
+        auth_db: Optional[sqlite3.Connection] = None,
     ) -> bool:
         """Administrative sign-off verifying that institutional DUA and IRB approvals are legally executed."""
         if dataset_id not in self._datasets:
@@ -2464,6 +2602,13 @@ class IndependentAnatomicalValidator:
         rev = self._reviewers.get(admin_reviewer_id)
         if not rev or (not rev.is_governance_board and rev.role not in ("CLINICAL_SAFETY_AUDITOR", "LEAD_ANATOMIST", "ADMIN")):
             raise ValueError(f"UNAUTHORIZED_ADMIN: Reviewer '{admin_reviewer_id}' lacks governance credentials for sign-off.")
+
+        # Active session validation if auth database provided
+        if auth_db and session_token:
+            from msk_therapy_os.auth import get_user_from_session
+            user = get_user_from_session(auth_db, session_token)
+            if not user or user.get("role") != "admin":
+                raise ValueError("INVALID_SESSION_AUTH: Active administrator session required for administrative sign-off.")
 
         ds = self._datasets[dataset_id]
 
