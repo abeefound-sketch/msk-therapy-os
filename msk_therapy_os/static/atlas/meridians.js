@@ -2569,14 +2569,16 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
                 <button type="button" id="btnExportEvidenceManifest" style="background:#0f766e; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Xuất báo cáo bằng chứng kiểm định">📥 Xuất Bằng Chứng</button>
                 <button type="button" id="btnCheckGateStatus" style="background:#7c3aed; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Kiểm tra trạng thái Cổng Khoa Học G14">🛡️ Cổng G14</button>
               </div>
-              <div style="display:grid; grid-template-columns: 1fr; gap:4px;">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
                 <button type="button" id="btnRunBootstrapCI" style="background:#d97706; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Tính toán Bootstrap 95% Confidence Interval">📐 Bootstrap CI</button>
+                <button type="button" id="btnCheckPilotReadiness" style="background:#059669; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Kiểm tra trạng thái Sẵn Sàng Pilot P10.5">📋 Pilot Readiness</button>
               </div>
               <button type="button" id="btnToggleValidationDetails" style="background:#334155; color:#f8fafc; border:none; border-radius:3px; padding:2px 4px; font-size:8.5px; cursor:pointer;">📊 Xem Chi Tiết Kiểm Định P10.3</button>
               <div id="p102ValidationDetailsContainer" style="display:none; flex-direction:column; gap:4px; background:#1e293b; padding:6px; border-radius:3px; font-size:9px; margin-top:2px;">
                 <div id="lblP102DryRunResult" style="color:#38bdf8; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px;"></div>
                 <div id="lblP103GateStatusResult" style="color:#a78bfa; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px;"></div>
                 <div id="lblP103BootstrapResult" style="color:#fcd34d; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px;"></div>
+                <div id="lblP105PilotReadinessResult" style="color:#6ee7b7; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px; border-left:2px solid #10b981;"></div>
                 <div id="lblP102CohortStatus" style="color:#cbd5e1;">Đang tải danh sách cohort...</div>
                 <div id="lblP102MetricsSummary" style="color:#cbd5e1;"></div>
               </div>
@@ -3212,13 +3214,42 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     const btnExpEv = document.getElementById('btnExportEvidenceManifest');
     const btnGateStatus = document.getElementById('btnCheckGateStatus');
     const btnBootstrap = document.getElementById('btnRunBootstrapCI');
+    const btnPilotReadiness = document.getElementById('btnCheckPilotReadiness');
     const btnTglVal = document.getElementById('btnToggleValidationDetails');
     const valContainer = document.getElementById('p102ValidationDetailsContainer');
     const elDryRes = document.getElementById('lblP102DryRunResult');
     const elGateRes = document.getElementById('lblP103GateStatusResult');
     const elBootRes = document.getElementById('lblP103BootstrapResult');
+    const elPilotRes = document.getElementById('lblP105PilotReadinessResult');
     const elCohorts = document.getElementById('lblP102CohortStatus');
     const elMetrics = document.getElementById('lblP102MetricsSummary');
+
+    if (btnPilotReadiness) {
+      btnPilotReadiness.addEventListener('click', async () => {
+        btnPilotReadiness.disabled = true;
+        btnPilotReadiness.textContent = '⏳ Kiểm tra...';
+        try {
+          const res = await fetch('/api/atlas/validation/pilot-readiness');
+          const data = await res.json();
+          if (elPilotRes) {
+            elPilotRes.style.display = 'block';
+            elPilotRes.innerHTML = `<strong>P10.5 Sẵn Sàng Pilot Nghiên Cứu:</strong><br/>` +
+              `<span>Kỹ Thuật: <strong style="color:#10b981;">${data.engineering_readiness}</strong> • Khoa Học: <strong style="color:#f43f5e;">${data.scientific_readiness}</strong></span><br/>` +
+              `<span>G14: <strong>${data.gate_g14}</strong> • Mẫu Holdout N=${data.cohort_sample_counts.aggregate.total_holdout_patients} (Power: ${(data.cohort_sample_counts.aggregate.aggregate_holdout_power * 100).toFixed(1)}%)</span><br/>` +
+              `<em>Rào cản ngoài: ${data.outstanding_blockers_count} mục (DUA, IRB, PACS, Radiologists)</em>`;
+          }
+          if (valContainer) valContainer.style.display = 'flex';
+        } catch (e) {
+          if (elPilotRes) {
+            elPilotRes.style.display = 'block';
+            elPilotRes.innerHTML = `<span style="color:#f43f5e;">Lỗi tải Pilot Readiness: ${e.message}</span>`;
+          }
+        } finally {
+          btnPilotReadiness.disabled = false;
+          btnPilotReadiness.textContent = '📋 Pilot Readiness';
+        }
+      });
+    }
 
     if (btnGateStatus) {
       btnGateStatus.addEventListener('click', async () => {

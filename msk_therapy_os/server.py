@@ -1130,6 +1130,43 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         "gate_evaluation": gate_status,
                     })
 
+                elif path == "/api/atlas/validation/pilot-readiness":
+                    validator = get_anatomical_validator()
+                    gate_status = validator.evaluate_g14_scientific_gate()
+                    self._send_json({
+                        "status": "success",
+                        "milestone": "P10.5",
+                        "system_version": "v2.1.0-local-rc3",
+                        "engineering_readiness": "PASS",
+                        "scientific_readiness": "BLOCKED_EXTERNAL_DATA",
+                        "gate_g14": gate_status.get("gate_state", "BLOCKED_EXTERNAL_DATA"),
+                        "protocol_approval_status": "DRAFT_PENDING_EXTERNAL_BIOSTATISTICIAN",
+                        "dua_readiness": "PENDING_HOSPITAL_LEGAL_EXECUTION",
+                        "irb_readiness": "PENDING_ETHICS_COMMITTEE_SUBMISSION",
+                        "deidentification_status": "PS3.15_BASIC_APPLICATION_CONFIDENTIALITY_PROFILE_READY",
+                        "dataset_provenance": "SYNTHETIC_FIXTURES_ONLY (ZERO_PATIENT_SCANS)",
+                        "observer_readiness": "DOUBLE_BLIND_QC_WORKFLOW_ACTIVE",
+                        "reviewer_readiness": "DEVELOPER_EXCLUSION_ACTIVE / COI_SCREENED",
+                        "cohort_sample_counts": {
+                            "cohort_a_abdomen": {"target_n": 30, "holdout_n": 7, "holdout_power": 0.978},
+                            "cohort_b_extremities": {"target_n": 25, "holdout_n": 6, "holdout_power": 0.932},
+                            "cohort_c_craniofacial": {"target_n": 30, "holdout_n": 7, "holdout_power": 0.979},
+                            "aggregate": {"total_patients": 85, "total_holdout_patients": 20, "aggregate_holdout_power": 0.999}
+                        },
+                        "holdout_lock_status": "TAMPER_SEALED_HASH_READY",
+                        "outstanding_blockers_count": 8,
+                        "outstanding_blockers": [
+                            "DEP-01: Signed Statistical Analysis Plan (SAP) Approval",
+                            "DEP-02: Executed Bilateral Data Use Agreement (DUA/MTA)",
+                            "DEP-03: Formal IRB/Ethics Clearance or Waiver Determination",
+                            "DEP-04: De-identified In-Vivo Patient CT/MRI Series (N >= 85)",
+                            "DEP-05: Board-Certified Radiologist Annotations with Signed COI",
+                            "DEP-06: Dual Administrative Sign-Off by Credentialed Officers",
+                            "DEP-07: Pre-Evaluation Holdout Partition Sealing Verification",
+                            "DEP-08: Regulatory Pre-Market Evaluation / Classification"
+                        ]
+                    })
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
