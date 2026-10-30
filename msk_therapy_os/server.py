@@ -1246,6 +1246,109 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                         "active_blockers_count": 24,
                     })
 
+                elif path == "/api/atlas/validation/p10-7-dashboard":
+                    validator = get_anatomical_validator()
+                    gate_status = validator.evaluate_g14_scientific_gate()
+
+                    from msk_therapy_os.protocol_freeze import ProtocolFreezeManager
+                    from msk_therapy_os.external_dependency_register import ExternalDependencyRegistry
+
+                    manifest = ProtocolFreezeManager.create_freeze_candidate_manifest()
+                    valid, err = ProtocolFreezeManager.verify_manifest_integrity(manifest)
+
+                    reg = ExternalDependencyRegistry(getattr(self, "db_path", ":memory:"))
+                    for cid in ["INST-CHARITE-BERLIN", "INST-MGH-HARVARD", "INST-SNUH-SEOUL"]:
+                        if not reg.get_institutional_readiness_summary(cid)["total_dependencies_tracked"]:
+                            reg.initialize_standard_dependencies(cid)
+
+                    charite_summary = reg.get_institutional_readiness_summary("INST-CHARITE-BERLIN")
+                    mgh_summary = reg.get_institutional_readiness_summary("INST-MGH-HARVARD")
+                    snuh_summary = reg.get_institutional_readiness_summary("INST-SNUH-SEOUL")
+
+                    self._send_json({
+                        "status": "success",
+                        "milestone": "P10.7",
+                        "system_version": "v2.1.0-local-rc3",
+                        "release_scope": "ENGINEERING_RESEARCH_ONLY",
+                        "scientific_gate_g14": gate_status.get("gate_state", "BLOCKED_EXTERNAL_DATA"),
+                        "clinical_depth_guidance_allowed": False,
+                        "terminal_state": "ENGINEERING_HANDOFF_COMPLETE / EXTERNAL_ACTION_REQUIRED",
+                        "protocol_freeze_candidate": {
+                            "protocol_version": manifest.protocol_version,
+                            "release_tag": manifest.release_tag,
+                            "lifecycle_status": manifest.lifecycle_status.value,
+                            "canonical_hash": manifest.canonical_hash,
+                            "primary_estimand": manifest.primary_estimand,
+                            "integrity_verified": valid,
+                        },
+                        "independent_review_packages": [
+                            {
+                                "role": "Independent Biostatistician",
+                                "dossier": "Dossier 1 (SAP & Power Oracle)",
+                                "status": "DRAFT_PREPARED_REVIEW_BLOCKED",
+                                "qualifications": "Ph.D./M.Sc. Biostatistics",
+                            },
+                            {
+                                "role": "Medical Imaging / Anatomical Specialist",
+                                "dossier": "Dossier 2 (Landmarks & Consensus)",
+                                "status": "DRAFT_PREPARED_REVIEW_BLOCKED",
+                                "qualifications": "Board-Certified MSK Radiologist",
+                            },
+                            {
+                                "role": "Research Ethics & Data Governance Reviewer",
+                                "dossier": "Dossier 3 (Privacy & Compliance)",
+                                "status": "DRAFT_PREPARED_REVIEW_BLOCKED",
+                                "qualifications": "IRB Chair / Institutional DPO",
+                            },
+                            {
+                                "role": "Software Security & Release QA Auditor",
+                                "dossier": "Dossier 4 (Security & Invariants)",
+                                "status": "DRAFT_PREPARED_REVIEW_BLOCKED",
+                                "qualifications": "IEC 62304 / ISO 13485 Auditor",
+                            },
+                        ],
+                        "partner_candidates": [
+                            {
+                                "institution_id": "INST-CHARITE-BERLIN",
+                                "name": "Charité – Universitätsmedizin Berlin",
+                                "country": "Germany",
+                                "jurisdiction_law": "EU GDPR & German BDSG § 27",
+                                "status": "PROSPECTIVE_UNCONTACTED",
+                                "package_path": "1docs/audits/P10_7/partners/charite_berlin/",
+                                "readiness": charite_summary,
+                            },
+                            {
+                                "institution_id": "INST-MGH-HARVARD",
+                                "name": "Massachusetts General Hospital / Harvard",
+                                "country": "United States",
+                                "jurisdiction_law": "US HIPAA Safe Harbor & 45 CFR § 46",
+                                "status": "PROSPECTIVE_UNCONTACTED",
+                                "package_path": "1docs/audits/P10_7/partners/mgh_harvard/",
+                                "readiness": mgh_summary,
+                            },
+                            {
+                                "institution_id": "INST-SNUH-SEOUL",
+                                "name": "Seoul National University Hospital",
+                                "country": "Republic of Korea",
+                                "jurisdiction_law": "ROK PIPA Art. 28-2 & Bioethics Act",
+                                "status": "PROSPECTIVE_UNCONTACTED",
+                                "package_path": "1docs/audits/P10_7/partners/snuh_seoul/",
+                                "readiness": snuh_summary,
+                            },
+                        ],
+                        "holdout_protection": {
+                            "holdout_percentage": 0.30,
+                            "sealing_status": "SEALED_AIR_GAPPED",
+                            "unblinded": False,
+                        },
+                        "real_dataset_intake": {
+                            "available": False,
+                            "status": "BLOCKED_EXTERNAL_DATA",
+                            "prerequisite": "DUA_AND_IRB_EXECUTION_REQUIRED",
+                        },
+                        "next_actionable_step": "Transmit Dossier 1 to independent academic biostatistician for SAP sign-off (DEP-01)",
+                    })
+
                 elif path == "/api/acupuncture-3d":
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():

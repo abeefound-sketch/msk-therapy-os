@@ -2573,8 +2573,9 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
                 <button type="button" id="btnRunBootstrapCI" style="background:#d97706; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Tính toán Bootstrap 95% Confidence Interval">📐 Bootstrap CI</button>
                 <button type="button" id="btnCheckPilotReadiness" style="background:#059669; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Kiểm tra trạng thái Sẵn Sàng Pilot P10.5">📋 Pilot Readiness</button>
               </div>
-              <div style="display:grid; grid-template-columns: 1fr; gap:4px;">
-                <button type="button" id="btnP106PartnerDashboard" style="background:#4f46e5; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Bảng Điều Khiển Đối Tác & Quản Trị Phụ Thuộc P10.6">🌐 P10.6 Partner Readiness</button>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
+                <button type="button" id="btnP106PartnerDashboard" style="background:#4f46e5; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Bảng Điều Khiển Đối Tác & Quản Trị Phụ Thuộc P10.6">🌐 P10.6 Partners</button>
+                <button type="button" id="btnP107ProtocolLock" style="background:#0891b2; color:#ffffff; border:none; border-radius:3px; padding:3px 4px; font-size:9px; font-weight:600; cursor:pointer;" title="Khóa Protocol & Sẵn Sàng Đệ Trình Thẩm Định P10.7">🔒 P10.7 Lock & Review</button>
               </div>
               <button type="button" id="btnToggleValidationDetails" style="background:#334155; color:#f8fafc; border:none; border-radius:3px; padding:2px 4px; font-size:8.5px; cursor:pointer;">📊 Xem Chi Tiết Kiểm Định P10.3</button>
               <div id="p102ValidationDetailsContainer" style="display:none; flex-direction:column; gap:4px; background:#1e293b; padding:6px; border-radius:3px; font-size:9px; margin-top:2px;">
@@ -2583,6 +2584,7 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
                 <div id="lblP103BootstrapResult" style="color:#fcd34d; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px;"></div>
                 <div id="lblP105PilotReadinessResult" style="color:#6ee7b7; display:none; padding:3px; background:#0f172a; border-radius:2px; font-size:8.5px; border-left:2px solid #10b981;"></div>
                 <div id="p106PartnerDashboardContainer" style="color:#e2e8f0; display:none; padding:4px; background:#0f172a; border-radius:3px; font-size:8.5px; border-left:2px solid #6366f1;"></div>
+                <div id="p107ProtocolLockContainer" style="color:#e2e8f0; display:none; padding:4px; background:#0f172a; border-radius:3px; font-size:8.5px; border-left:2px solid #06b6d4;"></div>
                 <div id="lblP102CohortStatus" style="color:#cbd5e1;">Đang tải danh sách cohort...</div>
                 <div id="lblP102MetricsSummary" style="color:#cbd5e1;"></div>
               </div>
@@ -3227,6 +3229,8 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
     const elPilotRes = document.getElementById('lblP105PilotReadinessResult');
     const btnP106Partner = document.getElementById('btnP106PartnerDashboard');
     const elP106Container = document.getElementById('p106PartnerDashboardContainer');
+    const btnP107Lock = document.getElementById('btnP107ProtocolLock');
+    const elP107Container = document.getElementById('p107ProtocolLockContainer');
     const elCohorts = document.getElementById('lblP102CohortStatus');
     const elMetrics = document.getElementById('lblP102MetricsSummary');
 
@@ -3325,7 +3329,93 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
           }
         } finally {
           btnP106Partner.disabled = false;
-          btnP106Partner.textContent = '🌐 P10.6 Partner Readiness';
+          btnP106Partner.textContent = '🌐 P10.6 Partners';
+        }
+      });
+    }
+
+    if (btnP107Lock) {
+      btnP107Lock.addEventListener('click', async () => {
+        btnP107Lock.disabled = true;
+        btnP107Lock.textContent = '⏳ Đang tải...';
+        try {
+          const res = await fetch('/api/atlas/validation/p10-7-dashboard');
+          const data = await res.json();
+          if (elP107Container) {
+            elP107Container.style.display = 'block';
+
+            const badgesHtml = `
+              <div style="display:flex; flex-wrap:wrap; gap:3px; margin-bottom:4px;">
+                <span style="background:#065f46; color:#6ee7b7; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">ENGINEERING_HANDOFF_COMPLETE</span>
+                <span style="background:#0e7490; color:#a5f3fc; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">PROTOCOL_FREEZE_CANDIDATE</span>
+                <span style="background:#78350f; color:#fde68a; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">EXTERNAL_ACTION_REQUIRED</span>
+                <span style="background:#4c1d95; color:#c4b5fd; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">DUA_IRB_PENDING</span>
+                <span style="background:#7f1d1d; color:#fca5a5; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">G14_BLOCKED_EXTERNAL_DATA</span>
+                <span style="background:#1e1b4b; color:#c7d2fe; padding:1px 4px; border-radius:2px; font-weight:700; font-size:7.5px;">ENGINEERING_RESEARCH_ONLY</span>
+              </div>
+            `;
+
+            const manifestHtml = `
+              <div style="background:#083344; padding:3px 5px; border-radius:2px; margin-bottom:4px; border-left:2px solid #06b6d4;">
+                <div style="display:flex; justify-content:space-between;">
+                  <strong>Khóa Protocol:</strong> <span style="color:#67e8f9; font-weight:bold;">${data.protocol_freeze_candidate.protocol_version}</span>
+                  <span style="color:#22c55e; font-weight:bold;">TÍNH TOÀN VẸN: ${data.protocol_freeze_candidate.integrity_verified ? 'HỢP LỆ' : 'LỖI'}</span>
+                </div>
+                <div style="color:#94a3b8; font-size:7.5px; font-family:monospace; word-break:break-all;">
+                  Hash: ${data.protocol_freeze_candidate.canonical_hash}
+                </div>
+              </div>
+            `;
+
+            let reviewHtml = `<div style="background:#0f172a; padding:3px 5px; border-radius:2px; margin-bottom:4px;">
+              <strong>Gói Thẩm Định Chuyên Gia Độc Lập (4 Hồ Sơ):</strong>`;
+            for (const r of data.independent_review_packages) {
+              reviewHtml += `
+                <div style="margin-top:2px; display:flex; justify-content:space-between; align-items:center;">
+                  <span>• <strong>${r.role}</strong> (${r.dossier})</span>
+                  <span style="background:#475569; color:#f1f5f9; padding:0 3px; border-radius:2px; font-size:7px;">${r.status}</span>
+                </div>
+              `;
+            }
+            reviewHtml += `</div>`;
+
+            let partnerHtml = `<div style="background:#1e293b; padding:3px 5px; border-radius:2px; margin-bottom:4px;">
+              <strong>Hồ Sơ Đối Tác Bệnh Viện Nghiên Cứu (3 Ứng Viên):</strong>`;
+            for (const p of data.partner_candidates) {
+              partnerHtml += `
+                <div style="margin-top:2px;">
+                  <strong style="color:#38bdf8;">${p.name}</strong> <span style="color:#94a3b8; font-size:7.5px;">(${p.jurisdiction_law})</span>
+                  <div style="color:#e2e8f0; font-size:7.5px;">Trạng thái: <span style="color:#fbbf24;">${p.status}</span> • Phụ thuộc: 0/8 ĐÃ DUYỆT (8 Rào Cản Đang Chờ)</div>
+                </div>
+              `;
+            }
+            partnerHtml += `</div>`;
+
+            const actionHtml = `
+              <div style="background:#451a03; padding:3px 5px; border-radius:2px; border-left:2px solid #f59e0b;">
+                <strong>Hành Động Con Người Tiếp Theo:</strong><br/>
+                <span style="color:#fde68a;">${data.next_actionable_step}</span>
+              </div>
+            `;
+
+            elP107Container.innerHTML = `
+              <div style="margin-bottom:3px; font-weight:bold; color:#67e8f9; font-size:9.5px;">MSK-Therapy-OS P10.7 Khóa Protocol & Chuyển Giao:</div>
+              ${badgesHtml}
+              ${manifestHtml}
+              ${reviewHtml}
+              ${partnerHtml}
+              ${actionHtml}
+            `;
+          }
+          if (valContainer) valContainer.style.display = 'flex';
+        } catch (e) {
+          if (elP107Container) {
+            elP107Container.style.display = 'block';
+            elP107Container.innerHTML = `<span style="color:#f43f5e;">Lỗi tải Dashboard P10.7: ${e.message}</span>`;
+          }
+        } finally {
+          btnP107Lock.disabled = false;
+          btnP107Lock.textContent = '🔒 P10.7 Lock & Review';
         }
       });
     }
