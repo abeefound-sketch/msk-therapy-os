@@ -13,7 +13,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.2);
+            --accent-glow: rgba(56, 189, 248, 0.25);
             --danger: #f43f5e;
             --warning: #fbbf24;
             --success: #34d399;
@@ -54,21 +54,21 @@
         }
 
         .header-brand h1 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: var(--accent);
             letter-spacing: 0.5px;
         }
 
         .header-brand .sub {
-            font-size: 12px;
+            font-size: 11.5px;
             color: var(--text-muted);
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .badge {
@@ -89,9 +89,9 @@
             background: #1e293b;
             color: #e2e8f0;
             border: 1px solid #334155;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
@@ -120,7 +120,7 @@
         /* 3-Column Studio Grid */
         main {
             display: grid;
-            grid-template-columns: 340px minmax(0, 1fr) 380px;
+            grid-template-columns: 340px minmax(0, 1fr) 390px;
             flex: 1;
             min-height: 0;
         }
@@ -141,9 +141,9 @@
         }
 
         .panel-header {
-            padding: 12px 16px;
+            padding: 10px 16px;
             border-bottom: 1px solid var(--panel-border);
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -157,10 +157,10 @@
         .panel-body {
             flex: 1;
             overflow-y: auto;
-            padding: 14px 16px;
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .panel-body::-webkit-scrollbar {
@@ -176,8 +176,8 @@
             display: flex;
             align-items: flex-start;
             gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
             border: 1px solid #1e293b;
             background: #111c2e;
             cursor: pointer;
@@ -196,8 +196,8 @@
         }
 
         .stage-nav-num {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             background: #1e293b;
             color: #94a3b8;
@@ -216,29 +216,32 @@
         }
 
         .stage-nav-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: #e2e8f0;
-            line-height: 1.4;
+            line-height: 1.35;
         }
 
-        /* Stage Card */
+        /* Card Container */
         .card {
             background: var(--card-bg);
             border: 1px solid #334155;
             border-radius: 8px;
-            padding: 12px 14px;
+            padding: 10px 12px;
         }
 
         .card-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: var(--accent);
             margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .card-text {
-            font-size: 12px;
+            font-size: 11.5px;
             color: #cbd5e1;
             line-height: 1.5;
         }
@@ -249,11 +252,14 @@
             background: radial-gradient(circle at center, #111a2e 0%, #080d17 100%);
             min-height: 0;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         #canvas-container {
             width: 100%;
             height: 100%;
+            flex: 1;
         }
 
         .viewport-toolbar {
@@ -261,13 +267,13 @@
             top: 12px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(8px);
             border: 1px solid #334155;
             border-radius: 8px;
-            padding: 6px 10px;
+            padding: 4px 8px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             z-index: 10;
         }
 
@@ -275,7 +281,7 @@
             background: transparent;
             border: 1px solid transparent;
             color: #94a3b8;
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 5px;
             font-size: 11px;
             font-weight: 600;
@@ -289,14 +295,94 @@
             border-color: #475569;
         }
 
-        /* Biomechanics Simulator Controls */
+        /* Floating Biomechanical Player Bar */
+        .player-bar {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 32px);
+            max-width: 780px;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 15;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .player-btn {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .player-btn:hover {
+            background: #334155;
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .player-btn.active {
+            background: #0284c7;
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .timeline-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .time-label {
+            font-size: 11px;
+            font-family: monospace;
+            color: var(--accent);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Metrics & Readouts */
         .metric-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid #283548;
-            font-size: 12px;
+            padding: 5px 0;
+            border-bottom: 1px solid #223147;
+            font-size: 11.5px;
         }
 
         .metric-label {
@@ -306,27 +392,123 @@
         .metric-val {
             font-weight: 700;
             color: #f1f5f9;
+            font-family: monospace;
         }
 
-        .slider-group {
-            margin: 10px 0;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 600;
+        /* Muscle Activation Progress Bars */
+        .muscle-item {
             margin-bottom: 6px;
         }
 
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--accent);
-            cursor: pointer;
+        .muscle-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 3px;
         }
 
-        /* Evidence & Disclaimers */
+        .muscle-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: #111a2e;
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid #283548;
+        }
+
+        .muscle-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3b82f6 0%, #eab308 60%, #ef4444 100%);
+            transition: width 0.08s linear;
+        }
+
+        /* Scientific Watermark Banners */
+        .watermark-banner {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #7dd3fc;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .watermark-warning {
+            background: rgba(251, 191, 36, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            color: #fde047;
+        }
+
+        /* Quiz Widget */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-card {
+            background: #131d2e;
+            border: 1px solid #28374d;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .quiz-q-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+
+        .quiz-option {
+            background: #182337;
+            border: 1px solid #28374d;
+            border-radius: 5px;
+            padding: 6px 8px;
+            font-size: 11px;
+            color: #cbd5e1;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+            background: #1d2c45;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(52, 211, 153, 0.15);
+            color: #a7f3d0;
+            font-weight: 600;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(244, 63, 94, 0.15);
+            color: #fca5a5;
+        }
+
+        .quiz-explanation {
+            font-size: 10.5px;
+            color: #94a3b8;
+            padding: 6px 8px;
+            background: #0d1624;
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            margin-top: 6px;
+            display: none;
+            line-height: 1.4;
+        }
+
+        /* Evidence Items */
         .evidence-item {
             list-style: none;
             font-size: 11px;
@@ -348,12 +530,13 @@
             margin-top: 2px;
         }
 
+        /* Disclaimer Box */
         .disclaimer-box {
             background: rgba(244, 63, 94, 0.08);
             border: 1px solid rgba(244, 63, 94, 0.25);
             border-radius: 6px;
-            padding: 10px;
-            font-size: 11px;
+            padding: 8px 10px;
+            font-size: 10.5px;
             line-height: 1.4;
             color: #fca5a5;
         }
@@ -361,15 +544,15 @@
         .disclaimer-box strong {
             color: #f87171;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
-        /* Bottom Footer */
+        /* Footer */
         footer {
             background: #060a12;
             border-top: 1px solid var(--panel-border);
-            padding: 8px 20px;
-            font-size: 11px;
+            padding: 6px 20px;
+            font-size: 10.5px;
             color: #64748b;
             display: flex;
             justify-content: space-between;
@@ -381,7 +564,6 @@
             color: #38bdf8;
             text-decoration: none;
         }
-
         footer a:hover {
             text-decoration: underline;
         }
@@ -395,6 +577,7 @@
             <span class="sub" id="header-subtitle">MSK-Therapy-OS · 3D Musculoskeletal Education & Biomechanics Studio</span>
         </div>
         <div class="header-actions">
+            <button id="btn-studio-mode-toggle" class="btn" style="border-color: var(--accent); color: var(--accent);">Studio: P14 Biomechanics</button>
             <span id="fps-badge" class="badge badge-green">60 FPS</span>
             <span class="badge badge-neutral">G14: BLOCKED_EXTERNAL_DATA</span>
             <button id="btn-lang-toggle" class="btn">EN / VI</button>
@@ -407,54 +590,195 @@
         <!-- Left Column: Lesson Modules & Curriculum -->
         <section class="panel">
             <div class="panel-header">
-                <span>Chương Trình Học (Curriculum)</span>
-                <span class="badge badge-neutral">P13 Biomechanics</span>
+                <span id="lbl-curriculum-header">Chương Trình Học (Curriculum)</span>
+                <span id="badge-curriculum-version" class="badge badge-neutral">P14 Biomechanics</span>
             </div>
             <div class="panel-body">
-                <div class="card">
-                    <div class="card-title" id="stage-title">1. Nghịch lý cốt lõi</div>
+                <div class="card" id="stage-card">
+                    <div class="card-title" id="stage-title">1. Nghịch lý cốt lõi: Nhẹ cơ tức thời vs. Tái phát tư thế</div>
                     <p class="card-text" id="stage-summary">
                         Giải cơ bằng tay kích thích thụ thể cơ học giúp giảm trương lực và tăng tưới máu tạm thời, nhưng chưa tái lập thói quen vận động thần kinh hay phục hồi cân bằng cơ đối vận.
                     </p>
+                    <div id="stage-dynamic-body" style="margin-top: 10px; display: none;"></div>
                 </div>
 
-                <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">
-                    Các Giai Đoạn Phân Tích (6 Modules)
-                </div>
-                <div id="stage-list" style="display: flex; flex-direction: column; gap: 8px;">
-                    <!-- Rendered by shoulder_lab.js -->
+                <!-- Dynamic Content Container -->
+                <div id="dynamic-left-content" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div id="stage-list-header" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">
+                        Các Giai Đoạn Phân Tích
+                    </div>
+                    <div id="stage-list" style="display: flex; flex-direction: column; gap: 6px;">
+                        <!-- Rendered by shoulder_lab.js -->
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Center Column: 3D Anatomy Viewport -->
         <section class="viewport">
+            <!-- Camera & View Controls -->
             <div class="viewport-toolbar">
                 <button id="btn-view-anterior" class="toolbar-btn active">Mặt Trước</button>
-                <button id="btn-view-posterior" class="toolbar-btn">Mặt Sau (Xương Bả Vai)</button>
+                <button id="btn-view-posterior" class="toolbar-btn">Mặt Sau (Bả Vai)</button>
                 <button id="btn-view-lateral" class="toolbar-btn">Mặt Bên</button>
+                <span style="border-left: 1px solid #334155; margin: 0 4px;"></span>
+                <button id="btn-toggle-skeleton" class="toolbar-btn active">Khung Xương: Bật</button>
             </div>
+
+            <!-- WebGL Canvas Container -->
             <div id="canvas-container"></div>
+
+            <!-- Dynamic Biomechanics Motion Player Bar -->
+            <div class="player-bar">
+                <div class="player-row">
+                    <div class="player-controls">
+                        <button id="btn-motion-play" class="player-btn">▶ Phát</button>
+                        <button id="btn-motion-reset" class="player-btn">⏮ Đặt lại</button>
+                        <button id="btn-speed-025" class="player-btn">0.25x</button>
+                        <button id="btn-speed-05" class="player-btn">0.5x</button>
+                        <button id="btn-speed-1" class="player-btn active">1.0x</button>
+                    </div>
+
+                    <div class="timeline-container">
+                        <input id="motion-time-slider" type="range" min="0" max="200" value="0">
+                        <span id="motion-time-label" class="time-label">0.00 s / 2.00 s</span>
+                    </div>
+
+                    <div>
+                        <select id="scenario-select" class="player-btn" style="outline: none;">
+                            <option value="seth_shoulder_elevation">OpenSim Seth Model (0° → 120°)</option>
+                            <option value="illustrative_rounded_elevation">Kịch bản Vai đổ trước (0° → 120°)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="player-row" style="border-top: 1px solid #283548; padding-top: 6px; font-size: 11px;">
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <span style="color: #94a3b8; font-size: 11px;">Chế độ hiển thị:</span>
+                        <button id="btn-mode-anatomy" class="player-btn active">Giải Phẫu Chức Năng</button>
+                        <button id="btn-mode-activation" class="player-btn">Kích Hoạt OpenSim</button>
+                        <button id="btn-mode-comparison" class="player-btn">So Sánh Kịch Bản</button>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span style="color: #94a3b8; font-size: 11px;">Độ mờ cơ:</span>
+                        <input id="muscle-opacity-slider" type="range" min="0" max="100" value="65" style="width: 80px;">
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Right Column: Interactive Biomechanical Posture Lab -->
         <section class="panel right">
             <div class="panel-header">
                 <span>Phòng Thí Nghiệm Cơ Sinh Học (Lab)</span>
-                <span class="badge badge-neutral">Mô Phỏng Tương Tác</span>
+                <span class="badge badge-neutral">Đo Lường Mô Phỏng</span>
             </div>
             <div class="panel-body">
-                <!-- Posture Severity Slider -->
+                <!-- Dynamic Kinematic Angles Card -->
                 <div class="card">
+                    <div class="card-title">
+                        <span>Góc Động Học Chuyển Động Xương</span>
+                        <span id="badge-motion-status" class="badge badge-green">OpenSim 3D</span>
+                    </div>
+                    <div class="watermark-banner">
+                        IDEALIZED EDUCATIONAL EXAMPLE — NOT A UNIVERSAL NORMAL RANGE
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Góc Nâng Cánh Tay (Arm Elevation):</span>
+                        <span class="metric-val" id="dyn-arm-elev">0.0°</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Xoay Lên Bả Vai (Scapular Upward Rot):</span>
+                        <span class="metric-val" id="dyn-scap-up">0.0°</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Nghiêng Trước/Sau (Scapular Tilt):</span>
+                        <span class="metric-val" id="dyn-scap-tilt">10.0°</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Nâng Xương Đòn (Clavicular Elev):</span>
+                        <span class="metric-val" id="dyn-clav-elev">0.0°</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Tỷ Lệ Nhịp Cánh tay / Bả vai:</span>
+                        <span class="metric-val" id="val-rhythm-ratio">2.00 : 1</span>
+                    </div>
+                    <div class="metric-row" style="display: none;">
+                        <span class="metric-val" id="dyn-rhythm-ratio">2.00 : 1</span>
+                    </div>
+                </div>
+
+                <!-- Muscle Recruitment Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>Huy Động Cơ & Mức Kích Hoạt</span>
+                        <span id="badge-activation-mode" class="badge badge-neutral">Chức Năng</span>
+                    </div>
+                    <div id="watermark-activation-banner" class="watermark-banner">
+                        ANATOMICAL FUNCTION — NOT COMPUTED ACTIVATION
+                    </div>
+
+                    <div id="muscle-recruitment-list">
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Delta Bó Giữa (Deltoid Lateral):</span>
+                                <span class="metric-val" id="val-act-deltoid-lateral">45%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-deltoid-lateral" style="width: 45%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Trên Gai (Supraspinatus):</span>
+                                <span class="metric-val" id="val-act-supraspinatus">62%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-supraspinatus" style="width: 62%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Răng Trước (Serratus Anterior):</span>
+                                <span class="metric-val" id="val-act-serratus">38%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-serratus" style="width: 38%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Thang Dưới (Lower Trapezius):</span>
+                                <span class="metric-val" id="val-act-trapezius-lower">28%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-trapezius-lower" style="width: 28%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Ngực Bé (Pectoralis Minor):</span>
+                                <span class="metric-val" id="val-act-pec-minor">6%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-pec-minor" style="width: 6%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Trám Lớn (Rhomboid Major):</span>
+                                <span class="metric-val" id="val-act-rhomboid" style="font-size: 10px; color: #94a3b8;">DỮ LIỆU KÍCH HOẠT CHƯA CÓ TRONG MÔ HÌNH</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-rhomboid" style="width: 0%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Illustrative Posture Scenario Simulator -->
+                <div class="card">
+                    <div class="card-title">Mô Phỏng Kịch Bản Tư Thế Đổ Vai</div>
+                    <div class="watermark-banner watermark-warning">
+                        ILLUSTRATIVE POSTURE SCENARIO SIMULATOR (NOT A DIAGNOSTIC MEASUREMENT)
+                    </div>
                     <div class="slider-group">
-                        <div class="slider-header">
-                            <span>Mức Độ Đổ Vai (Rounded Shoulder)</span>
-                            <span id="posture-val-label" style="color: var(--accent);">65%</span>
+                        <div class="slider-header" style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                            <span>Mức Độ Đổ Vai (Rounded Shoulder):</span>
+                            <span id="posture-val-label" style="color: var(--accent); font-weight: 700;">65%</span>
                         </div>
                         <input id="posture-slider" type="range" min="0" max="100" value="65">
                     </div>
 
-                    <div style="margin-top: 8px;">
+                    <div style="margin-top: 6px;">
                         <div class="metric-row">
                             <span class="metric-label">Độ nhô trước (Protraction):</span>
                             <span class="metric-val" id="val-protraction">33.2°</span>
@@ -467,48 +791,37 @@
                             <span class="metric-label">Xoay lên bả vai (Upward Rotation):</span>
                             <span class="metric-val" id="val-upward-rot">6.9°</span>
                         </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Tình trạng chức năng:</span>
+                            <span id="val-rhythm-status" class="badge badge-amber">Giảm xoay lên</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Điểm cân bằng đối vận:</span>
+                            <span class="metric-val" id="val-reciprocal-score">35/100</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Scapulohumeral Rhythm Metric -->
-                <div class="card">
-                    <div class="card-title">Nhịp Bả Vai - Cánh Tay (2:1 Ratio)</div>
-                    <div class="metric-row">
-                        <span class="metric-label">Tỷ lệ Cánh tay / Bả vai:</span>
-                        <span class="metric-val" id="val-rhythm-ratio">2.65 : 1</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Tình trạng chức năng:</span>
-                        <span id="val-rhythm-status" class="badge badge-amber">Giảm xoay lên</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Điểm cân bằng đối vận:</span>
-                        <span class="metric-val" id="val-reciprocal-score">35/100</span>
-                    </div>
-                </div>
-
-                <!-- Why Massage Alone Fails Card -->
+                <!-- Why Massage Relief is Transient Card -->
                 <div class="card" style="border-left: 3px solid #f59e0b;">
                     <div class="card-title" style="color: #f59e0b;">Tại sao chỉ giải cơ là chưa đủ?</div>
-                    <p class="card-text" style="font-size: 11.5px;">
-                        Massage giải phóng mạc cơ (Pec Minor, Upper Trap) làm dịu thụ thể đau và giảm độ căng tạm thời. Tuy nhiên, nếu không <strong>kích hoạt nhóm cơ đối kháng bị ức chế</strong> (Serratus Anterior, Lower Trapezius) và <strong>tái lập cảm thụ bản thể tư thế làm việc</strong>, vai sẽ tự động trượt về phía trước theo thói quen thần kinh cũ.
+                    <p class="card-text">
+                        Giải cơ bằng tay kích thích thụ thể Ruffini và mạc cơ, giúp <strong>hạ trương lực và điều hòa thần kinh cảm giác tức thời</strong> (Schleip 2003). Tuy nhiên, nếu thiếu <strong>tập luyện vận động chủ động tăng tiến</strong> và <strong>điều chỉnh công thái học làm việc</strong>, hệ thần kinh sẽ sớm đưa khớp vai về thói quen cũ.
                     </p>
                 </div>
 
-                <!-- Evidence Register -->
-                <div>
-                    <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">
-                        Tài Liệu Y Văn & Cơ Sở Khoa Học
-                    </div>
-                    <ul id="evidence-list" style="padding-left: 0;">
+                <!-- Evidence Register Card -->
+                <div class="card">
+                    <div class="card-title">Tài Liệu Y Văn & Cơ Sở Khoa Học</div>
+                    <ul id="evidence-list" style="padding-left: 0; list-style: none;">
                         <!-- Injected by shoulder_lab.js -->
                     </ul>
                 </div>
 
-                <!-- Non-negotiable Disclaimers -->
+                <!-- Non-negotiable Scientific Safeguards -->
                 <div class="disclaimer-box">
-                    <strong>Giới Hạn & Tuyên Bố Trách Nhiệm Khoa Học</strong>
-                    Mô phỏng mang tính giáo dục, không đại diện cho phép đo trên từng bệnh nhân cụ thể. Mô hình không thay thế chẩn đoán y khoa. Cổng nghiên cứu khoa học G14 duy trì trạng thái <code>BLOCKED_EXTERNAL_DATA</code>.
+                    <strong>Tuyên Bố Giới Hạn Nghiên Cứu Khoa Học</strong>
+                    Mô hình cơ sinh học OpenSim sử dụng thuật toán tối ưu hóa tĩnh; mức kích hoạt cơ là ước tính toán học, không phải điện cơ (EMG) đo trực tiếp. Cổng dữ liệu khoa học G14 duy trì trạng thái <code>BLOCKED_EXTERNAL_DATA</code>.
                 </div>
             </div>
         </section>
@@ -517,11 +830,11 @@
     <!-- Bottom Footer -->
     <footer>
         <div>
-            Mô hình 3D: Dẫn xuất từ <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/" target="_blank">BodyParts3D</a> (DBCLS Japan) & <a href="https://www.z-anatomy.com/" target="_blank">Z-Anatomy</a> (CC BY-SA 2.1 JP).
+            Mô hình 3D: Dẫn xuất từ <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/" target="_blank">BodyParts3D v4.0</a> (DBCLS Japan) & <a href="https://www.z-anatomy.com/" target="_blank">Z-Anatomy</a> (CC BY-SA 2.1 JP / CC BY 4.0).
             Trình kết xuất: Three.js r160 (MIT License).
         </div>
         <div>
-            MSK-Therapy-OS · Milestone P13 · Offline Education Studio
+            MSK-Therapy-OS · Milestone P14 · Offline Biomechanics Studio
         </div>
     </footer>
 
@@ -544,26 +857,26 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             const viewer = new AnatomyViewer('canvas-container', {
-                modelUrl: './models/anatomy.glb',
+                musclesUrl: './models/anatomy.glb',
+                skeletonUrl: './models/shoulder_skeleton.glb',
                 onLoadProgress: (pct, msg) => {
-                    console.log(`[P13] ${msg}`);
+                    console.log(`[P14] ${msg}`);
                 },
                 onLoadComplete: (res) => {
-                    console.log(`[P13] Anatomy Model Loaded: ${res.meshCount} meshes`);
+                    console.log(`[P14] 3D Models Loaded: ${res.meshCount} meshes, skeleton: ${res.hasSkeleton}`);
                     if (window.shoulderLab) {
-                        window.shoulderLab._renderStage(window.shoulderLab.currentStageId);
+                        window.shoulderLab.onViewerReady();
                     }
                 },
                 onError: (err) => {
-                    console.error('[P13] Load error:', err);
+                    console.error('[P14] Viewer Load error:', err);
                 }
             });
 
-            // Immediately initialize UI and curriculum
             window.anatomyViewer = viewer;
             window.shoulderLab = new ShoulderLab(viewer);
 
-            // Asynchronously load 3D geometry
+            // Start loading 3D assets asynchronously
             viewer.loadModel();
         });
     </script>

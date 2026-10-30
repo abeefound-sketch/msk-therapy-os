@@ -211,6 +211,8 @@ MIME_TYPES = {
     ".bin": "application/octet-stream",
     ".glb": "model/gltf-binary",
     ".gltf": "model/gltf+json",
+    ".mot": "text/plain; charset=utf-8",
+    ".sto": "text/plain; charset=utf-8",
 }
 
 
@@ -548,10 +550,12 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
             self._send_json(self._atlas_status())
             return
 
-        # P13 Interactive MSK Education Studio API
-        if path == "/api/education/shoulder-lesson":
+        # P13 / P14 Interactive MSK Education Studio API
+        if path in ("/api/education/shoulder-lesson", "/api/education/p14-lesson"):
             from msk_therapy_os.biomechanics_adapter import get_shoulder_education_curriculum
-            self._send_json(get_shoulder_education_curriculum())
+            version_param = query.get("v", [""])[0].lower() or query.get("milestone", [""])[0].lower()
+            v = "P14" if ("p14" in version_param or "2" in version_param or path == "/api/education/p14-lesson") else "P13"
+            self._send_json(get_shoulder_education_curriculum(version=v))
             return
 
         with open_db(self.db_path) as db:
