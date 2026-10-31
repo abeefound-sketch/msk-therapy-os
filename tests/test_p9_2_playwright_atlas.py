@@ -107,10 +107,10 @@ def test_playwright_atlas_dynamic_geometry_suite(browser_server):
         li4_upstream = page.evaluate("() => window.__meridiansDebug.getPointData('LI4')")
         pos_ups = li4_upstream.get("resolved_world_position") or li4_upstream.get("position")
 
-        # Assert geometric variance across layers
+        # Under P18 governance, upstream_raw rejects synthetic offsets and falls back to legacy coordinates
         assert pos_can != pos_leg, f"Canonical {pos_can} and Legacy {pos_leg} must not be identical"
-        assert pos_can != pos_ups, f"Canonical {pos_can} and Upstream {pos_ups} must not be identical"
-        assert pos_leg != pos_ups, f"Legacy {pos_leg} and Upstream {pos_ups} must not be identical"
+        assert pos_ups == pos_leg, "Upstream raw must not add synthetic offsets, falling back to legacy coordinates"
+        assert li4_upstream.get("registration_status") == "UPSTREAM_TRANSFORM_UNAVAILABLE" 
 
         # Check badge updates in DOM
         badge_text = page.inner_text("#p9LayerBadge")

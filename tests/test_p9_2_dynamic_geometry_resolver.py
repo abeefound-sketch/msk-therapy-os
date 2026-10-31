@@ -97,13 +97,13 @@ class TestAnatomicalSpatialResolverCore:
         pos_leg = leg_res["points"]["LI4"]["resolved_world_position"]
         pos_ups = ups_res["points"]["LI4"]["resolved_world_position"]
 
-        # Ensure all 3 layers produce numerically distinct coordinates
+        # Under P18 governance: Canonical and Legacy differ; Upstream rejects synthetic offsets
         assert pos_can != pos_leg, f"Canonical {pos_can} and Legacy {pos_leg} must differ"
-        assert pos_can != pos_ups, f"Canonical {pos_can} and Upstream {pos_ups} must differ"
-        assert pos_leg != pos_ups, f"Legacy {pos_leg} and Upstream {pos_ups} must differ"
+        assert pos_ups == pos_leg, "Upstream raw must not add synthetic offsets, falling back to legacy coordinates"
 
         assert leg_res["points"]["LI4"]["registration_status"] == "LEGACY_SURFACE_RAYCAST"
-        assert ups_res["points"]["LI4"]["registration_status"] == "UPSTREAM_TRANSFORMED"
+        assert ups_res["points"]["LI4"]["registration_status"] == "UPSTREAM_TRANSFORM_UNAVAILABLE"
+        assert ups_res["points"]["LI4"].get("rejection_reason") is not None
 
     def test_posture_sensitivity_and_uncertainty_emission(self):
         resolver = AnatomicalSpatialResolver()

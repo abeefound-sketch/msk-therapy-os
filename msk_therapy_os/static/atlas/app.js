@@ -133,6 +133,18 @@
   function useAtlas(data) {
     if (mode === 'quiz') quizReset();
     atlas = new Atlas(data.index);
+    if (data.index && (data.index.demo || data.index.name === 'Demo mannequin')) {
+      atlas.isProceduralFallback = true;
+      window._msk_is_procedural_fallback = true;
+      let fallbackBanner = document.getElementById('mskProceduralFallbackBanner');
+      if (!fallbackBanner) {
+        fallbackBanner = document.createElement('div');
+        fallbackBanner.id = 'mskProceduralFallbackBanner';
+        fallbackBanner.style.cssText = 'position:absolute; top:46px; left:50%; transform:translateX(-50%); z-index:9999; background:rgba(185, 28, 28, 0.92); border:1px solid #f87171; color:#fff; padding:6px 14px; border-radius:6px; font-size:11px; font-weight:600; text-align:center; pointer-events:none; box-shadow:0 4px 12px rgba(0,0,0,0.5); max-width:90%;';
+        fallbackBanner.innerHTML = '<span style="display:inline-block; margin-right:6px; font-size:13px;">\u26a0\ufe0f</span>[UNVERIFIED PROCEDURAL GEOMETRY] \u0110ang s\u1eed d\u1ee5ng ma-n\u01a1-canh \u01b0\u1edbc l\u01b0\u1ee3ng (Demo Mannequin). T\u1ecda \u0111\u1ed9 huy\u1ec7t v\u00e0 \u0111\u01b0\u1eddng kinh ch\u1ec9 mang t\u00ednh ch\u1ea5t minh h\u1ecda thao t\u00e1c, CH\u01afA \u0110\u01af\u1ee2C TH\u1ea8M \u0110\u1ecaNH tr\u00ean m\u00f4 h\u00ecnh chu\u1ea9n BodyParts3D FJ2810.';
+        document.body.appendChild(fallbackBanner);
+      }
+    }
     if (window.parent && window.parent !== window) {
       try {
         window.parent.postMessage({

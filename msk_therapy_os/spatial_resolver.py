@@ -528,20 +528,11 @@ class AnatomicalSpatialResolver:
             applied_cun_rule = None
 
         elif layer_mode == "upstream_raw":
-            # Upstream raw coordinate conversion (retains distinct source differences)
-            # WaterCMY / TCMAcupoints delta model relative to canonical
-            if quality_class in ("CLASS_A", "CLASS_B"):
-                dx = -0.008 if laterality == "right" else 0.008
-                dy = 0.012
-                dz = -0.010
-                resolved_pos = (
-                    round(legacy_pos[0] + dx, 6),
-                    round(legacy_pos[1] + dy, 6),
-                    round(legacy_pos[2] + dz, 6),
-                )
-            else:
-                resolved_pos = (round(legacy_pos[0], 6), round(legacy_pos[1] + 0.005, 6), round(legacy_pos[2], 6))
-            registration_status = "UPSTREAM_TRANSFORMED"
+            # Upstream raw coordinate conversion: Fail-closed under P18 governance
+            # Synthetic dx/dy/dz removed. Returns legacy position with explicit UNAVAILABLE status.
+            resolved_pos = legacy_pos
+            registration_status = "UPSTREAM_TRANSFORM_UNAVAILABLE"
+            rejection_reason = "No empirical transformation matrix between upstream mesh and BodyParts3D FJ2810. Synthetic offset removed under P18 governance."
             residual_error_mm = None
             uncertainty_mm = None
             applied_cun_rule = None

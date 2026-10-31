@@ -2106,7 +2106,10 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
       postureNote = `✓ Articulated (${pt.pose_validity.current_angle_deg}° on ${pt.pose_validity.joint})`;
     }
 
-    const meshInfo = `${pt.mesh_id || 'FJ2810'} (Hash: ${(pt.mesh_hash || '05b49233').substring(0, 8)}...)`;
+    const isProcedural = !!(window._msk_is_procedural_fallback || (window.atlas && window.atlas.isProceduralFallback));
+    const meshInfo = isProcedural
+      ? 'DEMO-MANNEQUIN (UNVERIFIED PROCEDURAL FALLBACK - NOT FJ2810)'
+      : `${pt.mesh_id || 'FJ2810'} (Hash: ${(pt.mesh_hash || '05b49233').substring(0, 8)}...)`;
     const provenance = pt.source_provenance || 'BodyParts3D FJ2810 Surface Mesh';
 
     content.innerHTML = `
@@ -2129,6 +2132,9 @@ ${!item.facing ? ' (Dorsal/Occluded)' : ''}</title>
       </div>
       <div style="font-size:9.5px; color:#94a3b8; margin-bottom:4px;">
         <strong>Posture State:</strong> <span style="color:${isPostUncert ? '#f59e0b' : '#34d399'};">${postureNote}</span>
+      </div>
+      <div style="font-size:9.5px; color:#94a3b8; margin-bottom:4px;">
+        <strong>Occlusion Model:</strong> <span style="color:#38bdf8;">OCCLUSION_APPROXIMATE (Normal-facing / Raycast; WebGL depth buffer unbound)</span>
       </div>
       <div style="font-size:9px; color:#64748b; font-style:italic; border-top:1px solid #1e293b; padding-top:4px;">
         Ref: WHO 2008 Standard. Non-invasive educational visualization only. Not validated for surgical depth.

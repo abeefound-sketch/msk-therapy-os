@@ -15,6 +15,8 @@ Zero external dependencies (pure Python 3.11).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
+import json
 import math
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -240,7 +242,17 @@ class MeridianSurfacePathEngine:
         if joint_angles:
             pose_tuple = tuple(sorted((k, round(float(v), 2)) for k, v in joint_angles.items() if abs(float(v)) > 0.01))
 
-        cache_key = (channel_code, side, layer_mode, morph_tuple, pose_tuple)
+        # P18 Fix: Incorporate cryptographic digest of input resolved points into cache key
+        point_digest_items = []
+        for p in ordered_points:
+            if p in resolved_points:
+                pt_info = resolved_points[p]
+                pos = pt_info.get("resolved_world_position") or pt_info.get("canonical_position") or pt_info.get("position", [0, 0, 0])
+                norm = pt_info.get("surface_normal") or pt_info.get("normal", [0, 0, 1])
+                point_digest_items.append((p, [round(float(x), 5) for x in pos], [round(float(x), 4) for x in norm]))
+        point_digest = hashlib.sha256(json.dumps(point_digest_items, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
+        cache_key = (channel_code, side, layer_mode, morph_tuple, pose_tuple, point_digest)
         if cache_key in self._cache:
             return self._cache[cache_key]
 

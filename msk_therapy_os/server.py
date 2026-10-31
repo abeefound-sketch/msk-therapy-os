@@ -1440,6 +1440,24 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                     acu_file = ATLAS_UI_DIR / "data" / "acupuncture_3d.json"
                     if acu_file.exists():
                         acu_data = json.loads(acu_file.read_text(encoding="utf-8"))
+                        # P18 Reconciliation: Harmonize initial dataset with Canonical Spatial Resolver
+                        resolver = get_spatial_resolver()
+                        resolved_geo = resolver.resolve_atlas_geometry({"layer_mode": "canonical"})
+                        canon_pts = resolved_geo.get("points", {})
+                        for code, r_pt in canon_pts.items():
+                            if code in acu_data.get("points", {}):
+                                pt = acu_data["points"][code]
+                                pt["canonical_position"] = list(r_pt["canonical_position"])
+                                pt["resolved_world_position"] = list(r_pt["resolved_world_position"])
+                                pt["surface_normal"] = list(r_pt["surface_normal"])
+                                pt["quality_class"] = r_pt["quality_class"]
+                                pt["registration_status"] = r_pt["registration_status"]
+                                if r_pt.get("fma_id"):
+                                    pt["fma_id"] = r_pt["fma_id"]
+                                if r_pt.get("skeletal_anchor"):
+                                    pt["skeletal_anchor"] = r_pt["skeletal_anchor"]
+                                if r_pt.get("who_reference"):
+                                    pt["who_reference"] = r_pt["who_reference"]
                         # Dynamically apply active overrides and custom points from SQLite
                         overrides = list_reference_overrides(db)
                         for code, ov in overrides.items():
