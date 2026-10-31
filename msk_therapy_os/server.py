@@ -612,7 +612,7 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(res)
                 return
 
-            if path in ("/api/education/unified-curriculum", "/api/education/p16-curriculum") or "p16" in version_param:
+            if path in ("/api/education/unified-curriculum", "/api/education/p16-curriculum", "/api/education/p17-curriculum") or "p16" in version_param or "p17" in version_param:
                 self._send_json(get_unified_education_curriculum(region=region_param, version="P16"))
                 return
 

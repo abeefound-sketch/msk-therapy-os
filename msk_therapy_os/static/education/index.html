@@ -298,28 +298,28 @@
         /* Floating Biomechanical Player Bar */
         .player-bar {
             position: absolute;
-            bottom: 12px;
+            bottom: 8px;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 32px);
+            width: calc(100% - 24px);
             max-width: 780px;
-            background: rgba(15, 23, 42, 0.92);
-            backdrop-filter: blur(10px);
+            background: rgba(11, 19, 34, 0.90);
+            backdrop-filter: blur(12px);
             border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 10px 14px;
+            border-radius: 8px;
+            padding: 6px 12px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
             z-index: 15;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
         }
 
         .player-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 8px;
         }
 
         .player-controls {
@@ -781,7 +781,7 @@
                     <div id="inspector-empty-state" class="watermark-banner watermark-warning" style="display: none; margin-bottom: 6px;"></div>
                     <div id="inspector-details-container" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;"></div>
 
-                    <div id="muscle-recruitment-list">
+                    <div id="muscle-recruitment-list" style="display: none;">
                         <div class="muscle-item">
                             <div class="muscle-info">
                                 <span class="metric-label">Cơ Delta Bó Giữa (Deltoid Lateral):</span>
@@ -970,20 +970,24 @@
         import { ShoulderLab } from './shoulder_lab.js';
 
         window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isShoulderOnly = urlParams.get('region') === 'shoulder' || urlParams.get('v') === 'p13' || urlParams.get('v') === 'p14';
+            const skelUrl = isShoulderOnly ? './models/shoulder_skeleton.glb' : './models/cervicothoracic_skeleton.glb';
+
             const viewer = new AnatomyViewer('canvas-container', {
                 musclesUrl: './models/anatomy.glb',
-                skeletonUrl: './models/shoulder_skeleton.glb',
+                skeletonUrl: skelUrl,
                 onLoadProgress: (pct, msg) => {
-                    console.log(`[P14] ${msg}`);
+                    console.log(`[P17] ${msg}`);
                 },
                 onLoadComplete: (res) => {
-                    console.log(`[P14] 3D Models Loaded: ${res.meshCount} meshes, skeleton: ${res.hasSkeleton}`);
+                    console.log(`[P17] 3D Models Loaded: ${res.meshCount} meshes, skeleton: ${res.hasSkeleton}`);
                     if (window.shoulderLab) {
                         window.shoulderLab.onViewerReady();
                     }
                 },
                 onError: (err) => {
-                    console.error('[P14] Viewer Load error:', err);
+                    console.error('[P17] Viewer Load error:', err);
                 }
             });
 

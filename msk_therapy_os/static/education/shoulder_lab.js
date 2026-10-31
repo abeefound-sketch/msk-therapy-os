@@ -27,11 +27,14 @@ export class ShoulderLab {
         this.skeletonVisible = true;
         this.currentMode = 'ANATOMICAL_FUNCTION'; // 'ANATOMICAL_FUNCTION', 'MODEL_ESTIMATED', 'SCENARIO_COMPARISON'
 
-        // Check if launched in P14, P15 or P16 mode via URL
+        // Check if launched in P13, P14, P15, P16 or P17 mode via URL
         const urlParams = new URLSearchParams(window.location.search);
-        this.isP16 = urlParams.get('v') === 'p16' || urlParams.get('milestone') === 'p16' || urlParams.get('region') === 'unified';
-        this.isP15 = !this.isP16 && (urlParams.get('v') === 'p15' || urlParams.get('region') === 'cervicothoracic');
-        this.isP14 = !this.isP16 && (this.isP15 || urlParams.get('v') === 'p14' || urlParams.get('milestone') === 'p14');
+        const verStr = (urlParams.get('v') || urlParams.get('milestone') || '').toLowerCase();
+        const regStr = (urlParams.get('region') || '').toLowerCase();
+        this.isP17 = verStr === 'p17';
+        this.isP16 = this.isP17 || verStr === 'p16' || regStr === 'unified';
+        this.isP15 = !this.isP16 && (verStr === 'p15' || regStr === 'cervicothoracic');
+        this.isP14 = !this.isP16 && !this.isP15 && (verStr === 'p14' || regStr === 'shoulder');
 
         // Quiz State
         this.quizAnswers = {};
@@ -174,6 +177,7 @@ export class ShoulderLab {
     onViewerReady() {
         this._renderCurriculum();
         this._renderStage(this.currentStageId);
+        this.setMode('MODE_A_ANATOMICAL_PARTICIPATION', this.elements.btnModeAnatomy);
     }
 
     _bindControls() {
@@ -201,19 +205,19 @@ export class ShoulderLab {
         if (this.elements.viewAnteriorBtn) {
             this.elements.viewAnteriorBtn.addEventListener('click', () => {
                 this._setActiveToolbarBtn(this.elements.viewAnteriorBtn);
-                if (this.viewer) this.viewer.resetCamera('shoulder');
+                if (this.viewer) this.viewer.setCameraView('anterior', this.currentRegion);
             });
         }
         if (this.elements.viewPosteriorBtn) {
             this.elements.viewPosteriorBtn.addEventListener('click', () => {
                 this._setActiveToolbarBtn(this.elements.viewPosteriorBtn);
-                if (this.viewer) this.viewer.resetCamera('posterior');
+                if (this.viewer) this.viewer.setCameraView('posterior', this.currentRegion);
             });
         }
         if (this.elements.viewLateralBtn) {
             this.elements.viewLateralBtn.addEventListener('click', () => {
                 this._setActiveToolbarBtn(this.elements.viewLateralBtn);
-                if (this.viewer) this.viewer.resetCamera('lateral');
+                if (this.viewer) this.viewer.setCameraView('lateral', this.currentRegion);
             });
         }
 
@@ -332,14 +336,16 @@ export class ShoulderLab {
                     this.isP15 = false;
                     this.isP14 = false;
                 }
+                if (this.viewer) this.viewer.setCameraView('anterior', reg);
                 await this._loadCurriculum();
+                await this.setMode(this.currentVisualMode || 'MODE_A_ANATOMICAL_PARTICIPATION', this.elements.btnModeAnatomy);
             });
         }
 
         // Visual & Mechanics Mode Selector (P16 Modes A, B, C, D & Comparison)
         const setMode = async (mode, activeBtn) => {
             this.currentMode = mode;
-            if (this.viewer) this.viewer.setVisualMode(mode === 'MODE_C_ESTIMATED_ACTIVATION' ? 'MODEL_ESTIMATED' : 'ANATOMICAL_FUNCTION');
+            this.currentVisualMode = mode;
 
             [
                 this.elements.btnModeAnatomy,
@@ -358,7 +364,10 @@ export class ShoulderLab {
             if (this.elements.inspectorDetailsContainer) this.elements.inspectorDetailsContainer.innerHTML = '';
             if (this.elements.comparisonCard) this.elements.comparisonCard.style.display = 'none';
 
+            const ml = document.getElementById('muscle-recruitment-list');
+
             if (mode === 'MODE_A_ANATOMICAL_PARTICIPATION') {
+                if (ml) ml.style.display = 'none';
                 if (this.elements.badgeActivationMode) this.elements.badgeActivationMode.textContent = isVi ? 'Chế độ A: Giải Phẫu' : 'Mode A: Anatomy';
                 if (this.elements.watermarkActivationBanner) {
                     this.elements.watermarkActivationBanner.textContent = 'ANATOMICAL FUNCTION & PARTICIPATION — NOT INVENTED ACTIVATION';
@@ -366,50 +375,40 @@ export class ShoulderLab {
                 }
                 await this._renderMuscleMechanicsModeA();
             } else if (mode === 'MODE_B_GEOMETRIC_CHANGE') {
+                if (ml) ml.style.display = 'none';
                 if (this.elements.badgeActivationMode) this.elements.badgeActivationMode.textContent = isVi ? 'Chế độ B: Hình Học' : 'Mode B: Geometry';
                 if (this.elements.watermarkActivationBanner) {
                     this.elements.watermarkActivationBanner.textContent = 'MODEL GEOMETRY INSUFFICIENT';
                     this.elements.watermarkActivationBanner.className = 'watermark-banner watermark-warning';
                 }
-                if (this.elements.inspectorEmptyState) {
-                    this.elements.inspectorEmptyState.textContent = isVi
-                        ? 'THIẾU ĐƯỜNG DẪN HÌNH HỌC (MODEL_GEOMETRY_INSUFFICIENT): Mô hình bề mặt xương cứng hiện tại chưa phân đoạn đường bao bọc sợi cơ 3D liên tục.'
-                        : 'MODEL_GEOMETRY_INSUFFICIENT: Musculotendon wrapping curves and length changes are unmeshed in the rigid osseous model.';
-                    this.elements.inspectorEmptyState.style.display = 'block';
-                }
+                await this._renderMuscleMechanicsModeB();
             } else if (mode === 'MODE_C_ESTIMATED_ACTIVATION') {
                 if (this.elements.badgeActivationMode) this.elements.badgeActivationMode.textContent = isVi ? 'Chế độ C: Kích Hoạt' : 'Mode C: Activation';
                 if (this.elements.watermarkActivationBanner) {
                     this.elements.watermarkActivationBanner.textContent = 'MATHEMATICAL MODEL ESTIMATE — NOT MEASURED EMG';
                     this.elements.watermarkActivationBanner.className = 'watermark-banner watermark-warning';
                 }
-                if (this.viewer && !this.viewer.muscleData && this.elements.inspectorEmptyState) {
-                    this.elements.inspectorEmptyState.textContent = isVi
-                        ? 'CHƯA CÓ DỮ LIỆU KÍCH HOẠT (MUSCLE_ACTIVATION_NOT_AVAILABLE): Kịch bản này không có tệp tĩnh tối ưu hóa (.sto).'
-                        : 'MUSCLE_ACTIVATION_NOT_AVAILABLE: No muscle activation dataset available for this scenario.';
-                    this.elements.inspectorEmptyState.style.display = 'block';
-                }
+                await this._renderMuscleMechanicsModeC();
             } else if (mode === 'MODE_D_ESTIMATED_FORCE') {
+                if (ml) ml.style.display = 'none';
                 if (this.elements.badgeActivationMode) this.elements.badgeActivationMode.textContent = isVi ? 'Chế độ D: Lực Cơ (N)' : 'Mode D: Force';
                 if (this.elements.watermarkActivationBanner) {
                     this.elements.watermarkActivationBanner.textContent = 'MUSCLE FORCE NOT AVAILABLE';
                     this.elements.watermarkActivationBanner.className = 'watermark-banner watermark-warning';
                 }
-                if (this.elements.inspectorEmptyState) {
-                    this.elements.inspectorEmptyState.textContent = isVi
-                        ? 'CHƯA CÓ LỰC CƠ (MUSCLE_FORCE_NOT_AVAILABLE): Tính toán lực cơ theo đơn vị Newton đòi hỏi giải cân bằng động học OpenSim runtime (bị khóa ngoại tuyến). Tuyệt đối không nhân kích hoạt với hằng số tùy ý.'
-                        : 'MUSCLE_FORCE_NOT_AVAILABLE: Individual muscle forces in Newtons require live dynamic equilibrium solving which is blocked offline.';
-                    this.elements.inspectorEmptyState.style.display = 'block';
-                }
+                await this._renderMuscleMechanicsModeD();
             } else if (mode === 'SCENARIO_COMPARISON') {
+                if (ml) ml.style.display = 'none';
                 if (this.elements.badgeActivationMode) this.elements.badgeActivationMode.textContent = isVi ? 'So Sánh Kịch Bản' : 'Comparison';
                 if (this.elements.watermarkActivationBanner) {
                     this.elements.watermarkActivationBanner.textContent = 'ILLUSTRATIVE SCENARIO COMPARISON (NOT A DIAGNOSIS)';
                     this.elements.watermarkActivationBanner.className = 'watermark-banner';
                 }
+                if (this.viewer) this.viewer.setVisualMode('SCENARIO_COMPARISON');
                 await this._renderScenarioComparisonWidget();
             }
         };
+        this.setMode = setMode;
 
         if (this.elements.btnModeAnatomy) this.elements.btnModeAnatomy.addEventListener('click', () => setMode('MODE_A_ANATOMICAL_PARTICIPATION', this.elements.btnModeAnatomy));
         if (this.elements.btnModeGeometry) this.elements.btnModeGeometry.addEventListener('click', () => setMode('MODE_B_GEOMETRIC_CHANGE', this.elements.btnModeGeometry));
@@ -590,9 +589,13 @@ export class ShoulderLab {
             this.elements.stageSummary.textContent = isVi ? stage.summary_vi : stage.summary_en;
         }
 
-        // Highlight focus muscles in Anatomical Function mode
-        if (this.viewer && stage.focus_muscles && this.currentMode === 'ANATOMICAL_FUNCTION') {
+        // Highlight focus muscles on stage selection
+        if (this.viewer && stage.focus_muscles) {
             this.viewer.highlightMuscles(stage.focus_muscles);
+        }
+        if (this.viewer && stage.region && stage.region !== this.currentRegion) {
+            this.currentRegion = stage.region;
+            this.viewer.setCameraView('anterior', stage.region);
         }
 
         // Update active class on stage nav items
@@ -943,36 +946,165 @@ export class ShoulderLab {
     async _renderMuscleMechanicsModeA() {
         if (!this.elements.inspectorDetailsContainer) return;
         const isVi = this.currentLang === 'vi';
-        const reg = this.isP15 ? 'cervicothoracic' : 'shoulder';
+        const reg = this.currentRegion || (this.isP16 ? 'unified' : (this.isP15 ? 'cervicothoracic' : 'shoulder'));
         const scen = this.elements.scenarioSelect ? this.elements.scenarioSelect.value : 'vasavada_cervical_flexion_extension';
+        const t = this.viewer ? this.viewer.currentTime : 0.0;
         
         try {
-            const resp = await fetch(`/api/education/muscle-mechanics?region=${reg}&scenario_id=${scen}&mode=MODE_A_ANATOMICAL_PARTICIPATION`);
+            const resp = await fetch(`/api/education/muscle-mechanics?region=${reg}&scenario_id=${scen}&mode=MODE_A_ANATOMICAL_PARTICIPATION&time=${t.toFixed(2)}`);
             if (resp.ok) {
                 const data = await resp.json();
                 this.elements.inspectorDetailsContainer.innerHTML = '';
                 data.muscles.forEach(m => {
                     const row = document.createElement('div');
-                    row.className = 'card';
-                    row.style.padding = '6px 8px';
-                    row.style.fontSize = '10.5px';
+                    row.className = 'card interactive-muscle-card';
+                    row.style.padding = '8px 10px';
+                    row.style.fontSize = '11px';
+                    row.style.cursor = 'pointer';
+                    row.style.transition = 'all 0.15s ease';
+                    row.style.marginBottom = '4px';
+
+                    const roleStr = m.anatomical_role || '';
+                    const isAgonist = roleStr.includes('Agonist') || roleStr.includes('Chủ vận');
+                    const isSynergist = roleStr.includes('Synergist') || roleStr.includes('Đồng vận');
+                    row.style.borderLeft = isAgonist ? '3px solid #38bdf8' : (isSynergist ? '3px solid #f59e0b' : '3px solid #a855f7');
+
                     row.innerHTML = `
-                        <div style="font-weight:700; color:var(--accent); display:flex; justify-content:space-between;">
+                        <div style="font-weight:700; color:var(--accent); display:flex; justify-content:space-between; align-items:center;">
                             <span>${isVi ? m.name_vi : m.name_en}</span>
-                            <span class="badge badge-neutral" style="font-size:9px;">${m.anatomical_role}</span>
+                            <span class="badge ${isAgonist ? 'badge-cyan' : (isSynergist ? 'badge-amber' : 'badge-neutral')}" style="font-size:9.5px;">${m.anatomical_role}</span>
                         </div>
-                        <div style="color:#cbd5e1; margin-top:2px;">
-                            <strong>${isVi ? 'Tác động chính:' : 'Actions:'}</strong> ${m.primary_actions.join(', ')}
+                        <div style="color:#cbd5e1; margin-top:3px; font-size:10.5px;">
+                            <strong>${isVi ? 'Tác động chính:' : 'Actions:'}</strong> ${(m.primary_actions || []).join(', ')}
                         </div>
                         <div style="color:#94a3b8; font-size:10px; margin-top:2px;">
                             <strong>${isVi ? 'Nguyên ủy/Bám tận:' : 'Attachments:'}</strong> ${m.origin} → ${m.insertion}
                         </div>
                     `;
+
+                    row.addEventListener('click', () => {
+                        this.elements.inspectorDetailsContainer.querySelectorAll('.interactive-muscle-card').forEach(c => {
+                            c.style.borderColor = '#334155';
+                            c.style.background = 'var(--card-bg)';
+                        });
+                        row.style.borderColor = '#facc15';
+                        row.style.background = 'rgba(250, 204, 21, 0.08)';
+                        if (this.viewer) {
+                            this.viewer.selectMuscle(m.muscle_id);
+                        }
+                    });
+
                     this.elements.inspectorDetailsContainer.appendChild(row);
                 });
+
+                if (this.viewer) {
+                    this.viewer.setVisualMode('MODE_A_ANATOMICAL_PARTICIPATION', { muscles: data.muscles });
+                }
             }
         } catch (e) {
             console.warn('[ShoulderLab] Failed to fetch Mode A mechanics:', e);
+        }
+    }
+
+    async _renderMuscleMechanicsModeB() {
+        if (!this.elements.inspectorDetailsContainer) return;
+        const isVi = this.currentLang === 'vi';
+        const reg = this.currentRegion || (this.isP16 ? 'unified' : (this.isP15 ? 'cervicothoracic' : 'shoulder'));
+        const scen = this.elements.scenarioSelect ? this.elements.scenarioSelect.value : 'vasavada_cervical_flexion_extension';
+        const t = this.viewer ? this.viewer.currentTime : 0.0;
+
+        if (this.elements.inspectorEmptyState) {
+            this.elements.inspectorEmptyState.textContent = isVi
+                ? 'THIẾU ĐƯỜNG DẪN HÌNH HỌC (MODEL_GEOMETRY_INSUFFICIENT): Mô hình bề mặt xương cứng hiện tại chưa phân đoạn đường bao bọc sợi cơ 3D liên tục (musculotendon wrapping curves).'
+                : 'MODEL_GEOMETRY_INSUFFICIENT: Musculotendon wrapping curves and continuous dynamic fiber length changes are unmeshed in the rigid osseous model.';
+            this.elements.inspectorEmptyState.style.display = 'block';
+        }
+
+        try {
+            const resp = await fetch(`/api/education/muscle-mechanics?region=${reg}&scenario_id=${scen}&mode=MODE_B_GEOMETRIC_CHANGE&time=${t.toFixed(2)}`);
+            if (resp.ok) {
+                const data = await resp.json();
+                this.elements.inspectorDetailsContainer.innerHTML = `
+                    <div class="card" style="font-size:11px; line-height:1.45; border-left:3px solid #f59e0b;">
+                        <div style="font-weight:700; color:#fbbf24; margin-bottom:4px;">
+                            ${isVi ? 'Thông số hình học cơ sở (Literature Reference):' : 'Geometric Reference Metrics:'}
+                        </div>
+                        <div style="color:#cbd5e1; margin-bottom:6px;">
+                            ${isVi ? 'Do thiếu đường bao cong 3D, chiều dài sợi động học không được ngoại suy tùy ý. Dưới đây là chiều dài sợi chuẩn nghỉ (Resting Fiber Length) từ y văn:' : 'Fiber length change is not arbitrarily extrapolated. Static resting fiber lengths from literature:'}
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            ${(data.muscles || []).slice(0, 6).map(m => `
+                                <div class="metric-row" style="padding:3px 0;">
+                                    <span style="color:#94a3b8;">${m.name_en}:</span>
+                                    <span class="metric-val" style="color:#e2e8f0;">L0 = ${m.default_fiber_length_cm} cm | r = ${m.default_moment_arm_cm} cm</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="margin-top:6px; font-size:10px; color:#94a3b8;">
+                            Nguồn: Vasavada et al. (1998) / Seth et al. (2019)
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            console.warn('[ShoulderLab] Failed to fetch Mode B mechanics:', e);
+        }
+
+        if (this.viewer) {
+            this.viewer.setVisualMode('MODE_B_GEOMETRIC_CHANGE');
+        }
+    }
+
+    async _renderMuscleMechanicsModeC() {
+        const isVi = this.currentLang === 'vi';
+        const muscleRecruitmentList = document.getElementById('muscle-recruitment-list');
+        const hasStoData = this.viewer && this.viewer.muscleData && this.viewer.muscleData.times && this.viewer.muscleData.times.length > 0;
+
+        if (hasStoData) {
+            if (muscleRecruitmentList) muscleRecruitmentList.style.display = 'block';
+            if (this.elements.inspectorEmptyState) this.elements.inspectorEmptyState.style.display = 'none';
+            if (this.elements.inspectorDetailsContainer) {
+                this.elements.inspectorDetailsContainer.innerHTML = `
+                    <div class="card" style="font-size:10.5px; color:#94a3b8; line-height:1.4;">
+                        <strong style="color:var(--accent); display:block; margin-bottom:2px;">
+                            ${isVi ? 'Ước tính Tối ưu hóa Tĩnh (Static Optimization):' : 'Static Optimization Estimate:'}
+                        </strong>
+                        ${isVi ? 'Giá trị chuẩn hóa (0.00 – 1.00) phản ánh tỷ lệ kích hoạt tương đối giải từ phương trình cân bằng mô-men khớp, không phải tín hiệu điện cơ (EMG) đo lường thực nghiệm hay phần trăm sức mạnh cơ tối đa.' : 'Normalized activations (0.00 - 1.00) solve inverse dynamic joint moment equilibrium and do not represent measured EMG or maximum strength percentage.'}
+                    </div>
+                `;
+            }
+            if (this.viewer) {
+                this.viewer.setVisualMode('MODE_C_ESTIMATED_ACTIVATION');
+                this.viewer.seek(this.viewer.currentTime);
+            }
+        } else {
+            if (muscleRecruitmentList) muscleRecruitmentList.style.display = 'none';
+            if (this.elements.inspectorEmptyState) {
+                this.elements.inspectorEmptyState.textContent = isVi
+                    ? 'CHƯA CÓ DỮ LIỆU KÍCH HOẠT (MUSCLE_ACTIVATION_NOT_AVAILABLE): Kịch bản này không có tệp tĩnh tối ưu hóa (.sto). Ứng dụng từ chối phát sinh số liệu kích hoạt giả lập.'
+                    : 'MUSCLE_ACTIVATION_NOT_AVAILABLE: No muscle activation (.sto) dataset available for this scenario. Refusing to invent synthetic activation values.';
+                this.elements.inspectorEmptyState.style.display = 'block';
+            }
+            if (this.viewer) {
+                this.viewer.setVisualMode('MODE_C_ESTIMATED_ACTIVATION');
+            }
+        }
+    }
+
+    async _renderMuscleMechanicsModeD() {
+        const isVi = this.currentLang === 'vi';
+        const muscleRecruitmentList = document.getElementById('muscle-recruitment-list');
+        if (muscleRecruitmentList) muscleRecruitmentList.style.display = 'none';
+        if (this.elements.inspectorDetailsContainer) this.elements.inspectorDetailsContainer.innerHTML = '';
+
+        if (this.elements.inspectorEmptyState) {
+            this.elements.inspectorEmptyState.textContent = isVi
+                ? 'CHƯA CÓ LỰC CƠ (MUSCLE_FORCE_NOT_AVAILABLE): Tính toán lực cơ theo đơn vị Newton đòi hỏi giải cân bằng động học OpenSim runtime (bị khóa ngoại tuyến). Tuyệt đối không nhân kích hoạt với hằng số tùy ý.'
+                : 'MUSCLE_FORCE_NOT_AVAILABLE: Individual muscle forces in Newtons require live dynamic equilibrium solving which is blocked offline. Strict prohibition against multiplying activation by arbitrary scalars.';
+            this.elements.inspectorEmptyState.style.display = 'block';
+        }
+        if (this.viewer) {
+            this.viewer.setVisualMode('MODE_D_ESTIMATED_FORCE');
         }
     }
 

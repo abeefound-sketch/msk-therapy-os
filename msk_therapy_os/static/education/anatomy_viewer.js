@@ -27,6 +27,32 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+const MUSCLE_ALIAS_MAP = {
+    'deltoid_anterior': ['delt-a', 'delt_a', 'deltoid_anterior', 'deltoideus_clavicular'],
+    'deltoid_lateral': ['delt-l', 'delt_l', 'deltoid_lateral', 'deltoideus_acromial'],
+    'deltoid_posterior': ['delt-p', 'delt_p', 'deltoid_posterior', 'deltoideus_spinal'],
+    'supraspinatus': ['supra', 'supraspinatus'],
+    'infraspinatus': ['infra', 'infraspinatus'],
+    'subscapularis': ['subscap', 'subscapularis'],
+    'serratus_anterior': ['serratus', 'serratus_anterior', 'serratus_l', 'serratus_u'],
+    'serratus': ['serratus', 'serratus_anterior', 'serratus_l', 'serratus_u'],
+    'trapezius_upper': ['trap-u', 'trap_u', 'trap_u_ipsi', 'trapezius_upper', 'trapezius_descending'],
+    'trapezius_middle': ['trap-m', 'trap_m', 'trapezius_middle'],
+    'trapezius_lower': ['trap-l', 'trap_l', 'trapezius_lower', 'trapezius_ascending'],
+    'pectoralis_minor': ['pec-minor', 'pec_minor', 'pectoralis_minor'],
+    'pectoralis_major': ['pec-major', 'pec_major', 'pectoralis_major'],
+    'rhomboid': ['rhomboid', 'rhomboid_major'],
+    'levator': ['levator', 'levator_ipsi', 'Levator_Scapulae', 'levator_scapulae'],
+    'suboccipital': ['suboccipital', 'suboccipital_ipsi', 'Suboccipital_Muscles', 'suboccipitals'],
+    'scm': ['scm', 'scm_contra', 'scm_ipsi', 'sternocleidomastoid'],
+    'scalenes': ['scalenes', 'scalenes_ipsi'],
+    'splenius': ['splenius', 'splenius_ipsi'],
+    'longus_colli': ['longus', 'longus_colli'],
+    'biceps': ['biceps'],
+    'triceps': ['triceps'],
+    'lat': ['lat', 'latissimus']
+};
+
 export class AnatomyViewer {
     constructor(canvasContainerId, options = {}) {
         this.container = document.getElementById(canvasContainerId);
@@ -94,8 +120,11 @@ export class AnatomyViewer {
         this.timelineDuration = 2.0;  // seconds
         this.isPlaying = false;
         this.playbackSpeed = 1.0;
-        this.activeScenarioId = 'seth_shoulder_elevation';
-        this.currentMode = 'ANATOMICAL_FUNCTION'; // 'ANATOMICAL_FUNCTION', 'MODEL_ESTIMATED', 'SCENARIO_COMPARISON'
+        this.activeScenarioId = 'vasavada_cervical_flexion_extension';
+        this.currentMode = 'MODE_A_ANATOMICAL_PARTICIPATION';
+        this.currentRegion = 'unified';
+        this.currentViewName = 'anterior';
+        this.currentActivations = {};
 
         // Interaction
         this.raycaster = new THREE.Raycaster();
@@ -137,8 +166,8 @@ export class AnatomyViewer {
         this.scene.background = new THREE.Color(0x0a101d);
 
         // 2. Camera
-        this.camera = new THREE.PerspectiveCamera(45, width / height, 0.05, 50.0);
-        this.camera.position.set(-0.25, 1.48, 1.05); // Focused on Right shoulder complex
+        this.camera = new THREE.PerspectiveCamera(40, width / height, 0.05, 50.0);
+        this.camera.position.set(0.0, 1.46, 0.88); // Centered on upper body / cervicothoracic complex
 
         // 3. WebGL Renderer
         this.renderer = new THREE.WebGLRenderer({
@@ -167,7 +196,7 @@ export class AnatomyViewer {
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.08;
-        this.controls.target.set(-0.10, 1.38, -0.02); // Right shoulder center
+        this.controls.target.set(0.0, 1.44, 0.0); // Anatomical center
         this.controls.minDistance = 0.25;
         this.controls.maxDistance = 3.5;
         this.controls.update();
@@ -329,7 +358,11 @@ export class AnatomyViewer {
             });
 
             // 3. Load default OpenSim elevation motion & muscle activation
-            await this.loadMotionData('./data/seth_shoulder_elevation.mot', './data/seth_shoulder_elevation.sto');
+            if (this.options.skeletonUrl && this.options.skeletonUrl.includes('shoulder')) {
+                await this.loadMotionData('./data/seth_shoulder_elevation.mot', './data/seth_shoulder_elevation.sto');
+            } else {
+                await this.loadMotionData('./data/vasavada_cervical_flexion_extension.mot', './data/vasavada_cervical_flexion_extension.sto');
+            }
 
             if (typeof this.options.onLoadComplete === 'function') {
                 this.options.onLoadComplete({
@@ -629,7 +662,8 @@ export class AnatomyViewer {
             }
         }
 
-        if (this.currentMode === 'MODEL_ESTIMATED') {
+        this.currentActivations = muscleActivations;
+        if (this.currentMode === 'MODE_C_ESTIMATED_ACTIVATION' || this.currentMode === 'MODEL_ESTIMATED') {
             this._applyMuscleActivationColors(muscleActivations);
         }
 
@@ -688,21 +722,15 @@ export class AnatomyViewer {
             let matchedAct = null;
 
             for (const [key, aliases] of Object.entries(muscleKeyMap)) {
-                if (aliases.some(a => lower.includes(a))) {
-                    matchedAct = activations[key] !== undefined ? activations[key] : (
-                        key === 'deltoid_lateral' ? activations['delt_l'] :
-                        key === 'deltoid_anterior' ? activations['delt_a'] :
-                        key === 'deltoid_posterior' ? activations['delt_p'] :
-                        key === 'supraspinatus' ? activations['supra'] :
-                        key === 'infraspinatus' ? activations['infra'] :
-                        key === 'subscapularis' ? activations['subscap'] :
-                        key === 'serratus_anterior' ? (activations['serratus_l'] !== undefined ? activations['serratus_l'] : activations['serratus_u']) :
-                        key === 'trapezius_upper' ? activations['trap_u'] :
-                        key === 'trapezius_lower' ? activations['trap_l'] :
-                        key === 'pectoralis_major' ? activations['pec_major'] :
-                        key === 'pectoralis_minor' ? activations['pec_minor'] : null
-                    );
-                    break;
+                if (aliases.some(a => lower.includes(a.toLowerCase()))) {
+                    const candidateCols = [key, ...aliases, key + '_ipsi', key + '_contra'];
+                    for (const col of candidateCols) {
+                        if (activations[col] !== undefined && activations[col] !== null) {
+                            matchedAct = activations[col];
+                            break;
+                        }
+                    }
+                    if (matchedAct !== null) break;
                 }
             }
 
@@ -742,12 +770,86 @@ export class AnatomyViewer {
         this.playbackSpeed = Math.max(0.1, Math.min(3.0, speed));
     }
 
-    setVisualMode(mode) {
-        this.currentMode = mode; // 'ANATOMICAL_FUNCTION', 'MODEL_ESTIMATED', 'SCENARIO_COMPARISON'
-        if (mode === 'ANATOMICAL_FUNCTION') {
-            this.clearHighlights();
-        } else if (mode === 'MODEL_ESTIMATED') {
+    setVisualMode(mode, params = {}) {
+        this.currentMode = mode;
+        this.currentVisualMode = mode;
+
+        if (mode === 'MODE_A_ANATOMICAL_PARTICIPATION' || mode === 'ANATOMICAL_FUNCTION') {
+            if (params && params.muscles && Array.isArray(params.muscles) && params.muscles.length > 0) {
+                const agonistKeys = [];
+                const synergistKeys = [];
+                const stabilizerKeys = [];
+
+                params.muscles.forEach(m => {
+                    const role = m.anatomical_role || '';
+                    const mId = m.muscle_id || '';
+                    if (role.includes('Agonist') || role.includes('Chủ vận')) {
+                        agonistKeys.push(mId);
+                    } else if (role.includes('Synergist') || role.includes('Đồng vận')) {
+                        synergistKeys.push(mId);
+                    } else {
+                        stabilizerKeys.push(mId);
+                    }
+                });
+
+                this.meshes.forEach((mesh, name) => {
+                    const lower = name.toLowerCase();
+                    const isBone = name === 'Thorax' || name === 'Clavicle_R' || name === 'Scapula_R' || name === 'Humerus_R' || lower.includes('cervical') || lower.includes('skull');
+                    if (isBone) return;
+
+                    const matchKey = (key) => {
+                        const aliases = MUSCLE_ALIAS_MAP[key] || [key];
+                        return aliases.some(a => lower.includes(a.toLowerCase()));
+                    };
+
+                    const isAgonist = agonistKeys.some(matchKey);
+                    const isSynergist = synergistKeys.some(matchKey);
+                    const isStabilizer = stabilizerKeys.some(matchKey);
+
+                    if (isAgonist) {
+                        mesh.material.color.setHex(0x38bdf8); // Sky Blue (Agonist)
+                        mesh.material.opacity = 0.95;
+                    } else if (isSynergist) {
+                        mesh.material.color.setHex(0xf59e0b); // Amber (Synergist)
+                        mesh.material.opacity = 0.90;
+                    } else if (isStabilizer) {
+                        mesh.material.color.setHex(0xa855f7); // Purple (Stabilizer)
+                        mesh.material.opacity = 0.88;
+                    } else {
+                        mesh.material.color.setHex(this.colors.muscleDefault);
+                        mesh.material.opacity = 0.20; // Dim non-participating
+                    }
+                });
+            } else {
+                this.clearHighlights();
+            }
+        } else if (mode === 'MODE_B_GEOMETRIC_CHANGE') {
+            // Geometric view: dim muscles to show skeleton articulatory geometry
+            this.meshes.forEach((mesh, name) => {
+                const lower = name.toLowerCase();
+                const isBone = name === 'Thorax' || name === 'Clavicle_R' || name === 'Scapula_R' || name === 'Humerus_R' || lower.includes('cervical') || lower.includes('skull');
+                if (!isBone) {
+                    mesh.material.color.setHex(this.colors.muscleDefault);
+                    mesh.material.opacity = 0.22;
+                } else {
+                    mesh.material.color.setHex(this.colors.boneDefault);
+                    mesh.material.opacity = 1.0;
+                }
+            });
+        } else if (mode === 'MODE_C_ESTIMATED_ACTIVATION' || mode === 'MODEL_ESTIMATED') {
             this.seek(this.currentTime);
+        } else if (mode === 'MODE_D_ESTIMATED_FORCE') {
+            this.clearHighlights();
+            this.meshes.forEach((mesh, name) => {
+                const lower = name.toLowerCase();
+                const isBone = name === 'Thorax' || name === 'Clavicle_R' || name === 'Scapula_R' || name === 'Humerus_R' || lower.includes('cervical') || lower.includes('skull');
+                if (!isBone) {
+                    mesh.material.color.setHex(this.colors.muscleDefault);
+                    mesh.material.opacity = 0.45;
+                }
+            });
+        } else if (mode === 'SCENARIO_COMPARISON') {
+            this.clearHighlights();
         }
     }
 
@@ -831,20 +933,44 @@ export class AnatomyViewer {
         this.fpsCallback = callback;
     }
 
-    resetCamera(focusArea = 'shoulder') {
+    setCameraView(viewName = 'anterior', region = null) {
         if (!this.camera || !this.controls) return;
+        this.currentViewName = viewName || 'anterior';
+        if (region) this.currentRegion = region;
 
-        if (focusArea === 'shoulder') {
-            this.camera.position.set(-0.25, 1.48, 1.05);
-            this.controls.target.set(-0.10, 1.38, -0.02);
-        } else if (focusArea === 'posterior') {
-            this.camera.position.set(-0.25, 1.48, -0.95); // Posterior view of Right Scapula
-            this.controls.target.set(-0.10, 1.38, -0.02);
-        } else if (focusArea === 'lateral') {
-            this.camera.position.set(-1.10, 1.42, -0.02); // Lateral view from right side
-            this.controls.target.set(-0.10, 1.38, -0.02);
+        let target = new THREE.Vector3(0.0, 1.44, 0.0);
+        let dist = 0.88;
+
+        if (this.currentRegion === 'shoulder') {
+            target.set(-0.12, 1.40, 0.0);
+            dist = 0.72;
+        } else if (this.currentRegion === 'cervicothoracic') {
+            target.set(0.0, 1.50, 0.0);
+            dist = 0.65;
+        } else {
+            target.set(0.0, 1.44, 0.0);
+            dist = 0.88;
         }
+
+        const v = (this.currentViewName || 'anterior').toLowerCase();
+        if (v === 'anterior' || v === 'front' || v === 'shoulder') {
+            this.camera.position.set(target.x, target.y + 0.03, target.z + dist);
+        } else if (v === 'posterior' || v === 'back') {
+            this.camera.position.set(target.x, target.y + 0.03, target.z - dist);
+        } else if (v === 'lateral' || v === 'side') {
+            this.camera.position.set(target.x + dist, target.y + 0.02, target.z);
+        }
+
+        this.controls.target.copy(target);
         this.controls.update();
+    }
+
+    resetCamera(focusArea = 'shoulder') {
+        if (focusArea === 'posterior' || focusArea === 'lateral' || focusArea === 'anterior') {
+            this.setCameraView(focusArea, this.currentRegion);
+        } else {
+            this.setCameraView('anterior', focusArea);
+        }
     }
 
     highlightMuscles(muscleNames, colorHex = null) {
@@ -870,7 +996,33 @@ export class AnatomyViewer {
 
     selectMuscle(muscleName) {
         this.selectedMeshName = muscleName;
-        this.highlightMuscles([muscleName], this.colors.muscleHighlighted);
+        const aliases = MUSCLE_ALIAS_MAP[muscleName] || [muscleName];
+        let foundMesh = null;
+
+        this.meshes.forEach((mesh, name) => {
+            const lower = name.toLowerCase();
+            const isBone = name === 'Thorax' || name === 'Clavicle_R' || name === 'Scapula_R' || name === 'Humerus_R' || lower.includes('cervical') || lower.includes('skull');
+            if (isBone) return;
+
+            const isTarget = aliases.some(a => lower.includes(a.toLowerCase()));
+            if (isTarget) {
+                mesh.material.color.setHex(0xfacc15); // Bright gold for selected muscle
+                mesh.material.opacity = 1.0;
+                foundMesh = mesh;
+            } else {
+                mesh.material.color.setHex(this.colors.muscleDefault);
+                mesh.material.opacity = 0.18;
+            }
+        });
+
+        if (foundMesh && this.controls) {
+            const box = new THREE.Box3().setFromObject(foundMesh);
+            const center = box.getCenter(new THREE.Vector3());
+            if (!isNaN(center.x) && isFinite(center.x)) {
+                this.controls.target.lerp(center, 0.4);
+                this.controls.update();
+            }
+        }
     }
 
     clearHighlights() {
