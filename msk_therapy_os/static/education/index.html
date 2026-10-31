@@ -646,8 +646,10 @@
 
                     <div>
                         <select id="scenario-select" class="player-btn" style="outline: none;">
-                            <option value="seth_shoulder_elevation">OpenSim Seth Model (0° → 120°)</option>
+                            <option value="seth_shoulder_elevation">OpenSim Seth Vai (0° → 120°)</option>
                             <option value="illustrative_rounded_elevation">Kịch bản Vai đổ trước (0° → 120°)</option>
+                            <option value="vasavada_cervical_flexion_extension">OpenSim Vasavada Cổ (-25° → +45°)</option>
+                            <option value="illustrative_forward_head_posture">Kịch bản Đầu đổ trước & Chéo trên</option>
                         </select>
                     </div>
                 </div>
@@ -706,6 +708,30 @@
                     <div class="metric-row" style="display: none;">
                         <span class="metric-val" id="dyn-rhythm-ratio">2.00 : 1</span>
                     </div>
+
+                    <!-- Cervical Spine Biomechanics Readout -->
+                    <div id="cervical-metrics-group" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #334155;">
+                        <div class="metric-row">
+                            <span class="metric-label">Góc Cổ - Đốt Sống (CVA):</span>
+                            <span class="metric-val" id="dyn-cva-angle">53.0°</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Độ Đưa Trước của Đầu (FHP):</span>
+                            <span class="metric-val" id="dyn-head-trans">0.0 mm</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Gập Cổ Dưới (C3–C7):</span>
+                            <span class="metric-val" id="dyn-lower-flex">0.0°</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Ngửa Cổ Trên (C0–C2):</span>
+                            <span class="metric-val" id="dyn-upper-flex">0.0°</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Tải Trọng Cơ Duỗi Gáy (Demand):</span>
+                            <span class="metric-val" id="dyn-extensor-load">35.7 N</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Muscle Recruitment Card -->
@@ -732,6 +758,34 @@
                                 <span class="metric-val" id="val-act-supraspinatus">62%</span>
                             </div>
                             <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-supraspinatus" style="width: 62%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Nâng Vai (Levator Scapulae):</span>
+                                <span class="metric-val" id="val-act-levator">22%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-levator" style="width: 22%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Dưới Chẩm (Suboccipitals):</span>
+                                <span class="metric-val" id="val-act-suboccipital">18%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-suboccipital" style="width: 18%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Ức Đòn Chũm (SCM):</span>
+                                <span class="metric-val" id="val-act-scm">15%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-scm" style="width: 15%;"></div></div>
+                        </div>
+                        <div class="muscle-item">
+                            <div class="muscle-info">
+                                <span class="metric-label">Cơ Gập Cổ Sâu (Longus Colli):</span>
+                                <span class="metric-val" id="val-act-longus-colli">32%</span>
+                            </div>
+                            <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-act-longus-colli" style="width: 32%;"></div></div>
                         </div>
                         <div class="muscle-item">
                             <div class="muscle-info">

@@ -550,10 +550,14 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
             self._send_json(self._atlas_status())
             return
 
-        # P13 / P14 Interactive MSK Education Studio API
-        if path in ("/api/education/shoulder-lesson", "/api/education/p14-lesson"):
-            from msk_therapy_os.biomechanics_adapter import get_shoulder_education_curriculum
+        # P13 / P14 / P15 Interactive MSK Education Studio API
+        if path in ("/api/education/shoulder-lesson", "/api/education/p14-lesson", "/api/education/cervicothoracic-lesson", "/api/education/p15-lesson"):
+            from msk_therapy_os.biomechanics_adapter import get_shoulder_education_curriculum, get_cervicothoracic_curriculum
             version_param = query.get("v", [""])[0].lower() or query.get("milestone", [""])[0].lower()
+            region_param = query.get("region", [""])[0].lower()
+            if path in ("/api/education/cervicothoracic-lesson", "/api/education/p15-lesson") or "p15" in version_param or region_param == "cervicothoracic":
+                self._send_json(get_cervicothoracic_curriculum(version="P15"))
+                return
             v = "P14" if ("p14" in version_param or "2" in version_param or path == "/api/education/p14-lesson") else "P13"
             self._send_json(get_shoulder_education_curriculum(version=v))
             return

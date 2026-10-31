@@ -27,9 +27,10 @@ export class ShoulderLab {
         this.skeletonVisible = true;
         this.currentMode = 'ANATOMICAL_FUNCTION'; // 'ANATOMICAL_FUNCTION', 'MODEL_ESTIMATED', 'SCENARIO_COMPARISON'
 
-        // Check if explicitly launched in P14 mode via URL
+        // Check if explicitly launched in P14 or P15 mode via URL
         const urlParams = new URLSearchParams(window.location.search);
-        this.isP14 = urlParams.get('v') === 'p14' || urlParams.get('milestone') === 'p14';
+        this.isP15 = urlParams.get('v') === 'p15' || urlParams.get('region') === 'cervicothoracic';
+        this.isP14 = this.isP15 || urlParams.get('v') === 'p14' || urlParams.get('milestone') === 'p14';
 
         // Quiz State
         this.quizAnswers = {};
@@ -76,13 +77,20 @@ export class ShoulderLab {
             badgeActivationMode: document.getElementById('badge-activation-mode'),
             watermarkActivationBanner: document.getElementById('watermark-activation-banner'),
 
-            // Dynamic Kinematic Readouts
+            // Dynamic Kinematic Readouts (Shoulder)
             dynArmElev: document.getElementById('dyn-arm-elev'),
             dynScapUp: document.getElementById('dyn-scap-up'),
             dynScapTilt: document.getElementById('dyn-scap-tilt'),
             dynClavElev: document.getElementById('dyn-clav-elev'),
             dynRhythmRatio: document.getElementById('dyn-rhythm-ratio'),
             valRhythmRatio: document.getElementById('val-rhythm-ratio'),
+
+            // Dynamic Kinematic Readouts (Cervical Spine P15)
+            dynCvaAngle: document.getElementById('dyn-cva-angle'),
+            dynHeadTrans: document.getElementById('dyn-head-trans'),
+            dynLowerFlex: document.getElementById('dyn-lower-flex'),
+            dynUpperFlex: document.getElementById('dyn-upper-flex'),
+            dynExtensorLoad: document.getElementById('dyn-extensor-load'),
 
             // Muscle Recruitment Bars
             valActDeltoidLateral: document.getElementById('val-act-deltoid-lateral'),
@@ -97,6 +105,16 @@ export class ShoulderLab {
             barActPecMinor: document.getElementById('bar-act-pec-minor'),
             valActRhomboid: document.getElementById('val-act-rhomboid'),
             barActRhomboid: document.getElementById('bar-act-rhomboid'),
+
+            // Cervical Muscle Recruitment Bars (P15)
+            valActLevator: document.getElementById('val-act-levator'),
+            barActLevator: document.getElementById('bar-act-levator'),
+            valActSuboccipital: document.getElementById('val-act-suboccipital'),
+            barActSuboccipital: document.getElementById('bar-act-suboccipital'),
+            valActScm: document.getElementById('val-act-scm'),
+            barActScm: document.getElementById('bar-act-scm'),
+            valActLongusColli: document.getElementById('val-act-longus-colli'),
+            barActLongusColli: document.getElementById('bar-act-longus-colli'),
 
             // Posture Simulator
             postureSlider: document.getElementById('posture-slider'),
@@ -253,6 +271,10 @@ export class ShoulderLab {
                     await this.viewer.loadMotionData('./data/seth_shoulder_elevation.mot', './data/seth_shoulder_elevation.sto');
                 } else if (scen === 'illustrative_rounded_elevation') {
                     await this.viewer.loadMotionData('./data/illustrative_rounded_elevation.mot', null);
+                } else if (scen === 'vasavada_cervical_flexion_extension') {
+                    await this.viewer.loadMotionData('./data/vasavada_cervical_flexion_extension.mot', './data/vasavada_cervical_flexion_extension.sto');
+                } else if (scen === 'illustrative_forward_head_posture') {
+                    await this.viewer.loadMotionData('./data/illustrative_forward_head_posture.mot', './data/illustrative_forward_head_posture.sto');
                 }
             });
         }
@@ -312,7 +334,8 @@ export class ShoulderLab {
 
     async _loadCurriculum() {
         try {
-            const resp = await fetch('/api/education/shoulder-lesson');
+            const endpoint = this.isP15 ? '/api/education/cervicothoracic-lesson' : (this.isP14 ? '/api/education/p14-lesson' : '/api/education/shoulder-lesson');
+            const resp = await fetch(endpoint);
             if (resp.ok) {
                 this.curriculum = await resp.json();
             } else {
@@ -330,7 +353,20 @@ export class ShoulderLab {
         const isVi = this.currentLang === 'vi';
 
         // Title and Subtitle based on milestone mode
-        if (this.isP14) {
+        if (this.isP15) {
+            if (this.elements.headerTitle) {
+                this.elements.headerTitle.textContent = isVi
+                    ? "Vì sao mỏi cổ vai gáy thường tái phát — Và tư thế đầu cùng cơ bắp tương tác ra sao?"
+                    : "Why Does Neck & Shoulder Discomfort Return — And How Do Head Posture & Muscles Interact?";
+            }
+            if (this.elements.headerSubtitle) {
+                this.elements.headerSubtitle.textContent = isVi
+                    ? "Cơ sinh học cột sống cổ 3D, Hội chứng Chéo trên của Janda & Phục hồi vận động chủ động"
+                    : "3D Cervicothoracic Kinematics, Janda's Upper Crossed Syndrome & Active Re-Education";
+            }
+            if (this.elements.badgeCurriculumVersion) this.elements.badgeCurriculumVersion.textContent = 'P15 Cervicothoracic';
+            if (this.elements.studioModeToggleBtn) this.elements.studioModeToggleBtn.textContent = 'Studio: P15 Cervicothoracic';
+        } else if (this.isP14) {
             if (this.elements.headerTitle) {
                 this.elements.headerTitle.textContent = isVi
                     ? "Điều gì xảy ra khi bạn giơ tay — Và tại sao vai đổ trước vẫn tái phát sau giải cơ?"
@@ -363,7 +399,9 @@ export class ShoulderLab {
             this.elements.lblCurriculumHeader.textContent = isVi ? 'Chương Trình Học (Curriculum)' : 'Curriculum & Lessons';
         }
 
-        const stages = (this.isP14 && this.curriculum.p14_stages) ? this.curriculum.p14_stages : this.curriculum.stages;
+        const stages = (this.isP15 && this.curriculum.p15_stages)
+            ? this.curriculum.p15_stages
+            : ((this.isP14 && this.curriculum.p14_stages) ? this.curriculum.p14_stages : this.curriculum.stages);
         if (!this.elements.stageList || !stages) return;
 
         if (this.elements.stageListHeader) {
@@ -411,7 +449,9 @@ export class ShoulderLab {
 
     _renderStage(stageId) {
         if (!this.curriculum) return;
-        const stages = (this.isP14 && this.curriculum.p14_stages) ? this.curriculum.p14_stages : this.curriculum.stages;
+        const stages = (this.isP15 && this.curriculum.p15_stages)
+            ? this.curriculum.p15_stages
+            : ((this.isP14 && this.curriculum.p14_stages) ? this.curriculum.p14_stages : this.curriculum.stages);
         const stage = stages.find(s => s.stage_id === stageId) || stages[0];
         if (!stage) return;
 
@@ -437,10 +477,10 @@ export class ShoulderLab {
             });
         }
 
-        // If P14 Stage 7 (Quiz) or Stage 8 (Evidence)
-        if (this.isP14 && stageId === 7) {
+        // If P14/P15 Stage 7 (Quiz) or Stage 8 (Evidence)
+        if ((this.isP15 || this.isP14) && stageId === 7) {
             this._renderQuizWidget();
-        } else if (this.isP14 && stageId === 8) {
+        } else if ((this.isP15 || this.isP14) && stageId === 8) {
             this._renderEvidenceRegisterWidget();
         } else {
             if (this.elements.stageDynamicBody) {
@@ -629,9 +669,52 @@ export class ShoulderLab {
         updateBar(this.elements.valActTrapeziusLower, this.elements.barActTrapeziusLower, getAct('trapezius_lower', 'trap_l'));
         updateBar(this.elements.valActPecMinor, this.elements.barActPecMinor, getAct('pectoralis_minor', 'pec_minor'));
         updateBar(this.elements.valActRhomboid, this.elements.barActRhomboid, getAct('rhomboid_major', 'rhomboid'));
+
+        // Cervical metrics and muscle activations (P15)
+        if (pose.cvaAngle !== undefined && this.elements.dynCvaAngle) {
+            this.elements.dynCvaAngle.textContent = `${pose.cvaAngle.toFixed(1)}°`;
+            const cvaDeficit = Math.max(0.0, 55.0 - pose.cvaAngle);
+            const momentArm = 2.5 + (cvaDeficit / 25.0) * 5.0;
+            const extensorLoad = (50.0 * momentArm) / 3.5;
+            if (this.elements.dynExtensorLoad) this.elements.dynExtensorLoad.textContent = `${extensorLoad.toFixed(1)} N`;
+        }
+        if (pose.headTrans !== undefined && this.elements.dynHeadTrans) {
+            this.elements.dynHeadTrans.textContent = `${pose.headTrans.toFixed(1)} mm`;
+        }
+        if (pose.lowerFlex !== undefined && this.elements.dynLowerFlex) {
+            this.elements.dynLowerFlex.textContent = `${pose.lowerFlex.toFixed(1)}°`;
+        }
+        if (pose.upperFlex !== undefined && this.elements.dynUpperFlex) {
+            this.elements.dynUpperFlex.textContent = `${pose.upperFlex.toFixed(1)}°`;
+        }
+
+        updateBar(this.elements.valActLevator, this.elements.barActLevator, getAct('levator', 'levator_scapulae'));
+        updateBar(this.elements.valActSuboccipital, this.elements.barActSuboccipital, getAct('suboccipital', 'suboccipitals'));
+        updateBar(this.elements.valActScm, this.elements.barActScm, getAct('scm'));
+        updateBar(this.elements.valActLongusColli, this.elements.barActLongusColli, getAct('longus_colli', 'longus'));
     }
 
     _getOfflineCurriculumCatalog() {
+        if (this.isP15) {
+            return {
+                title_en: "Why Does Neck & Shoulder Discomfort Return — And How Do Head Posture & Muscles Interact?",
+                title_vi: "Vì sao mỏi cổ vai gáy thường tái phát — Và tư thế đầu cùng cơ bắp tương tác ra sao?",
+                p15_stages: [
+                    { stage_id: 1, name_en: "1. Explore: Cervicothoracic Architecture", name_vi: "1. Khám phá: Khung xương Cổ - Ngực", summary_en: "Identify C1–C7 and thoracic vertebrae.", summary_vi: "Nhận diện 7 đốt sống cổ và đốt sống ngực." },
+                    { stage_id: 2, name_en: "2. Observe: Craniovertebral Angle", name_vi: "2. Quan sát: Góc Cổ - Đốt Sống", summary_en: "Gravitational torque multiplication.", summary_vi: "Mô-men trọng lực tăng theo góc CVA." },
+                    { stage_id: 3, name_en: "3. Move: Coupled Cervical Kinematics", name_vi: "3. Chuyển động: Cơ sinh học liên hoàn", summary_en: "Lower flexion coupled with upper extension.", summary_vi: "Cổ dưới gập và cổ trên ngửa quá mức." },
+                    { stage_id: 4, name_en: "4. The Scapular-Cervical Link", name_vi: "4. Mối liên kết Cổ - Bả vai", summary_en: "Levator scapulae tension tug-of-war.", summary_vi: "Lực giằng kéo cơ nâng vai." },
+                    { stage_id: 5, name_en: "5. Janda's Upper Crossed Syndrome", name_vi: "5. Hội chứng Chéo trên của Janda", summary_en: "Reciprocal inhibition and force couples.", summary_vi: "Ức chế tương hỗ và mất cân bằng lực ngẫu." },
+                    { stage_id: 6, name_en: "6. Suboccipital Compression", name_vi: "6. Chèn ép Dưới Chẩm", summary_en: "Suboccipital nerve and mechanoreceptor paradox.", summary_vi: "Thần kinh chẩm và nghịch lý nhẹ nhõm tạm thời." },
+                    { stage_id: 7, name_en: "7. Assess: Interactive Quiz", name_vi: "7. Đánh giá: Bài tập Trắc nghiệm", summary_en: "Assess knowledge of cervical biomechanics.", summary_vi: "Đánh giá tri thức cơ sinh học cổ." },
+                    { stage_id: 8, name_en: "8. Evidence: Scientific Register", name_vi: "8. Bằng chứng: Danh mục Nghiên cứu", summary_en: "Peer-reviewed literature EV-09 to EV-16.", summary_vi: "Văn hiến khoa học bình duyệt EV-09 đến EV-16." }
+                ],
+                evidence_register: [
+                    { id: "EV-09", evidence_id: "EV-09", title: "Muscles and Motor Control in Cervicogenic Disorders", authors: "Janda V", publication_year: 1987 },
+                    { id: "EV-10", evidence_id: "EV-10", title: "Influence of Muscle Morphometry on Neck Capacity", authors: "Vasavada AN, et al.", publication_year: 1998 }
+                ]
+            };
+        }
         return {
             title_en: "Why Do Rounded Shoulders Sometimes Return After Massage?",
             title_vi: "Tại sao giải cơ xong vai nhẹ hơn nhưng một thời gian sau vẫn đổ về trước?",

@@ -36,7 +36,7 @@ export class AnatomyViewer {
 
         this.options = Object.assign({
             musclesUrl: './models/anatomy.glb',
-            skeletonUrl: './models/shoulder_skeleton.glb',
+            skeletonUrl: './models/cervicothoracic_skeleton.glb',
             onMeshSelected: null,
             onLoadProgress: null,
             onLoadComplete: null,
@@ -60,20 +60,31 @@ export class AnatomyViewer {
         this.jointCenters = {
             sc: new THREE.Vector3(-0.018, 1.405, 0.038),   // Sternoclavicular joint
             ac: new THREE.Vector3(-0.142, 1.415, -0.025),  // Acromioclavicular joint
-            gh: new THREE.Vector3(-0.165, 1.395, -0.020)   // Glenohumeral joint center
+            gh: new THREE.Vector3(-0.165, 1.395, -0.020),  // Glenohumeral joint center
+            c7t1: new THREE.Vector3(-0.001, 1.448, -0.046), // C7-T1 Cervicothoracic junction
+            aa: new THREE.Vector3(-0.001, 1.542, -0.037),   // Atlanto-axial (C1-C2) pivot
+            ao: new THREE.Vector3(-0.001, 1.556, -0.036)    // Atlanto-occipital (Occiput) pivot
         };
 
         this.pivots = {
             sc: new THREE.Group(),
             ac: new THREE.Group(),
-            gh: new THREE.Group()
+            gh: new THREE.Group(),
+            c7t1: new THREE.Group(),
+            aa: new THREE.Group(),
+            ao: new THREE.Group()
         };
 
         this.bones = {
             thorax: null,
             clavicle: null,
             scapula: null,
-            humerus: null
+            humerus: null,
+            cervicalLower: null,
+            cervicalUpper: null,
+            skull: null,
+            levator: null,
+            suboccipital: null
         };
 
         // Kinematic Motion Player State
@@ -186,6 +197,23 @@ export class AnatomyViewer {
         this.pivots.gh.name = 'GlenohumeralPivot';
         this.pivots.gh.position.copy(ghRel);
         this.pivots.ac.add(this.pivots.gh);
+
+        // C7-T1 Pivot: Base of neck attached to SkeletonRoot
+        this.pivots.c7t1.name = 'CervicothoracicPivot_C7T1';
+        this.pivots.c7t1.position.copy(this.jointCenters.c7t1);
+        this.skeletonRoot.add(this.pivots.c7t1);
+
+        // Atlanto-Axial Pivot (C1-C2) relative to C7-T1
+        const aaRel = new THREE.Vector3().subVectors(this.jointCenters.aa, this.jointCenters.c7t1);
+        this.pivots.aa.name = 'AtlantoAxialPivot';
+        this.pivots.aa.position.copy(aaRel);
+        this.pivots.c7t1.add(this.pivots.aa);
+
+        // Atlanto-Occipital Pivot relative to C1-C2
+        const aoRel = new THREE.Vector3().subVectors(this.jointCenters.ao, this.jointCenters.aa);
+        this.pivots.ao.name = 'AtlantoOccipitalPivot';
+        this.pivots.ao.position.copy(aoRel);
+        this.pivots.aa.add(this.pivots.ao);
     }
 
     _bindEvents() {
@@ -328,8 +356,22 @@ export class AnatomyViewer {
 
         scene.traverse((child) => {
             if (child.isMesh) {
-                child.material = boneMat.clone();
                 const name = child.name;
+                if (child.material && child.material.name === 'LevatorMaterial') {
+                    child.material = new THREE.MeshStandardMaterial({
+                        color: 0xd97768, // terracotta muscle
+                        roughness: 0.65,
+                        metalness: 0.05
+                    });
+                } else if (child.material && child.material.name === 'SuboccipitalMaterial') {
+                    child.material = new THREE.MeshStandardMaterial({
+                        color: 0xc44536, // deep ruby muscle
+                        roughness: 0.65,
+                        metalness: 0.05
+                    });
+                } else {
+                    child.material = boneMat.clone();
+                }
 
                 if (name === 'Thorax') {
                     this.bones.thorax = child;
@@ -346,6 +388,25 @@ export class AnatomyViewer {
                     this.bones.humerus = child;
                     child.position.set(-this.jointCenters.gh.x, -this.jointCenters.gh.y, -this.jointCenters.gh.z);
                     this.pivots.gh.add(child);
+                } else if (name === 'Cervical_Lower') {
+                    this.bones.cervicalLower = child;
+                    child.position.set(-this.jointCenters.c7t1.x, -this.jointCenters.c7t1.y, -this.jointCenters.c7t1.z);
+                    this.pivots.c7t1.add(child);
+                } else if (name === 'Cervical_Upper') {
+                    this.bones.cervicalUpper = child;
+                    child.position.set(-this.jointCenters.aa.x, -this.jointCenters.aa.y, -this.jointCenters.aa.z);
+                    this.pivots.aa.add(child);
+                } else if (name === 'Skull_Cranium') {
+                    this.bones.skull = child;
+                    child.position.set(-this.jointCenters.ao.x, -this.jointCenters.ao.y, -this.jointCenters.ao.z);
+                    this.pivots.ao.add(child);
+                } else if (name === 'Levator_Scapulae') {
+                    this.bones.levator = child;
+                    this.skeletonRoot.add(child);
+                } else if (name === 'Suboccipital_Muscles') {
+                    this.bones.suboccipital = child;
+                    child.position.set(-this.jointCenters.ao.x, -this.jointCenters.ao.y, -this.jointCenters.ao.z);
+                    this.pivots.ao.add(child);
                 }
                 this.meshes.set(name, child);
             }
@@ -527,6 +588,24 @@ export class AnatomyViewer {
         // Axial external/internal rotation around Y
         this.pivots.gh.rotation.y = THREE.MathUtils.degToRad(armRot);
 
+        // 4. Cervical Spine & Cranium Transformations
+        const cervFlex = getVal('cervical_flexion') || 0.0;
+        const lowerFlex = getVal('lower_cervical_flex') || 0.0;
+        const upperFlex = getVal('upper_cervical_flex') || 0.0;
+        const headTrans = getVal('head_anterior_trans') || 0.0;
+        const cvaAngle = getVal('cva_angle') || (53.0 - (headTrans / 50.0) * 20.0);
+
+        if (this.pivots.c7t1) {
+            this.pivots.c7t1.rotation.x = THREE.MathUtils.degToRad(lowerFlex);
+            this.pivots.c7t1.position.z = this.jointCenters.c7t1.z + (headTrans * 0.0004);
+        }
+        if (this.pivots.aa) {
+            this.pivots.aa.rotation.x = THREE.MathUtils.degToRad(upperFlex * 0.4);
+        }
+        if (this.pivots.ao) {
+            this.pivots.ao.rotation.x = THREE.MathUtils.degToRad(upperFlex * 0.6);
+        }
+
         // Extract muscle activations if available in Mode 2
         const muscleActivations = {};
         if (this.muscleData) {
@@ -552,6 +631,11 @@ export class AnatomyViewer {
                 scapProt: round2(scapProt),
                 clavElev: round2(clavElev),
                 ghElev: round2(ghElev),
+                cervFlex: round2(cervFlex),
+                lowerFlex: round2(lowerFlex),
+                upperFlex: round2(upperFlex),
+                headTrans: round2(headTrans),
+                cvaAngle: round2(cvaAngle),
                 muscleActivations
             });
         }
@@ -562,17 +646,26 @@ export class AnatomyViewer {
 
         // Map OpenSim muscle keys to mesh identifiers
         const muscleKeyMap = {
-            'deltoid_anterior': ['deltoid_anterior', 'deltoideus_clavicular'],
-            'deltoid_lateral': ['deltoid_lateral', 'deltoideus_acromial'],
-            'deltoid_posterior': ['deltoid_posterior', 'deltoideus_spinal'],
-            'supraspinatus': ['supraspinatus'],
-            'infraspinatus': ['infraspinatus'],
-            'subscapularis': ['subscapularis'],
-            'serratus_anterior': ['serratus_anterior'],
-            'trapezius_upper': ['trapezius_upper', 'trapezius_descending'],
-            'trapezius_lower': ['trapezius_lower', 'trapezius_ascending'],
-            'pectoralis_minor': ['pectoralis_minor'],
-            'pectoralis_major': ['pectoralis_major']
+            'deltoid_anterior': ['deltoid_anterior', 'deltoideus_clavicular', 'delt_a'],
+            'deltoid_lateral': ['deltoid_lateral', 'deltoideus_acromial', 'delt_l'],
+            'deltoid_posterior': ['deltoid_posterior', 'deltoideus_spinal', 'delt_p'],
+            'supraspinatus': ['supraspinatus', 'supra'],
+            'infraspinatus': ['infraspinatus', 'infra'],
+            'subscapularis': ['subscapularis', 'subscap'],
+            'serratus_anterior': ['serratus_anterior', 'serratus_l', 'serratus_u', 'serratus'],
+            'serratus': ['serratus', 'serratus_anterior', 'serratus_l', 'serratus_u'],
+            'trapezius_upper': ['trapezius_upper', 'trapezius_descending', 'trap_u', 'trap-u'],
+            'trap_u': ['trap_u', 'trap-u', 'trapezius_upper'],
+            'trapezius_lower': ['trapezius_lower', 'trapezius_ascending', 'trap_l', 'trap-l'],
+            'trap_l': ['trap_l', 'trap-l', 'trapezius_lower'],
+            'pectoralis_minor': ['pectoralis_minor', 'pec_minor'],
+            'pectoralis_major': ['pectoralis_major', 'pec_major'],
+            'scm': ['scm'],
+            'scalenes': ['scalenes'],
+            'splenius': ['splenius'],
+            'suboccipital': ['Suboccipital_Muscles', 'suboccipital'],
+            'levator': ['Levator_Scapulae', 'levator'],
+            'longus_colli': ['longus', 'longus_colli']
         };
 
         this.meshes.forEach((mesh, name) => {

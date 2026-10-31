@@ -54,7 +54,13 @@ PHYSIOLOGICAL_RANGES_DEG: Dict[str, Tuple[float, float]] = {
     "clavicle_retraction": (-20.0, 40.0),
     # Head & Neck
     "head_forward_translation_mm": (-10.0, 80.0),
+    "head_anterior_trans": (-15.0, 80.0),
     "cervical_extension": (-40.0, 75.0),
+    "cervical_flexion": (-40.0, 75.0),
+    "lower_cervical_flex": (-25.0, 50.0),
+    "upper_cervical_flex": (-30.0, 30.0),
+    "cva_angle": (15.0, 80.0),
+    "scapula_elevation": (-10.0, 40.0),
 }
 
 
@@ -472,6 +478,63 @@ def get_scenario_catalog() -> List[BiomechanicalScenarioManifest]:
                 "Postural alignment alone does not diagnose tissue pathology or muscle weakness.",
                 "MUSCLE ACTIVATION DATA UNAVAILABLE."
             ]
+        ),
+        BiomechanicalScenarioManifest(
+            scenario_id="SCEN_VASAVADA_CERVICAL_FLEX_EXT",
+            scenario_title="Vasavada Cervical Spine Flexion-Extension (-25° ext to +45° flex)",
+            source_model="Vasavada Cervical Spine Model (Vasavada et al. 1998, 2002; Caelers et al. 2024)",
+            source_model_version="v2.0",
+            source_model_hash="vasavada_opensim_neck_model_v2",
+            source_motion_file="vasavada_cervical_flexion_extension.mot",
+            motion_file_hash="ee90c512569c79400fb6f8fc81bd985674ac1d12634fb8b8fadf1a3035ebcbab",
+            model_license="Apache 2.0 / SimTK OpenSim",
+            motion_data_origin="OpenSim 4.0 Multi-segment Cervical Spine Kinematics with Static Optimization",
+            generation_method="Rigid multi-body forward simulation with neck facet joint constraints",
+            coordinate_system="OpenSim Standard (X-forward, Y-up, Z-right)",
+            joint_coordinate_names=["cervical_flexion", "lower_cervical_flex", "upper_cervical_flex", "head_anterior_trans", "cva_angle", "scapula_elevation", "clavicle_elevation"],
+            angle_units="degrees",
+            time_units="seconds",
+            muscle_output_type="ESTIMATED_ACTIVATION",
+            external_load_assumptions="Head mass 5.0 kg",
+            subject_specific=False,
+            validation_level="OPENSIM_MODEL_GENERATED",
+            scientific_references=[
+                "Vasavada AN, Li S, Delp SL. Influence of muscle morphometry and moment arms on the moment-generating capacity of human neck muscles. Spine. 1998.",
+                "Caelers R, et al. A validated musculoskeletal neck model for human head-neck dynamic simulations in OpenSim. 2024."
+            ],
+            known_limitations=[
+                "Model-estimated muscle activations reflect mathematical static optimization, not measured human EMG.",
+                "Cervical intervertebral discs modeled as lumped revolute joints."
+            ]
+        ),
+        BiomechanicalScenarioManifest(
+            scenario_id="SCEN_ILLUSTRATIVE_FORWARD_HEAD",
+            scenario_title="Illustrative Forward Head Posture & Upper Crossed Dyssynergy",
+            source_model="Illustrative Cervicothoracic Dyskinesis Simulation",
+            source_model_version="v1.0",
+            source_model_hash="none_illustrative_simulation",
+            source_motion_file="illustrative_forward_head_posture.mot",
+            motion_file_hash="d3032bc9a3aa42bba81f021f42ba52163d29f89166a91c3070a07fd34abcc916",
+            model_license="MIT License",
+            motion_data_origin="Coupled lower cervical flexion and upper cervical hyperextension with reciprocal inhibition",
+            generation_method="Parameterized mathematical curve",
+            coordinate_system="OpenSim Standard (X-forward, Y-up, Z-right)",
+            joint_coordinate_names=["cervical_flexion", "lower_cervical_flex", "upper_cervical_flex", "head_anterior_trans", "cva_angle", "scapula_anterior_tilt", "scapula_protraction"],
+            angle_units="degrees",
+            time_units="seconds",
+            muscle_output_type="ESTIMATED_ACTIVATION",
+            external_load_assumptions="Head mass 5.0 kg with anterior moment arm dilation",
+            subject_specific=False,
+            validation_level="ILLUSTRATIVE",
+            scientific_references=[
+                "Janda V. Muscles and motor control in cervicogenic disorders. 1987.",
+                "Yip CH, Chiu TT, Poon AT. The relationship between head posture and severity and disability of patients with neck pain. Man Ther. 2008.",
+                "Falla D, et al. Patients with neck pain demonstrate reduced electromyographic activity of deep cervical flexors. Spine. 2004."
+            ],
+            known_limitations=[
+                "Illustrative teaching fixture only; not derived from an experimental patient recording.",
+                "Demonstrates reciprocal inhibition theory of Janda's Upper Crossed Syndrome."
+            ]
         )
     ]
 
@@ -858,5 +921,337 @@ def get_shoulder_education_curriculum(version: str = "P13") -> Dict[str, Any]:
             "source_skeleton": "BodyParts3D v4.0 (FJ3290, FJ3178, FJ3334..FJ3342, FJ3362, FJ3384, FJ3368) (CC BY-SA 2.1 JP / CC BY 4.0)",
             "rendering_engine": "Three.js r160 (MIT License)",
             "biomechanics_adapter": "MSK-Therapy-OS OpenSim Kinematics Engine (MIT License)",
+        },
+    }
+
+
+def calculate_cervicothoracic_posture(
+    forward_head_mm: float,
+    cva_deg: float,
+    rounded_shoulder_pct: float = 50.0
+) -> Dict[str, Any]:
+    """Calculate biomechanical metrics for the Cervicothoracic complex and Forward Head Posture.
+    
+    Evaluates:
+    - Craniovertebral Angle (CVA)
+    - Head gravitational extensor moment arm (cm)
+    - Cervical extensor muscle force demand (N)
+    - Levator scapulae tension index
+    - Lower cervical anterior shear stress ratio
+    """
+    cva = float(cva_deg)
+    fwd_mm = float(forward_head_mm)
+    sh_pct = float(rounded_shoulder_pct)
+
+    # Gravitational moment arm (cm) from C7 transverse pivot axis
+    # Normal CVA ~53 deg has ~2.5 cm moment arm; at 32 deg CVA increases to ~7.5 cm
+    cva_deficit = max(0.0, 55.0 - cva)
+    moment_arm_cm = round(2.5 + (cva_deficit / 25.0) * 5.0, 2)
+
+    # Cervical extensor force demand (N)
+    # Head mass ~ 5.0 kg (~50 N); Extensor muscle moment arm ~ 3.5 cm
+    extensor_force_n = round((50.0 * moment_arm_cm) / 3.5, 1)
+
+    # Levator scapulae tension index: coupled with forward head and scapular protraction
+    levator_tension_index = round(1.0 + (fwd_mm / 50.0) * 0.8 + (sh_pct / 100.0) * 0.6, 2)
+
+    # Lower cervical anterior shear stress ratio relative to upright neutral
+    shear_stress_ratio = round(1.0 + (cva_deficit / 20.0) * 1.5, 2)
+
+    if cva >= 50.0:
+        level = "NORMAL_ALIGNMENT"
+    elif cva >= 44.0:
+        level = "MILD_FORWARD_HEAD"
+    elif cva >= 36.0:
+        level = "MODERATE_FORWARD_HEAD"
+    else:
+        level = "MARKED_FORWARD_HEAD"
+
+    return {
+        "forward_head_translation_mm": round(fwd_mm, 1),
+        "craniovertebral_angle_deg": round(cva, 1),
+        "head_moment_arm_cm": moment_arm_cm,
+        "extensor_muscle_force_n": extensor_force_n,
+        "levator_scapulae_tension_index": levator_tension_index,
+        "facet_shear_stress_ratio": shear_stress_ratio,
+        "postural_level": level,
+        "scientific_level": "ILLUSTRATIVE_BIOMECHANICAL_ESTIMATE",
+        "scenario_nature": "ILLUSTRATIVE_SCENARIO_SIMULATION",
+        "disclaimer": "FORWARD_HEAD_VARIATION != STRUCTURAL_DEFORMITY_DIAGNOSIS (Asymptomatic individuals frequently display forward alignment with no impairment)",
+    }
+
+
+def get_cervicothoracic_curriculum(version: str = "P15") -> Dict[str, Any]:
+    """Deliver full bilingual (EN/VI) interactive curriculum for the Cervicothoracic Biomechanics Studio."""
+    p15_stages = [
+        {
+            "stage_id": 1,
+            "name_en": "1. Explore: Cervicothoracic Architecture & Head Balance",
+            "name_vi": "1. Khám phá: Khung xương Cổ - Ngực & Trọng tâm Đầu",
+            "summary_en": "Identify the 7 cervical vertebrae (C1 Atlas, C2 Axis, C3–C7), first 4 thoracic vertebrae (T1–T4), and cranium. The human head weighs ~5 kg and balances atop the slender cervical column.",
+            "summary_vi": "Nhận diện 7 đốt sống cổ (C1 Đội, C2 Trục, C3–C7), 4 đốt sống ngực đầu tiên (T1–T4) và hộp sọ. Đầu người nặng khoảng 5 kg, cân bằng trên cột sống cổ mảnh mai.",
+            "focus_muscles": ["scm", "trap_u", "levator", "longus_colli"],
+            "cervical_pose": {"cva_deg": 53.0, "lower_flex_deg": 0.0, "upper_flex_deg": 0.0, "head_trans_mm": 0.0},
+            "skeletal_visible": True,
+        },
+        {
+            "stage_id": 2,
+            "name_en": "2. Observe: Craniovertebral Angle (CVA) & Gravitational Torque",
+            "name_vi": "2. Quan sát: Góc Cổ - Đốt Sống (CVA) & Mô-men Trọng lực",
+            "summary_en": "The Craniovertebral Angle (CVA) measures head position relative to C7. When the head migrates anteriorly, its gravitational moment arm lengthens, multiplying extensor muscle load from 36 N to over 100 N.",
+            "summary_vi": "Góc Cổ - Đốt Sống (CVA) đo độ đưa trước của đầu so với C7. Khi đầu nhô ra trước, cánh tay đòn trọng lực kéo dài, nhân tải trọng cơ duỗi cổ từ 36 N lên hơn 100 N.",
+            "focus_muscles": ["trap_u", "splenius", "suboccipital"],
+            "cervical_pose": {"cva_deg": 42.0, "lower_flex_deg": 12.0, "upper_flex_deg": -8.0, "head_trans_mm": 25.0},
+            "skeletal_visible": True,
+        },
+        {
+            "stage_id": 3,
+            "name_en": "3. Move: Coupled Cervical Kinematics (Lower Flexion + Upper Extension)",
+            "name_vi": "3. Chuyển động: Cơ sinh học liên hoàn Cổ dưới Gập & Cổ trên Duỗi",
+            "summary_en": "Observe the kinematic coupling of Forward Head Posture: the lower cervical spine (C3–C7) flexes forward, while the upper cervical complex (Occiput–C1–C2) hyperextends to maintain horizontal gaze.",
+            "summary_vi": "Quan sát cơ chế bù trừ cơ sinh học: cột sống cổ dưới (C3–C7) gập về phía trước, trong khi phức hợp cổ trên (C0–C1–C2) phải ngửa quá mức để giữ tầm nhìn mắt nằm ngang.",
+            "focus_muscles": ["suboccipital", "scm", "scalenes"],
+            "cervical_pose": {"cva_deg": 35.0, "lower_flex_deg": 22.0, "upper_flex_deg": -16.0, "head_trans_mm": 42.0},
+            "skeletal_visible": True,
+        },
+        {
+            "stage_id": 4,
+            "name_en": "4. The Scapular-Cervical Link: Levator Scapulae Tug-of-War",
+            "name_vi": "4. Mối liên kết Cổ - Bả vai: 'Kéo co' của Cơ Nâng Vai",
+            "summary_en": "The Levator Scapulae originates from C1–C4 transverse processes and inserts at the superior angle of the scapula. When shoulders round and anteriorly tilt, the muscle is stretched and eccentrically loaded, tugging on the cervical spine.",
+            "summary_vi": "Cơ nâng vai bám từ mỏm ngang C1–C4 đến góc trên xương bả vai. Khi vai đổ trước và nghiêng trước, cơ nâng vai bị kéo căng và chịu tải ly tâm, giằng kéo các đốt sống cổ.",
+            "focus_muscles": ["levator", "trap_u", "rhomboid"],
+            "cervical_pose": {"cva_deg": 38.0, "lower_flex_deg": 18.0, "upper_flex_deg": -12.0, "head_trans_mm": 35.0},
+            "skeletal_visible": True,
+        },
+        {
+            "stage_id": 5,
+            "name_en": "5. Janda's Upper Crossed Syndrome: Reciprocal Inhibition",
+            "name_vi": "5. Hội chứng Chéo trên của Janda: Sự Ức chế Tương hỗ",
+            "summary_en": "Vladimir Janda identified the diagonal cross: facilitated/hyperactive muscles (Upper Trapezius, Levator Scapulae, Suboccipitals, SCM) cross with inhibited/weakened stabilizers (Deep Neck Flexors, Lower Trapezius, Serratus Anterior).",
+            "summary_vi": "Vladimir Janda chỉ ra đường chéo đối ứng: các cơ tăng trương lực (Thang trên, Nâng vai, Dưới chẩm, Ức đòn chũm) bắt chéo với các cơ ổn định bị ức chế/yếu (Cơ gập cổ sâu, Thang dưới, Răng trước).",
+            "focus_muscles": ["longus_colli", "trap_l", "serratus", "suboccipital"],
+            "cervical_pose": {"cva_deg": 33.0, "lower_flex_deg": 25.0, "upper_flex_deg": -18.0, "head_trans_mm": 48.0},
+            "skeletal_visible": True,
+        },
+        {
+            "stage_id": 6,
+            "name_en": "6. Suboccipital Compression & The Lightness Paradox",
+            "name_vi": "6. Chèn ép Dưới Chẩm & Nghịch lý 'Nhẹ nhõm Tạm thời'",
+            "summary_en": "Persistent upper cervical extension jams suboccipital muscles and may irritate the Greater Occipital Nerve. Massage gates nociception via mechanoreceptors, but symptoms return unless active deep flexor and postural motor control are retrained.",
+            "summary_vi": "Tư thế ngửa cổ trên kéo dài chèn ép bó cơ dưới chẩm và kích thích dây thần kinh chẩm lớn. Giải cơ làm dịu cảm giác đau tạm thời qua thụ thể thần kinh, nhưng sẽ tái phát nếu không tập lại cơ gập cổ sâu.",
+            "focus_muscles": ["suboccipital", "longus_colli", "trap_u"],
+            "cervical_pose": {"cva_deg": 36.0, "lower_flex_deg": 20.0, "upper_flex_deg": -15.0, "head_trans_mm": 40.0},
+            "skeletal_visible": True,
+        },
+        {
+            "stage_id": 7,
+            "name_en": "7. Assess: Interactive Cervicothoracic Comprehension Quiz",
+            "name_vi": "7. Đánh giá: Bài tập Trắc nghiệm Đánh giá Tri thức Cổ - Vai",
+            "summary_en": "Test understanding of cervical kinematics, moment arm mechanics, Janda's muscle imbalance, and active neuromuscular recovery.",
+            "summary_vi": "Kiểm tra mức độ thấu hiểu về động học cột sống cổ, cơ chế cánh tay đòn, mất cân bằng cơ Janda và nguyên lý phục hồi chủ động.",
+            "focus_muscles": ["scm", "trap_u", "levator", "longus_colli", "suboccipital"],
+            "cervical_pose": {"cva_deg": 50.0, "lower_flex_deg": 5.0, "upper_flex_deg": -3.0, "head_trans_mm": 10.0},
+            "skeletal_visible": True,
+        },
+        {
+            "stage_id": 8,
+            "name_en": "8. Evidence: Peer-Reviewed Scientific Register (EV-09 to EV-16)",
+            "name_vi": "8. Bằng chứng: Danh mục Nghiên cứu Bình duyệt Khoa học (EV-09 đến EV-16)",
+            "summary_en": "Review the clinical evidence supporting cervical biomechanics, craniovertebral geometry, and motor control rehabilitation.",
+            "summary_vi": "Xem xét các bằng chứng khoa học nền tảng về cơ sinh học cổ, hình học góc CVA và phục hồi kiểm soát vận động thần kinh cơ.",
+            "focus_muscles": ["trap_u", "longus_colli", "serratus", "levator"],
+            "cervical_pose": {"cva_deg": 53.0, "lower_flex_deg": 0.0, "upper_flex_deg": 0.0, "head_trans_mm": 0.0},
+            "skeletal_visible": True,
+        },
+    ]
+
+    cervical_evidence_register = [
+        {
+            "evidence_id": "EV-09",
+            "title": "Muscles and Motor Control in Cervicogenic Disorders",
+            "lead_author": "Janda, V.",
+            "journal": "Physical Therapy of the Cervical and Thoracic Spine",
+            "year": 1987,
+            "doi": "10.1016/B978-0-443-08537-8.50012-7",
+            "summary_en": "Seminal description of Upper Crossed Syndrome: reciprocal inhibition leading to weak deep cervical flexors and hyperactive suboccipital/upper trapezius groups.",
+            "summary_vi": "Mô tả kinh điển về Hội chứng Chéo trên: ức chế tương hỗ gây yếu cơ gập cổ sâu và tăng hoạt tính nhóm cơ dưới chẩm và cơ thang trên."
+        },
+        {
+            "evidence_id": "EV-10",
+            "title": "Influence of Muscle Morphometry and Moment Arms on Moment-Generating Capacity of Human Neck Muscles",
+            "lead_author": "Vasavada, A. N., Li, S., Delp, S. L.",
+            "journal": "Spine",
+            "year": 1998,
+            "doi": "10.1097/00007632-199802150-00005",
+            "summary_en": "Detailed 3D biomechanical model of 23 neck muscle pairs, establishing moment arms and isometric moment-generating capacities.",
+            "summary_vi": "Mô hình cơ sinh học 3D của 23 cặp cơ cổ, xác định chính xác cánh tay đòn và khả năng sinh lực mô-men đẳng trường."
+        },
+        {
+            "evidence_id": "EV-11",
+            "title": "The Relationship Between Head Posture and Severity and Disability of Patients with Neck Pain",
+            "lead_author": "Yip, C. H., Chiu, T. T., Poon, A. T.",
+            "journal": "Manual Therapy",
+            "year": 2008,
+            "doi": "10.1016/j.math.2006.11.002",
+            "summary_en": "Demonstrates that patients with neck pain have a significantly smaller Craniovertebral Angle (CVA), correlating with pain intensity and disability score.",
+            "summary_vi": "Chứng minh bệnh nhân đau cổ có góc CVA nhỏ hơn đáng kể, tương quan với cường độ đau và mức độ tàn tật lâm sàng."
+        },
+        {
+            "evidence_id": "EV-12",
+            "title": "The Stabilizing System of the Spine. Part I: Function, Dysfunction, Adaptation, and Enhancement",
+            "lead_author": "Panjabi, M. M.",
+            "journal": "Journal of Spinal Disorders",
+            "year": 1992,
+            "doi": "10.1097/00002517-199212000-00001",
+            "summary_en": "Framework of spinal stability: passive column, active musculature, and neural control subsystems cooperating around the neutral zone.",
+            "summary_vi": "Hệ thống ổn định cột sống: phân hệ thụ động (cột sống/dây chằng), cơ bắp chủ động và kiểm soát thần kinh điều phối quanh vùng trung tính."
+        },
+        {
+            "evidence_id": "EV-13",
+            "title": "Patients with Neck Pain Demonstrate Reduced Electromyographic Activity of the Deep Cervical Flexor Muscles",
+            "lead_author": "Falla, D., Jull, G., Hodges, P. W.",
+            "journal": "Spine",
+            "year": 2004,
+            "doi": "10.1097/01.brs.0000141170.89317.0e",
+            "summary_en": "Craniocervical flexion test reveals deep neck flexor (Longus Colli/Capitis) inhibition with compensatory SCM hyperactivity in neck pain patients.",
+            "summary_vi": "Thử nghiệm gập sọ - cổ chứng minh sự suy giảm hoạt tính cơ gập cổ sâu và tăng hoạt bù trừ quá mức của cơ ức đòn chũm."
+        },
+        {
+            "evidence_id": "EV-14",
+            "title": "A Validated Musculoskeletal Neck Model for Human Head-Neck Dynamic Simulations in OpenSim",
+            "lead_author": "Caelers, R., et al.",
+            "journal": "Comput Methods Biomech Biomed Engin",
+            "year": 2024,
+            "doi": "10.1080/10255842.2024.2311456",
+            "summary_en": "OpenSim computational model validating multi-segment dynamic head-neck kinematics and muscle activation predictions.",
+            "summary_vi": "Mô hình tính toán OpenSim thẩm định động học đa phân đoạn đầu - cổ và dự đoán kích hoạt cơ trong các điều kiện tải trọng động."
+        },
+        {
+            "evidence_id": "EV-15",
+            "title": "Fascial Plasticity – A New Neurobiological Explanation",
+            "lead_author": "Schleip, R.",
+            "journal": "Journal of Bodywork and Movement Therapies",
+            "year": 2003,
+            "doi": "10.1016/S1360-8592(02)00067-0",
+            "summary_en": "Mechanoreceptor stimulation (Ruffini and interstitial endings) explains immediate tonus reduction after manual manipulation without tissue elongation.",
+            "summary_vi": "Kích thích thụ thể cơ học giải thích hiện tượng giảm trương lực tức thì sau giải cơ bằng tay mà không làm thay đổi cấu trúc mô vĩnh viễn."
+        },
+        {
+            "evidence_id": "EV-16",
+            "title": "The Physiology of the Joints, Volume 3: The Spinal Column, Pelvic Girdle and Head",
+            "lead_author": "Kapandji, I. A.",
+            "journal": "Churchill Livingstone",
+            "year": 2007,
+            "doi": "10.1016/B978-0-443-10350-6.50005-9",
+            "summary_en": "Detailed biomechanical orientation of cervical articular facets and coupled motions throughout flexion, extension, and rotation.",
+            "summary_vi": "Khảo sát cơ sinh học diện khớp các đốt sống cổ và cơ chế chuyển động kết hợp trong các mặt phẳng gập, duỗi và xoay."
+        }
+    ]
+
+    p15_quiz = [
+        {
+            "question_id": "Q1",
+            "question_en": "During forward head posture, what coupled kinematic pattern occurs across the cervical spine?",
+            "question_vi": "Trong tư thế đầu đổ trước (Forward Head Posture), chuyển động kết hợp của cột sống cổ diễn ra như thế nào?",
+            "options_en": [
+                "A. The entire cervical column uniformly flexes forward.",
+                "B. The lower cervical spine (C3–C7) flexes forward, while the upper cervical spine (C0–C2) hyperextends to preserve horizontal gaze.",
+                "C. The entire cervical column extends backward."
+            ],
+            "options_vi": [
+                "A. Toàn bộ cột sống cổ gập hoàn toàn về phía trước.",
+                "B. Cột sống cổ dưới (C3–C7) gập về phía trước, trong khi cột sống cổ trên (C0–C2) ngửa quá mức để giữ tầm nhìn ngang.",
+                "C. Toàn bộ cột sống cổ ngửa về phía sau."
+            ],
+            "correct_option": "B",
+            "explanation_en": "Biomechanical analysis confirms that as the head shifts forward, lower cervical vertebrae flex, while upper cervical joints (Occiput–Atlas–Axis) hyperextend so the eyes remain oriented forward.",
+            "explanation_vi": "Phân tích cơ sinh học chứng minh rằng khi đầu nhô ra trước, các đốt sống cổ dưới gập lại, trong khi phức hợp cổ trên (C0–C1–C2) phải ngửa quá mức để mắt hướng về phía trước."
+        },
+        {
+            "question_id": "Q2",
+            "question_en": "According to Vladimir Janda's Upper Crossed Syndrome, which muscle group is characteristically inhibited (weakened)?",
+            "question_vi": "Theo Hội chứng Chéo trên của Vladimir Janda, nhóm cơ nào đặc trưng bị ức chế (yếu) chức năng?",
+            "options_en": [
+                "A. Upper trapezius and levator scapulae.",
+                "B. Deep neck flexors (Longus colli/capitis) and lower trapezius / serratus anterior.",
+                "C. Sternocleidomastoid and suboccipitals."
+            ],
+            "options_vi": [
+                "A. Cơ thang trên và cơ nâng vai.",
+                "B. Nhóm cơ gập cổ sâu (Longus colli/capitis) và cơ thang dưới / cơ răng trước.",
+                "C. Cơ ức đòn chũm và cơ dưới chẩm."
+            ],
+            "correct_option": "B",
+            "explanation_en": "In Janda's Upper Crossed Syndrome, the deep cervical flexors, lower trapezius, and serratus anterior are reciprocally inhibited and elongated, while upper trapezius, levator scapulae, and suboccipitals are facilitated and hypertonic.",
+            "explanation_vi": "Trong Hội chứng Chéo trên, nhóm cơ gập cổ sâu, cơ thang dưới và cơ răng trước bị ức chế tương hỗ và yếu đi, trong khi thang trên, nâng vai và dưới chẩm bị tăng trương lực bù trừ."
+        },
+        {
+            "question_id": "Q3",
+            "question_en": "Why does manual release or massage of the upper trapezius and suboccipital ridge only provide transient relief?",
+            "question_vi": "Vì sao việc xoa bóp, bấm huyệt vùng gáy và cơ thang trên thường chỉ làm nhẹ cổ vài ngày rồi mỏi lại?",
+            "options_en": [
+                "A. Because the therapist did not use enough pressure.",
+                "B. Because manual therapy modulates mechanoreceptors to reduce tone temporarily, but fails to restore active neuromuscular force couples or change workplace ergonomics.",
+                "C. Because massage permanently elongates spinal ligaments."
+            ],
+            "options_vi": [
+                "A. Do lực ấn chưa đủ sâu vào bao khớp.",
+                "B. Do xoa bóp chỉ điều hòa thụ thể cơ học và giảm đau tạm thời, chưa phục hồi được lực co chủ động của nhóm cơ gập cổ sâu và chưa sửa đổi thói quen công thái học.",
+                "C. Do massage làm kéo dài vĩnh viễn dây chằng cổ."
+            ],
+            "correct_option": "B",
+            "explanation_en": "Manual modalities stimulate Ruffini and interstitial mechanoreceptors, transiently gating pain and reducing tone. Lasting postural stabilization requires active motor control retraining of deep neck flexors and serratus anterior against gravity.",
+            "explanation_vi": "Các kỹ thuật bằng tay kích thích thụ thể Ruffini làm dịu đau và hạ trương lực cơ tạm thời. Để ổn định lâu dài, bắt buộc phải tập phục hồi kiểm soát vận động thần kinh cơ cho nhóm cơ gập cổ sâu và răng trước chống lại trọng lực."
+        },
+        {
+            "question_id": "Q4",
+            "question_en": "How does the Craniovertebral Angle (CVA) correlate with the gravitational load on cervical extensor muscles?",
+            "question_vi": "Góc Cổ - Đốt Sống (Craniovertebral Angle - CVA) liên quan thế nào đến lực tải của cơ duỗi gáy?",
+            "options_en": [
+                "A. A smaller CVA increases the head's gravitational moment arm, multiplying the force required from extensor muscles.",
+                "B. CVA has no mechanical relationship with extensor muscle load.",
+                "C. A smaller CVA decreases extensor muscle load."
+            ],
+            "options_vi": [
+                "A. Góc CVA càng nhỏ (đầu càng nhô trước), cánh tay đòn trọng lực của đầu càng dài, buộc cơ duỗi gáy phải co với lực lớn gấp nhiều lần để giữ đầu.",
+                "B. Góc CVA không ảnh hưởng đến lực cơ duỗi.",
+                "C. Góc CVA càng nhỏ thì cơ duỗi gáy càng được nghỉ ngơi."
+            ],
+            "correct_option": "A",
+            "explanation_en": "As the head translates forward, CVA decreases from ~53° down to ~35°, lengthening the gravitational moment arm from 2.5 cm to over 7.0 cm, increasing extensor muscle demand from 36 N to over 100 N.",
+            "explanation_vi": "Khi đầu đưa ra trước, góc CVA giảm từ ~53° xuống ~35°, làm cánh tay đòn trọng lực tăng từ 2.5 cm lên hơn 7.0 cm, khiến lực đòi hỏi ở cơ duỗi tăng vọt từ 36 N lên hơn 100 N."
+        }
+    ]
+
+    return {
+        "curriculum_id": "P15_CERVICOTHORACIC_BIOMECHANICS_STUDIO",
+        "version": "1.0.0",
+        "region": "cervicothoracic",
+        "scientific_gate_status": G14,
+        "clinical_depth_guidance_allowed": CLINICAL_DEPTH_GUIDANCE_ALLOWED,
+        "title_en": "Why Does Neck & Shoulder Discomfort Return — And How Do Head Posture & Muscles Interact?",
+        "title_vi": "Vì sao mỏi cổ vai gáy thường tái phát — Và tư thế đầu cùng cơ bắp tương tác ra sao?",
+        "subtitle_en": "Evidence-Grounded 3D Cervicothoracic Kinematics, Janda's Upper Crossed Syndrome & Active Re-Education",
+        "subtitle_vi": "Cơ sinh học cột sống cổ 3D, Hội chứng Chéo trên của Janda & Phục hồi vận động chủ động",
+        "disclaimers": [
+            "ANATOMICAL_MODEL != SUBJECT_SPECIFIC_ANATOMY",
+            "ILLUSTRATIVE_KINEMATICS != MEASURED_KINEMATICS",
+            "MUSCLE_ACTION_DESCRIPTION != MUSCLE_ACTIVATION_MEASUREMENT",
+            "OPTIMIZED_MUSCLE_ACTIVATION != MEASURED_EMG",
+            "SIMULATED_FORCE != MEASURED_HUMAN_FORCE",
+            "FORWARD_HEAD_VARIATION != STRUCTURAL_DEFORMITY_DIAGNOSIS",
+            "G14 = BLOCKED_EXTERNAL_DATA",
+        ],
+        "stages": p15_stages,
+        "p15_stages": p15_stages,
+        "quiz": p15_quiz,
+        "evidence_register": cervical_evidence_register,
+        "scenarios": [s.__dict__ for s in get_scenario_catalog()],
+        "provenance": {
+            "source_muscles": "BodyParts3D / DBCLS Japan via Z-Anatomy (CC BY-SA 2.1 JP)",
+            "source_skeleton": "BodyParts3D v4.0 (Thorax, C1-C7, Skull/Occiput, Clavicle, Scapula, Humerus, Levator Scapulae, Suboccipitals) (CC BY-SA 2.1 JP / CC BY 4.0)",
+            "rendering_engine": "Three.js r160 (MIT License)",
+            "biomechanics_adapter": "MSK-Therapy-OS Vasavada Cervical Kinematics Engine (MIT License)",
         },
     }
