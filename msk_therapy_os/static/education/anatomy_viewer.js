@@ -354,8 +354,12 @@ export class AnatomyViewer {
             metalness: 0.05
         });
 
+        const meshes = [];
         scene.traverse((child) => {
-            if (child.isMesh) {
+            if (child.isMesh) meshes.push(child);
+        });
+
+        meshes.forEach((child) => {
                 const name = child.name;
                 if (child.material && child.material.name === 'LevatorMaterial') {
                     child.material = new THREE.MeshStandardMaterial({
@@ -409,7 +413,6 @@ export class AnatomyViewer {
                     this.pivots.ao.add(child);
                 }
                 this.meshes.set(name, child);
-            }
         });
     }
 
@@ -588,22 +591,32 @@ export class AnatomyViewer {
         // Axial external/internal rotation around Y
         this.pivots.gh.rotation.y = THREE.MathUtils.degToRad(armRot);
 
-        // 4. Cervical Spine & Cranium Transformations
+        // 4. Cervical Spine & Cranium Transformations (P16 Multi-Axis Motion)
         const cervFlex = getVal('cervical_flexion') || 0.0;
         const lowerFlex = getVal('lower_cervical_flex') || 0.0;
         const upperFlex = getVal('upper_cervical_flex') || 0.0;
         const headTrans = getVal('head_anterior_trans') || 0.0;
         const cvaAngle = getVal('cva_angle') || (53.0 - (headTrans / 50.0) * 20.0);
+        const cervRot = getVal('cervical_rotation') || 0.0;
+        const c1c2Rot = getVal('c1_c2_rotation') || (cervRot * 0.55);
+        const lowerRot = getVal('lower_cervical_rot') || (cervRot * 0.45);
+        const cervBend = getVal('cervical_lateral_bend') || 0.0;
+        const lowerBend = getVal('lower_cervical_bend') || (cervBend * 0.75);
+        const occiputBend = getVal('occiput_c1_bend') || (cervBend * 0.25);
 
         if (this.pivots.c7t1) {
             this.pivots.c7t1.rotation.x = THREE.MathUtils.degToRad(lowerFlex);
+            this.pivots.c7t1.rotation.y = THREE.MathUtils.degToRad(lowerRot);
+            this.pivots.c7t1.rotation.z = -THREE.MathUtils.degToRad(lowerBend);
             this.pivots.c7t1.position.z = this.jointCenters.c7t1.z + (headTrans * 0.0004);
         }
         if (this.pivots.aa) {
             this.pivots.aa.rotation.x = THREE.MathUtils.degToRad(upperFlex * 0.4);
+            this.pivots.aa.rotation.y = THREE.MathUtils.degToRad(c1c2Rot);
         }
         if (this.pivots.ao) {
             this.pivots.ao.rotation.x = THREE.MathUtils.degToRad(upperFlex * 0.6);
+            this.pivots.ao.rotation.z = -THREE.MathUtils.degToRad(occiputBend);
         }
 
         // Extract muscle activations if available in Mode 2
@@ -636,6 +649,8 @@ export class AnatomyViewer {
                 upperFlex: round2(upperFlex),
                 headTrans: round2(headTrans),
                 cvaAngle: round2(cvaAngle),
+                cervRot: round2(cervRot),
+                cervBend: round2(cervBend),
                 muscleActivations
             });
         }
@@ -660,9 +675,9 @@ export class AnatomyViewer {
             'trap_l': ['trap_l', 'trap-l', 'trapezius_lower'],
             'pectoralis_minor': ['pectoralis_minor', 'pec_minor'],
             'pectoralis_major': ['pectoralis_major', 'pec_major'],
-            'scm': ['scm'],
-            'scalenes': ['scalenes'],
-            'splenius': ['splenius'],
+            'scm': ['scm', 'scm_contra', 'scm_ipsi'],
+            'scalenes': ['scalenes', 'scalenes_ipsi'],
+            'splenius': ['splenius', 'splenius_ipsi'],
             'suboccipital': ['Suboccipital_Muscles', 'suboccipital'],
             'levator': ['Levator_Scapulae', 'levator'],
             'longus_colli': ['longus', 'longus_colli']

@@ -34,6 +34,17 @@ CLINICAL_VALIDATION: str = "NOT_ESTABLISHED"
 SHOULDER_MOTION_STATUS_UNAVAILABLE: str = "SHOULDER_MOTION_DATA_UNAVAILABLE"
 MUSCLE_ACTIVATION_DATA_UNAVAILABLE: str = "MUSCLE ACTIVATION DATA UNAVAILABLE"
 
+# Biomechanical scenario constants (P14-P16)
+SCEN_SETH_2019_ARM_ELEVATION = "SCEN_SETH_2019_ARM_ELEVATION"
+SCEN_ILLUSTRATIVE_ROUNDED_ELEVATION = "SCEN_ILLUSTRATIVE_ROUNDED_ELEVATION"
+SCEN_STATIC_POSTURE_BASELINE = "SCEN_STATIC_POSTURE_BASELINE"
+SCEN_VASAVADA_CERVICAL_FLEX_EXT = "SCEN_VASAVADA_CERVICAL_FLEX_EXT"
+SCEN_ILLUSTRATIVE_FORWARD_HEAD = "SCEN_ILLUSTRATIVE_FORWARD_HEAD"
+SCEN_CERVICAL_AXIAL_ROTATION = "SCEN_CERVICAL_AXIAL_ROTATION"
+SCEN_CERVICAL_LATERAL_BENDING = "SCEN_CERVICAL_LATERAL_BENDING"
+SCEN_CONCURRENT_FORWARD_HEAD_ROUNDED_SHOULDER = "SCEN_CONCURRENT_FORWARD_HEAD_ROUNDED_SHOULDER"
+SCEN_BLACHE_2017_GLENOHUMERAL = "SCEN_BLACHE_2017_GLENOHUMERAL"
+
 # Recognized physiological ranges for scapular and glenohumeral degrees of freedom (degrees)
 # Sourced from Ludewig & Cook 2000, McClure et al. 2001, Inman et al. 1944.
 PHYSIOLOGICAL_RANGES_DEG: Dict[str, Tuple[float, float]] = {
@@ -61,6 +72,12 @@ PHYSIOLOGICAL_RANGES_DEG: Dict[str, Tuple[float, float]] = {
     "upper_cervical_flex": (-30.0, 30.0),
     "cva_angle": (15.0, 80.0),
     "scapula_elevation": (-10.0, 40.0),
+    "cervical_rotation": (-50.0, 50.0),
+    "c1_c2_rotation": (-35.0, 35.0),
+    "lower_cervical_rot": (-30.0, 30.0),
+    "cervical_lateral_bend": (-45.0, 45.0),
+    "lower_cervical_bend": (-35.0, 35.0),
+    "occiput_c1_bend": (-15.0, 15.0),
 }
 
 
@@ -535,6 +552,62 @@ def get_scenario_catalog() -> List[BiomechanicalScenarioManifest]:
                 "Illustrative teaching fixture only; not derived from an experimental patient recording.",
                 "Demonstrates reciprocal inhibition theory of Janda's Upper Crossed Syndrome."
             ]
+        ),
+        BiomechanicalScenarioManifest(
+            scenario_id="SCEN_CERVICAL_AXIAL_ROTATION",
+            scenario_title="Cervical Spine Axial Rotation (0° to +40° Left/Right)",
+            source_model="Vasavada and Panjabi Atlanto-Axial Kinematic Model (1998, 2001)",
+            source_model_version="v1.0",
+            source_model_hash="cervical_axial_rotation_model_v1",
+            source_motion_file="cervical_axial_rotation.mot",
+            motion_file_hash="7bb48dbcb8c2a72a14ce0d5af3093a89bb4afc77e21858276f12603bc7723e2f",
+            model_license="Apache 2.0 / SimTK OpenSim",
+            motion_data_origin="Coupled Atlanto-Axial C1-C2 and Lower Cervical Axial Kinematics",
+            generation_method="Illustrative kinematic curve partitioned by segmental contribution (55 pct C1-C2, 45 pct C3-C7)",
+            coordinate_system="OpenSim Standard (X-forward, Y-up, Z-right)",
+            joint_coordinate_names=["cervical_rotation", "c1_c2_rotation", "lower_cervical_rot", "cervical_flexion"],
+            angle_units="degrees",
+            time_units="seconds",
+            muscle_output_type="ESTIMATED_ACTIVATION",
+            external_load_assumptions="Head mass 5.0 kg in axial rotation",
+            subject_specific=False,
+            validation_level="ILLUSTRATIVE_MATHEMATICAL_MODEL",
+            scientific_references=[
+                "Panjabi MM, et al. Biomechanical evaluation of the cervical spine. Spine. 1988.",
+                "Vasavada AN, et al. Neck muscle moment-generating capacity. Spine. 1998."
+            ],
+            known_limitations=[
+                "Illustrative mathematical model; live OpenSim C++ simulation execution is blocked offline.",
+                "C1-C2 modeled as single degree-of-freedom axial pivot without vertical coupled translation."
+            ]
+        ),
+        BiomechanicalScenarioManifest(
+            scenario_id="SCEN_CERVICAL_LATERAL_BENDING",
+            scenario_title="Cervical Spine Lateral Bending (0° to +30° Left/Right)",
+            source_model="Cervical Spine Multi-segment Lateral Kinematic Model",
+            source_model_version="v1.0",
+            source_model_hash="cervical_lateral_bending_model_v1",
+            source_motion_file="cervical_lateral_bending.mot",
+            motion_file_hash="3bec69762393edc6c4c751440c9d47faee54c8f8738a4303f38845988069359d",
+            model_license="Apache 2.0 / SimTK OpenSim",
+            motion_data_origin="Coupled Coronal Cervical Motion with Facet Gliding",
+            generation_method="Illustrative kinematic curve with segmental distribution (75 pct lower cervical, 25 pct occiput-C1)",
+            coordinate_system="OpenSim Standard (X-forward, Y-up, Z-right)",
+            joint_coordinate_names=["cervical_lateral_bend", "lower_cervical_bend", "occiput_c1_bend"],
+            angle_units="degrees",
+            time_units="seconds",
+            muscle_output_type="ESTIMATED_ACTIVATION",
+            external_load_assumptions="Head mass 5.0 kg in coronal lateral flexion",
+            subject_specific=False,
+            validation_level="ILLUSTRATIVE_MATHEMATICAL_MODEL",
+            scientific_references=[
+                "Bogduk N, Mercer S. Biomechanics of the cervical spine. I: Normal kinematics. Clin Biomech. 2000.",
+                "White AA, Panjabi MM. Clinical Biomechanics of the Spine. 1990."
+            ],
+            known_limitations=[
+                "Illustrative mathematical model; live OpenSim C++ simulation execution is blocked offline.",
+                "Coronal bending inherently couples with slight ipsilateral axial rotation in vivo."
+            ]
         )
     ]
 
@@ -925,59 +998,125 @@ def get_shoulder_education_curriculum(version: str = "P13") -> Dict[str, Any]:
     }
 
 
+def calculate_cervical_gravitational_mechanics(
+    forward_head_mm: float = 0.0,
+    cva_deg: float = 53.0,
+    head_mass_kg: float = 5.0,
+    extensor_moment_arm_cm: float = 3.5,
+    rounded_shoulder_pct: float = 50.0
+) -> Dict[str, Any]:
+    """Calculate explicit gravitational force, horizontal lever arm, sagittal moment, extensor demand, and axial compression (P16-01)."""
+    for val_name, val in [("forward_head_mm", forward_head_mm), ("cva_deg", cva_deg), ("head_mass_kg", head_mass_kg), ("extensor_moment_arm_cm", extensor_moment_arm_cm), ("rounded_shoulder_pct", rounded_shoulder_pct)]:
+        if not math.isfinite(val):
+            raise ValueError(f"{val_name} must be a finite real number, got {val}")
+    
+    if head_mass_kg <= 0.0:
+        raise ValueError(f"Head mass must be positive, got {head_mass_kg}")
+    if extensor_moment_arm_cm <= 0.0:
+        raise ValueError(f"Extensor moment arm must be positive, got {extensor_moment_arm_cm}")
+
+    g_accel = 9.80665
+    head_weight_n = round(head_mass_kg * g_accel, 2)
+    cva_deficit = max(0.0, 55.0 - float(cva_deg))
+
+    # Horizontal moment arm (Hansraj 2014 & Vasavada et al. 1998 static model)
+    moment_arm_cm = round(2.5 + (cva_deficit / 25.0) * 5.0, 2)
+    moment_arm_m = round(moment_arm_cm / 100.0, 4)
+
+    # Gravitational moment M = W_head * d_horizontal (N*m)
+    m_gravity_nm = round(head_weight_n * moment_arm_m, 3)
+
+    # Extensor muscle equilibrium demand F_ext = M_gravity / r_eff (N)
+    r_eff_m = round(extensor_moment_arm_cm / 100.0, 4)
+    extensor_force_n = round(m_gravity_nm / r_eff_m, 1)
+
+    # Resultant axial compression R_comp = W_head + F_ext (N)
+    resultant_comp_n = round(head_weight_n + extensor_force_n, 1)
+
+    # Illustrative joint shear estimate
+    shear_angle_rad = math.radians(10.0 + (cva_deficit / 25.0) * 20.0)
+    shear_force_n = round(resultant_comp_n * math.sin(shear_angle_rad), 1)
+
+    # Levator scapulae tension tendency index
+    levator_index = round(1.0 + (cva_deficit / 25.0) * 1.2 + (rounded_shoulder_pct / 100.0) * 0.4, 2)
+
+    if cva_deg >= 50.0:
+        postural_level = "NORMAL_ALIGNMENT"
+    elif cva_deg >= 44.0:
+        postural_level = "MILD_FORWARD_HEAD"
+    elif cva_deg >= 36.0:
+        postural_level = "MODERATE_FORWARD_HEAD"
+    else:
+        postural_level = "MARKED_FORWARD_HEAD"
+
+    return {
+        "head_mass_kg": float(head_mass_kg),
+        "gravitational_accel_m_s2": g_accel,
+        "head_weight_n": head_weight_n,
+        "horizontal_moment_arm_cm": moment_arm_cm,
+        "horizontal_moment_arm_m": moment_arm_m,
+        "gravitational_flexion_moment_nm": m_gravity_nm,
+        "external_gravitational_moment_nm": m_gravity_nm,
+        "effective_extensor_moment_arm_cm": float(extensor_moment_arm_cm),
+        "effective_extensor_moment_arm_m": r_eff_m,
+        "extensor_demand_force_n": extensor_force_n,
+        "extensor_muscle_force_n": extensor_force_n,
+        "resultant_axial_compression_n": resultant_comp_n,
+        "joint_reaction_compression_n": resultant_comp_n,
+        "joint_reaction_shear_estimate_n": shear_force_n,
+        "levator_scapulae_tension_tendency_index": levator_index,
+        "postural_level": postural_level,
+        "scientific_classification": "MODEL_BASED_MECHANICS",
+        "tissue_stress_status": "TISSUE_STRESS_MODEL_UNAVAILABLE",
+        "tissue_stress_scientific_note": "Stress cannot be reported without patient-specific finite element disc mesh and contact area.",
+        "janda_upper_crossed_qualification": "Janda's Upper Crossed Syndrome is a conceptual clinical framework, not a verified diagnostic condition. Postural variations do not deterministically establish muscle inhibition or weakness.",
+        "disclaimer": "FORWARD_HEAD_VARIATION != STRUCTURAL_DEFORMITY_DIAGNOSIS (Asymptomatic individuals frequently display forward alignment with no impairment)",
+        "model_assumptions": [
+            "2D static sagittal equilibrium (Sigma M = 0 around C7-T1 joint center)",
+            "Single lumped equivalent extensor muscle moment arm (~3.5 cm from Vasavada et al., 1998)",
+            "Zero antagonist co-contraction assumed (antagonist activation would further increase required extensor force)",
+            "Zero passive osteoligamentous tension contribution assumed",
+            "Fixed head mass of 5.0 kg (~49.03 N; adult human range typically 4.0 - 6.0 kg)",
+            "Rigid cranium without dynamic vestibular / ocular compensation"
+        ]
+    }
+
 def calculate_cervicothoracic_posture(
     forward_head_mm: float,
     cva_deg: float,
     rounded_shoulder_pct: float = 50.0
 ) -> Dict[str, Any]:
     """Calculate biomechanical metrics for the Cervicothoracic complex and Forward Head Posture.
-    
-    Evaluates:
-    - Craniovertebral Angle (CVA)
-    - Head gravitational extensor moment arm (cm)
-    - Cervical extensor muscle force demand (N)
-    - Levator scapulae tension index
-    - Lower cervical anterior shear stress ratio
+    Preserves backward compatibility for P15 while incorporating P16 scientific claim separation.
     """
-    cva = float(cva_deg)
-    fwd_mm = float(forward_head_mm)
-    sh_pct = float(rounded_shoulder_pct)
-
-    # Gravitational moment arm (cm) from C7 transverse pivot axis
-    # Normal CVA ~53 deg has ~2.5 cm moment arm; at 32 deg CVA increases to ~7.5 cm
-    cva_deficit = max(0.0, 55.0 - cva)
-    moment_arm_cm = round(2.5 + (cva_deficit / 25.0) * 5.0, 2)
-
-    # Cervical extensor force demand (N)
-    # Head mass ~ 5.0 kg (~50 N); Extensor muscle moment arm ~ 3.5 cm
-    extensor_force_n = round((50.0 * moment_arm_cm) / 3.5, 1)
-
-    # Levator scapulae tension index: coupled with forward head and scapular protraction
-    levator_tension_index = round(1.0 + (fwd_mm / 50.0) * 0.8 + (sh_pct / 100.0) * 0.6, 2)
-
-    # Lower cervical anterior shear stress ratio relative to upright neutral
-    shear_stress_ratio = round(1.0 + (cva_deficit / 20.0) * 1.5, 2)
-
-    if cva >= 50.0:
-        level = "NORMAL_ALIGNMENT"
-    elif cva >= 44.0:
-        level = "MILD_FORWARD_HEAD"
-    elif cva >= 36.0:
-        level = "MODERATE_FORWARD_HEAD"
-    else:
-        level = "MARKED_FORWARD_HEAD"
-
+    mech = calculate_cervical_gravitational_mechanics(
+        forward_head_mm=forward_head_mm,
+        cva_deg=cva_deg,
+        head_mass_kg=5.0,
+        extensor_moment_arm_cm=3.5,
+        rounded_shoulder_pct=rounded_shoulder_pct
+    )
+    cva_deficit = max(0.0, 55.0 - float(cva_deg))
     return {
-        "forward_head_translation_mm": round(fwd_mm, 1),
-        "craniovertebral_angle_deg": round(cva, 1),
-        "head_moment_arm_cm": moment_arm_cm,
-        "extensor_muscle_force_n": extensor_force_n,
-        "levator_scapulae_tension_index": levator_tension_index,
-        "facet_shear_stress_ratio": shear_stress_ratio,
-        "postural_level": level,
+        "forward_head_translation_mm": round(float(forward_head_mm), 1),
+        "craniovertebral_angle_deg": round(float(cva_deg), 1),
+        "head_moment_arm_cm": mech["horizontal_moment_arm_cm"],
+        "extensor_muscle_force_n": mech["extensor_muscle_force_n"],
+        "levator_scapulae_tension_index": mech["levator_scapulae_tension_tendency_index"],
+        "facet_shear_stress_ratio": round(1.0 + (cva_deficit / 20.0) * 1.5, 2),  # Kept for P15 test compat
+        "postural_level": mech["postural_level"],
         "scientific_level": "ILLUSTRATIVE_BIOMECHANICAL_ESTIMATE",
         "scenario_nature": "ILLUSTRATIVE_SCENARIO_SIMULATION",
-        "disclaimer": "FORWARD_HEAD_VARIATION != STRUCTURAL_DEFORMITY_DIAGNOSIS (Asymptomatic individuals frequently display forward alignment with no impairment)",
+        "disclaimer": mech["disclaimer"],
+        "head_mass_kg": mech["head_mass_kg"],
+        "head_weight_n": mech["head_weight_n"],
+        "external_gravitational_moment_nm": mech["external_gravitational_moment_nm"],
+        "effective_extensor_moment_arm_cm": mech["effective_extensor_moment_arm_cm"],
+        "joint_reaction_compression_n": mech["joint_reaction_compression_n"],
+        "joint_reaction_shear_estimate_n": mech["joint_reaction_shear_estimate_n"],
+        "tissue_stress_status": mech["tissue_stress_status"],
+        "model_assumptions": mech["model_assumptions"],
+        "janda_framework_status": mech["janda_upper_crossed_qualification"],
     }
 
 
@@ -1254,4 +1393,838 @@ def get_cervicothoracic_curriculum(version: str = "P15") -> Dict[str, Any]:
             "rendering_engine": "Three.js r160 (MIT License)",
             "biomechanics_adapter": "MSK-Therapy-OS Vasavada Cervical Kinematics Engine (MIT License)",
         },
+    }
+
+
+# ==============================================================================
+# P16: MUSCLE MECHANICS INSPECTOR & DATA STRUCTURES
+# ==============================================================================
+
+@dataclass
+class MuscleMechanicsChannel:
+    muscle_id: str
+    name_en: str
+    name_vi: str
+    region: str  # "shoulder" or "cervicothoracic"
+    primary_actions: List[str]
+    anatomical_role: str  # "prime_mover", "synergist", "stabilizer", "antagonist"
+    origin: str
+    insertion: str
+    innervation: str
+    has_geometric_path: bool
+    default_moment_arm_cm: Optional[float]
+    default_fiber_length_cm: Optional[float]
+
+
+MUSCLE_CATALOG: Dict[str, MuscleMechanicsChannel] = {
+    # Shoulder & Girdle
+    "deltoid_anterior": MuscleMechanicsChannel(
+        muscle_id="deltoid_anterior",
+        name_en="Anterior Deltoid",
+        name_vi="Cơ delta bó trước",
+        region="shoulder",
+        primary_actions=["flexion", "internal_rotation", "horizontal_adduction"],
+        anatomical_role="prime_mover",
+        origin="Lateral third of clavicle",
+        insertion="Deltoid tuberosity of humerus",
+        innervation="Axillary nerve (C5, C6)",
+        has_geometric_path=True,
+        default_moment_arm_cm=3.2,
+        default_fiber_length_cm=9.8
+    ),
+    "deltoid_lateral": MuscleMechanicsChannel(
+        muscle_id="deltoid_lateral",
+        name_en="Middle / Lateral Deltoid",
+        name_vi="Cơ delta bó giữa",
+        region="shoulder",
+        primary_actions=["abduction", "elevation_in_scapular_plane"],
+        anatomical_role="prime_mover",
+        origin="Acromion of scapula",
+        insertion="Deltoid tuberosity of humerus",
+        innervation="Axillary nerve (C5, C6)",
+        has_geometric_path=True,
+        default_moment_arm_cm=3.8,
+        default_fiber_length_cm=11.2
+    ),
+    "supraspinatus": MuscleMechanicsChannel(
+        muscle_id="supraspinatus",
+        name_en="Supraspinatus",
+        name_vi="Cơ trên gai",
+        region="shoulder",
+        primary_actions=["abduction_initiation", "glenohumeral_joint_compression"],
+        anatomical_role="stabilizer",
+        origin="Supraspinous fossa of scapula",
+        insertion="Superior facet of greater tubercle of humerus",
+        innervation="Suprascapular nerve (C5, C6)",
+        has_geometric_path=True,
+        default_moment_arm_cm=2.4,
+        default_fiber_length_cm=6.8
+    ),
+    "infraspinatus": MuscleMechanicsChannel(
+        muscle_id="infraspinatus",
+        name_en="Infraspinatus",
+        name_vi="Cơ dưới gai",
+        region="shoulder",
+        primary_actions=["external_rotation", "posterior_stabilization"],
+        anatomical_role="stabilizer",
+        origin="Infraspinous fossa of scapula",
+        insertion="Middle facet of greater tubercle of humerus",
+        innervation="Suprascapular nerve (C5, C6)",
+        has_geometric_path=True,
+        default_moment_arm_cm=2.1,
+        default_fiber_length_cm=7.5
+    ),
+    "pectoralis_minor": MuscleMechanicsChannel(
+        muscle_id="pectoralis_minor",
+        name_en="Pectoralis Minor",
+        name_vi="Cơ ngực bé",
+        region="shoulder",
+        primary_actions=["scapular_anterior_tilt", "scapular_depression", "scapular_downward_rotation"],
+        anatomical_role="prime_mover",
+        origin="Anterior surfaces of ribs 3-5",
+        insertion="Coracoid process of scapula",
+        innervation="Medial pectoral nerve (C8, T1)",
+        has_geometric_path=True,
+        default_moment_arm_cm=3.0,
+        default_fiber_length_cm=8.0
+    ),
+    "serratus_anterior": MuscleMechanicsChannel(
+        muscle_id="serratus_anterior",
+        name_en="Serratus Anterior",
+        name_vi="Cơ răng trước",
+        region="shoulder",
+        primary_actions=["scapular_protraction", "scapular_upward_rotation", "scapular_posterior_tilt"],
+        anatomical_role="stabilizer",
+        origin="Outer surfaces of ribs 1-8/9",
+        insertion="Costal surface of medial border of scapula",
+        innervation="Long thoracic nerve (C5-C7)",
+        has_geometric_path=True,
+        default_moment_arm_cm=5.5,
+        default_fiber_length_cm=14.0
+    ),
+    "trapezius_upper": MuscleMechanicsChannel(
+        muscle_id="trapezius_upper",
+        name_en="Upper Trapezius",
+        name_vi="Cơ thang trên",
+        region="cervicothoracic",
+        primary_actions=["scapular_elevation", "scapular_upward_rotation", "cervical_extension"],
+        anatomical_role="synergist",
+        origin="External occipital protuberance and nuchal ligament",
+        insertion="Lateral third of clavicle and acromion",
+        innervation="Accessory nerve (CN XI) and C3-C4",
+        has_geometric_path=True,
+        default_moment_arm_cm=4.2,
+        default_fiber_length_cm=13.5
+    ),
+    "trapezius_lower": MuscleMechanicsChannel(
+        muscle_id="trapezius_lower",
+        name_en="Lower Trapezius",
+        name_vi="Cơ thang dưới",
+        region="shoulder",
+        primary_actions=["scapular_depression", "scapular_upward_rotation", "scapular_posterior_tilt"],
+        anatomical_role="stabilizer",
+        origin="Spinous processes of T4-T12",
+        insertion="Spine of scapula near medial border",
+        innervation="Accessory nerve (CN XI) and C3-C4",
+        has_geometric_path=True,
+        default_moment_arm_cm=4.8,
+        default_fiber_length_cm=12.0
+    ),
+    "levator_scapulae": MuscleMechanicsChannel(
+        muscle_id="levator_scapulae",
+        name_en="Levator Scapulae",
+        name_vi="Cơ nâng vai",
+        region="cervicothoracic",
+        primary_actions=["scapular_elevation", "scapular_downward_rotation", "cervical_ipsilateral_lateral_flexion"],
+        anatomical_role="synergist",
+        origin="Transverse processes of C1-C4",
+        insertion="Superior medial angle of scapula",
+        innervation="Dorsal scapular nerve (C5) and C3-C4",
+        has_geometric_path=True,
+        default_moment_arm_cm=3.6,
+        default_fiber_length_cm=11.0
+    ),
+    "suboccipital": MuscleMechanicsChannel(
+        muscle_id="suboccipital",
+        name_en="Suboccipital Muscle Complex",
+        name_vi="Nhóm cơ dưới chẩm (Rectus & Obliquus Capitis)",
+        region="cervicothoracic",
+        primary_actions=["upper_cervical_extension", "atlanto_axial_axial_rotation", "proprioceptive_kinesthesia"],
+        anatomical_role="stabilizer",
+        origin="C1 Atlas and C2 Axis spinous and transverse processes",
+        insertion="Inferior nuchal line of occiput",
+        innervation="Suboccipital nerve (C1 posterior ramus)",
+        has_geometric_path=True,
+        default_moment_arm_cm=2.5,
+        default_fiber_length_cm=3.2
+    ),
+    "longus_colli": MuscleMechanicsChannel(
+        muscle_id="longus_colli",
+        name_en="Deep Neck Flexors (Longus Colli & Capitis)",
+        name_vi="Nhóm cơ gập cổ sâu (Cơ dài cổ & Cơ dài đầu)",
+        region="cervicothoracic",
+        primary_actions=["craniocervical_flexion", "cervical_lordosis_stabilization", "axial_elongation"],
+        anatomical_role="stabilizer",
+        origin="Anterior tubercles of C3-C6 transverse processes and vertebral bodies of T1-T3",
+        insertion="Anterior arch of C1 and basilar part of occipital bone",
+        innervation="Anterior rami of C2-C6 spinal nerves",
+        has_geometric_path=True,
+        default_moment_arm_cm=2.8,
+        default_fiber_length_cm=8.5
+    ),
+    "scm": MuscleMechanicsChannel(
+        muscle_id="scm",
+        name_en="Sternocleidomastoid (SCM)",
+        name_vi="Cơ ức đòn chũm",
+        region="cervicothoracic",
+        primary_actions=["cervical_contralateral_rotation", "ipsilateral_lateral_flexion", "lower_cervical_flexion"],
+        anatomical_role="prime_mover",
+        origin="Manubrium sterni and medial clavicle",
+        insertion="Mastoid process of temporal bone",
+        innervation="Accessory nerve (CN XI) and C2-C3",
+        has_geometric_path=True,
+        default_moment_arm_cm=4.5,
+        default_fiber_length_cm=15.0
+    ),
+    "scalenes": MuscleMechanicsChannel(
+        muscle_id="scalenes",
+        name_en="Scalene Complex (Anterior, Middle, Posterior)",
+        name_vi="Nhóm cơ bậc thang (Trước, Giữa, Sau)",
+        region="cervicothoracic",
+        primary_actions=["cervical_lateral_flexion", "cervical_flexion", "rib_elevation_inspiration"],
+        anatomical_role="synergist",
+        origin="Transverse processes of C2-C7",
+        insertion="First and second ribs",
+        innervation="Anterior rami of C3-C8 spinal nerves",
+        has_geometric_path=True,
+        default_moment_arm_cm=3.5,
+        default_fiber_length_cm=9.0
+    ),
+    "splenius": MuscleMechanicsChannel(
+        muscle_id="splenius",
+        name_en="Splenius Capitis & Cervicis",
+        name_vi="Cơ gối đầu & Cơ gối cổ",
+        region="cervicothoracic",
+        primary_actions=["cervical_extension", "ipsilateral_rotation", "ipsilateral_lateral_flexion"],
+        anatomical_role="prime_mover",
+        origin="Nuchal ligament and spinous processes of C7-T6",
+        insertion="Mastoid process and transverse processes of C1-C3",
+        innervation="Posterior rami of middle and lower cervical nerves",
+        has_geometric_path=True,
+        default_moment_arm_cm=3.8,
+        default_fiber_length_cm=12.5
+    )
+}
+
+
+SCENARIO_ID_ALIASES = {
+    "vasavada_cervical_flexion_extension": SCEN_VASAVADA_CERVICAL_FLEX_EXT,
+    "illustrative_forward_head_posture": SCEN_ILLUSTRATIVE_FORWARD_HEAD,
+    "cervical_axial_rotation": SCEN_CERVICAL_AXIAL_ROTATION,
+    "cervical_lateral_bending": SCEN_CERVICAL_LATERAL_BENDING,
+    "seth_shoulder_elevation": SCEN_SETH_2019_ARM_ELEVATION,
+    "concurrent_fwd_head_rounded_shoulder": SCEN_CONCURRENT_FORWARD_HEAD_ROUNDED_SHOULDER,
+    "blache_abduction": SCEN_BLACHE_2017_GLENOHUMERAL,
+}
+
+def get_muscle_mechanics_inspection(
+    region: str,
+    scenario_id: str,
+    time_sec: float,
+    mode: str = "MODE_A_ANATOMICAL_PARTICIPATION"
+) -> Dict[str, Any]:
+    """Execute Muscle Mechanics Inspection across Modes A, B, C, D with mandatory empty states (P16-04)."""
+    valid_modes = [
+        "MODE_A_ANATOMICAL_PARTICIPATION",
+        "MODE_B_GEOMETRIC_CHANGE",
+        "MODE_C_ESTIMATED_ACTIVATION",
+        "MODE_D_ESTIMATED_FORCE"
+    ]
+    if mode not in valid_modes:
+        raise ValueError(f"Invalid muscle mechanics inspection mode: {mode}. Must be one of {valid_modes}")
+
+    scenario_id = SCENARIO_ID_ALIASES.get(scenario_id, scenario_id)
+    catalog = get_scenario_catalog()
+    scen = next((s for s in catalog if s.scenario_id == scenario_id), None)
+    if not scen:
+        raise ValueError(f"Scenario not found: {scenario_id}")
+
+    relevant_muscles = [
+        m for m in MUSCLE_CATALOG.values()
+        if region == "all" or m.region == region or region in ("both", "unified")
+    ]
+
+    # MODE A: Anatomical Participation
+    if mode == "MODE_A_ANATOMICAL_PARTICIPATION":
+        return {
+            "mode": "MODE_A_ANATOMICAL_PARTICIPATION",
+            "mode_title_en": "Mode A — Anatomical Participation",
+            "mode_title_vi": "Chế độ A — Nhóm cơ tham gia giải phẫu",
+            "region": region,
+            "scenario_id": scenario_id,
+            "time_sec": round(float(time_sec), 2),
+            "status": "AVAILABLE",
+            "notice": "Identifies muscles anatomically capable of contributing to movement without simulated percentages.",
+            "muscles": [
+                {
+                    "muscle_id": m.muscle_id,
+                    "name_en": m.name_en,
+                    "name_vi": m.name_vi,
+                    "anatomical_role": m.anatomical_role,
+                    "primary_actions": m.primary_actions,
+                    "origin": m.origin,
+                    "insertion": m.insertion,
+                    "innervation": m.innervation,
+                }
+                for m in relevant_muscles
+            ]
+        }
+
+    # MODE B: Geometric Change
+    if mode == "MODE_B_GEOMETRIC_CHANGE":
+        return {
+            "mode": "MODE_B_GEOMETRIC_CHANGE",
+            "mode_title_en": "Mode B — Musculotendon Geometric Change",
+            "mode_title_vi": "Chế độ B — Thay đổi hình học chiều dài cơ",
+            "region": region,
+            "scenario_id": scenario_id,
+            "time_sec": round(float(time_sec), 2),
+            "status": "MODEL_GEOMETRY_INSUFFICIENT",
+            "empty_state_code": "MODEL_GEOMETRY_INSUFFICIENT",
+            "notice": "Continuous 3D muscle line-of-action wrapping curves and dynamic fiber length changes require discrete musculoskeletal path definitions which are unmeshed in the current rigid osseous surface model.",
+            "muscles": [
+                {
+                    "muscle_id": m.muscle_id,
+                    "name_en": m.name_en,
+                    "default_moment_arm_cm": m.default_moment_arm_cm,
+                    "default_fiber_length_cm": m.default_fiber_length_cm,
+                    "dynamic_length_change_status": "MODEL_GEOMETRY_INSUFFICIENT"
+                }
+                for m in relevant_muscles
+            ]
+        }
+
+    # MODE C: Estimated Activation
+    if mode == "MODE_C_ESTIMATED_ACTIVATION":
+        sto_file = None
+        if scen.scenario_id in ("SCEN_SETH_2019_ARM_ELEVATION", "SCEN_ILLUSTRATIVE_ROUNDED_ELEVATION"):
+            sto_file = "seth_shoulder_elevation.sto"
+        elif scen.scenario_id == "SCEN_VASAVADA_CERVICAL_FLEX_EXT":
+            sto_file = "vasavada_cervical_flexion_extension.sto"
+        elif scen.scenario_id == "SCEN_ILLUSTRATIVE_FORWARD_HEAD":
+            sto_file = "illustrative_forward_head_posture.sto"
+        elif scen.scenario_id == "SCEN_CERVICAL_AXIAL_ROTATION":
+            sto_file = "cervical_axial_rotation.sto"
+        elif scen.scenario_id == "SCEN_CERVICAL_LATERAL_BENDING":
+            sto_file = "cervical_lateral_bending.sto"
+
+        if not sto_file:
+            return {
+                "mode": "MODE_C_ESTIMATED_ACTIVATION",
+                "mode_title_en": "Mode C — Model-Estimated Muscle Activation",
+                "mode_title_vi": "Chế độ C — Mức kích hoạt cơ ước tính mô hình",
+                "region": region,
+                "scenario_id": scenario_id,
+                "time_sec": round(float(time_sec), 2),
+                "status": "MUSCLE_ACTIVATION_NOT_AVAILABLE",
+                "empty_state_code": "MUSCLE_ACTIVATION_NOT_AVAILABLE",
+                "notice": "No muscle activation (.sto) dataset registered for this scenario.",
+                "muscles": []
+            }
+
+        sto_path = Path("msk_therapy_os/data/biomechanics") / sto_file
+        if not sto_path.is_file():
+            return {
+                "mode": "MODE_C_ESTIMATED_ACTIVATION",
+                "region": region,
+                "scenario_id": scenario_id,
+                "status": "MUSCLE_ACTIVATION_NOT_AVAILABLE",
+                "empty_state_code": "MUSCLE_ACTIVATION_NOT_AVAILABLE",
+                "notice": f"File {sto_file} not found on disk.",
+                "muscles": []
+            }
+
+        parsed_sto = OpenSimFormatParser.parse_file(sto_path)
+        t_val = max(parsed_sto.time[0], min(float(time_sec), parsed_sto.time[-1]))
+        
+        # Binary search for bracket
+        low, high = 0, len(parsed_sto.time) - 1
+        while low <= high:
+            mid = (low + high) // 2
+            if parsed_sto.time[mid] == t_val:
+                idx0 = idx1 = mid
+                break
+            elif parsed_sto.time[mid] < t_val:
+                low = mid + 1
+            else:
+                high = mid - 1
+        else:
+            idx0 = max(0, high)
+            idx1 = min(len(parsed_sto.time) - 1, low)
+
+        dt = parsed_sto.time[idx1] - parsed_sto.time[idx0] if idx1 != idx0 else 1.0
+        alpha = (t_val - parsed_sto.time[idx0]) / dt if dt > 0 else 0.0
+
+        res_muscles = []
+        for ch in parsed_sto.headers:
+            if ch.lower() == "time":
+                continue
+            v0 = parsed_sto.data[ch][idx0]
+            v1 = parsed_sto.data[ch][idx1]
+            act = round(v0 + alpha * (v1 - v0), 3)
+            res_muscles.append({
+                "channel": ch,
+                "normalized_activation": act,
+                "activation_percentage": round(act * 100.0, 1),
+                "optimization_criterion": "Static optimization (Minimizing sum of squared muscle activations)",
+                "disclaimer": "SIMULATED_OPTIMIZED_ACTIVATION != MEASURED_SURFACE_EMG"
+            })
+
+        return {
+            "mode": "MODE_C_ESTIMATED_ACTIVATION",
+            "mode_title_en": "Mode C — Model-Estimated Muscle Activation",
+            "mode_title_vi": "Chế độ C — Mức kích hoạt cơ ước tính mô hình",
+            "region": region,
+            "scenario_id": scenario_id,
+            "source_sto_file": sto_file,
+            "time_sec": round(t_val, 2),
+            "status": "AVAILABLE",
+            "notice": "Model-derived normalized activations represent numerical static optimization approximations. They DO NOT represent directly measured biological electromyography (EMG).",
+            "muscles": res_muscles
+        }
+
+    # MODE D: Estimated Muscle Force
+    if mode == "MODE_D_ESTIMATED_FORCE":
+        return {
+            "mode": "MODE_D_ESTIMATED_FORCE",
+            "mode_title_en": "Mode D — Model-Estimated Muscle Force",
+            "mode_title_vi": "Chế độ D — Lực cơ ước tính mô hình (Newton)",
+            "region": region,
+            "scenario_id": scenario_id,
+            "time_sec": round(float(time_sec), 2),
+            "status": "MUSCLE_FORCE_NOT_AVAILABLE",
+            "empty_state_code": "MUSCLE_FORCE_NOT_AVAILABLE",
+            "notice": "Individual muscle force calculation in Newtons requires live OpenSim dynamic equilibrium solving with validated physiological cross-sectional area (PCSA) and contraction dynamics. Multiplying generic activation by arbitrary constants is strictly rejected to preserve scientific biomechanical validity.",
+            "muscles": []
+        }
+
+    return {"status": "UNKNOWN_MODE"}
+
+
+# ==============================================================================
+# P16: INTERACTIVE SCENARIO COMPARISON ENGINE
+# ==============================================================================
+
+def compare_scenarios(
+    scenario_id_a: str,
+    scenario_id_b: str,
+    time_a_sec: float = 0.0,
+    time_b_sec: float = 0.0
+) -> Dict[str, Any]:
+    """Compare two biomechanical scenarios side-by-side with difference metrics (P16-05)."""
+    scenario_id_a = SCENARIO_ID_ALIASES.get(scenario_id_a, scenario_id_a)
+    scenario_id_b = SCENARIO_ID_ALIASES.get(scenario_id_b, scenario_id_b)
+    catalog = get_scenario_catalog()
+    scen_a = next((s for s in catalog if s.scenario_id == scenario_id_a), None)
+    scen_b = next((s for s in catalog if s.scenario_id == scenario_id_b), None)
+    if not scen_a or not scen_b:
+        raise ValueError(f"One or both scenario IDs not found: {scenario_id_a}, {scenario_id_b}")
+
+    base_dir = Path("msk_therapy_os/data/biomechanics")
+    mot_a_path = base_dir / scen_a.source_motion_file
+    mot_b_path = base_dir / scen_b.source_motion_file
+
+    def get_eval(mot_path, t_sec):
+        if not mot_path.is_file():
+            return {}
+        p = OpenSimFormatParser.parse_file(mot_path)
+        t = max(p.time[0], min(float(t_sec), p.time[-1]))
+        low, high = 0, len(p.time) - 1
+        while low <= high:
+            mid = (low + high) // 2
+            if p.time[mid] == t:
+                idx0 = idx1 = mid
+                break
+            elif p.time[mid] < t:
+                low = mid + 1
+            else:
+                high = mid - 1
+        else:
+            idx0 = max(0, high)
+            idx1 = min(len(p.time) - 1, low)
+        dt = p.time[idx1] - p.time[idx0] if idx1 != idx0 else 1.0
+        alpha = (t - p.time[idx0]) / dt if dt > 0 else 0.0
+        vals = {}
+        for h in p.headers:
+            if h.lower() != "time":
+                vals[h] = round(p.data[h][idx0] + alpha * (p.data[h][idx1] - p.data[h][idx0]), 2)
+        vals["time"] = round(t, 2)
+        return vals
+
+    eval_a = get_eval(mot_a_path, time_a_sec)
+    eval_b = get_eval(mot_b_path, time_b_sec)
+
+    # Calculate coordinate angle deltas
+    common_coords = [k for k in eval_a if k in eval_b and k != "time"]
+    deltas = {c: round(eval_b[c] - eval_a[c], 2) for c in common_coords}
+
+    # Gravitational comparison if cervical
+    cva_a = eval_a.get("cva_angle", 53.0)
+    cva_b = eval_b.get("cva_angle", 53.0)
+    fwd_a = eval_a.get("head_anterior_trans", 0.0)
+    fwd_b = eval_b.get("head_anterior_trans", 0.0)
+    mech_a = calculate_cervical_gravitational_mechanics(fwd_a, cva_a)
+    mech_b = calculate_cervical_gravitational_mechanics(fwd_b, cva_b)
+
+    grav_delta = {
+        "delta_moment_arm_cm": round(mech_b["horizontal_moment_arm_cm"] - mech_a["horizontal_moment_arm_cm"], 2),
+        "delta_gravitational_moment_nm": round(mech_b["external_gravitational_moment_nm"] - mech_a["external_gravitational_moment_nm"], 3),
+        "delta_extensor_muscle_force_n": round(mech_b["extensor_muscle_force_n"] - mech_a["extensor_muscle_force_n"], 1),
+        "delta_compression_force_n": round(mech_b["joint_reaction_compression_n"] - mech_a["joint_reaction_compression_n"], 1),
+    }
+
+    return {
+        "status": "SUCCESS",
+        "scenario_a": {
+            "scenario_id": scen_a.scenario_id,
+            "title": scen_a.scenario_title,
+            "time_sec": eval_a.get("time", 0.0),
+            "angles": eval_a,
+            "mechanics": mech_a,
+        },
+        "scenario_b": {
+            "scenario_id": scen_b.scenario_id,
+            "title": scen_b.scenario_title,
+            "time_sec": eval_b.get("time", 0.0),
+            "angles": eval_b,
+            "mechanics": mech_b,
+        },
+        "coordinate_deltas": deltas,
+        "gravitational_mechanics_delta": grav_delta,
+        "uncertainty_and_assumptions": [
+            "Kinematic comparison reflects idealized rigid-body coordinate definitions.",
+            "Gravitational moments represent static 2D sagittal equilibrium without active co-contraction.",
+            "HIGHER_GRAVITATIONAL_MOMENT != TISSUE_DAMAGE_OR_DIAGNOSIS (Mechanical load variations are natural and do not prove pathology)."
+        ],
+        "disclaimer": "ILLUSTRATIVE_SCENARIO_COMPARISON_ONLY"
+    }
+
+
+# ==============================================================================
+# P16: DATA PROVENANCE MANIFEST REGISTRY
+# ==============================================================================
+
+def get_provenance_manifest() -> Dict[str, Any]:
+    """Deliver strict, traceable provenance manifest for all biomechanical datasets (P16-02)."""
+    catalog = get_scenario_catalog()
+    base_dir = Path("msk_therapy_os/data/biomechanics")
+    
+    manifest_records = []
+    for s in catalog:
+        fpath = base_dir / s.source_motion_file
+        file_exists = fpath.is_file()
+        actual_hash = hashlib.sha256(fpath.read_bytes()).hexdigest() if file_exists else "FILE_NOT_FOUND"
+        file_size_bytes = fpath.stat().st_size if file_exists else 0
+        
+        manifest_records.append({
+            "scenario_id": s.scenario_id,
+            "scenario_title": s.scenario_title,
+            "source_model": s.source_model,
+            "source_model_version": s.source_model_version,
+            "source_model_hash": s.source_model_hash,
+            "source_motion_file": s.source_motion_file,
+            "motion_file_hash": s.motion_file_hash,
+            "actual_motion_file_hash": actual_hash,
+            "hash_match": (actual_hash == s.motion_file_hash),
+            "file_size_bytes": file_size_bytes,
+            "model_license": s.model_license,
+            "motion_data_origin": s.motion_data_origin,
+            "generation_method": s.generation_method,
+            "coordinate_system": s.coordinate_system,
+            "joint_coordinate_names": s.joint_coordinate_names,
+            "angle_units": s.angle_units,
+            "time_units": s.time_units,
+            "muscle_output_type": s.muscle_output_type,
+            "external_load_assumptions": s.external_load_assumptions,
+            "subject_specific": s.subject_specific,
+            "validation_level": s.validation_level,
+            "scientific_references": s.scientific_references,
+            "known_limitations": s.known_limitations,
+        })
+
+    return {
+        "manifest_version": "P16.1.0",
+        "live_opensim_runtime_status": "OPENSIM_LIVE_SIMULATION_BLOCKED",
+        "live_opensim_runtime_notice": "OpenSim Python bindings / C++ binaries are not installed in this offline Windows environment. Datasets are verified and served as standardized illustrative OpenSim-format files.",
+        "scenarios_count": len(manifest_records),
+        "scenarios": manifest_records,
+    }
+
+
+# ==============================================================================
+# P16: UNIFIED 10-TOPIC MSK EDUCATION CURRICULUM
+# ==============================================================================
+
+def get_unified_education_curriculum(region: str = "all", version: str = "P16") -> Dict[str, Any]:
+    """Deliver full bilingual (EN/VI) 10-topic unified MSK education curriculum (P16-06)."""
+    p16_topics = [
+        {
+            "topic_id": 1,
+            "name_en": "1. Anatomy: Head, Neck & Shoulder Girdle Architecture",
+            "name_vi": "1. Giải phẫu: Cấu trúc Đầu, Cổ & Đai Vai",
+            "summary_en": "Explore authentic 3D osseous anatomy: Cranium, C1 Atlas, C2 Axis, C3-C7, T1-T4, Clavicle, Scapula, and Humerus. The ~5 kg skull balances atop delicate cervical vertebrae, coupled to the thoracic cage through the floating scapulothoracic articulation.",
+            "summary_vi": "Khám phá giải phẫu xương 3D thực tế: Hộp sọ, C1 Đội, C2 Trục, C3-C7, T1-T4, Xương đòn, Xương bả vai và Xương cánh tay. Hộp sọ nặng ~5 kg cân bằng trên các đốt sống cổ mảnh mai, liên kết với lồng ngực qua khớp bả vai lồng ngực tự do.",
+            "focus_muscles": ["trapezius_upper", "levator_scapulae", "suboccipital", "deltoid_anterior"],
+            "region": "unified"
+        },
+        {
+            "topic_id": 2,
+            "name_en": "2. Joint Motion: Scapular & Cervical Kinematics",
+            "name_vi": "2. Chuyển động khớp: Cơ học Vận động Bả vai & Cột sống cổ",
+            "summary_en": "Multi-segment joint motion involves coordinated kinematics. Arm elevation couples glenohumeral rotation with scapular upward rotation and posterior tilt. Cervical motion integrates upper cervical atlanto-occipital and atlanto-axial motion with lower cervical facet gliding.",
+            "summary_vi": "Vận động đa phân đoạn đòi hỏi sự phối hợp nhịp nhàng. Khi giơ tay, khớp ổ chảo cánh tay phối hợp với xoay lên và nghiêng sau của bả vai. Vận động cổ kết hợp gập ngửa đội-chẩm, xoay đội-trục và trượt diện khớp cổ dưới.",
+            "focus_muscles": ["serratus_anterior", "trapezius_lower", "scm", "splenius"],
+            "region": "unified"
+        },
+        {
+            "topic_id": 3,
+            "name_en": "3. Alignment: Forward-Head & Postural Diversity",
+            "name_vi": "3. Tư thế: Đầu đổ trước & Sự đa dạng hình thái tự nhiên",
+            "summary_en": "Forward Head Posture (FHP) describes anterior translation of the cranium relative to C7. Postural alignment varies widely across healthy individuals; posture alone does NOT constitute a structural deformity or disease diagnosis.",
+            "summary_vi": "Tư thế đầu đổ trước (FHP) mô tả sự nhô ra trước của hộp sọ so với C7. Góc tư thế biến thiên rất lớn giữa những người hoàn toàn khỏe mạnh; tư thế đơn thuần KHÔNG PHẢI là dị tật hay bệnh lý.",
+            "focus_muscles": ["suboccipital", "longus_colli", "pectoralis_minor"],
+            "region": "cervicothoracic"
+        },
+        {
+            "topic_id": 4,
+            "name_en": "4. Physics: Gravity, Moment Arms & Equilibrium",
+            "name_vi": "4. Vật lý cơ sinh học: Trọng lực, Cánh tay đòn & Cân bằng",
+            "summary_en": "In static equilibrium (Sigma M = 0), external gravitational moment (M_gravity = W_head * d_horizontal) must be counterbalanced by internal extensor muscle moment (M_internal = F_extensor * r_eff). When the head translates forward from 0 to 50 mm, the moment arm lengthens from ~2.5 cm to ~7.5 cm, tripling extensor muscle demand.",
+            "summary_vi": "Ở trạng thái cân bằng tĩnh (Tổng mô-men = 0), mô-men trọng lực ngoài (M = Trọng lượng * Cánh tay đòn) bắt buộc phải được cân bằng bởi mô-men cơ duỗi trong. Khi đầu nhô trước từ 0 đến 50 mm, cánh tay đòn tăng từ ~2.5 cm lên ~7.5 cm, khiến lực đòi hỏi ở cơ duỗi gáy tăng gấp ba lần.",
+            "focus_muscles": ["trapezius_upper", "splenius", "suboccipital"],
+            "region": "cervicothoracic"
+        },
+        {
+            "topic_id": 5,
+            "name_en": "5. Muscle Mechanics: Agonists, Synergists & Force Couples",
+            "name_vi": "5. Cơ học bắp cơ: Cơ chủ vận, Cơ trợ vận & Ngẫu lực",
+            "summary_en": "Joint motion requires muscular force couples. In the shoulder, Upper Trapezius, Lower Trapezius, and Serratus Anterior create a balanced upward rotation force couple. In the neck, deep stabilizers support axial lordosis while superficial muscles generate high torque.",
+            "summary_vi": "Vận động khớp đòi hỏi các cặp ngẫu lực. Ở vai, Cơ thang trên, Cơ thang dưới và Cơ răng trước tạo ngẫu lực xoay lên bả vai cân đối. Ở cổ, cơ gập cổ sâu giữ vững trục đường cong sinh lý trong khi các cơ nông tạo lực quay lớn.",
+            "focus_muscles": ["serratus_anterior", "trapezius_lower", "trapezius_upper", "deltoid_lateral"],
+            "region": "unified"
+        },
+        {
+            "topic_id": 6,
+            "name_en": "6. Science: Distinguishing Tension, Activation, Force & Pain",
+            "name_vi": "6. Khoa học: Phân biệt Cảm giác căng, Kích hoạt điện, Lực cơ & Cơn đau",
+            "summary_en": "Subjective feeling of muscle tightness does not mean a muscle is physically short or hyperactive. Simulated activation (OpenSim) is an optimization estimate, not direct EMG. Pain is a complex neurobiological alarm influenced by fatigue, stress, and sensitivity, not purely tissue damage.",
+            "summary_vi": "Cảm giác căng cứng chủ quan không đồng nghĩa với việc cơ bị ngắn cơ học hay co thắt điện sinh học. Kích hoạt mô phỏng (OpenSim) là ước tính toán học, không phải điện cơ EMG thực tế. Cơn đau là tín hiệu cảnh báo thần kinh phức tạp chịu ảnh hưởng của mệt mỏi và độ nhạy cảm thần kinh, không đơn thuần do tổn thương mô.",
+            "focus_muscles": ["levator_scapulae", "trapezius_upper", "infraspinatus"],
+            "region": "unified"
+        },
+        {
+            "topic_id": 7,
+            "name_en": "7. The Paradox: Why Temporary Relief from Massage May Not Last",
+            "name_vi": "7. Nghịch lý: Vì sao cảm giác nhẹ sau giải cơ thường không duy trì lâu?",
+            "summary_en": "Massage and manual therapy stimulate mechanoreceptors, transiently gating nociceptive signaling and modulating tone. However, passive release does not strengthen inhibited stabilizers or alter habitual workplace ergonomics, leading to recurrence under continuous postural loading.",
+            "summary_vi": "Xoa bóp và giải cơ thụ động kích thích thụ thể cơ học, giúp ức chế tín hiệu đau tạm thời qua cổng cảm giác và hạ trương lực. Tuy nhiên, thao tác thụ động không làm mạnh cơ ổn định bị yếu và không thay đổi thói quen làm việc, khiến cảm giác mỏi tái phát khi tiếp tục ngồi làm việc kéo dài.",
+            "focus_muscles": ["levator_scapulae", "suboccipital", "pectoralis_minor"],
+            "region": "unified"
+        },
+        {
+            "topic_id": 8,
+            "name_en": "8. Active Care: Graded Loading & Movement Variability",
+            "name_vi": "8. Tự chăm sóc chủ động: Tải trọng thích nghi & Đa dạng vận động",
+            "summary_en": "Long-term musculoskeletal resilience relies on active exercise: Craniocervical Flexion Training (CCFT) for deep neck flexors, prone horizontal abduction and Y-raises for lower trapezius, wall slides for serratus anterior, and regular posture changes every 30-45 minutes.",
+            "summary_vi": "Sức khỏe cơ xương khớp bền vững dựa trên vận động chủ động: Tập gập cổ sâu (CCFT) kích hoạt cơ dài cổ, bài tập chữ Y và dang ngang nằm sấp cho cơ thang dưới, trượt tường cho cơ răng trước, cùng việc đổi tư thế ngồi đều đặn mỗi 30-45 phút.",
+            "focus_muscles": ["longus_colli", "trapezius_lower", "serratus_anterior"],
+            "region": "unified"
+        },
+        {
+            "topic_id": 9,
+            "name_en": "9. Limitations: Model Assumptions & Scientific Uncertainty",
+            "name_vi": "9. Giới hạn khoa học: Giả định mô hình & Sự không chắc chắn",
+            "summary_en": "All calculations presented are educational simulations derived from standardized models (Vasavada et al., Seth et al.). They do not represent individualized clinical diagnostics. Actual human anatomy features unique ligamentous laxity, disc geometry, and neuromuscular coordination.",
+            "summary_vi": "Mọi tính toán trình bày đều là mô phỏng giáo dục từ các mô hình tiêu chuẩn hóa (Vasavada, Seth). Chúng không đại diện cho chẩn đoán cá nhân hóa. Cơ thể người thực tế có sự đa dạng rất lớn về độ chùng dây chằng, hình học đĩa đệm và phối hợp thần kinh cơ.",
+            "focus_muscles": ["scm", "deltoid_lateral"],
+            "region": "unified"
+        },
+        {
+            "topic_id": 10,
+            "name_en": "10. Self-Assessment: Biomechanical Knowledge Check",
+            "name_vi": "10. Tự đánh giá: Trắc nghiệm Tri thức Cơ sinh học",
+            "summary_en": "Consolidate your learning with 5 evidence-based comprehension questions covering joint rhythm, gravitational moment arms, muscle activation versus EMG, and active rehabilitation.",
+            "summary_vi": "Củng cố kiến thức với 5 câu hỏi trắc nghiệm dựa trên bằng chứng khoa học về nhịp khớp, cánh tay đòn trọng lực, kích hoạt cơ mô phỏng và phục hồi chủ động.",
+            "focus_muscles": ["longus_colli", "serratus_anterior", "trapezius_upper", "suboccipital"],
+            "region": "unified"
+        }
+    ]
+
+    p16_quiz = [
+        {
+            "question_id": "Q1",
+            "question_en": "Why does the head's gravitational demand on cervical extensor muscles increase during forward head posture?",
+            "question_vi": "Vì sao tải trọng của đầu lên nhóm cơ duỗi gáy lại tăng vọt khi đầu nhô ra phía trước?",
+            "options_en": [
+                "A. The head physically becomes heavier due to blood pooling.",
+                "B. The horizontal moment arm between the head's center of mass and the C7 pivot axis lengthens, increasing external torque.",
+                "C. Cervical vertebrae shrink under tension."
+            ],
+            "options_vi": [
+                "A. Trọng lượng thực tế của đầu tăng lên do ứ trệ tuần hoàn máu.",
+                "B. Cánh tay đòn nằm ngang từ trọng tâm đầu tới trục quay C7 bị kéo dài, làm tăng mô-men uốn của trọng lực.",
+                "C. Các đốt sống cổ bị co rút ngắn lại."
+            ],
+            "correct_option": "B",
+            "explanation_en": "According to rotational equilibrium (M = W * d), moving the head forward increases the horizontal distance (moment arm) from ~2.5 cm to >6.5 cm. To maintain balance, extensor muscle force must increase proportionally (from ~35 N to >95 N).",
+            "explanation_vi": "Theo nguyên lý cân bằng mô-men (M = Trọng lượng * Cánh tay đòn), khi đầu đưa ra trước, khoảng cách nằm ngang tăng từ ~2.5 cm lên >6.5 cm. Để giữ đầu thăng bằng, cơ duỗi gáy bắt buộc phải co với lực lớn tương ứng (từ ~35 N lên >95 N)."
+        },
+        {
+            "question_id": "Q2",
+            "question_en": "Can observing a person's posture alone establish a definitive medical diagnosis of muscle weakness or pathology?",
+            "question_vi": "Chỉ quan sát tư thế bên ngoài có thể khẳng định chắc chắn cơ nào bị yếu hay có bệnh lý không?",
+            "options_en": [
+                "A. Yes, rounded shoulders always indicate pathological shortening of the pectoralis minor.",
+                "B. No, posture reflects resting alignment. Asymptomatic individuals frequently display forward alignment with normal strength and zero pain.",
+                "C. Yes, posture is directly equivalent to an MRI diagnosis."
+            ],
+            "options_vi": [
+                "A. Có, vai đổ trước luôn chứng tỏ cơ ngực bé bị co ngắn bệnh lý.",
+                "B. Không, tư thế chỉ phản ánh vị trí nghỉ. Rất nhiều người không có triệu chứng vẫn có tư thế đưa trước nhưng sức mạnh cơ bình thường và hoàn toàn không đau.",
+                "C. Có, quan sát tư thế tương đương với kết quả chụp cộng hưởng từ MRI."
+            ],
+            "correct_option": "B",
+            "explanation_en": "Current systematic reviews (Swain et al. 2020, Barrett et al. 2016) show weak and inconsistent correlations between spinal curvature in resting postures and spinal pain in asymptomatic populations.",
+            "explanation_vi": "Các tổng quan hệ thống hiện đại (Swain 2020, Barrett 2016) chứng minh mối tương quan giữa tư thế nghỉ và triệu chứng đau là rất yếu và không đồng nhất ở cộng đồng người khỏe mạnh."
+        },
+        {
+            "question_id": "Q3",
+            "question_en": "What does a muscle activation value generated by an OpenSim model represent?",
+            "question_vi": "Chỉ số kích hoạt cơ do mô hình OpenSim xuất ra đại diện cho điều gì?",
+            "options_en": [
+                "A. Directly recorded bioelectrical voltage from a patient's muscle electrodes.",
+                "B. A mathematical optimization estimate predicting recruitment based on minimal effort criteria, not empirical EMG.",
+                "C. The exact mechanical force of the muscle in Newtons."
+            ],
+            "options_vi": [
+                "A. Tín hiệu điện thế sinh học đo trực tiếp qua điện cực gắn trên cơ thể người.",
+                "B. Ước tính toán học từ thuật toán tối ưu hóa nhằm dự đoán mức huy động cơ theo tiêu chí tối thiểu hóa năng lượng, không phải điện cơ EMG thực nghiệm.",
+                "C. Lực cơ học chính xác tính theo đơn vị Newton."
+            ],
+            "correct_option": "B",
+            "explanation_en": "OpenSim activations are computed using numerical algorithms (such as static optimization minimizing sum of squared activations). They are model estimates, not bioelectrical measurements.",
+            "explanation_vi": "Mức kích hoạt trong OpenSim được tính bằng thuật toán tối ưu hóa số học. Đây là kết quả mô phỏng tính toán, không phải dữ liệu điện sinh học thu thập từ cơ thể người."
+        },
+        {
+            "question_id": "Q4",
+            "question_en": "Why does neck and upper shoulder tension frequently return days after feeling light from a massage?",
+            "question_vi": "Vì sao cảm giác nhẹ nhõm sau giải cơ thường chỉ duy trì vài ngày rồi cổ vai gáy lại căng mỏi như cũ?",
+            "options_en": [
+                "A. Because the massage therapist applied improper pressure.",
+                "B. Because manual therapy provides transient neurosensory modulation, but lasting adaptation requires active motor re-education and ergonomic behavioral change.",
+                "C. Because massage permanently loosens cervical ligaments."
+            ],
+            "options_vi": [
+                "A. Do kỹ thuật viên xoa bóp chưa dùng đúng kỹ thuật.",
+                "B. Do xoa bóp chỉ điều hòa thụ thể cơ học và giảm đau tạm thời, còn cải thiện bền vững đòi hỏi tập luyện vận động chủ động và điều chỉnh thói quen làm việc.",
+                "C. Do massage làm giãn vĩnh viễn dây chằng cổ."
+            ],
+            "correct_option": "B",
+            "explanation_en": "Passive soft-tissue manipulation activates sensory mechanoreceptors to reduce pain perception transiently (gate control). However, it does not retrain motor recruitment or alter sustained physical demands.",
+            "explanation_vi": "Tác động mô mềm thụ động kích thích thụ thể cơ học giúp giảm nhận thức đau tạm thời. Tuy nhiên, nó không giúp não học lại mẫu hình vận động và không thay đổi tải trọng tư thế kéo dài."
+        },
+        {
+            "question_id": "Q5",
+            "question_en": "When should an individual with neck and shoulder discomfort seek prompt medical evaluation instead of relying on self-care?",
+            "question_vi": "Khi nào một người bị mỏi cổ vai gáy cần đi khám y tế chuyên khoa ngay thay vì chỉ tự tập luyện?",
+            "options_en": [
+                "A. If there is radiating sharp pain, progressive arm weakness, numbness in fingers, or after severe traumatic impact (red flags).",
+                "B. Only if pain lasts more than one hour.",
+                "C. Never, self-care exercises are always sufficient for all spinal conditions."
+            ],
+            "options_vi": [
+                "A. Khi có cơn đau nhói lan xuống tay, yếu liệt tăng dần ở cánh tay/bàn tay, tê bì theo dải cảm giác, hoặc sau chấn thương va đập mạnh (dấu hiệu cờ đỏ).",
+                "B. Chỉ cần đi khám khi đau kéo dài hơn 1 giờ.",
+                "C. Không bao giờ cần khám, các bài tập tự chăm sóc luôn luôn giải quyết được mọi vấn đề cột sống."
+            ],
+            "correct_option": "A",
+            "explanation_en": "Red flag symptoms such as progressive neurological deficits (radiculopathy/myelopathy), severe trauma history, or unremitting night pain require professional clinical assessment and diagnostic imaging.",
+            "explanation_vi": "Các dấu hiệu cảnh báo đỏ như chèn ép rễ thần kinh tiến triển (đau lan, tê bì, yếu cơ), tiền sử chấn thương hoặc đau không giảm về đêm bắt buộc phải được bác sĩ chuyên khoa thăm khám và chỉ định chẩn đoán hình ảnh."
+        }
+    ]
+
+    red_flags = [
+        {
+            "flag_id": "RF1_PROGRESSIVE_NEUROLOGICAL_DEFICIT",
+            "title_en": "Progressive Neurological Deficits (Radiculopathy)",
+            "title_vi": "Thiếu hụt thần kinh tiến triển (Chèn ép rễ)",
+            "description_en": "Progressive weakness in shoulder elevation, elbow flexion/extension, wrist drop, or hand grip weakness. Numbness or tingling radiating past the elbow into fingers (C5-T1 dermatomes).",
+            "description_vi": "Yếu cơ tiến triển khi nâng vai, gập/duỗi khuỷu, rủ cổ tay hoặc yếu lực cầm nắm bàn tay. Cảm giác tê bì, châm chích lan qua khuỷu tay xuống các ngón tay."
+        },
+        {
+            "flag_id": "RF2_CERVICAL_MYELOPATHY",
+            "title_en": "Cervical Spinal Cord Compression (Myelopathy)",
+            "title_vi": "Chèn ép tủy cổ (Bệnh lý tủy)",
+            "description_en": "Gait unsteadiness, feeling of walking on cotton wool, loss of manual dexterity (difficulty buttoning shirts), or unexpected changes in bowel/bladder function.",
+            "description_vi": "Dáng đi loạng choạng, cảm giác như đi trên đệm bông, mất độ khéo léo của bàn tay (khó cài cúc áo), hoặc rối loạn tiểu tiện/đại tiện bất thường."
+        },
+        {
+            "flag_id": "RF3_ACUTE_TRAUMA_OR_SYSTEMIC_SIGNS",
+            "title_en": "Acute Trauma or Systemic Pathology",
+            "title_vi": "Tiền sử chấn thương cấp hoặc Dấu hiệu toàn thân",
+            "description_en": "History of high-energy trauma (motor vehicle accident, fall from height, sports collision), unexplained fever, persistent unremitting night pain unrelated to movement, or unexplained weight loss.",
+            "description_vi": "Tiền sử chấn thương mạnh (tai nạn xe cộ, ngã từ trên cao), sốt không rõ nguyên nhân, đau dữ dội về đêm không liên quan đến vận động, hoặc sụt cân nhanh bất thường."
+        }
+    ]
+
+    p16_evidence_register = [
+        {"evidence_id": "EV-01", "citation": "Inman VT, Saunders JB, Abbott LC. Observations on the function of the shoulder joint. J Bone Joint Surg Am. 1944;26(1):1-30.", "category": "MODEL_BASED_MECHANICS", "confidence": "ESTABLISHED_HISTORICAL_AVERAGE", "topic": "2:1 scapulohumeral rhythm average"},
+        {"evidence_id": "EV-02", "citation": "Ludewig PM, Cook TM. Alterations in shoulder kinematics and associated muscle activity in people with symptoms of shoulder impingement. Phys Ther. 2000;80(3):276-291.", "category": "OBSERVATIONAL_ASSOCIATION", "confidence": "MODERATE_PEER_REVIEWED", "topic": "Scapular kinematics in impingement"},
+        {"evidence_id": "EV-03", "citation": "Seth A, Hicks JL, Uchida TK, et al. OpenSim: Simulating musculoskeletal dynamics and neuromuscular control to study human and animal movement. PLoS Comput Biol. 2018;14(7):e1006223.", "category": "MODEL_BASED_MECHANICS", "confidence": "HIGH_COMPUTATIONAL_FRAMEWORK", "topic": "OpenSim biomechanical modeling software"},
+        {"evidence_id": "EV-04", "citation": "McClure PW, Michener LA, Sennett BJ, Karduna AR. Direct 3-dimensional measurement of scapular kinematics during dynamic movements in vivo. J Shoulder Elbow Surg. 2001;10(3):269-277.", "category": "ANATOMICAL_EVIDENCE", "confidence": "HIGH_EXPERIMENTAL", "topic": "In vivo 3D bone pin scapular kinematics"},
+        {"evidence_id": "EV-05", "citation": "Borstad JD, Ludewig PM. The effect of long versus short pectoralis minor resting length on scapular kinematics in healthy individuals. J Orthop Sports Phys Ther. 2005;35(4):227-238.", "category": "OBSERVATIONAL_ASSOCIATION", "confidence": "MODERATE_EXPERIMENTAL", "topic": "Pectoralis minor resting length and tilt"},
+        {"evidence_id": "EV-06", "citation": "Kebaetse M, McClure P, Pratt NA. Thoracic position effect on shoulder range of motion, strength, and three-dimensional scapular kinematics. Arch Phys Med Rehabil. 1999;80(8):945-950.", "category": "INTERVENTION_EVIDENCE", "confidence": "HIGH_EXPERIMENTAL", "topic": "Thoracic posture impact on shoulder elevation"},
+        {"evidence_id": "EV-07", "citation": "de Oliveira FX, et al. Scapular movement training with biofeedback in shoulder impingement. Clin Biomech. 2017;47:73-81.", "category": "INTERVENTION_EVIDENCE", "confidence": "MODERATE_CONTROLLED_TRIAL", "topic": "Motor control biofeedback for shoulder"},
+        {"evidence_id": "EV-08", "citation": "Bialosky JE, Bishop MD, Price DD, et al. The mechanisms of manual therapy in the treatment of musculoskeletal pain: a comprehensive model. Man Ther. 2009;14(5):531-538.", "category": "MODEL_BASED_MECHANICS", "confidence": "HIGH_CONCEPTUAL_REVIEW", "topic": "Neurophysiological mechanisms of manual therapy"},
+        {"evidence_id": "EV-09", "citation": "Hansraj KK. Assessment of Stresses in the Cervical Spine Caused by Posture and Position of the Head. Surg Technol Int. 2014;25:277-279.", "category": "MODEL_BASED_MECHANICS", "confidence": "ESTABLISHED_SIMULATION_LIMITATIONS", "topic": "Gravitational torque vs head flexion tilt angle"},
+        {"evidence_id": "EV-10", "citation": "Vasavada AN, Li S, Delp SL. Influence of muscle morphometry and moment arms on the moment-generating capacity of human neck muscles. Spine. 1998;23(4):412-422.", "category": "ANATOMICAL_EVIDENCE", "confidence": "HIGH_CADAVERIC_AND_MODEL", "topic": "Neck muscle moment arms (~3.5 cm) and architecture"},
+        {"evidence_id": "EV-11", "citation": "Yip CH, Chiu TT, Poon AT. The relationship between head posture and severity and disability of patients with neck pain. Man Ther. 2008;13(2):148-154.", "category": "OBSERVATIONAL_ASSOCIATION", "confidence": "MODERATE_CROSS_SECTIONAL", "topic": "Craniovertebral angle and self-reported neck disability"},
+        {"evidence_id": "EV-12", "citation": "Jull G, Trott P, Potter H, et al. A randomized controlled trial of exercise and manipulative therapy for cervicogenic headache. Spine. 2002;27(17):1835-1843.", "category": "INTERVENTION_EVIDENCE", "confidence": "HIGH_RCT", "topic": "Craniocervical flexion training and deep neck flexors"},
+        {"evidence_id": "EV-13", "citation": "Janda V. Muscles and Motor Control in Cervicothoracic Disorders. Physical Therapy of the Cervical and Thoracic Spine. 1988:182-199.", "category": "UNVALIDATED_HYPOTHESIS", "confidence": "CONCEPTUAL_CLINICAL_FRAMEWORK", "topic": "Upper Crossed Syndrome reciprocal inhibition model"},
+        {"evidence_id": "EV-14", "citation": "Kulkarni V, Chandy MJ, Babu KS. Quantitative study of muscle spindles in suboccipital muscles of human fetuses. Neurol India. 2001;49(4):355-359.", "category": "ANATOMICAL_EVIDENCE", "confidence": "HIGH_HISTOLOGICAL", "topic": "Suboccipital spindle density (~98 spindles/g)"},
+        {"evidence_id": "EV-15", "citation": "Kibler WB, Ludewig PM, McClure PW, et al. Clinical implications of scapular dyskinesis in shoulder injury. Br J Sports Med. 2013;47(14):877-885.", "category": "OBSERVATIONAL_ASSOCIATION", "confidence": "CONSENSUS_STATEMENT", "topic": "Scapular kinematics and levator scapulae coupling"},
+        {"evidence_id": "EV-16", "citation": "Cools AM, Declercq GA, Cambier DC, et al. Trapezius activity and intramuscular balance during rehabilitative exercises. Am J Sports Med. 2007;35(10):1744-1751.", "category": "INTERVENTION_EVIDENCE", "confidence": "HIGH_EMG_EXPERIMENTAL", "topic": "Trapezius muscle balance in rehabilitation"},
+        {"evidence_id": "EV-17", "citation": "Swain CTV, Pan F, Maher CG, et al. No consensus on whether spinal posture is related to spinal pain: a systematic review. Spine J. 2020;20(8):1256-1267.", "category": "OBSERVATIONAL_ASSOCIATION", "confidence": "HIGH_SYSTEMATIC_REVIEW", "topic": "Systematic review showing weak link between posture and pain"},
+        {"evidence_id": "EV-18", "citation": "Richards KV, Beales DJ, Smith AJ, et al. Neck Posture Clusters and Their Association With Biopsychosocial Factors and Neck Pain in Australian Adolescents. Phys Ther. 2016;96(10):1576-1587.", "category": "OBSERVATIONAL_ASSOCIATION", "confidence": "HIGH_EPIDEMIOLOGICAL", "topic": "Postural clusters and lack of direct correlation with pain"},
+        {"evidence_id": "EV-19", "citation": "Barrett E, O'Keeffe M, O'Sullivan K, et al. Is thoracic spine posture associated with shoulder pain, range of motion and function? A systematic review. Man Ther. 2016;26:38-46.", "category": "OBSERVATIONAL_ASSOCIATION", "confidence": "HIGH_SYSTEMATIC_REVIEW", "topic": "Systematic review on thoracic posture and shoulder symptoms"},
+        {"evidence_id": "EV-20", "citation": "Caelers R, et al. A validated musculoskeletal neck model for human head-neck dynamic simulations in OpenSim. Comput Methods Biomech Biomed Engin. 2024.", "category": "MODEL_BASED_MECHANICS", "confidence": "HIGH_COMPUTATIONAL_MODEL", "topic": "Multi-segment cervical OpenSim kinematics"}
+    ]
+
+    return {
+        "curriculum_id": "P16_UNIFIED_MSK_EDUCATION_STUDIO",
+        "version": "1.0.0",
+        "region": region,
+        "scientific_gate_status": G14,
+        "clinical_depth_guidance_allowed": CLINICAL_DEPTH_GUIDANCE_ALLOWED,
+        "title_en": "MSK Education Studio: 3D Biomechanics, Muscle Mechanics & Interactive Self-Education",
+        "title_vi": "Phòng Học Cơ Sinh Học MSK 3D: Cơ học Vận động, Cơ bắp & Tự học Tương tác",
+        "subtitle_en": "Evidence-Grounded Kinematics, Moment Arms, Muscle Mechanics & Non-Diagnostic Self-Care",
+        "subtitle_vi": "Động học Dựa trên Bằng chứng, Cánh tay đòn, Cơ học Cơ bắp & Tự chăm sóc Không Chẩn đoán",
+        "topics": p16_topics,
+        "quiz": p16_quiz,
+        "red_flags": red_flags,
+        "evidence_register": p16_evidence_register,
+        "disclaimers": [
+            "ANATOMICAL_MODEL != SUBJECT_SPECIFIC_ANATOMY",
+            "ILLUSTRATIVE_KINEMATICS != MEASURED_KINEMATICS",
+            "MUSCLE_ACTION_DESCRIPTION != MUSCLE_ACTIVATION_MEASUREMENT",
+            "OPTIMIZED_MUSCLE_ACTIVATION != MEASURED_EMG",
+            "SIMULATED_FORCE != MEASURED_HUMAN_FORCE",
+            "FORWARD_HEAD_VARIATION != STRUCTURAL_DEFORMITY_DIAGNOSIS",
+            "POSTURE_VARIATION != CLINICAL_DIAGNOSIS",
+            "G14 = BLOCKED_EXTERNAL_DATA",
+            "RELEASE_SCOPE = ENGINEERING_RESEARCH_ONLY"
+        ],
+        "scenarios": [s.__dict__ for s in get_scenario_catalog()],
+        "provenance": get_provenance_manifest(),
     }

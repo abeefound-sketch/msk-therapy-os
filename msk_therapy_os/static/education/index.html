@@ -577,7 +577,12 @@
             <span class="sub" id="header-subtitle">MSK-Therapy-OS · 3D Musculoskeletal Education & Biomechanics Studio</span>
         </div>
         <div class="header-actions">
-            <button id="btn-studio-mode-toggle" class="btn" style="border-color: var(--accent); color: var(--accent);">Studio: P14 Biomechanics</button>
+            <select id="region-select" class="btn" style="border-color: var(--accent); color: #38bdf8; outline: none;">
+                <option value="cervicothoracic">Vùng Cổ - Ngực (Cervicothoracic)</option>
+                <option value="shoulder">Vùng Vai - Bả Vai (Shoulder)</option>
+                <option value="unified">Toàn Bộ Phức Hợp (Unified MSK)</option>
+            </select>
+            <button id="btn-studio-mode-toggle" class="btn" style="border-color: var(--accent); color: var(--accent);">Studio: P16 Unified MSK</button>
             <span id="fps-badge" class="badge badge-green">60 FPS</span>
             <span class="badge badge-neutral">G14: BLOCKED_EXTERNAL_DATA</span>
             <button id="btn-lang-toggle" class="btn">EN / VI</button>
@@ -646,19 +651,23 @@
 
                     <div>
                         <select id="scenario-select" class="player-btn" style="outline: none;">
-                            <option value="seth_shoulder_elevation">OpenSim Seth Vai (0° → 120°)</option>
-                            <option value="illustrative_rounded_elevation">Kịch bản Vai đổ trước (0° → 120°)</option>
-                            <option value="vasavada_cervical_flexion_extension">OpenSim Vasavada Cổ (-25° → +45°)</option>
-                            <option value="illustrative_forward_head_posture">Kịch bản Đầu đổ trước & Chéo trên</option>
+                            <option value="vasavada_cervical_flexion_extension">Gập - Ngửa Cổ (Vasavada -25° → +45°)</option>
+                            <option value="illustrative_forward_head_posture">Đầu đổ trước & Hội chứng chéo trên</option>
+                            <option value="cervical_axial_rotation">Xoay trục Cổ Trái - Phải (0° → 40°)</option>
+                            <option value="cervical_lateral_bending">Nghiêng bên Cổ Trái - Phải (0° → 30°)</option>
+                            <option value="seth_shoulder_elevation">Nâng cánh tay (OpenSim Seth 0° → 120°)</option>
+                            <option value="illustrative_rounded_elevation">Nâng tay vai đổ trước (Minh họa)</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="player-row" style="border-top: 1px solid #283548; padding-top: 6px; font-size: 11px;">
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                        <span style="color: #94a3b8; font-size: 11px;">Chế độ hiển thị:</span>
-                        <button id="btn-mode-anatomy" class="player-btn active">Giải Phẫu Chức Năng</button>
-                        <button id="btn-mode-activation" class="player-btn">Kích Hoạt OpenSim</button>
+                    <div style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;">
+                        <span style="color: #94a3b8; font-size: 11px;">Chế độ cơ học:</span>
+                        <button id="btn-mode-anatomy" class="player-btn active">Chế độ A: Giải Phẫu</button>
+                        <button id="btn-mode-geometry" class="player-btn">Chế độ B: Hình Học</button>
+                        <button id="btn-mode-activation" class="player-btn">Chế độ C: Kích Hoạt</button>
+                        <button id="btn-mode-force" class="player-btn">Chế độ D: Lực Cơ (N)</button>
                         <button id="btn-mode-comparison" class="player-btn">So Sánh Kịch Bản</button>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
@@ -709,7 +718,7 @@
                         <span class="metric-val" id="dyn-rhythm-ratio">2.00 : 1</span>
                     </div>
 
-                    <!-- Cervical Spine Biomechanics Readout -->
+                    <!-- Cervical Spine Biomechanics Readout (P16 Physics Separation) -->
                     <div id="cervical-metrics-group" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #334155;">
                         <div class="metric-row">
                             <span class="metric-label">Góc Cổ - Đốt Sống (CVA):</span>
@@ -728,8 +737,32 @@
                             <span class="metric-val" id="dyn-upper-flex">0.0°</span>
                         </div>
                         <div class="metric-row">
-                            <span class="metric-label">Tải Trọng Cơ Duỗi Gáy (Demand):</span>
-                            <span class="metric-val" id="dyn-extensor-load">35.7 N</span>
+                            <span class="metric-label">Trọng Lượng Đầu (W_head):</span>
+                            <span class="metric-val" id="dyn-head-weight">49.0 N (5.0 kg)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Cánh Tay Đòn Ngoài (Moment Arm d):</span>
+                            <span class="metric-val" id="dyn-moment-arm-m">0.029 m (2.9 cm)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Mô-men Trọng Lực Ngoài (M_gravity):</span>
+                            <span class="metric-val" id="dyn-ext-moment">1.42 N·m</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Cánh Tay Đòn Cơ Duỗi (r_eff):</span>
+                            <span class="metric-val" id="dyn-internal-arm">3.5 cm (Vasavada 1998)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Lực Cơ Duỗi Gáy Đòi Hỏi (F_extensor):</span>
+                            <span class="metric-val" id="dyn-extensor-load">40.6 N</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Lực Nén Trục Khớp C7-T1 (Compression):</span>
+                            <span class="metric-val" id="dyn-axial-comp">89.6 N</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Ứng Suất Đĩa Đệm (Tissue Stress):</span>
+                            <span class="metric-val" id="dyn-tissue-stress" style="color: #fbbf24; font-size: 10px;">CHƯA HỖ TRỢ</span>
                         </div>
                     </div>
                 </div>
@@ -743,6 +776,10 @@
                     <div id="watermark-activation-banner" class="watermark-banner">
                         ANATOMICAL FUNCTION — NOT COMPUTED ACTIVATION
                     </div>
+
+                    <div id="inspector-notice" class="watermark-banner" style="margin-bottom: 6px;"></div>
+                    <div id="inspector-empty-state" class="watermark-banner watermark-warning" style="display: none; margin-bottom: 6px;"></div>
+                    <div id="inspector-details-container" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;"></div>
 
                     <div id="muscle-recruitment-list">
                         <div class="muscle-item">
@@ -864,9 +901,32 @@
                     </p>
                 </div>
 
+                <!-- Scenario Comparison Card (P16-05) -->
+                <div id="comparison-card" class="card" style="display: none; margin-top: 10px; border-color: #38bdf8;">
+                    <div class="card-title">
+                        <span>So Sánh Cơ Sinh Học Kịch Bản</span>
+                        <button id="btn-close-comparison" class="player-btn" style="padding: 2px 6px;">✕ Đóng</button>
+                    </div>
+                    <div class="watermark-banner watermark-warning" style="margin-bottom: 6px;">
+                        MÔ-MEN CAO HƠN KHÔNG ĐỒNG NGHĨA VỚI TỔN THƯƠNG MÔ HAY BỆNH LÝ
+                    </div>
+                    <div id="comparison-details-body" style="font-size: 11px; display: flex; flex-direction: column; gap: 4px;"></div>
+                </div>
+
+                <!-- Red Flags Clinical Warning Card (P16-06) -->
+                <div id="red-flags-card" class="card" style="margin-top: 10px; border: 1px solid rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.05);">
+                    <div class="card-title" style="color: #f87171;">
+                        <span>⚠️ Dấu Hiệu Cảnh Báo Đỏ (Red Flags)</span>
+                        <span class="badge badge-red">Khám Y Tế</span>
+                    </div>
+                    <p class="card-text" style="font-size: 10.5px; color: #fca5a5;">
+                        Khi có đau nhói lan xuống tay, yếu liệt chi trên, tê bì ngón tay, dáng đi loạng choạng hoặc sau chấn thương mạnh, cần đến cơ sở y tế chuyên khoa thăm khám ngay thay vì tự tập luyện.
+                    </p>
+                </div>
+
                 <!-- Evidence Register Card -->
                 <div class="card">
-                    <div class="card-title">Tài Liệu Y Văn & Cơ Sở Khoa Học</div>
+                    <div class="card-title">Tài Liệu Y Văn & Cơ Sở Khoa Học (EV-01..20)</div>
                     <ul id="evidence-list" style="padding-left: 0; list-style: none;">
                         <!-- Injected by shoulder_lab.js -->
                     </ul>

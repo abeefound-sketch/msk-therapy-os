@@ -550,14 +550,76 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
             self._send_json(self._atlas_status())
             return
 
-        # P13 / P14 / P15 Interactive MSK Education Studio API
-        if path in ("/api/education/shoulder-lesson", "/api/education/p14-lesson", "/api/education/cervicothoracic-lesson", "/api/education/p15-lesson"):
-            from msk_therapy_os.biomechanics_adapter import get_shoulder_education_curriculum, get_cervicothoracic_curriculum
+        # P13 / P14 / P15 / P16 Interactive MSK Education Studio API
+        if path in (
+            "/api/education/shoulder-lesson",
+            "/api/education/p14-lesson",
+            "/api/education/cervicothoracic-lesson",
+            "/api/education/p15-lesson",
+            "/api/education/unified-curriculum",
+            "/api/education/p16-curriculum",
+            "/api/education/provenance-manifest",
+            "/api/education/muscle-mechanics",
+            "/api/education/compare-scenarios",
+            "/api/education/cervical-mechanics",
+        ):
+            from msk_therapy_os.biomechanics_adapter import (
+                get_shoulder_education_curriculum,
+                get_cervicothoracic_curriculum,
+                get_unified_education_curriculum,
+                get_provenance_manifest,
+                get_muscle_mechanics_inspection,
+                compare_scenarios,
+                calculate_cervical_gravitational_mechanics,
+            )
             version_param = query.get("v", [""])[0].lower() or query.get("milestone", [""])[0].lower()
-            region_param = query.get("region", [""])[0].lower()
+            region_param = query.get("region", ["all"])[0].lower()
+
+            if path == "/api/education/provenance-manifest":
+                self._send_json(get_provenance_manifest())
+                return
+
+            if path == "/api/education/muscle-mechanics":
+                scenario_id = query.get("scenario_id", ["SCEN_SETH_2019_ARM_ELEVATION"])[0]
+                time_sec = float(query.get("time", ["0.0"])[0])
+                mode = query.get("mode", ["MODE_A_ANATOMICAL_PARTICIPATION"])[0]
+                try:
+                    res = get_muscle_mechanics_inspection(region_param, scenario_id, time_sec, mode)
+                    self._send_json(res)
+                except Exception as e:
+                    self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+            if path == "/api/education/compare-scenarios":
+                scen_a = query.get("scenario_a", ["SCEN_VASAVADA_CERVICAL_FLEX_EXT"])[0]
+                scen_b = query.get("scenario_b", ["SCEN_ILLUSTRATIVE_FORWARD_HEAD"])[0]
+                t_a = float(query.get("time_a", ["0.0"])[0])
+                t_b = float(query.get("time_b", ["0.0"])[0])
+                try:
+                    res = compare_scenarios(scen_a, scen_b, t_a, t_b)
+                    self._send_json(res)
+                except Exception as e:
+                    self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+            if path == "/api/education/cervical-mechanics":
+                fwd_mm = float(query.get("fwd_mm", ["0.0"])[0])
+                cva_deg = float(query.get("cva_deg", ["53.0"])[0])
+                head_mass = float(query.get("head_mass", ["5.0"])[0])
+                moment_arm = float(query.get("moment_arm", ["3.5"])[0])
+                sh_pct = float(query.get("sh_pct", ["50.0"])[0])
+                res = calculate_cervical_gravitational_mechanics(fwd_mm, cva_deg, head_mass, moment_arm, sh_pct)
+                self._send_json(res)
+                return
+
+            if path in ("/api/education/unified-curriculum", "/api/education/p16-curriculum") or "p16" in version_param:
+                self._send_json(get_unified_education_curriculum(region=region_param, version="P16"))
+                return
+
             if path in ("/api/education/cervicothoracic-lesson", "/api/education/p15-lesson") or "p15" in version_param or region_param == "cervicothoracic":
                 self._send_json(get_cervicothoracic_curriculum(version="P15"))
                 return
+
             v = "P14" if ("p14" in version_param or "2" in version_param or path == "/api/education/p14-lesson") else "P13"
             self._send_json(get_shoulder_education_curriculum(version=v))
             return
