@@ -42,7 +42,7 @@ def print_banner(host: str, port: int) -> None:
                      MSK-THERAPY-OS · STUDIO
 ========================================================================
     """)
-    print(f"  * 3D Education Studio: http://{host}:{port}/education/?v=p16")
+    print(f"  * 3D Education Studio: http://{host}:{port}/education/?v=p17")
     print(f"  * 3D Meridian Atlas:   http://{host}:{port}/atlas/")
     print(f"  * Clinical Dashboard:  http://{host}:{port}/")
     print("------------------------------------------------------------------------")
@@ -60,7 +60,7 @@ def main() -> None:
     server = create_server(db_path=str(db_file), host=host, port=port)
     print_banner(host, port)
 
-    target_url = f"http://{host}:{port}/education/?v=p16"
+    target_url = f"http://{host}:{port}/education/?v=p17"
     print(f"[i] Đang mở trình duyệt vào: {target_url} ...")
 
     # Launch browser after a short pause
