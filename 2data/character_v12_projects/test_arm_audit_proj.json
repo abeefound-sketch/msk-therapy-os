@@ -1,0 +1,15 @@
+{
+  "project_id": "test_arm_audit_proj",
+  "elbow_deg": 90.0,
+  "morphs": {
+    "ArmLength": 0.5,
+    "Broader": 0.3
+  },
+  "calibration": {
+    "LI4": [
+      0.02,
+      0.03,
+      0.015
+    ]
+  }
+}

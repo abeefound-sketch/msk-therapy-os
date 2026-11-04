@@ -1,0 +1,1439 @@
+{
+  "schema_version": "1.0.0",
+  "motion_id": "MOT-P28-REAL-001",
+  "source_trial": "Pose2Sim_Demo_cam01_cf4f2816",
+  "source_type": "MEDIAPIPE_ESTIMATED",
+  "fps": 60.0,
+  "root_transform": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "rig_version": "1.0.0",
+  "source_skeleton": "MediaPipe_33_Landmarks",
+  "target_skeleton": "Armature_UpperLimb_R",
+  "frames": [
+    {
+      "frame_index": 0,
+      "time_seconds": 0.0,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 24.59,
+        "right_shoulder_elevation_deg": 39.49
+      },
+      "confidence": 0.997,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 1,
+      "time_seconds": 0.0167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 28.14,
+        "right_shoulder_elevation_deg": 39.19
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 2,
+      "time_seconds": 0.0333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 30.26,
+        "right_shoulder_elevation_deg": 35.96
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 3,
+      "time_seconds": 0.05,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 33.09,
+        "right_shoulder_elevation_deg": 35.89
+      },
+      "confidence": 0.996,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 4,
+      "time_seconds": 0.0667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 28.42,
+        "right_shoulder_elevation_deg": 35.51
+      },
+      "confidence": 0.994,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 5,
+      "time_seconds": 0.0833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 36.05,
+        "right_shoulder_elevation_deg": 36.2
+      },
+      "confidence": 0.996,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 6,
+      "time_seconds": 0.1,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 36.56,
+        "right_shoulder_elevation_deg": 40.62
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 7,
+      "time_seconds": 0.1167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 36.0,
+        "right_shoulder_elevation_deg": 38.6
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 8,
+      "time_seconds": 0.1333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 33.73,
+        "right_shoulder_elevation_deg": 38.09
+      },
+      "confidence": 0.993,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 9,
+      "time_seconds": 0.15,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 38.94,
+        "right_shoulder_elevation_deg": 39.11
+      },
+      "confidence": 0.993,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 10,
+      "time_seconds": 0.1667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 42.69,
+        "right_shoulder_elevation_deg": 41.67
+      },
+      "confidence": 0.994,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 11,
+      "time_seconds": 0.1833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 41.85,
+        "right_shoulder_elevation_deg": 43.27
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 12,
+      "time_seconds": 0.2,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 46.26,
+        "right_shoulder_elevation_deg": 43.99
+      },
+      "confidence": 0.994,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 13,
+      "time_seconds": 0.2167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 51.6,
+        "right_shoulder_elevation_deg": 47.89
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 14,
+      "time_seconds": 0.2333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 53.97,
+        "right_shoulder_elevation_deg": 50.76
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 15,
+      "time_seconds": 0.25,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 48.34,
+        "right_shoulder_elevation_deg": 61.36
+      },
+      "confidence": 0.997,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 16,
+      "time_seconds": 0.2667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 56.45,
+        "right_shoulder_elevation_deg": 61.38
+      },
+      "confidence": 0.996,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 17,
+      "time_seconds": 0.2833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 61.6,
+        "right_shoulder_elevation_deg": 63.11
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 18,
+      "time_seconds": 0.3,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 54.63,
+        "right_shoulder_elevation_deg": 71.21
+      },
+      "confidence": 0.996,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 19,
+      "time_seconds": 0.3167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 59.51,
+        "right_shoulder_elevation_deg": 72.52
+      },
+      "confidence": 0.992,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 20,
+      "time_seconds": 0.3333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 51.33,
+        "right_shoulder_elevation_deg": 77.41
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 21,
+      "time_seconds": 0.35,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 46.03,
+        "right_shoulder_elevation_deg": 78.1
+      },
+      "confidence": 0.997,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 22,
+      "time_seconds": 0.3667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 66.1,
+        "right_shoulder_elevation_deg": 72.48
+      },
+      "confidence": 0.984,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 23,
+      "time_seconds": 0.3833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 55.63,
+        "right_shoulder_elevation_deg": 70.91
+      },
+      "confidence": 0.982,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 24,
+      "time_seconds": 0.4,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 51.36,
+        "right_shoulder_elevation_deg": 79.16
+      },
+      "confidence": 0.991,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 25,
+      "time_seconds": 0.4167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 50.0,
+        "right_shoulder_elevation_deg": 74.12
+      },
+      "confidence": 0.992,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 26,
+      "time_seconds": 0.4333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 44.09,
+        "right_shoulder_elevation_deg": 71.08
+      },
+      "confidence": 0.996,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 27,
+      "time_seconds": 0.45,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 50.62,
+        "right_shoulder_elevation_deg": 70.98
+      },
+      "confidence": 0.993,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 28,
+      "time_seconds": 0.4667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 45.02,
+        "right_shoulder_elevation_deg": 76.91
+      },
+      "confidence": 0.996,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 29,
+      "time_seconds": 0.4833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 44.59,
+        "right_shoulder_elevation_deg": 74.52
+      },
+      "confidence": 0.994,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 30,
+      "time_seconds": 0.5,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 67.6,
+        "right_shoulder_elevation_deg": 74.39
+      },
+      "confidence": 0.997,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 31,
+      "time_seconds": 0.5167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 71.35,
+        "right_shoulder_elevation_deg": 72.93
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 32,
+      "time_seconds": 0.5333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 70.78,
+        "right_shoulder_elevation_deg": 74.43
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 33,
+      "time_seconds": 0.55,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 75.68,
+        "right_shoulder_elevation_deg": 81.92
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 34,
+      "time_seconds": 0.5667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 69.6,
+        "right_shoulder_elevation_deg": 78.93
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 35,
+      "time_seconds": 0.5833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 76.97,
+        "right_shoulder_elevation_deg": 75.28
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 36,
+      "time_seconds": 0.6,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 77.73,
+        "right_shoulder_elevation_deg": 80.21
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 37,
+      "time_seconds": 0.6167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 72.43,
+        "right_shoulder_elevation_deg": 82.31
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 38,
+      "time_seconds": 0.6333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 73.56,
+        "right_shoulder_elevation_deg": 79.71
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 39,
+      "time_seconds": 0.65,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 75.77,
+        "right_shoulder_elevation_deg": 82.83
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 40,
+      "time_seconds": 0.6667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 70.51,
+        "right_shoulder_elevation_deg": 84.22
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 41,
+      "time_seconds": 0.6833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 67.86,
+        "right_shoulder_elevation_deg": 86.03
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 42,
+      "time_seconds": 0.7,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 73.89,
+        "right_shoulder_elevation_deg": 87.51
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 43,
+      "time_seconds": 0.7167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 70.57,
+        "right_shoulder_elevation_deg": 91.48
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 44,
+      "time_seconds": 0.7333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 70.97,
+        "right_shoulder_elevation_deg": 93.63
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 45,
+      "time_seconds": 0.75,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 74.06,
+        "right_shoulder_elevation_deg": 97.02
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 46,
+      "time_seconds": 0.7667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 74.78,
+        "right_shoulder_elevation_deg": 93.37
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 47,
+      "time_seconds": 0.7833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 80.67,
+        "right_shoulder_elevation_deg": 96.94
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 48,
+      "time_seconds": 0.8,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 77.67,
+        "right_shoulder_elevation_deg": 97.72
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 49,
+      "time_seconds": 0.8167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 78.0,
+        "right_shoulder_elevation_deg": 98.53
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 50,
+      "time_seconds": 0.8333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 80.44,
+        "right_shoulder_elevation_deg": 98.02
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 51,
+      "time_seconds": 0.85,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 81.54,
+        "right_shoulder_elevation_deg": 96.74
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 52,
+      "time_seconds": 0.8667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 81.32,
+        "right_shoulder_elevation_deg": 95.53
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 53,
+      "time_seconds": 0.8833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 82.2,
+        "right_shoulder_elevation_deg": 96.4
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 54,
+      "time_seconds": 0.9,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 81.25,
+        "right_shoulder_elevation_deg": 101.26
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 55,
+      "time_seconds": 0.9167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 82.15,
+        "right_shoulder_elevation_deg": 98.4
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 56,
+      "time_seconds": 0.9333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 82.24,
+        "right_shoulder_elevation_deg": 99.22
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 57,
+      "time_seconds": 0.95,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 83.96,
+        "right_shoulder_elevation_deg": 98.87
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 58,
+      "time_seconds": 0.9667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 89.85,
+        "right_shoulder_elevation_deg": 101.14
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 59,
+      "time_seconds": 0.9833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 80.23,
+        "right_shoulder_elevation_deg": 96.2
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 60,
+      "time_seconds": 1.0,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 82.62,
+        "right_shoulder_elevation_deg": 94.29
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 61,
+      "time_seconds": 1.0167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 87.61,
+        "right_shoulder_elevation_deg": 95.7
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 62,
+      "time_seconds": 1.0333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 85.07,
+        "right_shoulder_elevation_deg": 93.84
+      },
+      "confidence": 1.0,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 63,
+      "time_seconds": 1.05,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 86.68,
+        "right_shoulder_elevation_deg": 87.93
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 64,
+      "time_seconds": 1.0667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 87.46,
+        "right_shoulder_elevation_deg": 88.66
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 65,
+      "time_seconds": 1.0833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 86.81,
+        "right_shoulder_elevation_deg": 88.04
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 66,
+      "time_seconds": 1.1,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 85.39,
+        "right_shoulder_elevation_deg": 83.67
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 67,
+      "time_seconds": 1.1167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 87.21,
+        "right_shoulder_elevation_deg": 81.87
+      },
+      "confidence": 0.997,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 68,
+      "time_seconds": 1.1333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 91.5,
+        "right_shoulder_elevation_deg": 75.84
+      },
+      "confidence": 0.999,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 69,
+      "time_seconds": 1.15,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 93.7,
+        "right_shoulder_elevation_deg": 72.69
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 70,
+      "time_seconds": 1.1667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 96.35,
+        "right_shoulder_elevation_deg": 68.58
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 71,
+      "time_seconds": 1.1833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 96.48,
+        "right_shoulder_elevation_deg": 66.2
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 72,
+      "time_seconds": 1.2,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 89.91,
+        "right_shoulder_elevation_deg": 67.51
+      },
+      "confidence": 0.996,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 73,
+      "time_seconds": 1.2167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 94.42,
+        "right_shoulder_elevation_deg": 66.27
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 74,
+      "time_seconds": 1.2333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 92.64,
+        "right_shoulder_elevation_deg": 65.71
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 75,
+      "time_seconds": 1.25,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 97.84,
+        "right_shoulder_elevation_deg": 59.86
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 76,
+      "time_seconds": 1.2667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 97.09,
+        "right_shoulder_elevation_deg": 60.91
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 77,
+      "time_seconds": 1.2833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 87.32,
+        "right_shoulder_elevation_deg": 65.85
+      },
+      "confidence": 0.997,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 78,
+      "time_seconds": 1.3,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 91.2,
+        "right_shoulder_elevation_deg": 67.66
+      },
+      "confidence": 0.998,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 79,
+      "time_seconds": 1.3167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 83.43,
+        "right_shoulder_elevation_deg": 73.08
+      },
+      "confidence": 0.991,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 80,
+      "time_seconds": 1.3333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 48.42,
+        "right_shoulder_elevation_deg": 68.78
+      },
+      "confidence": 0.995,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 81,
+      "time_seconds": 1.35,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 79.76,
+        "right_shoulder_elevation_deg": 70.94
+      },
+      "confidence": 0.994,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 82,
+      "time_seconds": 1.3667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 84.66,
+        "right_shoulder_elevation_deg": 72.07
+      },
+      "confidence": 0.993,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 83,
+      "time_seconds": 1.3833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 89.58,
+        "right_shoulder_elevation_deg": 68.52
+      },
+      "confidence": 0.987,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 84,
+      "time_seconds": 1.4,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 89.6,
+        "right_shoulder_elevation_deg": 71.84
+      },
+      "confidence": 0.986,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 85,
+      "time_seconds": 1.4167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 89.32,
+        "right_shoulder_elevation_deg": 51.42
+      },
+      "confidence": 0.96,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 86,
+      "time_seconds": 1.4333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 82.56,
+        "right_shoulder_elevation_deg": 49.12
+      },
+      "confidence": 0.978,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 87,
+      "time_seconds": 1.45,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 74.18,
+        "right_shoulder_elevation_deg": 48.55
+      },
+      "confidence": 0.954,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 88,
+      "time_seconds": 1.4667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 75.38,
+        "right_shoulder_elevation_deg": 50.85
+      },
+      "confidence": 0.986,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 89,
+      "time_seconds": 1.4833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 62.19,
+        "right_shoulder_elevation_deg": 49.37
+      },
+      "confidence": 0.984,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 90,
+      "time_seconds": 1.5,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 64.05,
+        "right_shoulder_elevation_deg": 61.24
+      },
+      "confidence": 0.989,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 91,
+      "time_seconds": 1.5167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 59.96,
+        "right_shoulder_elevation_deg": 67.02
+      },
+      "confidence": 0.987,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 92,
+      "time_seconds": 1.5333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 47.38,
+        "right_shoulder_elevation_deg": 77.96
+      },
+      "confidence": 0.987,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 93,
+      "time_seconds": 1.55,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 41.84,
+        "right_shoulder_elevation_deg": 78.31
+      },
+      "confidence": 0.989,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 94,
+      "time_seconds": 1.5667,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 36.62,
+        "right_shoulder_elevation_deg": 84.97
+      },
+      "confidence": 0.989,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 95,
+      "time_seconds": 1.5833,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 33.68,
+        "right_shoulder_elevation_deg": 81.68
+      },
+      "confidence": 0.985,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 96,
+      "time_seconds": 1.6,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 30.89,
+        "right_shoulder_elevation_deg": 84.61
+      },
+      "confidence": 0.986,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 97,
+      "time_seconds": 1.6167,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 37.18,
+        "right_shoulder_elevation_deg": 79.34
+      },
+      "confidence": 0.99,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 98,
+      "time_seconds": 1.6333,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 41.61,
+        "right_shoulder_elevation_deg": 53.01
+      },
+      "confidence": 0.983,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    },
+    {
+      "frame_index": 99,
+      "time_seconds": 1.65,
+      "joint_rotations": {
+        "right_elbow_flexion_deg": 42.93,
+        "right_shoulder_elevation_deg": 48.42
+      },
+      "confidence": 0.969,
+      "observable_flags": {
+        "elbow_flexion_observable": true,
+        "forearm_pronation_observable": false,
+        "depth_calibrated": false
+      }
+    }
+  ],
+  "quality_metadata": {
+    "total_frames": 100,
+    "dropped_frames": 0,
+    "unobservable_dofs": [
+      "forearm_pronation_supination",
+      "wrist_radial_ulnar_deviation"
+    ],
+    "checksum": "bcf990e58dbd9670e5acfd9f9c82ee6a25259473c6bc8aafef4080ef9abcddfa"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "P30-VAL-REPORT-001",
+  "milestone": "P30",
+  "status": "ENGINEERING_PASS_SCOPE_LIMITED",
+  "gates": {
+    "G1_Functional": "PASS",
+    "G2_Data_Integrity": "PASS",
+    "G3_Domain_Validity": "BLOCKED",
+    "G4_Independent_Acceptance": "BLOCKED"
+  },
+  "trial_ids": [
+    "MOT-P28-REAL-001"
+  ],
+  "tests_evaluated": 12,
+  "tests_passed": 10,
+  "tests_failed": 0,
+  "tests_blocked": 2,
+  "metrics": {
+    "total_frames": 100,
+    "rejection_rate": 0.0,
+    "mean_velocity_deg_s": 244.21,
+    "max_velocity_deg_s": 2109.04,
+    "accuracy_assessment": {
+      "status": "ACCURACY_NOT_ESTABLISHED",
+      "notes": "No ground truth reference series provided; refusing fake benchmark claim."
+    }
+  },
+  "artifact_hashes": {
+    "motion_sequence_checksum": "bcf990e58dbd9670e5acfd9f9c82ee6a25259473c6bc8aafef4080ef9abcddfa"
+  },
+  "blockers": [
+    "G3: Clinical domain validation requires medical panel review of monocular depth uncertainty.",
+    "G4: Independent hospital mocap benchmarking not yet performed."
+  ],
+  "limitations": [
+    "Monocular MediaPipe camera lacks axial forearm twist observability (pronation/supination).",
+    "Soft tissue artifact (STA) not modelled in rigid bone kinematics."
+  ]
+}

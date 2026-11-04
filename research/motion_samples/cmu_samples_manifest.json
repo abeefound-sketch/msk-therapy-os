@@ -1,0 +1,14 @@
+{
+  "02.asf": {
+    "status": "DOWNLOADED",
+    "size_bytes": 7268,
+    "sha256": "c9f5ff45b4437b279f58b95dacf017afd3135373096274df69436a9354d796cf",
+    "url": "http://mocap.cs.cmu.edu/subjects/02/02.asf"
+  },
+  "02_01.amc": {
+    "status": "DOWNLOADED",
+    "size_bytes": 273444,
+    "sha256": "1503c481f4726e640c77888f0c841dd3be0694684bcd32296cf53685c6fc1492",
+    "url": "http://mocap.cs.cmu.edu/subjects/02/02_01.amc"
+  }
+}

@@ -498,6 +498,383 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_text("Education studio not installed", status=HTTPStatus.NOT_FOUND)
             return
 
+        # P21 Sandbox Atlas PoC Route & Static Assets
+        if path.startswith("/sandbox/p21") or path == "/sandbox/p21":
+            rel = path[12:].lstrip("/") if path.startswith("/sandbox/p21") else ""
+            if not rel or rel == "index.html":
+                sandbox_file = STATIC_DIR / "sandbox_p21" / "index.html"
+            else:
+                sandbox_file = (STATIC_DIR / "sandbox_p21" / rel).resolve()
+            if str(sandbox_file).startswith(str((STATIC_DIR / "sandbox_p21").resolve())) and sandbox_file.is_file():
+                if self._serve_file(sandbox_file):
+                    return
+            self._send_text("Sandbox P21 file not found", status=HTTPStatus.NOT_FOUND)
+            return
+
+        # V1.3 Universal Anatomical Binding System Route & Static Assets
+        if path.startswith(("/character_v13", "/atlas_v13", "/sandbox/v13")) or path in ("/character_v13", "/atlas_v13", "/sandbox/v13"):
+            rel = ""
+            if path.startswith("/character_v13"):
+                rel = path[14:].lstrip("/")
+            elif path.startswith("/atlas_v13"):
+                rel = path[10:].lstrip("/")
+            elif path.startswith("/sandbox/v13"):
+                rel = path[12:].lstrip("/")
+            if not rel or rel == "index.html":
+                char_file = STATIC_DIR / "character_v13" / "index.html"
+            else:
+                char_file = (STATIC_DIR / "character_v13" / rel).resolve()
+            if str(char_file).startswith(str((STATIC_DIR / "character_v13").resolve())) and char_file.is_file():
+                if self._serve_file(char_file):
+                    return
+            self._send_text("Character V1.3 file not found", status=HTTPStatus.NOT_FOUND)
+            return
+
+        # V1.2 Anatomical Binding System Route & Static Assets
+        if path.startswith(("/character_v12", "/arm_v12", "/sandbox/v12")) or path in ("/character_v12", "/arm_v12", "/sandbox/v12"):
+            rel = ""
+            if path.startswith("/character_v12"):
+                rel = path[14:].lstrip("/")
+            elif path.startswith("/arm_v12"):
+                rel = path[8:].lstrip("/")
+            elif path.startswith("/sandbox/v12"):
+                rel = path[12:].lstrip("/")
+            if not rel or rel == "index.html":
+                char_file = STATIC_DIR / "character_v12" / "index.html"
+            else:
+                char_file = (STATIC_DIR / "character_v12" / rel).resolve()
+            if str(char_file).startswith(str((STATIC_DIR / "character_v12").resolve())) and char_file.is_file():
+                if self._serve_file(char_file):
+                    return
+            self._send_text("Character V1.2 file not found", status=HTTPStatus.NOT_FOUND)
+            return
+
+        # V1.1 Game Character Pipeline Route & Static Assets
+        if path.startswith(("/character", "/sandbox/v11")) or path in ("/character", "/sandbox/v11"):
+            rel = ""
+            if path.startswith("/character"):
+                rel = path[10:].lstrip("/")
+            elif path.startswith("/sandbox/v11"):
+                rel = path[12:].lstrip("/")
+            if not rel or rel == "index.html":
+                char_file = STATIC_DIR / "character_v11" / "index.html"
+            else:
+                char_file = (STATIC_DIR / "character_v11" / rel).resolve()
+            if str(char_file).startswith(str((STATIC_DIR / "character_v11").resolve())) and char_file.is_file():
+                if self._serve_file(char_file):
+                    return
+            self._send_text("Character V1.1 file not found", status=HTTPStatus.NOT_FOUND)
+            return
+
+        # P21 Sandbox Atlas PoC GET APIs
+        if path == "/api/sandbox/p21/metadata":
+            from msk_therapy_os.sandbox_p21_adapter import get_p21_metadata
+            self._send_json(get_p21_metadata())
+            return
+
+        if path == "/api/sandbox/p21/structures":
+            from msk_therapy_os.sandbox_p21_adapter import get_p21_structures
+            layer = query.get("layer", [None])[0]
+            system = query.get("system", [None])[0]
+            search = query.get("search", [None])[0]
+            limit_raw = query.get("limit", [0])[0]
+            limit = int(limit_raw) if limit_raw and str(limit_raw).isdigit() else None
+            self._send_json(get_p21_structures(layer=layer, system=system, search=search, limit=limit))
+            return
+
+        if path == "/api/sandbox/p21/representative":
+            from msk_therapy_os.sandbox_p21_adapter import get_representative_structures
+            self._send_json(get_representative_structures())
+            return
+
+        if path == "/api/sandbox/p21/chunk":
+            from msk_therapy_os.sandbox_p21_adapter import get_p21_chunk_file
+            chunk_name = query.get("name", [""])[0]
+            try:
+                chunk_file = get_p21_chunk_file(chunk_name)
+                if not self._serve_file(chunk_file):
+                    self._send_text("Chunk file not found", status=HTTPStatus.NOT_FOUND)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/sandbox/p21/annotations":
+            from msk_therapy_os.sandbox_p21_adapter import get_annotations_and_polylines
+            self._send_json(get_annotations_and_polylines())
+            return
+
+        # P31 Cross-System Integration GET APIs
+        if path == "/api/sandbox/p31/bundle":
+            from tools.blender_anatomy_studio.addon.web_atlas_adapter import WebAtlasAdapter
+            adapter = WebAtlasAdapter()
+            bundle = adapter.build_exchange_bundle()
+            self._send_json(bundle.to_dict())
+            return
+
+        if path == "/api/sandbox/p31/knowledge_links":
+            code = query.get("code", [None])[0]
+            if not code:
+                self._send_json({"error": "Missing 'code' query parameter"}, status=HTTPStatus.BAD_REQUEST)
+                return
+            from tools.blender_anatomy_studio.addon.web_atlas_adapter import WebAtlasAdapter
+            adapter = WebAtlasAdapter()
+            bundle = adapter.build_exchange_bundle()
+            link = bundle.knowledge_links.get(code.upper())
+            if not link:
+                self._send_json({"error": f"Code '{code}' not found in knowledge registry", "status": "SOURCE_NOT_AVAILABLE"}, status=HTTPStatus.NOT_FOUND)
+                return
+            self._send_json(link)
+            return
+
+        if path == "/api/sandbox/p31/markdown_export":
+            from tools.blender_anatomy_studio.addon.web_atlas_adapter import WebAtlasAdapter
+            adapter = WebAtlasAdapter()
+            bundle = adapter.build_exchange_bundle()
+            md = adapter.export_research_bundle_markdown(bundle)
+            self._send_text(md, content_type="text/markdown; charset=utf-8")
+            return
+
+        # =========================================================================
+        # MSK-Therapy-OS V1.0 Product APIs (GET)
+        # =========================================================================
+        if path == "/api/v1/body_parameters/presets":
+            from msk_therapy_os.body_parametric.parametric_engine import ParametricBodyEngine
+            engine = getattr(self.server, "parametric_engine", None)
+            if not engine:
+                engine = ParametricBodyEngine()
+                setattr(self.server, "parametric_engine", engine)
+            self._send_json({
+                "presets": engine.PRESETS,
+                "current": engine.current_params.to_dict(),
+                "pivots": engine.compute_joint_pivots()
+            })
+            return
+
+        if path == "/api/v1/dynamic_anchors":
+            from msk_therapy_os.dynamic_anchors.dynamic_anchor_manager import DynamicAnchorManager
+            manager = getattr(self.server, "anchor_manager", None)
+            if not manager:
+                manager = DynamicAnchorManager()
+                setattr(self.server, "anchor_manager", manager)
+            self._send_json(manager.get_summary())
+            return
+
+        if path == "/api/v1/motion/frames":
+            from msk_therapy_os.motion_bridge.web_motion_controller import WebMotionController
+            controller = getattr(self.server, "motion_controller", None)
+            if not controller:
+                controller = WebMotionController()
+                setattr(self.server, "motion_controller", controller)
+            self._send_json({
+                "total_frames": len(controller.frames),
+                "frames": controller.get_all_frames_dict(),
+                "rhythm": "2:1_SCAPULOHUMERAL_INMAN"
+            })
+            return
+
+        # =========================================================================
+        # MSK-Therapy-OS V1.1 Character Pipeline APIs (GET)
+        # =========================================================================
+        if path == "/api/character/v11/metadata":
+            from msk_therapy_os.character_anatomy_adapter import registration_adapter
+            from msk_therapy_os.character_acupoints_adapter import acupoints_adapter
+            from msk_therapy_os.character_motion_retarget import motion_retarget_adapter
+            self._send_json({
+                "pipeline_version": "V1.1",
+                "character_engine": "MakeHuman + Blender 3.6 LTS + Three.js",
+                "skeleton": {
+                    "bone_count": 53,
+                    "rig_name": "game_engine",
+                    "skin_weights_assigned": 52
+                },
+                "mesh": {
+                    "base_vertices": 19158,
+                    "base_polygons": 18486,
+                    "morph_targets_count": 6,
+                    "morph_names": ["Height", "Proportions", "ShoulderWidth", "WaistCircumference", "ArmLength", "LegLength"]
+                },
+                "active_anatomy_registrations": registration_adapter.get_active_registrations_count(),
+                "pending_anatomy_registrations": registration_adapter.get_pending_registrations_count(),
+                "acupoint_candidates": len(acupoints_adapter.list_acupoints()),
+                "motion_frames": motion_retarget_adapter.get_total_frames(),
+                "scope": "ENGINEERING_RESEARCH_ONLY"
+            })
+            return
+
+        if path == "/api/character/v11/registrations":
+            from msk_therapy_os.character_anatomy_adapter import registration_adapter
+            self._send_json({
+                "registrations": registration_adapter.list_registrations()
+            })
+            return
+
+        if path == "/api/character/v11/acupoints":
+            from msk_therapy_os.character_acupoints_adapter import acupoints_adapter
+            self._send_json({
+                "acupoints": acupoints_adapter.list_acupoints()
+            })
+            return
+
+        if path == "/api/character/v11/motion":
+            from msk_therapy_os.character_motion_retarget import motion_retarget_adapter
+            self._send_json(motion_retarget_adapter.get_motion_summary())
+            return
+
+        # =========================================================================
+        # MSK-Therapy-OS V1.2 Anatomical Binding System (ABS) APIs (GET)
+        # =========================================================================
+        if path == "/api/character/v12/metadata":
+            from msk_therapy_os.canonical_skeleton_adapter import canonical_skeleton
+            from msk_therapy_os.anatomical_binding.rigid_bone_binding import rigid_bone_adapter
+            from msk_therapy_os.anatomical_binding.muscle_deformation_binding import muscle_deformation_adapter
+            from msk_therapy_os.anatomical_binding.surface_anchor_binding import surface_anchor_adapter
+            self._send_json({
+                "pipeline_version": "V1.2",
+                "system_name": "Anatomical Binding System (ABS)",
+                "scope": "ENGINEERING_RESEARCH_ONLY",
+                "clinical_validation": "NOT_ESTABLISHED",
+                "gate_g3": "PENDING",
+                "canonical_skeleton": {
+                    "bone_count": canonical_skeleton.get_bone_count(),
+                    "arm_bones": ["clavicle_r", "upperarm_r", "lowerarm_r", "hand_r"],
+                },
+                "musculoskeletal_assets": {
+                    "rigid_bones_count": len(rigid_bone_adapter.list_bindings()),
+                    "muscles_count": len(muscle_deformation_adapter.list_muscles()),
+                    "surface_anchors_count": len(surface_anchor_adapter.list_anchors()),
+                    "source_dataset": "BodyParts3D 4.0 (CC BY 4.0 DBCLS Japan)",
+                },
+                "kinematic_synchronization": {
+                    "elbow_flexion_rom_deg": [0.0, 90.0],
+                    "joint_gap_tolerance_mm": 0.0,
+                    "biceps_shortening_expected_pct": 23.17,
+                    "triceps_stretch_expected_pct": 20.0,
+                }
+            })
+            return
+
+        if path == "/api/character/v12/skeleton":
+            from msk_therapy_os.canonical_skeleton_adapter import canonical_skeleton
+            self._send_json(canonical_skeleton.export_contract_dict())
+            return
+
+        if path == "/api/character/v12/bones":
+            from msk_therapy_os.anatomical_binding.rigid_bone_binding import rigid_bone_adapter
+            self._send_json({
+                "rigid_bones": rigid_bone_adapter.list_bindings()
+            })
+            return
+
+        if path == "/api/character/v12/muscles":
+            from msk_therapy_os.anatomical_binding.muscle_deformation_binding import muscle_deformation_adapter
+            self._send_json({
+                "muscles": muscle_deformation_adapter.list_muscles()
+            })
+            return
+
+        if path == "/api/character/v12/anchors":
+            from msk_therapy_os.anatomical_binding.surface_anchor_binding import surface_anchor_adapter
+            self._send_json({
+                "anchors": surface_anchor_adapter.list_anchors()
+            })
+            return
+
+        if path.startswith("/api/character/v12/evaluate"):
+            from dataclasses import asdict
+            from msk_therapy_os.anatomical_binding.kinematic_chain_coordinator import kinematic_coordinator
+            qs = parse_qs(parsed.query)
+            elbow = float(qs.get("elbow_flexion", ["0.0"])[0])
+            shoulder = float(qs.get("shoulder_abduction", ["0.0"])[0])
+            state = kinematic_coordinator.compute_arm_state(elbow, shoulder)
+            self._send_json(asdict(state))
+            return
+
+        if path.startswith("/api/character/v12/geometry"):
+            from dataclasses import asdict
+            from msk_therapy_os.geometry_evaluator import geometry_evaluator
+            qs = parse_qs(parsed.query)
+            elbow = float(qs.get("elbow_flexion", ["0.0"])[0])
+            geom = geometry_evaluator.evaluate_at_angle(elbow)
+            self._send_json(asdict(geom))
+            return
+
+        if path.startswith("/api/character/v12/meridian"):
+            from msk_therapy_os.dynamic_meridian_system import dynamic_meridian_system
+            qs = parse_qs(parsed.query)
+            elbow = float(qs.get("elbow_flexion", ["0.0"])[0])
+            pathway = dynamic_meridian_system.evaluate_meridian_pathway(elbow)
+            self._send_json({
+                "meridian": "Large Intestine (Thủ Dương Minh Đại Trường)",
+                "elbow_flexion_deg": elbow,
+                "waypoints": pathway
+            })
+            return
+
+        # =========================================================================
+        # MSK-Therapy-OS V1.3 Universal Anatomical Binding System Endpoints (GET)
+        # =========================================================================
+        if path == "/api/character/v13/metadata":
+            from msk_therapy_os.anatomical_binding import universal_registry, StructureType
+            bones = universal_registry.get_by_type(StructureType.BONE)
+            muscles = universal_registry.get_by_type(StructureType.MUSCLE)
+            anchors = universal_registry.get_by_type(StructureType.SURFACE_ANCHOR)
+            self._send_json({
+                "system": "MSK-Therapy-OS V1.3 Universal Anatomical Binding System",
+                "canonical_skeleton": "makehuman_game_engine_53",
+                "canonical_bones_count": 53,
+                "registered_bones_count": len(bones),
+                "registered_muscles_count": len(muscles),
+                "registered_anchors_count": len(anchors),
+                "supported_strategies": [
+                    "RIGID_BONE",
+                    "MULTI_BONE_SKINNING",
+                    "ATTACHMENT_DRIVEN_DEFORMATION",
+                    "SURFACE_BARYCENTRIC",
+                    "MORPH_AWARE_REGISTRATION"
+                ],
+                "release_scope": "ENGINEERING_RESEARCH_ONLY",
+                "clinical_validation": "NOT_ESTABLISHED",
+                "clinical_safety_notice": "ENGINEERING_RESEARCH_ONLY; NOT_FOR_CLINICAL_USE"
+            })
+            return
+
+        if path == "/api/character/v13/structures":
+            from msk_therapy_os.anatomical_binding import universal_registry
+            self._send_json({
+                "structures": universal_registry.list_all()
+            })
+            return
+
+        if path.startswith("/api/character/v13/evaluate"):
+            from dataclasses import asdict
+            from msk_therapy_os.anatomical_binding import universal_coordinator
+            qs = parse_qs(parsed.query)
+            elbow = float(qs.get("elbow_flexion", ["0.0"])[0])
+            shoulder = float(qs.get("shoulder_abduction", ["0.0"])[0])
+            knee = float(qs.get("knee_flexion", ["0.0"])[0])
+            hip = float(qs.get("hip_flexion", ["0.0"])[0])
+            torso = float(qs.get("torso_twist", ["0.0"])[0])
+            state = universal_coordinator.compute_full_body_state(
+                elbow_flexion_deg=elbow,
+                shoulder_abduction_deg=shoulder,
+                knee_flexion_deg=knee,
+                hip_flexion_deg=hip,
+                torso_twist_deg=torso,
+            )
+            self._send_json(asdict(state))
+            return
+
+        if path.startswith("/api/character/v13/project/load"):
+            qs = parse_qs(parsed.query)
+            proj_name = qs.get("name", ["default_project"])[0]
+            save_dir = Path(__file__).resolve().parent.parent / "2data" / "character_v13_projects"
+            proj_file = save_dir / f"{proj_name}.json"
+            if proj_file.exists():
+                self._send_json(json.loads(proj_file.read_text(encoding="utf-8")))
+            else:
+                self._send_json({"error": "Project not found"}, status=HTTPStatus.NOT_FOUND)
+            return
+
         # Serve static assets directly from STATIC_DIR (e.g. meridianEditor.js)
         if not path.startswith(("/api/", "/atlas/", "/data/")):
             static_file = (STATIC_DIR / path.lstrip("/")).resolve()
@@ -1781,6 +2158,305 @@ class MSKRequestHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
             return
 
+        # P21 Sandbox Atlas PoC POST APIs
+        if path == "/api/sandbox/p21/annotation":
+            try:
+                from msk_therapy_os.sandbox_p21_adapter import save_user_annotation
+                res = save_user_annotation(body)
+                self._send_json(res, status=HTTPStatus.CREATED)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/sandbox/p21/polyline":
+            try:
+                from msk_therapy_os.sandbox_p21_adapter import save_user_polyline
+                res = save_user_polyline(body)
+                self._send_json(res, status=HTTPStatus.CREATED)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/sandbox/p21/export-markdown":
+            try:
+                from msk_therapy_os.sandbox_p21_adapter import export_to_vault_markdown
+                md = export_to_vault_markdown(body)
+                self._send_json({"markdown": md})
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        # =========================================================================
+        # MSK-Therapy-OS V1.0 Product APIs (POST)
+        # =========================================================================
+        if path == "/api/v1/body_parameters/apply":
+            try:
+                from msk_therapy_os.body_parametric.parametric_engine import ParametricBodyEngine
+                engine = getattr(self.server, "parametric_engine", None)
+                if not engine:
+                    engine = ParametricBodyEngine()
+                    setattr(self.server, "parametric_engine", engine)
+
+                preset = body.get("preset_name")
+                if preset and preset in engine.PRESETS:
+                    updated = engine.apply_preset(preset)
+                else:
+                    updated = engine.set_parameters(
+                        height_scale=body.get("height_scale"),
+                        right_arm_length_ratio=body.get("right_arm_length_ratio"),
+                        right_arm_circumference_visual=body.get("right_arm_circumference_visual"),
+                        preset_name=preset or "custom"
+                    )
+
+                self._send_json({
+                    "parameters": updated.to_dict(),
+                    "pivots": engine.compute_joint_pivots(updated),
+                    "reversibility_drift_m": engine.check_reversibility(1)
+                })
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/v1/dynamic_anchors/adjust":
+            try:
+                from msk_therapy_os.dynamic_anchors.dynamic_anchor_manager import DynamicAnchorManager
+                manager = getattr(self.server, "anchor_manager", None)
+                if not manager:
+                    manager = DynamicAnchorManager()
+                    setattr(self.server, "anchor_manager", manager)
+
+                code = body.get("code")
+                coords = body.get("coordinates")
+                author = body.get("author", "user")
+                if not code or not coords:
+                    self._send_json({"error": "Missing code or coordinates"}, status=HTTPStatus.BAD_REQUEST)
+                    return
+
+                res = manager.adjust_anchor(code, [float(c) for c in coords], author=author)
+                self._send_json({
+                    "anchor": res.to_dict(),
+                    "summary": manager.get_summary()
+                })
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/v1/dynamic_anchors/undo":
+            try:
+                from msk_therapy_os.dynamic_anchors.dynamic_anchor_manager import DynamicAnchorManager
+                manager = getattr(self.server, "anchor_manager", None)
+                if not manager:
+                    manager = DynamicAnchorManager()
+                    setattr(self.server, "anchor_manager", manager)
+
+                ok = manager.undo()
+                self._send_json({"success": ok, "summary": manager.get_summary()})
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/v1/dynamic_anchors/redo":
+            try:
+                from msk_therapy_os.dynamic_anchors.dynamic_anchor_manager import DynamicAnchorManager
+                manager = getattr(self.server, "anchor_manager", None)
+                if not manager:
+                    manager = DynamicAnchorManager()
+                    setattr(self.server, "anchor_manager", manager)
+
+                ok = manager.redo()
+                self._send_json({"success": ok, "summary": manager.get_summary()})
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/v1/motion/mouse_pose":
+            try:
+                from msk_therapy_os.motion_bridge.web_motion_controller import WebMotionController
+                controller = getattr(self.server, "motion_controller", None)
+                if not controller:
+                    controller = WebMotionController()
+                    setattr(self.server, "motion_controller", controller)
+
+                sh_deg = float(body.get("shoulder_elevation_deg", 0.0))
+                el_deg = float(body.get("elbow_flexion_deg", 0.0))
+                pose = controller.compute_mouse_pose(sh_deg, el_deg)
+                self._send_json(pose.to_dict())
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/v1/project/save":
+            try:
+                from msk_therapy_os.project_io.project_manager import ProjectManager
+                proj_data = body.get("project_data", {})
+                filename = body.get("filename", f"msk_project_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.mskproj")
+                save_dir = REPO_ROOT / "knowledge_vault" / "projects"
+                target_path = save_dir / filename
+                saved_path = ProjectManager.save_project(target_path, proj_data)
+                self._send_json({
+                    "status": "SAVED",
+                    "filepath": saved_path,
+                    "filename": Path(saved_path).name,
+                    "updated_at": proj_data.get("updated_at")
+                })
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/v1/project/load":
+            try:
+                from msk_therapy_os.project_io.project_manager import ProjectManager
+                if "project_data" in body:
+                    data = body["project_data"]
+                    if "schema_version" not in data:
+                        raise ValueError("Invalid project data manifest")
+                else:
+                    filename = body.get("filename")
+                    filepath = REPO_ROOT / "knowledge_vault" / "projects" / filename
+                    data = ProjectManager.load_project(filepath)
+                self._send_json({"status": "LOADED", "project": data})
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/v1/project/export_markdown":
+            try:
+                from msk_therapy_os.project_io.project_manager import ProjectManager
+                proj_data = body.get("project_data", {})
+                md = ProjectManager.export_markdown_report(proj_data)
+                self._send_json({"markdown": md})
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        # =========================================================================
+        # MSK-Therapy-OS V1.1 Character Pipeline APIs (POST)
+        # =========================================================================
+        if path == "/api/character/v11/acupoints/adjust":
+            try:
+                from dataclasses import asdict
+                from msk_therapy_os.character_acupoints_adapter import acupoints_adapter
+                code = body.get("code")
+                offset = body.get("local_offset")
+                notes = body.get("notes", "")
+                if not code or not offset:
+                    self._send_json({"error": "Missing code or local_offset"}, status=HTTPStatus.BAD_REQUEST)
+                    return
+                ok = acupoints_adapter.adjust_coordinates(code, [float(c) for c in offset], notes)
+                if ok:
+                    self._send_json({
+                        "status": "SUCCESS",
+                        "acupoint": asdict(acupoints_adapter.get_acupoint(code))
+                    })
+                else:
+                    self._send_json({"error": "Acupoint not found"}, status=HTTPStatus.NOT_FOUND)
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/character/v11/acupoints/undo":
+            try:
+                from msk_therapy_os.character_acupoints_adapter import acupoints_adapter
+                ok = acupoints_adapter.undo()
+                self._send_json({"status": "SUCCESS" if ok else "NOTHING_TO_UNDO"})
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        # =========================================================================
+        # MSK-Therapy-OS V1.2.1 Project State Persistence & Calibration (POST)
+        # =========================================================================
+        if path == "/api/character/v12/project/save":
+            try:
+                save_dir = Path(__file__).resolve().parent.parent / "2data" / "character_v12_projects"
+                save_dir.mkdir(parents=True, exist_ok=True)
+                project_id = body.get("project_id", "default_project")
+                save_file = save_dir / f"{project_id}.json"
+                with open(save_file, "w", encoding="utf-8") as pf:
+                    json.dump(body, pf, indent=2)
+                self._send_json({
+                    "status": "SAVED",
+                    "project_id": project_id,
+                    "file": str(save_file.name)
+                })
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            return
+
+        if path == "/api/character/v12/project/load":
+            try:
+                save_dir = Path(__file__).resolve().parent.parent / "2data" / "character_v12_projects"
+                project_id = body.get("project_id", "default_project")
+                save_file = save_dir / f"{project_id}.json"
+                if not save_file.exists():
+                    self._send_json({"error": "Project not found"}, status=HTTPStatus.NOT_FOUND)
+                    return
+                with open(save_file, "r", encoding="utf-8") as pf:
+                    data = json.load(pf)
+                self._send_json({
+                    "status": "LOADED",
+                    "project_id": project_id,
+                    "data": data
+                })
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            return
+
+        # =========================================================================
+        # MSK-Therapy-OS V1.3 Universal Anatomical Binding System Endpoints (POST)
+        # =========================================================================
+        if path == "/api/character/v13/register":
+            try:
+                from msk_therapy_os.anatomical_binding import universal_registry, AnatomicalStructureDefinition
+                defn = AnatomicalStructureDefinition.from_dict(body)
+                universal_registry.register_structure(defn, validate=True)
+                self._send_json({
+                    "status": "REGISTERED",
+                    "structure_id": defn.structure_id,
+                    "anatomical_name": defn.anatomical_name_en,
+                    "strategy": defn.deformation_strategy.value,
+                    "registration_status": defn.registration_status.value
+                })
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if path == "/api/character/v13/project/save":
+            try:
+                save_dir = Path(__file__).resolve().parent.parent / "2data" / "character_v13_projects"
+                save_dir.mkdir(parents=True, exist_ok=True)
+                project_id = body.get("project_id", "default_project")
+                save_file = save_dir / f"{project_id}.json"
+                with open(save_file, "w", encoding="utf-8") as pf:
+                    json.dump(body, pf, indent=2)
+                self._send_json({
+                    "status": "SAVED",
+                    "project_id": project_id,
+                    "file": str(save_file.name)
+                })
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            return
+
+        if path == "/api/character/v13/project/load":
+            try:
+                save_dir = Path(__file__).resolve().parent.parent / "2data" / "character_v13_projects"
+                project_id = body.get("project_id", "default_project")
+                save_file = save_dir / f"{project_id}.json"
+                if not save_file.exists():
+                    self._send_json({"error": "Project not found"}, status=HTTPStatus.NOT_FOUND)
+                    return
+                with open(save_file, "r", encoding="utf-8") as pf:
+                    data = json.load(pf)
+                self._send_json({
+                    "status": "LOADED",
+                    "project_id": project_id,
+                    "data": data
+                })
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            return
+
         with open_db(self.db_path) as db:
             try:
                 user = self._get_authenticated_user(db)
@@ -2781,8 +3457,10 @@ def create_server(db_path: str = DEFAULT_DB, host: str = "127.0.0.1", port: int 
     return ThreadingHTTPServer((host, port), ConfiguredHandler)
 
 
-def run_server(db_path: str = DEFAULT_DB, host: str = "127.0.0.1", port: int = 8080) -> None:
+def run_server(db_path: str = DEFAULT_DB, host: str = "127.0.0.1", port: Optional[int] = None) -> None:
     """Run server until keyboard interrupt."""
+    if port is None:
+        port = int(os.environ.get("MSK_PORT", "8080"))
     server = create_server(db_path, host, port)
     print("========================================================================")
     print("MSK-THERAPY-OS: Milestone M2 Body-Map Learning Server Running")
@@ -2800,4 +3478,10 @@ def run_server(db_path: str = DEFAULT_DB, host: str = "127.0.0.1", port: int = 8
 
 
 if __name__ == "__main__":
-    run_server()
+    import argparse
+    parser = argparse.ArgumentParser(description="Run MSK-Therapy-OS HTTP server.")
+    parser.add_argument("--port", type=int, default=None, help="Port to listen on")
+    parser.add_argument("--host", type=str, default="127.0.0.1", help="Host address")
+    parser.add_argument("--db", type=str, default=DEFAULT_DB, help="SQLite database path")
+    args = parser.parse_args()
+    run_server(db_path=args.db, host=args.host, port=args.port)

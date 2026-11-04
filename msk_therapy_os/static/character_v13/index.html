@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSK-Therapy-OS V1.3 — Universal Anatomical Binding System (Full-Body Atlas)</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Import Map for Offline Three.js Modules -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "/education/vendor/three/three.module.js",
+        "three/addons/controls/OrbitControls.js": "/education/vendor/three/OrbitControls.js",
+        "three/addons/loaders/GLTFLoader.js": "/education/vendor/three/loaders/GLTFLoader.js"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div id="app-container">
+        <!-- Top Application Header -->
+        <header id="main-header">
+            <div class="logo-group">
+                <span class="app-badge">MSK-OS V1.3</span>
+                <h1>Universal Anatomical Binding System (Full-Body Humanoid Atlas)</h1>
+                <span class="research-pill" id="badge-scope">ENGINEERING_RESEARCH_ONLY</span>
+                <span class="research-pill warning" id="badge-clinical">CLINICAL_VALIDATION: NOT_ESTABLISHED</span>
+            </div>
+            
+            <!-- Viewport Navigation Toolbar -->
+            <nav id="viewport-nav-toolbar">
+                <div class="mode-switch-group">
+                    <button class="nav-btn mode-btn active" id="btn-mode-overlay" data-mode="OVERLAY_MODE">✨ Xuyên Thấu (Overlay)</button>
+                    <button class="nav-btn mode-btn" id="btn-mode-anatomy" data-mode="ANATOMY_MODE">🦴 Cơ Xương (Musculoskeletal)</button>
+                    <button class="nav-btn mode-btn" id="btn-mode-character" data-mode="CHARACTER_MODE">👤 Da Thật (Living Skin)</button>
+                </div>
+                <div class="quick-actions">
+                    <button class="nav-btn" id="btn-toggle-anim" title="Phát chuỗi chuyển động toàn thân">▶ Chạy Hoạt Họa</button>
+                    <button class="nav-btn" id="btn-save-project" title="Lưu trạng thái dự án">💾 Lưu Dự Án</button>
+                    <button class="nav-btn" id="btn-load-project" title="Mở lại trạng thái dự án">📂 Mở Dự Án</button>
+                    <button class="nav-btn" id="btn-reset-pose" title="Đưa toàn thân về tư thế nghỉ 0°">↺ Đặt Lại</button>
+                    <button class="nav-btn primary" id="btn-export-audit">📥 Xuất Báo Cáo JSON</button>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Main Workspace -->
+        <main id="workspace">
+            <!-- 3D WebGL Viewport Container -->
+            <div id="canvas-container">
+                <div id="viewport-loading-overlay">
+                    <div class="spinner"></div>
+                    <p id="loading-status-text">Đang nạp mô hình toàn thân V1.3 (53 Bones, 9 BP3D Bones, 10 Muscles, 6 Acupoints, 2 Meridians)...</p>
+                </div>
+
+                <!-- Heads-Up Display (HUD) Overlays -->
+                <div id="hud-top-left" class="hud-overlay">
+                    <div class="hud-item"><span class="hud-label">Hệ Thống:</span> <span class="hud-val text-success" id="hud-reg-status">UNIVERSAL_ABS_ACTIVE</span></div>
+                    <div class="hud-item"><span class="hud-label">Chế Độ:</span> <span class="hud-val text-accent" id="hud-mode-text">OVERLAY_MODE</span></div>
+                    <div class="hud-item"><span class="hud-label">Khung Xương Chuẩn:</span> <span class="hud-val">53 Canonical Bones</span></div>
+                    <div class="hud-item"><span class="hud-label">Xương Giải Phẫu:</span> <span class="hud-val text-info">9 Bones (5 Tay + 4 Chân)</span></div>
+                    <div class="hud-item"><span class="hud-label">Cơ Bắp Giải Phẫu:</span> <span class="hud-val text-info">10 Muscles (Biceps, Triceps, Quads)</span></div>
+                    <div class="hud-item"><span class="hud-label">Khe Khớp Hoạt Dịch:</span> <span class="hud-val text-success" id="hud-joint-gap">Khuỷu 2.4 mm | Gối 3.0 mm</span></div>
+                    <div class="hud-item"><span class="hud-label">Độ Xuyên Thấu Mesh:</span> <span class="hud-val text-success" id="hud-penetration">0.00 mm (Không Cấn)</span></div>
+                    <div class="hud-item"><span class="hud-label">Sai Số Thân Xương:</span> <span class="hud-val text-success" id="hud-bone-inv">&lt; 0.12 mm (Bất biến)</span></div>
+                </div>
+
+                <div id="hud-top-right" class="hud-overlay">
+                    <div class="hud-item"><span class="hud-label">Góc Khuỷu Tay:</span> <span class="hud-val text-warning" id="hud-elbow-angle">0.0°</span></div>
+                    <div class="hud-item"><span class="hud-label">Co Cơ Nhị Đầu (Biceps):</span> <span class="hud-val text-danger" id="hud-biceps-shortening">0.0% (Phồng 42.0 mm)</span></div>
+                    <div class="hud-item"><span class="hud-label">Góc Gập Gối (Knee):</span> <span class="hud-val text-warning" id="hud-knee-angle">0.0°</span></div>
+                    <div class="hud-item"><span class="hud-label">Căng Cơ Tứ Đầu (Quads):</span> <span class="hud-val text-danger" id="hud-quad-stretch">+0.0% (L = 44.0 cm)</span></div>
+                    <div class="hud-item"><span class="hud-label">Mốc Huyệt Hoạt Động:</span> <span class="hud-val text-info">6 Mốc (LI4, LI11, LI14, LI15, ST36, KI3)</span></div>
+                    <div class="hud-item"><span class="hud-label">Hiệu Năng Viewport:</span> <span class="hud-val text-accent" id="hud-fps-counter">60 FPS</span></div>
+                </div>
+            </div>
+
+            <!-- Left Controls Sidebar -->
+            <aside id="controls-sidebar">
+                <!-- Layer Visibility Toggles -->
+                <section class="control-panel-card">
+                    <div class="card-header">
+                        <h2>👁️ Lớp Hiển Thị Cấu Trúc (5 Layers)</h2>
+                        <span class="badge-mini">Visibility</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="checkbox-grid">
+                            <label class="check-item"><input type="checkbox" id="chk-layer-bones" checked> 🦴 Xương Thật (9 Bones)</label>
+                            <label class="check-item"><input type="checkbox" id="chk-layer-muscles" checked> 🥩 Cơ Bắp Thật (10 Muscles)</label>
+                            <label class="check-item"><input type="checkbox" id="chk-layer-skin" checked> 👤 Da MakeHuman Toàn Thân</label>
+                            <label class="check-item"><input type="checkbox" id="chk-layer-acupoints" checked> 🎯 Huyệt Vị (LI4-15, ST36, KI3)</label>
+                            <label class="check-item"><input type="checkbox" id="chk-layer-meridian" checked> ⚡ Kinh Lạc 3D (LI & ST)</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Full-Body Kinematics (Arm + Leg Simultaneous) -->
+                <section class="control-panel-card">
+                    <div class="card-header">
+                        <h2>💪 Vận Động Khớp Đa Vùng (Multi-Joint Kinematics)</h2>
+                        <span class="badge-mini">Kinematics</span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Upper Limb -->
+                        <div class="section-subtitle">Chi Trên (Upper Limb):</div>
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-elbow-flex">Gập Khuỷu Tay Phải (Elbow):</label>
+                                <span class="value-display" id="val-elbow-flex">0.0°</span>
+                            </div>
+                            <input type="range" id="slider-elbow-flex" min="0" max="120" step="1" value="0">
+                        </div>
+
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-shoulder-abd">Dạng Khớp Vai Phải (Shoulder):</label>
+                                <span class="value-display" id="val-shoulder-abd">0.0°</span>
+                            </div>
+                            <input type="range" id="slider-shoulder-abd" min="0" max="90" step="1" value="0">
+                        </div>
+
+                        <!-- Lower Limb -->
+                        <div class="section-subtitle">Chi Dưới (Lower Limb):</div>
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-knee-flex">Gập Khớp Gối Phải (Knee Flexion):</label>
+                                <span class="value-display" id="val-knee-flex">0.0°</span>
+                            </div>
+                            <input type="range" id="slider-knee-flex" min="0" max="90" step="1" value="0">
+                        </div>
+
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-hip-flex">Gập Khớp Hông Phải (Hip Flexion):</label>
+                                <span class="value-display" id="val-hip-flex">0.0°</span>
+                            </div>
+                            <input type="range" id="slider-hip-flex" min="-15" max="60" step="1" value="0">
+                        </div>
+
+                        <!-- Spine -->
+                        <div class="section-subtitle">Thân Mình (Spine):</div>
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-torso-twist">Xoay Thân (Torso Twist):</label>
+                                <span class="value-display" id="val-torso-twist">0.0°</span>
+                            </div>
+                            <input type="range" id="slider-torso-twist" min="-30" max="30" step="1" value="0">
+                        </div>
+
+                        <div class="quick-postures-grid">
+                            <button class="posture-btn" id="btn-posture-0">0° Nghỉ</button>
+                            <button class="posture-btn" id="btn-posture-arm90">Tay 90°</button>
+                            <button class="posture-btn" id="btn-posture-knee60">Gối 60°</button>
+                            <button class="posture-btn primary" id="btn-posture-simultaneous">⚡ Đồng Thời (Tay 90° + Gối 60°)</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Morph Targets & Body Shapes -->
+                <section class="control-panel-card">
+                    <div class="card-header">
+                        <h2>🧬 Vóc Dáng & Hình Thể (Morph Targets)</h2>
+                        <span class="badge-mini">Parametric</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="preset-buttons-row">
+                            <button class="preset-btn active" id="btn-preset-baseline">Chuẩn</button>
+                            <button class="preset-btn" id="btn-preset-broader">Vận Động Viên</button>
+                            <button class="preset-btn" id="btn-preset-slender">Mảnh Mai</button>
+                            <button class="preset-btn" id="btn-preset-longarm">Tay Dài</button>
+                            <button class="preset-btn" id="btn-preset-longleg">Chân Dài</button>
+                        </div>
+
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-morph-broader">Bề Ngang Cơ Bắp (Broader):</label>
+                                <span class="value-display" id="val-morph-broader">0.00</span>
+                            </div>
+                            <input type="range" id="slider-morph-broader" min="0" max="1" step="0.05" value="0">
+                        </div>
+
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-morph-slender">Vóc Dáng Mảnh (Slender):</label>
+                                <span class="value-display" id="val-morph-slender">0.00</span>
+                            </div>
+                            <input type="range" id="slider-morph-slender" min="0" max="1" step="0.05" value="0">
+                        </div>
+
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-morph-armlength">Chiều Dài Chi Trên (ArmLength):</label>
+                                <span class="value-display" id="val-morph-armlength">0.00</span>
+                            </div>
+                            <input type="range" id="slider-morph-armlength" min="0" max="1" step="0.05" value="0">
+                        </div>
+
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label for="slider-morph-leglength">Chiều Dài Chi Dưới (LegLength):</label>
+                                <span class="value-display" id="val-morph-leglength">0.00</span>
+                            </div>
+                            <input type="range" id="slider-morph-leglength" min="0" max="1" step="0.05" value="0">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Anatomy Inspector -->
+                <section class="control-panel-card" id="inspector-card">
+                    <div class="card-header">
+                        <h2>🔍 Thanh Tra Giải Phẫu (Anatomy Inspector)</h2>
+                        <span class="badge-mini" id="inspector-badge">Structure</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="inspector-content">
+                            <div class="info-row"><span class="info-key">Tên Cấu Trúc:</span> <span class="info-val" id="insp-name">Nhấp cấu trúc hoặc chọn bên dưới</span></div>
+                            <div class="info-row"><span class="info-key">Mã Nguồn FMA:</span> <span class="info-val text-accent" id="insp-fma">FMA:---</span></div>
+                            <div class="info-row"><span class="info-key">Xương Gắn Kết:</span> <span class="info-val" id="insp-bone">---</span></div>
+                            <div class="info-row"><span class="info-key">Chiến Lược Binding:</span> <span class="info-val text-info" id="insp-strategy">---</span></div>
+                            <div class="info-row"><span class="info-key">Trạng Thái Kiểm Thẩm:</span> <span class="info-val text-success" id="insp-status">REGISTERED_ACTIVE</span></div>
+                            <div class="info-row"><span class="info-key">Tham Chiếu:</span> <span class="info-val" id="insp-ref">BodyParts3D DBCLS Japan / WHO 2008</span></div>
+                        </div>
+                        <div class="structure-select-group">
+                            <label for="select-structure">Chọn nhanh cấu trúc:</label>
+                            <select id="select-structure">
+                                <option value="FJ3368">Xương cánh tay (Right Humerus)</option>
+                                <option value="FJ3365">Xương đùi (Right Femur)</option>
+                                <option value="FJ3387">Xương chày (Right Tibia)</option>
+                                <option value="FJ3381">Xương bánh chè (Right Patella)</option>
+                                <option value="FJ1478">Cơ nhị đầu cánh tay (Biceps brachii)</option>
+                                <option value="FJ1433">Cơ thẳng đùi (Rectus femoris)</option>
+                                <option value="LI4">Huyệt Hợp Cốc (LI4 Hegu)</option>
+                                <option value="ST36">Huyệt Túc Tam Lý (ST36 Zusanli)</option>
+                                <option value="KI3">Huyệt Thái Khê (KI3 Taixi)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

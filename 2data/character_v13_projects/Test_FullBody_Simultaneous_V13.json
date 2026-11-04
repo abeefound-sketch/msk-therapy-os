@@ -1,0 +1,10 @@
+{
+  "project_id": "Test_FullBody_Simultaneous_V13",
+  "elbow_flexion": 90,
+  "knee_flexion": 60,
+  "morph_influences": {
+    "Broader": 0.8,
+    "LegLength": 0.5
+  },
+  "display_mode": "OVERLAY_MODE"
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PoseObservation",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "model_id",
+    "model_version",
+    "model_hash",
+    "source_video_hash",
+    "frame_id",
+    "timestamp",
+    "camera_id",
+    "image_width",
+    "image_height",
+    "landmarks_normalized",
+    "landmarks_world_estimated",
+    "observability_flags",
+    "quality_flags"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "model_id": { "type": "string" },
+    "model_version": { "type": "string" },
+    "model_hash": { "type": "string" },
+    "source_video_hash": { "type": "string" },
+    "frame_id": { "type": "integer", "minimum": 0 },
+    "timestamp": { "type": "number", "minimum": 0.0 },
+    "camera_id": { "type": "string" },
+    "image_width": { "type": "integer", "minimum": 1 },
+    "image_height": { "type": "integer", "minimum": 1 },
+    "landmarks_normalized": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "x", "y", "z", "visibility", "presence"],
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "z": { "type": "number" },
+          "visibility": { "type": "number" },
+          "presence": { "type": "number" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "landmarks_world_estimated": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "x", "y", "z", "visibility"],
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "z": { "type": "number" },
+          "visibility": { "type": "number" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "camera_calibration": {
+      "type": ["object", "null"],
+      "properties": {
+        "focal_length_px": { "type": "number" },
+        "principal_point": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    },
+    "observability_flags": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "quality_flags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

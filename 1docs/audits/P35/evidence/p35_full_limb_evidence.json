@@ -1,0 +1,191 @@
+{
+  "milestone": "P35",
+  "description": "Complete Limb Anatomical Binding & Multi-Point Surface Anchoring",
+  "blend_file": {
+    "path": "1docs\\audits\\P35\\evidence\\p35_full_limb_binding.blend",
+    "sha256": "bcb8a931f1feac9e4f2dc9f68840b7da79e237b950a1021256dd807c6d95c2b2",
+    "size_bytes": 1306496
+  },
+  "anatomical_meshes": {
+    "Clavicle_R": {
+      "vertex_count": 420,
+      "face_count": 820,
+      "parent_bone": "clavicle.R"
+    },
+    "Scapula_R": {
+      "vertex_count": 2896,
+      "face_count": 5756,
+      "parent_bone": "clavicle.R"
+    },
+    "Humerus_R": {
+      "vertex_count": 794,
+      "face_count": 1070,
+      "parent_bone": "upper_arm.R"
+    },
+    "Radius_R": {
+      "vertex_count": 249,
+      "face_count": 408,
+      "parent_bone": "forearm.R"
+    },
+    "Ulna_R": {
+      "vertex_count": 305,
+      "face_count": 482,
+      "parent_bone": "forearm.R"
+    },
+    "Metacarpal_2_R": {
+      "vertex_count": 347,
+      "face_count": 610,
+      "parent_bone": "hand.R"
+    }
+  },
+  "surface_anchors": {
+    "LI4": {
+      "marker_id": "anchor_LI4",
+      "code": "LI4",
+      "name_vi": "H\u1ee3p C\u1ed1c",
+      "name_en": "Hegu",
+      "fma_id": "FMA:23910",
+      "ta2_name": "Musculus interosseus dorsalis primus / Ossa metacarpalia I-II",
+      "source_asset_id": "FJ3352",
+      "mesh_hash": "23c39f4eb1ff3ffc0ff314ae1938507851390499ba5d3989cf8bdfa3754e60fa",
+      "target_mesh_name": "Metacarpal_2_R",
+      "target_bone_name": "hand.R",
+      "face_index": 0,
+      "local_surface_coordinates": [
+        -0.28,
+        0.835,
+        0.035
+      ],
+      "local_normal": [
+        -0.7,
+        0.0,
+        0.7
+      ],
+      "barycentric_coordinates": [
+        0.5,
+        0.5,
+        0.0
+      ],
+      "reference_frame": "local_Metacarpal_2_R",
+      "laterality": "RIGHT",
+      "source_reference": "WHO Standard Acupuncture Point Locations (2008), p. 33; GB/T 12346-2021",
+      "clinical_uncertainty_mm": 5.0,
+      "technical_anchor_status": "VALID_SURFACE_ANCHOR",
+      "clinical_verification_status": "EXPERT_REVIEW_PENDING",
+      "deformation_model": "DEFORMATION_MODEL_NOT_VALIDATED"
+    },
+    "LI14": {
+      "marker_id": "anchor_LI14",
+      "code": "LI14",
+      "name_vi": "T\u00ed Nhu",
+      "name_en": "Binao",
+      "fma_id": "FMA:23412",
+      "ta2_name": "Tuberositas deltoidea humeri",
+      "source_asset_id": "FJ3368",
+      "mesh_hash": "d583ad2e7ee11cf1523f2f819fbc7da3ce7fe505d96ca418bf7dd8178e72750d",
+      "target_mesh_name": "Humerus_R",
+      "target_bone_name": "upper_arm.R",
+      "face_index": 0,
+      "local_surface_coordinates": [
+        -0.21,
+        1.25,
+        -0.015
+      ],
+      "local_normal": [
+        -0.8,
+        0.0,
+        0.6
+      ],
+      "barycentric_coordinates": [
+        0.4,
+        0.3,
+        0.3
+      ],
+      "reference_frame": "local_Humerus_R",
+      "laterality": "RIGHT",
+      "source_reference": "WHO Standard Acupuncture Point Locations (2008), p. 41; GB/T 12346-2021",
+      "clinical_uncertainty_mm": 5.0,
+      "technical_anchor_status": "VALID_SURFACE_ANCHOR",
+      "clinical_verification_status": "VALID_SURFACE_ANCHOR",
+      "deformation_model": "DEFORMATION_MODEL_NOT_VALIDATED"
+    },
+    "LI15": {
+      "marker_id": "anchor_LI15",
+      "code": "LI15",
+      "name_vi": "Ki\u00ean Ngung",
+      "name_en": "Jianyu",
+      "fma_id": "FMA:23240",
+      "ta2_name": "Angulus acromii / Sulcus intertubercularis",
+      "source_asset_id": "FJ3384",
+      "mesh_hash": "0ee8ecd6595fb0b0467554f65c197e41be868d407ae48eb2cf829f0e1f37e19f",
+      "target_mesh_name": "Scapula_R",
+      "target_bone_name": "clavicle.R",
+      "face_index": 0,
+      "local_surface_coordinates": [
+        -0.16,
+        1.41,
+        -0.02
+      ],
+      "local_normal": [
+        0.0,
+        0.7,
+        0.7
+      ],
+      "barycentric_coordinates": [
+        0.33,
+        0.33,
+        0.34
+      ],
+      "reference_frame": "local_Scapula_R",
+      "laterality": "RIGHT",
+      "source_reference": "WHO Standard Acupuncture Point Locations (2008), p. 42; GB/T 12346-2021",
+      "clinical_uncertainty_mm": 6.0,
+      "technical_anchor_status": "VALID_SURFACE_ANCHOR",
+      "clinical_verification_status": "VALID_SURFACE_ANCHOR",
+      "deformation_model": "DEFORMATION_MODEL_NOT_VALIDATED"
+    }
+  },
+  "kinematics": {
+    "kinematic_mode": "FK",
+    "ik_influence": 0.0,
+    "total_frames_retargeted": 100,
+    "scapulohumeral_rhythm_ratio": "2:1",
+    "max_surface_drift_mm": 0.00018902,
+    "drift_pass_criterion_met": true
+  },
+  "rendered_evidence": {
+    "frame_001": {
+      "blender_frame": 1,
+      "clavicle_elevation_deg": 13.16,
+      "humerus_elevation_deg": 26.33,
+      "total_arm_elevation_deg": 39.49,
+      "elbow_flexion_deg": 24.59,
+      "image_path": "1docs\\audits\\P35\\evidence\\p35_blender_render_frame_001.png",
+      "image_size_bytes": 357596
+    },
+    "frame_050": {
+      "blender_frame": 50,
+      "clavicle_elevation_deg": 32.84,
+      "humerus_elevation_deg": 65.69,
+      "total_arm_elevation_deg": 98.53,
+      "elbow_flexion_deg": 78.0,
+      "image_path": "1docs\\audits\\P35\\evidence\\p35_blender_render_frame_050.png",
+      "image_size_bytes": 358179
+    },
+    "frame_100": {
+      "blender_frame": 100,
+      "clavicle_elevation_deg": 16.14,
+      "humerus_elevation_deg": 32.28,
+      "total_arm_elevation_deg": 48.42,
+      "elbow_flexion_deg": 42.93,
+      "image_path": "1docs\\audits\\P35\\evidence\\p35_blender_render_frame_100.png",
+      "image_size_bytes": 357517
+    }
+  },
+  "gates": {
+    "G1_Functional": "PASS",
+    "G2_Data_Integrity": "PASS",
+    "G3_Domain_Validity": "PENDING (Awaiting domain expert clinical review)",
+    "G4_Independent_Acceptance": "PENDING (Awaiting external reviewer signoff)"
+  }
+}

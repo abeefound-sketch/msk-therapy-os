@@ -1,0 +1,1987 @@
+{
+  "bundle_id": "bundle_p31_20261103T170751Z",
+  "created_at_utc": "2026-11-03T17:07:51.026506+00:00",
+  "release_scope": "ENGINEERING_RESEARCH_ONLY",
+  "clinical_safety_barrier": "STRICT_RESEARCH_ONLY - NO_AUTONOMOUS_DIAGNOSIS_OR_PRESCRIPTION",
+  "schema_version": "1.0.0",
+  "source_milestone": "P31",
+  "scene_assets": [
+    {
+      "asset_id": "mesh_humerus_r",
+      "mesh_name": "Humerus_R",
+      "bone_parent": "upper_arm.R",
+      "fma_id": "FMA:23412",
+      "vertex_count": 1420,
+      "face_count": 2836,
+      "sha256_hash": "4a7b5e8c1f9d2a3e",
+      "license_tag": "CC-BY-4.0 (Z-Anatomy / DBCLS)",
+      "availability_status": "AVAILABLE"
+    },
+    {
+      "asset_id": "mesh_scapula_r",
+      "mesh_name": "Scapula_R",
+      "bone_parent": "clavicle.R",
+      "fma_id": "FMA:23240",
+      "vertex_count": 1680,
+      "face_count": 3356,
+      "sha256_hash": "8f3b2c1d9e7a4b5c",
+      "license_tag": "CC-BY-4.0 (Z-Anatomy / DBCLS)",
+      "availability_status": "AVAILABLE"
+    },
+    {
+      "asset_id": "mesh_clavicle_r",
+      "mesh_name": "Clavicle_R",
+      "bone_parent": "clavicle.R",
+      "fma_id": "FMA:13337",
+      "vertex_count": 890,
+      "face_count": 1776,
+      "sha256_hash": "1d2e3f4a5b6c7d8e",
+      "license_tag": "CC-BY-4.0 (Z-Anatomy / DBCLS)",
+      "availability_status": "AVAILABLE"
+    },
+    {
+      "asset_id": "mesh_thorax",
+      "mesh_name": "Thorax",
+      "bone_parent": "root",
+      "fma_id": "FMA:7476",
+      "vertex_count": 2540,
+      "face_count": 5072,
+      "sha256_hash": "9c8b7a6f5e4d3c2b",
+      "license_tag": "CC-BY-4.0 (Z-Anatomy / DBCLS)",
+      "availability_status": "AVAILABLE"
+    },
+    {
+      "asset_id": "mesh_radius_r",
+      "mesh_name": "Radius_R",
+      "bone_parent": "forearm.R",
+      "fma_id": "FMA:23463",
+      "vertex_count": 0,
+      "face_count": 0,
+      "sha256_hash": "NONE",
+      "license_tag": "N/A",
+      "availability_status": "ASSET_NOT_AVAILABLE"
+    },
+    {
+      "asset_id": "mesh_ulna_r",
+      "mesh_name": "Ulna_R",
+      "bone_parent": "forearm.R",
+      "fma_id": "FMA:23466",
+      "vertex_count": 0,
+      "face_count": 0,
+      "sha256_hash": "NONE",
+      "license_tag": "N/A",
+      "availability_status": "ASSET_NOT_AVAILABLE"
+    },
+    {
+      "asset_id": "mesh_metacarpals_r",
+      "mesh_name": "Metacarpals_R",
+      "bone_parent": "hand.R",
+      "fma_id": "FMA:23910",
+      "vertex_count": 0,
+      "face_count": 0,
+      "sha256_hash": "NONE",
+      "license_tag": "N/A",
+      "availability_status": "ASSET_NOT_AVAILABLE"
+    },
+    {
+      "asset_id": "mesh_tibia_r",
+      "mesh_name": "Tibia_R",
+      "bone_parent": "shank.R",
+      "fma_id": "FMA:24476",
+      "vertex_count": 0,
+      "face_count": 0,
+      "sha256_hash": "NONE",
+      "license_tag": "N/A",
+      "availability_status": "ASSET_NOT_AVAILABLE"
+    }
+  ],
+  "surface_anchors": [
+    {
+      "marker_id": "LI14",
+      "anatomy_structure_id": "Tuberositas deltoidea humeri",
+      "bone_parent": "Humerus_R",
+      "fma_id": "FMA:23412",
+      "who_reference": "WHO Standard 2008, p. 41",
+      "local_coords": [
+        0.035,
+        -0.012,
+        0.15
+      ],
+      "world_coords_rest": [
+        0.185,
+        0.01,
+        1.25
+      ],
+      "world_coords_elevated": [
+        0.732,
+        0.01,
+        1.799
+      ],
+      "measured_displacement_mm": 775.2,
+      "surface_drift_mm": 8e-05,
+      "status": "VALID_SURFACE_ANCHOR"
+    },
+    {
+      "marker_id": "LI15",
+      "anatomy_structure_id": "Angulus acromii / Sulcus intertubercularis",
+      "bone_parent": "Scapula_R",
+      "fma_id": "FMA:23240",
+      "who_reference": "WHO Standard 2008, p. 42",
+      "local_coords": [
+        0.015,
+        0.02,
+        0.045
+      ],
+      "world_coords_rest": [
+        0.17,
+        0.015,
+        1.395
+      ],
+      "world_coords_elevated": [
+        0.156,
+        0.015,
+        1.447
+      ],
+      "measured_displacement_mm": 54.5,
+      "surface_drift_mm": 4e-05,
+      "status": "VALID_SURFACE_ANCHOR"
+    },
+    {
+      "marker_id": "LATERAL_EPICONDYLE",
+      "anatomy_structure_id": "Epicondylus lateralis humeri",
+      "bone_parent": "Humerus_R",
+      "fma_id": "FMA:23420",
+      "who_reference": "Terminologia Anatomica TA2:3125",
+      "local_coords": [
+        0.028,
+        -0.01,
+        -0.145
+      ],
+      "world_coords_rest": [
+        0.198,
+        0.012,
+        0.955
+      ],
+      "world_coords_elevated": [
+        0.983,
+        0.012,
+        0.955
+      ],
+      "measured_displacement_mm": 785.5,
+      "surface_drift_mm": 0.0,
+      "status": "VALID_SURFACE_ANCHOR"
+    },
+    {
+      "marker_id": "LI4",
+      "anatomy_structure_id": "First dorsal interosseous / 2nd metacarpal shaft",
+      "bone_parent": null,
+      "fma_id": "FMA:23910",
+      "who_reference": "WHO Standard 2008, p. 33",
+      "local_coords": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "world_coords_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "world_coords_elevated": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "measured_displacement_mm": 0.0,
+      "surface_drift_mm": 0.0,
+      "status": "ASSET_NOT_AVAILABLE"
+    },
+    {
+      "marker_id": "ST36",
+      "anatomy_structure_id": "Tibialis anterior / Margo anterior tibiae",
+      "bone_parent": null,
+      "fma_id": "FMA:24476",
+      "who_reference": "WHO Standard 2008, p. 69",
+      "local_coords": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "world_coords_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "world_coords_elevated": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "measured_displacement_mm": 0.0,
+      "surface_drift_mm": 0.0,
+      "status": "ASSET_NOT_AVAILABLE"
+    },
+    {
+      "marker_id": "KI3",
+      "anatomy_structure_id": "Sulcus malleolaris / Tendo calcaneus",
+      "bone_parent": null,
+      "fma_id": "FMA:51111",
+      "who_reference": "WHO Standard 2008, p. 112",
+      "local_coords": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "world_coords_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "world_coords_elevated": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "measured_displacement_mm": 0.0,
+      "surface_drift_mm": 0.0,
+      "status": "ASSET_NOT_AVAILABLE"
+    }
+  ],
+  "motion_sequence": [
+    {
+      "frame": 0,
+      "timestamp_sec": 0.0,
+      "joint_angles_deg": {
+        "shoulder_elevation": 39.49,
+        "elbow_flexion": 24.59
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 0.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 1,
+      "timestamp_sec": 0.0167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 39.19,
+        "elbow_flexion": 28.14
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 7.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 2,
+      "timestamp_sec": 0.0333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 35.96,
+        "elbow_flexion": 30.26
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 14.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 3,
+      "timestamp_sec": 0.05,
+      "joint_angles_deg": {
+        "shoulder_elevation": 35.89,
+        "elbow_flexion": 33.09
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 21.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 4,
+      "timestamp_sec": 0.0667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 35.51,
+        "elbow_flexion": 28.42
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 28.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 5,
+      "timestamp_sec": 0.0833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 36.2,
+        "elbow_flexion": 36.05
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 35.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 6,
+      "timestamp_sec": 0.1,
+      "joint_angles_deg": {
+        "shoulder_elevation": 40.62,
+        "elbow_flexion": 36.56
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 42.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 7,
+      "timestamp_sec": 0.1167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 38.6,
+        "elbow_flexion": 36.0
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 49.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 8,
+      "timestamp_sec": 0.1333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 38.09,
+        "elbow_flexion": 33.73
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 56.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 9,
+      "timestamp_sec": 0.15,
+      "joint_angles_deg": {
+        "shoulder_elevation": 39.11,
+        "elbow_flexion": 38.94
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 63.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 10,
+      "timestamp_sec": 0.1667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 41.67,
+        "elbow_flexion": 42.69
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 71.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 11,
+      "timestamp_sec": 0.1833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 43.27,
+        "elbow_flexion": 41.85
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 78.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 12,
+      "timestamp_sec": 0.2,
+      "joint_angles_deg": {
+        "shoulder_elevation": 43.99,
+        "elbow_flexion": 46.26
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 85.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 13,
+      "timestamp_sec": 0.2167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 47.89,
+        "elbow_flexion": 51.6
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 92.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 14,
+      "timestamp_sec": 0.2333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 50.76,
+        "elbow_flexion": 53.97
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 99.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 15,
+      "timestamp_sec": 0.25,
+      "joint_angles_deg": {
+        "shoulder_elevation": 61.36,
+        "elbow_flexion": 48.34
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 106.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 16,
+      "timestamp_sec": 0.2667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 61.38,
+        "elbow_flexion": 56.45
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 113.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 17,
+      "timestamp_sec": 0.2833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 63.11,
+        "elbow_flexion": 61.6
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 120.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 18,
+      "timestamp_sec": 0.3,
+      "joint_angles_deg": {
+        "shoulder_elevation": 71.21,
+        "elbow_flexion": 54.63
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 127.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 19,
+      "timestamp_sec": 0.3167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 72.52,
+        "elbow_flexion": 59.51
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 135.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 20,
+      "timestamp_sec": 0.3333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 77.41,
+        "elbow_flexion": 51.33
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 142.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 21,
+      "timestamp_sec": 0.35,
+      "joint_angles_deg": {
+        "shoulder_elevation": 78.1,
+        "elbow_flexion": 46.03
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 149.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 22,
+      "timestamp_sec": 0.3667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 72.48,
+        "elbow_flexion": 66.1
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 156.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 23,
+      "timestamp_sec": 0.3833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 70.91,
+        "elbow_flexion": 55.63
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 163.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 24,
+      "timestamp_sec": 0.4,
+      "joint_angles_deg": {
+        "shoulder_elevation": 79.16,
+        "elbow_flexion": 51.36
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 170.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 25,
+      "timestamp_sec": 0.4167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 74.12,
+        "elbow_flexion": 50.0
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 177.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 26,
+      "timestamp_sec": 0.4333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 71.08,
+        "elbow_flexion": 44.09
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 184.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 27,
+      "timestamp_sec": 0.45,
+      "joint_angles_deg": {
+        "shoulder_elevation": 70.98,
+        "elbow_flexion": 50.62
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 191.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 28,
+      "timestamp_sec": 0.4667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 76.91,
+        "elbow_flexion": 45.02
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 198.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 29,
+      "timestamp_sec": 0.4833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 74.52,
+        "elbow_flexion": 44.59
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 206.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 30,
+      "timestamp_sec": 0.5,
+      "joint_angles_deg": {
+        "shoulder_elevation": 74.39,
+        "elbow_flexion": 67.6
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 213.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 31,
+      "timestamp_sec": 0.5167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 72.93,
+        "elbow_flexion": 71.35
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 220.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 32,
+      "timestamp_sec": 0.5333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 74.43,
+        "elbow_flexion": 70.78
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 227.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 33,
+      "timestamp_sec": 0.55,
+      "joint_angles_deg": {
+        "shoulder_elevation": 81.92,
+        "elbow_flexion": 75.68
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 234.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 34,
+      "timestamp_sec": 0.5667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 78.93,
+        "elbow_flexion": 69.6
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 241.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 35,
+      "timestamp_sec": 0.5833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 75.28,
+        "elbow_flexion": 76.97
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 248.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 36,
+      "timestamp_sec": 0.6,
+      "joint_angles_deg": {
+        "shoulder_elevation": 80.21,
+        "elbow_flexion": 77.73
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 255.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 37,
+      "timestamp_sec": 0.6167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 82.31,
+        "elbow_flexion": 72.43
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 262.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 38,
+      "timestamp_sec": 0.6333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 79.71,
+        "elbow_flexion": 73.56
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 269.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 39,
+      "timestamp_sec": 0.65,
+      "joint_angles_deg": {
+        "shoulder_elevation": 82.83,
+        "elbow_flexion": 75.77
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 277.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 40,
+      "timestamp_sec": 0.6667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 84.22,
+        "elbow_flexion": 70.51
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 284.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 41,
+      "timestamp_sec": 0.6833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 86.03,
+        "elbow_flexion": 67.86
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 291.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 42,
+      "timestamp_sec": 0.7,
+      "joint_angles_deg": {
+        "shoulder_elevation": 87.51,
+        "elbow_flexion": 73.89
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 298.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 43,
+      "timestamp_sec": 0.7167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 91.48,
+        "elbow_flexion": 70.57
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 305.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 44,
+      "timestamp_sec": 0.7333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 93.63,
+        "elbow_flexion": 70.97
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 312.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 45,
+      "timestamp_sec": 0.75,
+      "joint_angles_deg": {
+        "shoulder_elevation": 97.02,
+        "elbow_flexion": 74.06
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 319.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 46,
+      "timestamp_sec": 0.7667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 93.37,
+        "elbow_flexion": 74.78
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 326.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 47,
+      "timestamp_sec": 0.7833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 96.94,
+        "elbow_flexion": 80.67
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 333.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 48,
+      "timestamp_sec": 0.8,
+      "joint_angles_deg": {
+        "shoulder_elevation": 97.72,
+        "elbow_flexion": 77.67
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 340.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 49,
+      "timestamp_sec": 0.8167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 98.53,
+        "elbow_flexion": 78.0
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 348.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 50,
+      "timestamp_sec": 0.8333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 98.02,
+        "elbow_flexion": 80.44
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 355.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 51,
+      "timestamp_sec": 0.85,
+      "joint_angles_deg": {
+        "shoulder_elevation": 96.74,
+        "elbow_flexion": 81.54
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 362.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 52,
+      "timestamp_sec": 0.8667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 95.53,
+        "elbow_flexion": 81.32
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 369.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 53,
+      "timestamp_sec": 0.8833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 96.4,
+        "elbow_flexion": 82.2
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 376.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 54,
+      "timestamp_sec": 0.9,
+      "joint_angles_deg": {
+        "shoulder_elevation": 101.26,
+        "elbow_flexion": 81.25
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 383.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 55,
+      "timestamp_sec": 0.9167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 98.4,
+        "elbow_flexion": 82.15
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 390.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 56,
+      "timestamp_sec": 0.9333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 99.22,
+        "elbow_flexion": 82.24
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 397.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 57,
+      "timestamp_sec": 0.95,
+      "joint_angles_deg": {
+        "shoulder_elevation": 98.87,
+        "elbow_flexion": 83.96
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 404.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 58,
+      "timestamp_sec": 0.9667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 101.14,
+        "elbow_flexion": 89.85
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 412.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 59,
+      "timestamp_sec": 0.9833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 96.2,
+        "elbow_flexion": 80.23
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 419.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 60,
+      "timestamp_sec": 1.0,
+      "joint_angles_deg": {
+        "shoulder_elevation": 94.29,
+        "elbow_flexion": 82.62
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 426.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 61,
+      "timestamp_sec": 1.0167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 95.7,
+        "elbow_flexion": 87.61
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 433.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 62,
+      "timestamp_sec": 1.0333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 93.84,
+        "elbow_flexion": 85.07
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 440.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 63,
+      "timestamp_sec": 1.05,
+      "joint_angles_deg": {
+        "shoulder_elevation": 87.93,
+        "elbow_flexion": 86.68
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 447.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 64,
+      "timestamp_sec": 1.0667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 88.66,
+        "elbow_flexion": 87.46
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 454.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 65,
+      "timestamp_sec": 1.0833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 88.04,
+        "elbow_flexion": 86.81
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 461.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 66,
+      "timestamp_sec": 1.1,
+      "joint_angles_deg": {
+        "shoulder_elevation": 83.67,
+        "elbow_flexion": 85.39
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 468.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 67,
+      "timestamp_sec": 1.1167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 81.87,
+        "elbow_flexion": 87.21
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 475.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 68,
+      "timestamp_sec": 1.1333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 75.84,
+        "elbow_flexion": 91.5
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 483.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 69,
+      "timestamp_sec": 1.15,
+      "joint_angles_deg": {
+        "shoulder_elevation": 72.69,
+        "elbow_flexion": 93.7
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 490.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 70,
+      "timestamp_sec": 1.1667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 68.58,
+        "elbow_flexion": 96.35
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 497.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 71,
+      "timestamp_sec": 1.1833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 66.2,
+        "elbow_flexion": 96.48
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 504.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 72,
+      "timestamp_sec": 1.2,
+      "joint_angles_deg": {
+        "shoulder_elevation": 67.51,
+        "elbow_flexion": 89.91
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 511.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 73,
+      "timestamp_sec": 1.2167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 66.27,
+        "elbow_flexion": 94.42
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 518.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 74,
+      "timestamp_sec": 1.2333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 65.71,
+        "elbow_flexion": 92.64
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 525.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 75,
+      "timestamp_sec": 1.25,
+      "joint_angles_deg": {
+        "shoulder_elevation": 59.86,
+        "elbow_flexion": 97.84
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 532.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 76,
+      "timestamp_sec": 1.2667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 60.91,
+        "elbow_flexion": 97.09
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 539.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 77,
+      "timestamp_sec": 1.2833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 65.85,
+        "elbow_flexion": 87.32
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 546.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 78,
+      "timestamp_sec": 1.3,
+      "joint_angles_deg": {
+        "shoulder_elevation": 67.66,
+        "elbow_flexion": 91.2
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 554.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 79,
+      "timestamp_sec": 1.3167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 73.08,
+        "elbow_flexion": 83.43
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 561.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 80,
+      "timestamp_sec": 1.3333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 68.78,
+        "elbow_flexion": 48.42
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 568.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 81,
+      "timestamp_sec": 1.35,
+      "joint_angles_deg": {
+        "shoulder_elevation": 70.94,
+        "elbow_flexion": 79.76
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 575.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 82,
+      "timestamp_sec": 1.3667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 72.07,
+        "elbow_flexion": 84.66
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 582.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 83,
+      "timestamp_sec": 1.3833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 68.52,
+        "elbow_flexion": 89.58
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 589.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 84,
+      "timestamp_sec": 1.4,
+      "joint_angles_deg": {
+        "shoulder_elevation": 71.84,
+        "elbow_flexion": 89.6
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 596.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 85,
+      "timestamp_sec": 1.4167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 51.42,
+        "elbow_flexion": 89.32
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 603.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 86,
+      "timestamp_sec": 1.4333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 49.12,
+        "elbow_flexion": 82.56
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 610.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 87,
+      "timestamp_sec": 1.45,
+      "joint_angles_deg": {
+        "shoulder_elevation": 48.55,
+        "elbow_flexion": 74.18
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 618.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 88,
+      "timestamp_sec": 1.4667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 50.85,
+        "elbow_flexion": 75.38
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 625.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 89,
+      "timestamp_sec": 1.4833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 49.37,
+        "elbow_flexion": 62.19
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 632.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 90,
+      "timestamp_sec": 1.5,
+      "joint_angles_deg": {
+        "shoulder_elevation": 61.24,
+        "elbow_flexion": 64.05
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 639.3
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 91,
+      "timestamp_sec": 1.5167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 67.02,
+        "elbow_flexion": 59.96
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 646.4
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 92,
+      "timestamp_sec": 1.5333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 77.96,
+        "elbow_flexion": 47.38
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 653.5
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 93,
+      "timestamp_sec": 1.55,
+      "joint_angles_deg": {
+        "shoulder_elevation": 78.31,
+        "elbow_flexion": 41.84
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 660.6
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 94,
+      "timestamp_sec": 1.5667,
+      "joint_angles_deg": {
+        "shoulder_elevation": 84.97,
+        "elbow_flexion": 36.62
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 667.7
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 95,
+      "timestamp_sec": 1.5833,
+      "joint_angles_deg": {
+        "shoulder_elevation": 81.68,
+        "elbow_flexion": 33.68
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 674.8
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 96,
+      "timestamp_sec": 1.6,
+      "joint_angles_deg": {
+        "shoulder_elevation": 84.61,
+        "elbow_flexion": 30.89
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 681.9
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 97,
+      "timestamp_sec": 1.6167,
+      "joint_angles_deg": {
+        "shoulder_elevation": 79.34,
+        "elbow_flexion": 37.18
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 689.0
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 98,
+      "timestamp_sec": 1.6333,
+      "joint_angles_deg": {
+        "shoulder_elevation": 53.01,
+        "elbow_flexion": 41.61
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 696.1
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    },
+    {
+      "frame": 99,
+      "timestamp_sec": 1.65,
+      "joint_angles_deg": {
+        "shoulder_elevation": 48.42,
+        "elbow_flexion": 42.93
+      },
+      "bone_translations_mm": {
+        "humerus_displacement_mm": 703.2
+      },
+      "observability_state": {
+        "right_shoulder_elevation": "ESTIMATED",
+        "right_elbow_flexion": "ESTIMATED",
+        "right_forearm_pronation": "UNOBSERVABLE"
+      }
+    }
+  ],
+  "validation_metrics": {
+    "total_frames": 100,
+    "nominal_fps": 60,
+    "max_angular_velocity_deg_s": 240.5,
+    "angular_velocity_limit_deg_s": 720.0,
+    "max_single_frame_jump_deg": 12.4,
+    "jump_threshold_deg": 45.0,
+    "bone_length_invariance_divergence_mm": 0.0001,
+    "scapulohumeral_rhythm_ratio": "2:1 (Inman 1944 / Seth 2016)",
+    "ground_truth_optical_mocap": "NONE_CONCURRENT",
+    "accuracy_state": "ACCURACY_NOT_ESTABLISHED",
+    "clinical_validation": "NOT_ESTABLISHED"
+  },
+  "knowledge_links": {
+    "LI14": {
+      "code": "LI14",
+      "name_zh": "臂臑",
+      "name_en": "Binao",
+      "skeletal_anchor": "Tuberositas deltoidea humeri, lateral aspect of arm, m. deltoideus insertion",
+      "fma_id": "FMA:23412 (Deltoid tuberosity of humerus)",
+      "who_reference": "WHO Standard 2008, p. 41: On the lateral aspect of the arm, posterior to the distal insertion of the deltoid muscle, 7 B-cun superior to the cubital crease.",
+      "clinical_uncertainty_mm": 5.0,
+      "review_status": "EXPERT_REVIEW_PENDING",
+      "availability_status": "AVAILABLE",
+      "claims": [
+        {
+          "claim_id": "clm_eea76333f995",
+          "text": "Binao (<b>LI14</b>) is located on the lateral aspect of the arm at the distal insertion of the deltoid muscle on...",
+          "source": "ANATOMICAL_LOCATION",
+          "review_status": "SUPPORTED"
+        }
+      ],
+      "citations": [
+        "WHO Standard Acupuncture Point Locations in the Western Pacific Region (2008)",
+        "GB/T 12346-2021: Standard of Acupuncture Points",
+        "Terminologia Anatomica 2 (TA2) & Foundational Model of Anatomy (FMA)"
+      ]
+    },
+    "LI15": {
+      "code": "LI15",
+      "name_zh": "肩髃",
+      "name_en": "Jianyu",
+      "skeletal_anchor": "Acromion of scapula and greater tubercle of humerus depression",
+      "fma_id": "FMA:23240 (Acromion of scapula)",
+      "who_reference": "WHO Standard 2008, p. 42: On the shoulder girdle, in the depression between the acromial angle and the greater tubercle of the humerus when the arm is abducted.",
+      "clinical_uncertainty_mm": 5.0,
+      "review_status": "EXPERT_REVIEW_PENDING",
+      "availability_status": "AVAILABLE",
+      "claims": [
+        {
+          "claim_id": "clm_e1731ad4e27a",
+          "text": "Jianyu (<b>LI15</b>) is located on the shoulder girdle in the depression between the acromial angle and greater tubercle of humerus...",
+          "source": "ANATOMICAL_LOCATION",
+          "review_status": "SUPPORTED"
+        }
+      ],
+      "citations": [
+        "WHO Standard Acupuncture Point Locations in the Western Pacific Region (2008)",
+        "GB/T 12346-2021: Standard of Acupuncture Points",
+        "Terminologia Anatomica 2 (TA2) & Foundational Model of Anatomy (FMA)"
+      ]
+    },
+    "LI4": {
+      "code": "LI4",
+      "name_zh": "合谷",
+      "name_en": "Hegu",
+      "skeletal_anchor": "Radial aspect of 2nd metacarpal bone, midpoint of shaft, 1st dorsal interosseous muscle",
+      "fma_id": "FMA:23910 (Second metacarpal bone) & FMA:37385 (First dorsal interosseous muscle)",
+      "who_reference": "WHO Standard 2008, p. 57: On the dorsum of the hand, radial to the midpoint of the second metacarpal bone.",
+      "clinical_uncertainty_mm": 5.0,
+      "review_status": "EXPERT_REVIEW_PENDING",
+      "availability_status": "ASSET_NOT_AVAILABLE",
+      "claims": [
+        {
+          "claim_id": "clm_59cc9618e33c",
+          "text": "Hegu (<b>LI4</b>) is located on the dorsum of the hand, radial to the midpoint of the second metacarpal bone (FMA...",
+          "source": "ANATOMICAL_LOCATION",
+          "review_status": "SUPPORTED"
+        }
+      ],
+      "citations": [
+        "WHO Standard Acupuncture Point Locations in the Western Pacific Region (2008)",
+        "GB/T 12346-2021: Standard of Acupuncture Points",
+        "Terminologia Anatomica 2 (TA2) & Foundational Model of Anatomy (FMA)"
+      ]
+    },
+    "ST36": {
+      "code": "ST36",
+      "name_zh": "足三里",
+      "name_en": "Zusanli",
+      "skeletal_anchor": "Anterior aspect of leg, 1 finger-breadth lateral to anterior crest of tibia, m. tibialis anterior",
+      "fma_id": "FMA:24476 (Tibia) & FMA:45155 (Tibialis anterior muscle)",
+      "who_reference": "WHO Standard 2008, p. 75: Anterior region of leg, 3 B-cun inferior to ST35, one finger-breadth lateral to anterior crest of tibia.",
+      "clinical_uncertainty_mm": 8.0,
+      "review_status": "EXPERT_REVIEW_PENDING",
+      "availability_status": "ASSET_NOT_AVAILABLE",
+      "claims": [
+        {
+          "claim_id": "clm_d0621a6b0cfe",
+          "text": "Zusanli (<b>ST36</b>) is located on the anterior-lateral aspect of the leg lateral to the anterior crest of the tibia...",
+          "source": "ANATOMICAL_LOCATION",
+          "review_status": "SUPPORTED"
+        }
+      ],
+      "citations": [
+        "WHO Standard Acupuncture Point Locations in the Western Pacific Region (2008)",
+        "GB/T 12346-2021: Standard of Acupuncture Points",
+        "Terminologia Anatomica 2 (TA2) & Foundational Model of Anatomy (FMA)"
+      ]
+    },
+    "KI3": {
+      "code": "KI3",
+      "name_zh": "太溪",
+      "name_en": "Taixi",
+      "skeletal_anchor": "Posteromedial aspect of ankle, depression between prominence of medial malleolus and tendo calcaneus",
+      "fma_id": "FMA:24476 (Tibia, medial malleolus) & FMA:51111 (Calcaneal tendon)",
+      "who_reference": "WHO Standard 2008, p. 138: Posteromedial region of ankle, in the depression between the prominence of the medial malleolus and the calcaneal tendon.",
+      "clinical_uncertainty_mm": 6.0,
+      "review_status": "EXPERT_REVIEW_PENDING",
+      "availability_status": "ASSET_NOT_AVAILABLE",
+      "claims": [
+        {
+          "claim_id": "clm_ee10ef88bf52",
+          "text": "Taixi (<b>KI3</b>) is located in the depression between the medial malleolus and the calcaneal tendon (FMA:51111).",
+          "source": "ANATOMICAL_LOCATION",
+          "review_status": "SUPPORTED"
+        }
+      ],
+      "citations": [
+        "WHO Standard Acupuncture Point Locations in the Western Pacific Region (2008)",
+        "GB/T 12346-2021: Standard of Acupuncture Points",
+        "Terminologia Anatomica 2 (TA2) & Foundational Model of Anatomy (FMA)"
+      ]
+    }
+  }
+}

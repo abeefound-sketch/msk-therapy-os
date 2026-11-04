@@ -1,0 +1,184 @@
+{
+  "FJ1478": {
+    "asset_id": "FJ1478",
+    "muscle_name": "Biceps_brachii_long_R",
+    "canonical_name": "Long head of right biceps brachii",
+    "fma_id": "FMA:37670",
+    "muscle_group": "biceps",
+    "action": "elbow_flexion_supination",
+    "vertex_count": 466,
+    "triangle_count": 492,
+    "sha256": "7f985981cbd8b1726bddf81a7aeb78f475441134053e40ff1c525df1949fe1dc",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Biceps_brachii_long_R.obj",
+    "bounds": [
+      [
+        -0.22986,
+        1.0721832,
+        -0.032191100000000014
+      ],
+      [
+        -0.135268,
+        1.4175312,
+        0.009291999999999995
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-3.bin"
+  },
+  "FJ1512": {
+    "asset_id": "FJ1512",
+    "muscle_name": "Biceps_brachii_short_R",
+    "canonical_name": "Short head of right biceps brachii",
+    "fma_id": "FMA:37671",
+    "muscle_group": "biceps",
+    "action": "elbow_flexion_adduction",
+    "vertex_count": 1035,
+    "triangle_count": 804,
+    "sha256": "8aaf9166f8f8e7d0b08b73f58092dd9a06dc569c08d521c947b318775114c3d1",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Biceps_brachii_short_R.obj",
+    "bounds": [
+      [
+        -0.21239,
+        1.1433312,
+        -0.024041900000000005
+      ],
+      [
+        -0.135237,
+        1.4058712,
+        0.009100999999999998
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-4.bin"
+  },
+  "FJ1477": {
+    "asset_id": "FJ1477",
+    "muscle_name": "Triceps_brachii_lateral_R",
+    "canonical_name": "Lateral head of right triceps brachii",
+    "fma_id": "FMA:37689",
+    "muscle_group": "triceps",
+    "action": "elbow_extension",
+    "vertex_count": 656,
+    "triangle_count": 838,
+    "sha256": "9d59fc1f2c36e53080bf943b7ee75046df60a1f185dbdf2c75309418dbd89737",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Triceps_brachii_lateral_R.obj",
+    "bounds": [
+      [
+        -0.228005,
+        1.1140812,
+        -0.07991580000000001
+      ],
+      [
+        -0.174456,
+        1.3702412000000002,
+        -0.0312032
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-3.bin"
+  },
+  "FJ1479": {
+    "asset_id": "FJ1479",
+    "muscle_name": "Triceps_brachii_long_R",
+    "canonical_name": "Long head of right triceps brachii",
+    "fma_id": "FMA:37688",
+    "muscle_group": "triceps",
+    "action": "elbow_extension_shoulder_adduction",
+    "vertex_count": 504,
+    "triangle_count": 560,
+    "sha256": "ba61edfd7355c30a2fa89cf38d21e6f2d8147732809e1d9bdd6a0f74b0a4eb52",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Triceps_brachii_long_R.obj",
+    "bounds": [
+      [
+        -0.216462,
+        1.1133511999999999,
+        -0.08124050000000001
+      ],
+      [
+        -0.134691,
+        1.3788612,
+        -0.03589790000000001
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-3.bin"
+  },
+  "FJ1480": {
+    "asset_id": "FJ1480",
+    "muscle_name": "Triceps_brachii_medial_R",
+    "canonical_name": "Medial head of right triceps brachii",
+    "fma_id": "FMA:37690",
+    "muscle_group": "triceps",
+    "action": "elbow_extension",
+    "vertex_count": 325,
+    "triangle_count": 372,
+    "sha256": "db6c36c539fd22aa60a943845b8395706e8232b69e6f04a4ee74bd1d5f0b5268",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Triceps_brachii_medial_R.obj",
+    "bounds": [
+      [
+        -0.226963,
+        1.1074612,
+        -0.0536828
+      ],
+      [
+        -0.167373,
+        1.3341512,
+        -0.028120099999999995
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-3.bin"
+  },
+  "FJ1486": {
+    "asset_id": "FJ1486",
+    "muscle_name": "Brachialis_R",
+    "canonical_name": "Right brachialis",
+    "fma_id": "FMA:37667",
+    "muscle_group": "brachialis",
+    "action": "pure_elbow_flexion",
+    "vertex_count": 630,
+    "triangle_count": 712,
+    "sha256": "f16924d6393ea213d19d99265d92ed5d0e63d829cfbc32f1d3fa56752e5685fa",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Brachialis_R.obj",
+    "bounds": [
+      [
+        -0.23512100000000002,
+        1.0734722,
+        -0.03943030000000001
+      ],
+      [
+        -0.176385,
+        1.2983112,
+        -0.013604000000000005
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-3.bin"
+  },
+  "FJ1488": {
+    "asset_id": "FJ1488",
+    "muscle_name": "Coracobrachialis_R",
+    "canonical_name": "Right coracobrachialis",
+    "fma_id": "FMA:37664",
+    "muscle_group": "coracobrachialis",
+    "action": "shoulder_flexion_adduction",
+    "vertex_count": 329,
+    "triangle_count": 280,
+    "sha256": "6dcc2bfb4a4f111e2cbafffca93b3e7d9d08c1dd359ff8c82d85f5a8a34aaffd",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Coracobrachialis_R.obj",
+    "bounds": [
+      [
+        -0.18942599999999998,
+        1.2482412,
+        -0.0331395
+      ],
+      [
+        -0.13015100000000002,
+        1.4059811999999998,
+        0.006175
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-3.bin"
+  }
+}

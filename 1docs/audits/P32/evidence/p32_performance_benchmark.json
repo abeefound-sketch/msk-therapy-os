@@ -1,0 +1,33 @@
+{
+  "hardware_environment": {
+    "os": "Windows 10 (10.0.19045)",
+    "python_version": "3.11.9",
+    "target_cpu": "Intel(R) Core(TM) i7-5600U CPU @ 2.60GHz",
+    "target_gpu": "Intel(R) HD Graphics 5500",
+    "target_ram": "8.0 GB RAM",
+    "blender_version": "3.6.5 LTS",
+    "mediapipe_version": "1.2.0 (pose_landmarker_full.task)"
+  },
+  "timings_and_throughput": {
+    "motion_validation_ms": 0.18,
+    "motion_validation_fps": 551876.4,
+    "blender_load_sec": 0.0093,
+    "blender_playback_fps": 11562.43,
+    "blender_total_headless_sec": 2.21,
+    "bundle_json_export_ms": 21.84,
+    "markdown_export_ms": 1.14
+  },
+  "integrity_and_security": {
+    "vault_db_integrity": "ok",
+    "msk_db_integrity": "ok",
+    "backup_db_integrity": "ok",
+    "pii_audit_result": "NEGATIVE_100_PERCENT",
+    "release_scope": "ENGINEERING_RESEARCH_ONLY",
+    "clinical_validation": "NOT_ESTABLISHED"
+  },
+  "regression_results": {
+    "duration_sec": 6.14,
+    "exit_code": 0,
+    "summary": "........................................................................ [ 82%]\n...............                                                          [100%]\n============================== warnings summary ===============================\ntests/test_p21_atlas_poc.py::TestP21ServerIntegrationAndRouteIsolation::test_sandbox_p21_html_route_serves_ok\n  C:\\Users\\tuanh\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\_pytest\\fixtures.py:1313: PytestRemovedIn10Warning: Class-scoped fixture defined as instance method is deprecated.\n  Instance attributes set in this fixture will NOT be visible to test methods,\n  as each test gets a new instance while the fixture runs only once per class.\n  Use @classmethod decorator and set attributes on cls instead.\n  See https://docs.pytest.org/en/stable/deprecations.html#class-scoped-fixture-as-instance-method\n    fixturefunc = resolve_fixture_function(fixturedef, request)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n87 passed, 1 warning in 5.04s"
+  }
+}

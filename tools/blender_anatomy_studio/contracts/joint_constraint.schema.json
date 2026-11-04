@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JointConstraint",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "joint_id",
+    "kinematic_dofs",
+    "axis_frame",
+    "convention",
+    "units",
+    "rom_reference",
+    "rom_context",
+    "bounds_status",
+    "hard_limits",
+    "soft_prior_id",
+    "model_assumptions",
+    "review_status"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "joint_id": { "type": "string" },
+    "kinematic_dofs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "axis_frame": { "type": "string" },
+    "convention": { "type": "string" },
+    "units": {
+      "type": "string",
+      "enum": ["deg", "rad"]
+    },
+    "rom_reference": { "type": ["string", "null"] },
+    "rom_context": { "type": ["string", "null"] },
+    "bounds_status": {
+      "type": "string",
+      "enum": ["UNVERIFIED", "LITERATURE_REFERENCED", "NUMERICAL_ESTIMATE_ONLY"]
+    },
+    "hard_limits": {
+      "type": ["object", "null"],
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "soft_prior_id": { "type": ["string", "null"] },
+    "model_assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["UNREVIEWED", "CONTESTED", "EXPERT_REVIEW_PENDING"]
+    }
+  },
+  "additionalProperties": false
+}

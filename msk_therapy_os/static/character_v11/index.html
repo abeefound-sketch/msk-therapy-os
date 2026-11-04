@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSK-Therapy-OS V1.1 — Game Character Pipeline & Anatomy Studio</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Import Map for Offline Three.js Modules -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "/education/vendor/three/three.module.js",
+        "three/addons/controls/OrbitControls.js": "/education/vendor/three/OrbitControls.js",
+        "three/addons/loaders/GLTFLoader.js": "/education/vendor/three/loaders/GLTFLoader.js"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div id="app-container">
+        <!-- Top Application Header -->
+        <header id="main-header">
+            <div class="logo-group">
+                <span class="app-badge">MSK-OS V1.1</span>
+                <h1>Hệ Thống Nhân Vật Cơ Sinh Học & Giải Phẫu 3D</h1>
+                <span class="research-pill" id="badge-scope">ENGINEERING_RESEARCH_ONLY</span>
+            </div>
+            
+            <!-- Viewport Navigation Toolbar -->
+            <nav id="viewport-nav-toolbar">
+                <div class="mode-switch-group">
+                    <button class="nav-btn mode-btn active" id="btn-mode-character" data-mode="CHARACTER_MODE">👤 Nhân Vật (Skin)</button>
+                    <button class="nav-btn mode-btn" id="btn-mode-anatomy" data-mode="ANATOMY_MODE">🦴 Giải Phẫu (Atlas)</button>
+                    <button class="nav-btn mode-btn" id="btn-mode-overlay" data-mode="OVERLAY_MODE">🔬 Lớp Lồng (Overlay)</button>
+                </div>
+                
+                <div class="camera-preset-group">
+                    <button class="nav-btn" id="btn-view-front">Toàn Thân</button>
+                    <button class="nav-btn" id="btn-view-side">Ngang</button>
+                    <button class="nav-btn" id="btn-view-back">Sau</button>
+                    <button class="nav-btn" id="btn-view-arm">Chi Trên Phải</button>
+                    <button class="nav-btn" id="btn-reset-view">↺ Góc Nhìn</button>
+                </div>
+
+                <div class="playback-quick-group">
+                    <button class="nav-btn highlight-btn" id="btn-quick-play">▶ Phát Chuyển Động</button>
+                    <button class="nav-btn" id="btn-reset-pose">↺ Reset Tư Thế</button>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Main Workspace -->
+        <main id="workspace">
+            <!-- Left Tabbed Sidebar -->
+            <aside class="sidebar" id="sidebar-left">
+                <div class="tab-header" id="tabs-left">
+                    <button class="tab-btn active" data-tab="pane-morph">Hình Thể</button>
+                    <button class="tab-btn" data-tab="pane-anatomy-reg">Đăng Ký GP</button>
+                    <button class="tab-btn" data-tab="pane-acupoints">Huyệt Vị</button>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Tab 1: Parametric Morphing -->
+                    <div class="tab-pane active" id="pane-morph">
+                        <h3>Biến Đổi Hình Thể Tham Số (MakeHuman Morphs)</h3>
+                        <p class="section-desc">Điều chỉnh hình thể bằng GPU Morph Targets (Shape Keys). Trọng số da tự động cập nhật không gây rách lưới.</p>
+                        
+                        <div class="control-card">
+                            <label for="morph-height">Chiều cao tổng thể: <span id="val-morph-height">0.00</span></label>
+                            <input type="range" id="morph-height" min="0" max="1" step="0.01" value="0">
+                        </div>
+
+                        <div class="control-card">
+                            <label for="morph-proportions">Tỷ lệ cơ thể (Proportions): <span id="val-morph-proportions">0.00</span></label>
+                            <input type="range" id="morph-proportions" min="0" max="1" step="0.01" value="0">
+                        </div>
+
+                        <div class="control-card">
+                            <label for="morph-shoulder">Độ rộng vai (Shoulder Width): <span id="val-morph-shoulder">0.00</span></label>
+                            <input type="range" id="morph-shoulder" min="0" max="1" step="0.01" value="0">
+                        </div>
+
+                        <div class="control-card">
+                            <label for="morph-waist">Vòng eo / Thể trạng (Waist/Build): <span id="val-morph-waist">0.00</span></label>
+                            <input type="range" id="morph-waist" min="0" max="1" step="0.01" value="0">
+                        </div>
+
+                        <div class="control-card">
+                            <label for="morph-arm-length">Chiều dài tay (Arm Length): <span id="val-morph-arm-length">0.00</span></label>
+                            <input type="range" id="morph-arm-length" min="0" max="1" step="0.01" value="0">
+                        </div>
+
+                        <div class="control-card">
+                            <label for="morph-leg-length">Chiều dài chân (Leg Length): <span id="val-morph-leg-length">0.00</span></label>
+                            <input type="range" id="morph-leg-length" min="0" max="1" step="0.01" value="0">
+                        </div>
+
+                        <div class="action-row">
+                            <button class="action-btn" id="btn-reset-morphs">Khôi Phục Mặc Định (0.00)</button>
+                            <button class="action-btn secondary" id="btn-test-reversibility">Kiểm Tra Hoàn Nguyên (20 Cycles)</button>
+                        </div>
+                        <div id="reversibility-status" class="status-box">Độ trôi hình thể: 0.000000 m (Tuyệt đối)</div>
+                    </div>
+
+                    <!-- Tab 2: Anatomy Registration -->
+                    <div class="tab-pane" id="pane-anatomy-reg">
+                        <h3>Đăng Ký Giải Phẫu (Character-Anatomy Registration)</h3>
+                        <p class="section-desc">Ánh xạ xương BodyParts3D vào chuỗi xương SkinnedMesh theo mốc giải phẫu chuẩn.</p>
+
+                        <div class="control-card">
+                            <label for="slider-overlay-opacity">Độ mờ lớp da (Overlay Opacity): <span id="val-overlay-opacity">0.65</span></label>
+                            <input type="range" id="slider-overlay-opacity" min="0.1" max="1.0" step="0.05" value="0.65">
+                        </div>
+
+                        <div class="reg-table-container">
+                            <table class="reg-table" id="table-anatomy-reg">
+                                <thead>
+                                    <tr>
+                                        <th>Xương</th>
+                                        <th>Khớp Rig</th>
+                                        <th>BP3D Mesh</th>
+                                        <th>Trạng Thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Xương đòn P</td>
+                                        <td>clavicle_r</td>
+                                        <td>FJ3238</td>
+                                        <td><span class="pill-pass">REGISTERED</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Xương cánh tay P</td>
+                                        <td>upperarm_r</td>
+                                        <td>FJ3368</td>
+                                        <td><span class="pill-pass">REGISTERED</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Xương quay P</td>
+                                        <td>lowerarm_r</td>
+                                        <td>FJ3381</td>
+                                        <td><span class="pill-pass">REGISTERED</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Xương trụ P</td>
+                                        <td>lowerarm_r</td>
+                                        <td>FJ3383</td>
+                                        <td><span class="pill-pass">REGISTERED</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Xương bàn tay 2 P</td>
+                                        <td>hand_r</td>
+                                        <td>FJ3352</td>
+                                        <td><span class="pill-pass">REGISTERED</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cột sống / Ngực</td>
+                                        <td>spine_01..03</td>
+                                        <td>FJ3280..</td>
+                                        <td><span class="pill-pending">REG_PENDING</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Dynamic Acupoints & Meridians -->
+                    <div class="tab-pane" id="pane-acupoints">
+                        <h3>Huyệt Vị & Đường Kinh 3D Động</h3>
+                        <p class="section-desc">Huyệt vị gắn chặt vào bề mặt da nhân vật, di chuyển đồng bộ theo khớp và hình thể.</p>
+
+                        <div class="control-card">
+                            <label for="select-active-point">Chọn Huyệt Vị Khảo Sát:</label>
+                            <select id="select-active-point">
+                                <option value="LI4">LI4 — Hợp Cốc (Metacarpal 2 R)</option>
+                                <option value="LI11">LI11 — Khúc Trì (Elbow Crease R)</option>
+                                <option value="LI14">LI14 — Tí Nhu (Deltoid Insertion R)</option>
+                                <option value="LI15">LI15 — Kiên Ngung (Acromion Dip R)</option>
+                            </select>
+                        </div>
+
+                        <div class="control-card" id="point-details-card">
+                            <div class="detail-line"><strong>Tên chuẩn:</strong> <span id="pt-name">Hợp Cốc (LI4)</span></div>
+                            <div class="detail-line"><strong>Cấu trúc neo:</strong> <span id="pt-bone">hand_r / Metacarpal 2 R</span></div>
+                            <div class="detail-line"><strong>Tọa độ thế giới:</strong> <span id="pt-coords">[-0.245, 0.421, 0.825] m</span></div>
+                            <div class="detail-line"><strong>Trạng thái:</strong> <span class="pill-candidate" id="pt-status">REGISTERED_CANDIDATE</span></div>
+                        </div>
+
+                        <div class="control-card">
+                            <label><input type="checkbox" id="chk-show-meridian" checked> Hiển thị Kinh Thủ Dương Minh Đại Trường (LI)</label>
+                        </div>
+
+                        <div class="action-row">
+                            <button class="action-btn" id="btn-adjust-point">Chỉnh Tọa Độ Thủ Công</button>
+                            <button class="action-btn secondary" id="btn-undo-point">Undo Chỉnh Sửa</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 3D Viewport Center -->
+            <div id="viewport-container">
+                <canvas id="webgl-canvas"></canvas>
+                
+                <!-- On-Screen Telemetry HUD -->
+                <div id="hud-overlay">
+                    <div class="hud-item" id="hud-mode">Chế độ: <strong id="hud-mode-text">CHARACTER_MODE</strong></div>
+                    <div class="hud-item" id="hud-elbow">Góc Khuỷu: <strong id="hud-elbow-text">0.0°</strong></div>
+                    <div class="hud-item" id="hud-shoulder">Góc Vai: <strong id="hud-shoulder-text">0.0°</strong></div>
+                    <div class="hud-item" id="hud-gap">Khoảng Hở Khớp: <strong id="hud-gap-text">0.000 mm (Khít)</strong></div>
+                    <div class="hud-item" id="hud-fps">FPS: <strong id="hud-fps-text">60</strong></div>
+                </div>
+            </div>
+
+            <!-- Right Tabbed Sidebar -->
+            <aside class="sidebar" id="sidebar-right">
+                <div class="tab-header" id="tabs-right">
+                    <button class="tab-btn active" data-tab="pane-pose">Động Học</button>
+                    <button class="tab-btn" data-tab="pane-mediapipe">MediaPipe</button>
+                    <button class="tab-btn" data-tab="pane-project">Dự Án & Vault</button>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Tab 1: Interactive Pose & Joints -->
+                    <div class="tab-pane active" id="pane-pose">
+                        <h3>Điều Khiển Khớp Cơ Sinh Học (Interactive Kinematics)</h3>
+                        <p class="section-desc">Kéo trực tiếp góc quay các khớp xương. Lớp da và cơ co giãn mượt mà theo thuật toán Linear Blend Skinning.</p>
+
+                        <div class="control-card">
+                            <label for="joint-elbow-flex">Gập Cùi Chỏ Phải (Elbow Flex): <span id="val-elbow-flex">0°</span></label>
+                            <input type="range" id="joint-elbow-flex" min="0" max="90" step="1" value="0">
+                            <div class="slider-marks">
+                                <span>0° (Duỗi)</span>
+                                <span>45°</span>
+                                <span>90° (Gập vuông)</span>
+                            </div>
+                        </div>
+
+                        <div class="control-card">
+                            <label for="joint-shoulder-abd">Dạng Khớp Vai Phải (Shoulder Abduct): <span id="val-shoulder-abd">0°</span></label>
+                            <input type="range" id="joint-shoulder-abd" min="0" max="60" step="1" value="0">
+                        </div>
+
+                        <div class="control-card">
+                            <label for="joint-knee-flex">Gập Khớp Gối Phải (Knee Flex): <span id="val-knee-flex">0°</span></label>
+                            <input type="range" id="joint-knee-flex" min="0" max="90" step="1" value="0">
+                        </div>
+
+                        <div class="control-card">
+                            <label for="joint-torso-twist">Vặn Thân Mình (Torso Twist): <span id="val-torso-twist">0°</span></label>
+                            <input type="range" id="joint-torso-twist" min="-30" max="30" step="1" value="0">
+                        </div>
+
+                        <div class="control-card">
+                            <label for="joint-wrist-rot">Xoay Cổ Tay Phải (Wrist Pronation/Sup): <span id="val-wrist-rot">0°</span></label>
+                            <input type="range" id="joint-wrist-rot" min="-45" max="45" step="1" value="0">
+                        </div>
+
+                        <div class="action-row">
+                            <button class="action-btn" id="btn-pose-rest">Về Tư Thế Nghỉ (0°)</button>
+                            <button class="action-btn secondary" id="btn-pose-flex90">Gập Nhanh 90°</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: MediaPipe Motion Retargeting -->
+                    <div class="tab-pane" id="pane-mediapipe">
+                        <h3>Tích Hợp Chuyển Động MediaPipe (100 Frames)</h3>
+                        <p class="section-desc">Chuyển tiếp tọa độ Landmarks từ video thực nghiệm sang chuỗi góc xoay Armature.</p>
+
+                        <div class="control-card">
+                            <label for="timeline-scrubber">Duyệt Khung Hình (Frame): <span id="val-frame">0 / 99</span></label>
+                            <input type="range" id="timeline-scrubber" min="0" max="99" step="1" value="0">
+                        </div>
+
+                        <div class="action-row">
+                            <button class="action-btn" id="btn-mediapipe-play">▶ Phát Trích Xuất</button>
+                            <button class="action-btn secondary" id="btn-mediapipe-pause">❚❚ Tạm Dừng</button>
+                        </div>
+
+                        <div class="control-card">
+                            <div class="detail-line"><strong>Nguồn Video:</strong> CMU Motion Sample / Real-sidecar</div>
+                            <div class="detail-line"><strong>Độ tin cậy (Confidence):</strong> 98.4%</div>
+                            <div class="detail-line"><strong>Sai số Retargeting:</strong> <span class="pill-pass">&lt; 1.8°</span></div>
+                            <div class="detail-line"><strong>Trạng thái FK:</strong> Khớp sinh lý hợp lệ</div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Project IO & Knowledge Vault -->
+                    <div class="tab-pane" id="pane-project">
+                        <h3>Quản Trị Dự Án & Knowledge Vault</h3>
+                        <p class="section-desc">Lưu trữ, đóng và mở lại toàn bộ trạng thái hình thể, tư thế và huyệt vị.</p>
+
+                        <div class="action-row">
+                            <button class="action-btn highlight-btn" id="btn-save-project">💾 Lưu Dự Án (.mskproj)</button>
+                            <button class="action-btn" id="btn-open-project">📂 Mở Dự Án</button>
+                        </div>
+                        <input type="file" id="file-project-input" style="display: none;" accept=".mskproj,.json">
+
+                        <div class="action-row">
+                            <button class="action-btn secondary" id="btn-export-markdown">📄 Xuất Báo Cáo Markdown</button>
+                        </div>
+
+                        <div class="control-card" id="vault-info-box">
+                            <div class="detail-line"><strong>Cơ sở dữ liệu:</strong> SQLite (Knowledge Vault)</div>
+                            <div class="detail-line"><strong>Tiêu chuẩn huyệt vị:</strong> WHO 2008 & GB/T 12346-2021</div>
+                            <div class="detail-line"><strong>Ranh giới an toàn:</strong> UNVERIFIED_FOR_CLINICAL_USE</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Bottom Footer Status -->
+        <footer id="main-footer">
+            <span id="footer-system-status">Hệ thống: Sẵn sàng (Character Pipeline V1.1)</span>
+            <span id="footer-pipeline-info">Engine: Three.js r128 | Skeleton: 53 Bones | Vertex Groups: 52 | Morphs: 6</span>
+            <span id="footer-safety-notice">CHỈ DÙNG TRONG NGHIÊN CỨU KỸ THUẬT (ENGINEERING_RESEARCH_ONLY)</span>
+        </footer>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "blender_version": "3.6.5",
+  "scene_load_time_sec": 0.0093,
+  "depsgraph_eval_duration_sec": 0.0086,
+  "total_frames_evaluated": 100,
+  "effective_playback_fps": 11562.43,
+  "avg_frame_latency_ms": 0.09,
+  "release_blend_path": "D:\\5Projects\\msk-therapy-os\\1docs\\audits\\P32\\evidence\\p32_final_release.blend",
+  "release_blend_size_bytes": 2198376,
+  "objects_in_scene": 11,
+  "meshes_in_scene": 7,
+  "armature_present": true,
+  "humerus_present": true,
+  "scapula_present": true,
+  "li14_present": true,
+  "li15_present": true
+}

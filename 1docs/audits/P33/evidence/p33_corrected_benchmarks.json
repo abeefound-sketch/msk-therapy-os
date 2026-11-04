@@ -1,0 +1,38 @@
+{
+  "milestone": "P33",
+  "blender_version": "3.6.5",
+  "environment": {
+    "platform": "win32",
+    "target_cpu": "Intel(R) Core(TM) i7-5600U CPU @ 2.60GHz",
+    "target_gpu": "Intel(R) HD Graphics 5500",
+    "target_ram": "8.0 GB RAM"
+  },
+  "corrected_benchmarks": {
+    "cold_start_and_exec_duration_ms": 5602.4,
+    "in_memory_scene_open_ms": 57.21,
+    "reopen_verification_ms": 37.07,
+    "headless_depsgraph_eval_duration_ms": 12.04,
+    "headless_computational_throughput_fps": 8302.82,
+    "display_viewport_fps_status": "NOT_APPLICABLE_IN_HEADLESS_CLI (Requires Win32 swap buffer)",
+    "workbench_offscreen_render_latency_ms": 766.48,
+    "workbench_offscreen_render_fps": 1.3,
+    "blender_process_peak_ram_mb": 289.98,
+    "sidecar_process_peak_ram_mb": 270.18,
+    "release_blend_size_bytes": 2203360
+  },
+  "motion_and_rig_verification": {
+    "kinematic_mode": "FK",
+    "ik_constraint_influence": 0.0,
+    "humerus_displacement_f1_to_f60_mm": 1830.02,
+    "li14_displacement_f1_to_f60_mm": 775.16,
+    "li15_displacement_f1_to_f60_mm": 54.46,
+    "surface_attachment_drift_mm": 0.000123,
+    "scapulohumeral_rhythm_active": true
+  },
+  "artifacts": {
+    "release_blend": "D:\\5Projects\\msk-therapy-os\\1docs\\audits\\P33\\evidence\\p33_hardened_release.blend",
+    "render_frame_001": "D:\\5Projects\\msk-therapy-os\\1docs\\audits\\P33\\screenshots\\p33_blender_render_frame_001.png",
+    "render_frame_050": "D:\\5Projects\\msk-therapy-os\\1docs\\audits\\P33\\screenshots\\p33_blender_render_frame_050.png",
+    "render_frame_100": "D:\\5Projects\\msk-therapy-os\\1docs\\audits\\P33\\screenshots\\p33_blender_render_frame_100.png"
+  }
+}

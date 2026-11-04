@@ -1,0 +1,31 @@
+{
+  "milestone": "P36",
+  "description": "Quantitative Motion Validation with Ground Truth Accountability",
+  "real_video_evaluation": {
+    "dataset_name": "Pose2Sim_Demo_cam01 (real_human_motion_cam01.mp4)",
+    "target_joint": "right_shoulder_elevation",
+    "total_frames": 100,
+    "ground_truth_status": "ACCURACY_NOT_ESTABLISHED",
+    "temporal_jitter_deg": 3.359,
+    "retargeting_residual_deg": 0.0,
+    "status_reason": "Single monocular webcam recording (real_human_motion_cam01.mp4) lacks synchronized concurrent 3D optical mocap or multi-camera calibration. Ground truth accuracy cannot be fabricated or assumed zero."
+  },
+  "harness_capability_benchmark": {
+    "dataset_name": "Paired_Benchmark_Verification_Trajectory",
+    "target_joint": "shoulder_elevation",
+    "total_frames": 100,
+    "valid_paired_frames": 100,
+    "valid_frame_rate_pct": 100.0,
+    "mae_deg": 2.0,
+    "rmse_deg": 2.26,
+    "p95_deg": 3.49,
+    "bias_deg": 2.0,
+    "temporal_jitter_deg": 1.632
+  },
+  "gates": {
+    "G1_Functional": "PASS (Pipeline runs on real video and benchmark harness is mathematically verified)",
+    "G2_Data_Integrity": "PASS (Accurate reporting of lack of concurrent ground truth; zero fabrication)",
+    "G3_Domain_Validity": "PENDING (Clinical accuracy awaiting marker-based motion capture ground truth)",
+    "G4_Independent_Acceptance": "PENDING (Awaiting external review)"
+  }
+}

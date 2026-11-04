@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AnatomyAssetManifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_id",
+    "asset_sha256",
+    "license_id",
+    "license_scope",
+    "attribution",
+    "structure_ids",
+    "frame_id",
+    "units",
+    "mesh_transform",
+    "anatomy_classes",
+    "review_status"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "source_id": { "type": "string" },
+    "asset_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "license_id": { "type": "string" },
+    "license_scope": {
+      "type": "string",
+      "enum": [
+        "COMMERCIAL_PERMITTED_WITH_ATTRIBUTION",
+        "SHARE_ALIKE_COPYLEFT",
+        "NON_COMMERCIAL_RESTRICTED",
+        "QUARANTINED",
+        "PUBLIC_DOMAIN"
+      ]
+    },
+    "attribution": { "type": "string" },
+    "structure_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "frame_id": { "type": "string" },
+    "units": {
+      "type": "string",
+      "enum": ["meters", "millimeters"]
+    },
+    "mesh_transform": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 16,
+      "maxItems": 16
+    },
+    "anatomy_classes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["BONE", "MUSCLE", "ORGAN", "SKIN", "OTHER"]
+      }
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["UNREVIEWED", "CONTESTED", "ANATOMICAL_VERIFIED_PENDING", "USER_ANNOTATED_UNVERIFIED"]
+    }
+  },
+  "additionalProperties": false
+}

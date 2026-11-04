@@ -1,0 +1,1470 @@
+{
+  "annotations": [
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261101072117-001",
+      "created_at": "2026-11-01T07:21:17.325346+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261101072118-002",
+      "created_at": "2026-11-01T07:21:18.160486+00:00"
+    },
+    {
+      "label": "Huyệt Hợp Cốc (LI4 - Thử Nghiệm)",
+      "standard_code": "LI4-POC",
+      "category": "manual_acupoint",
+      "notes": "Đánh dấu thử nghiệm trên bề mặt xương đòn theo FMA13323.",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "concept_id": "FMA13323",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.00863706972450018,
+          1.3945112228393555,
+          0.03024500049650669
+        ],
+        "local_position": [
+          0.00863706972450018,
+          1.3945112228393555,
+          0.03024500049650669
+        ],
+        "surface_normal": [
+          0,
+          0,
+          1
+        ],
+        "triangle_index": 0,
+        "uncertainty_radius_mm": 5
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261101072739-003",
+      "created_at": "2026-11-01T07:27:39.196934+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261101072842-004",
+      "created_at": "2026-11-01T07:28:42.094003+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261101072842-005",
+      "created_at": "2026-11-01T07:28:42.862748+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261102162027-006",
+      "created_at": "2026-11-02T16:20:27.501406+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261102162028-007",
+      "created_at": "2026-11-02T16:20:28.591048+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261102184521-008",
+      "created_at": "2026-11-02T18:45:21.265747+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261102184526-009",
+      "created_at": "2026-11-02T18:45:26.658824+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261102184917-010",
+      "created_at": "2026-11-02T18:49:17.973416+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261102184923-011",
+      "created_at": "2026-11-02T18:49:23.330035+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103021440-012",
+      "created_at": "2026-11-03T02:14:40.380621+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103021441-013",
+      "created_at": "2026-11-03T02:14:41.214036+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103022559-014",
+      "created_at": "2026-11-03T02:25:59.271039+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103022600-015",
+      "created_at": "2026-11-03T02:26:00.074972+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103070540-016",
+      "created_at": "2026-11-03T07:05:40.794655+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103070541-017",
+      "created_at": "2026-11-03T07:05:41.670019+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103070648-018",
+      "created_at": "2026-11-03T07:06:48.464088+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103070649-019",
+      "created_at": "2026-11-03T07:06:49.284417+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103070725-020",
+      "created_at": "2026-11-03T07:07:25.649184+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103070726-021",
+      "created_at": "2026-11-03T07:07:26.492168+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103110649-022",
+      "created_at": "2026-11-03T11:06:49.519414+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103110650-023",
+      "created_at": "2026-11-03T11:06:50.317507+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103113456-024",
+      "created_at": "2026-11-03T11:34:56.576843+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103113457-025",
+      "created_at": "2026-11-03T11:34:57.320428+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103115136-026",
+      "created_at": "2026-11-03T11:51:36.496131+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103115137-027",
+      "created_at": "2026-11-03T11:51:37.304943+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103115213-028",
+      "created_at": "2026-11-03T11:52:13.174933+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103115214-029",
+      "created_at": "2026-11-03T11:52:14.084740+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103115458-030",
+      "created_at": "2026-11-03T11:54:58.755814+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103115459-031",
+      "created_at": "2026-11-03T11:54:59.625015+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103121648-032",
+      "created_at": "2026-11-03T12:16:48.525588+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103121649-033",
+      "created_at": "2026-11-03T12:16:49.303295+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103124006-034",
+      "created_at": "2026-11-03T12:40:06.163339+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103124007-035",
+      "created_at": "2026-11-03T12:40:07.112621+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103124026-036",
+      "created_at": "2026-11-03T12:40:26.307642+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103124027-037",
+      "created_at": "2026-11-03T12:40:27.085468+00:00"
+    },
+    {
+      "label": "Huyệt Skin",
+      "standard_code": "EXP-FJ2810",
+      "category": "manual_acupoint",
+      "notes": "Điểm gắn kết trên mặt tam giác #4969 của Skin.",
+      "anatomical_target": {
+        "mesh_id": "FJ2810",
+        "structure_name": "Skin",
+        "system": "integumentary",
+        "concept_id": "FMA7163",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          -0.2180106091370666,
+          1.116438572736866,
+          0.005143895194641646
+        ],
+        "local_position": [
+          -0.2180106091370666,
+          1.116438572736866,
+          0.005143895194641646
+        ],
+        "surface_normal": [
+          0.0675509288016692,
+          0.06272270559997159,
+          0.9957423031187593
+        ],
+        "triangle_index": 4969,
+        "uncertainty_radius_mm": 5
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "annotation_id": "PT-20261103164718-038",
+      "created_at": "2026-11-03T16:47:18.193492+00:00"
+    }
+  ],
+  "polylines": [
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261101072117-001",
+      "created_at": "2026-11-01T07:21:17.338484+00:00"
+    },
+    {
+      "name": "Kinh Phế Thủ Thái Âm (Đoạn Cổ Tay)",
+      "system_type": "meridian_trajectory",
+      "waypoints": [
+        {
+          "index": 0,
+          "mesh_id": "FJ3237",
+          "world_position": [
+            0.00863706972450018,
+            1.3945112228393555,
+            0.03024500049650669
+          ],
+          "triangle_index": 0
+        },
+        {
+          "index": 1,
+          "mesh_id": "FJ3262",
+          "world_position": [
+            0.1407250016927719,
+            1.388181209564209,
+            -0.028404299169778824
+          ],
+          "triangle_index": 0
+        },
+        {
+          "index": 2,
+          "mesh_id": "FJ3178",
+          "world_position": [
+            -0.022481100633740425,
+            1.2750911712646484,
+            0.1049410030245781
+          ],
+          "triangle_index": 0
+        }
+      ],
+      "render_attributes": {
+        "color": "#06b6d4",
+        "line_width_mm": 2.5
+      },
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261101072745-002",
+      "created_at": "2026-11-01T07:27:45.889496+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261101072842-003",
+      "created_at": "2026-11-01T07:28:42.106753+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261102162027-004",
+      "created_at": "2026-11-02T16:20:27.529241+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261102184521-005",
+      "created_at": "2026-11-02T18:45:21.526181+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261102184918-006",
+      "created_at": "2026-11-02T18:49:18.270885+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103021440-007",
+      "created_at": "2026-11-03T02:14:40.398922+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103022559-008",
+      "created_at": "2026-11-03T02:25:59.284691+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103070540-009",
+      "created_at": "2026-11-03T07:05:40.808353+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103070648-010",
+      "created_at": "2026-11-03T07:06:48.479813+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103070725-011",
+      "created_at": "2026-11-03T07:07:25.665747+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103110649-012",
+      "created_at": "2026-11-03T11:06:49.532429+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103113456-013",
+      "created_at": "2026-11-03T11:34:56.592180+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103115136-014",
+      "created_at": "2026-11-03T11:51:36.512376+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103115213-015",
+      "created_at": "2026-11-03T11:52:13.197048+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103115458-016",
+      "created_at": "2026-11-03T11:54:58.775653+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103121648-017",
+      "created_at": "2026-11-03T12:16:48.540412+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103124006-018",
+      "created_at": "2026-11-03T12:40:06.181318+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103124026-019",
+      "created_at": "2026-11-03T12:40:26.328115+00:00"
+    }
+  ]
+}

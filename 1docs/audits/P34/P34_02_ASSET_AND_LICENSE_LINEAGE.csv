@@ -1,0 +1,11 @@
+Asset_Name,Local_Path,Upstream_Source_URL,Revision_Or_Version,License,Redistribution_Rights,Clinical_Validity_Status
+BodyParts3D Right Radius,3refs/upstream/tcm-3d/public/models/body-13.bin (FJ3349),https://dbcls.rois.ac.jp/bodyparts3d/,Release 4.0 (FMA23464),CC BY 4.0,Permitted with attribution,ANATOMICAL_MODEL_GEOMETRIC_ONLY
+BodyParts3D Right Ulna,3refs/upstream/tcm-3d/public/models/body-13.bin (FJ3391),https://dbcls.rois.ac.jp/bodyparts3d/,Release 4.0 (FMA23467),CC BY 4.0,Permitted with attribution,ANATOMICAL_MODEL_GEOMETRIC_ONLY
+BodyParts3D Right 2nd Metacarpal,3refs/upstream/tcm-3d/public/models/body-13.bin (FJ3352),https://dbcls.rois.ac.jp/bodyparts3d/,Release 4.0 (FMA24466),CC BY 4.0,Permitted with attribution,ANATOMICAL_MODEL_GEOMETRIC_ONLY
+BodyParts3D Right Tibia,3refs/upstream/tcm-3d/public/models/body-13.bin (FJ3387),https://dbcls.rois.ac.jp/bodyparts3d/,Release 4.0 (FMA24477),CC BY 4.0,Permitted with attribution,ANATOMICAL_MODEL_GEOMETRIC_ONLY
+Z-Anatomy Shoulder Skeleton,msk_therapy_os/static/education/models/shoulder_skeleton.glb,https://www.z-anatomy.net/,Git main / 2023,CC BY-SA 4.0,Permitted with ShareAlike,ANATOMICAL_MODEL_GEOMETRIC_ONLY
+MediaPipe Pose Landmark Model,tools/pose_sidecar/models/pose_landmarker_heavy.task,https://developers.google.com/mediapipe/solutions/vision/pose_landmarker,v1.2.0 (Heavy),Apache 2.0,Permitted,ESTIMATION_ENGINE_ONLY
+Pose2Sim Demo Video,research/motion_samples/real_human_motion_cam01.mp4,https://github.com/perfanalytics/pose2sim,Trial Demo cam01,BSD 3-Clause / CC BY,Permitted with attribution,RESEARCH_DEMO_SAMPLE
+CMU Mocap Upper Limb Samples,research/motion_samples/cmu_subject_02_arm.bvh,http://mocap.cs.cmu.edu/,Subject 02 Trial 01,Creative Commons Attribution 3.0,Permitted with attribution,BENCHMARK_REFERENCE_ONLY
+WHO Standard Acupuncture Locations,knowledge_vault/sources/who_standard_acupuncture_point_locations_2008.md,WHO Western Pacific Region,ISBN 978 92 9061 248 7 (2008),World Health Organization (Academic),Academic Quotation Only,HISTORICAL_CLINICAL_REFERENCE
+GB/T 12346-2021 Meridian Standards,knowledge_vault/sources/gbt_12346_2021_meridian_points.md,National Standard of PR China,GB/T 12346-2021,National Standard of China,Academic Quotation Only,HISTORICAL_CLINICAL_REFERENCE

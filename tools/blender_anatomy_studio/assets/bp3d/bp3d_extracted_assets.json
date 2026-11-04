@@ -1,0 +1,202 @@
+{
+  "FJ3368": {
+    "asset_id": "FJ3368",
+    "bone_name": "Humerus_R",
+    "canonical_name": "Right humerus",
+    "fma_id": "FMA:23130",
+    "parent_segment": "upper_arm.R",
+    "vertex_count": 794,
+    "triangle_count": 1070,
+    "sha256": "d583ad2e7ee1c677ef8dafbefc5b29fd1eb11796003fe597f9f253f010c2baa3",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Humerus_R.obj",
+    "bounds": [
+      [
+        -0.240841,
+        1.1073112,
+        -0.04896090000000001
+      ],
+      [
+        -0.14009000000000002,
+        1.4146512,
+        0.00021899999999999697
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-13.bin"
+  },
+  "FJ3349": {
+    "asset_id": "FJ3349",
+    "bone_name": "Radius_R",
+    "canonical_name": "Right radius",
+    "fma_id": "FMA:23464",
+    "parent_segment": "forearm.R",
+    "vertex_count": 249,
+    "triangle_count": 408,
+    "sha256": "347290571f6d35416b76b94a749d09062de3a45c525ecc768ef2d35ea13df133",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Radius_R.obj",
+    "bounds": [
+      [
+        -0.27953500000000003,
+        0.8839462000000001,
+        -0.0388974
+      ],
+      [
+        -0.219833,
+        1.1131612,
+        0.026907999999999987
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-13.bin"
+  },
+  "FJ3391": {
+    "asset_id": "FJ3391",
+    "bone_name": "Ulna_R",
+    "canonical_name": "Right ulna",
+    "fma_id": "FMA:23467",
+    "parent_segment": "forearm.R",
+    "vertex_count": 305,
+    "triangle_count": 482,
+    "sha256": "6af632e4dd2fadc3d879ae1b23fe640475960b4eec19b7521a3f4dea0472cfb3",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Ulna_R.obj",
+    "bounds": [
+      [
+        -0.247179,
+        0.8832842000000001,
+        -0.05520080000000001
+      ],
+      [
+        -0.196881,
+        1.1305612,
+        0.023494
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-13.bin"
+  },
+  "FJ3352": {
+    "asset_id": "FJ3352",
+    "bone_name": "Metacarpal_2_R",
+    "canonical_name": "Right second metacarpal bone",
+    "fma_id": "FMA:24466",
+    "parent_segment": "hand.R",
+    "vertex_count": 347,
+    "triangle_count": 610,
+    "sha256": "23c39f4eb1ff74321b98d3cc6db1b2cc09d47042df2baa59eea21c09c63719ef",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Metacarpal_2_R.obj",
+    "bounds": [
+      [
+        -0.29268700000000003,
+        0.7969822000000001,
+        0.017057000000000003
+      ],
+      [
+        -0.26182,
+        0.8649802000000001,
+        0.04278699999999999
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-13.bin"
+  },
+  "FJ3384": {
+    "asset_id": "FJ3384",
+    "bone_name": "Scapula_R",
+    "canonical_name": "Right scapula",
+    "fma_id": "FMA:13395",
+    "parent_segment": "clavicle.R",
+    "vertex_count": 2896,
+    "triangle_count": 5756,
+    "sha256": "0ee8ecd6595f9dc774498758a70dcfd2454267b326fc2f53bf3f614a3f2412ce",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Scapula_R.obj",
+    "bounds": [
+      [
+        -0.166464,
+        1.2620712,
+        -0.10508275
+      ],
+      [
+        -0.0570538,
+        1.4279711999999998,
+        0.0028559999999999974
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-13.bin"
+  },
+  "FJ3362": {
+    "asset_id": "FJ3362",
+    "bone_name": "Clavicle_R",
+    "canonical_name": "Right clavicle",
+    "fma_id": "FMA:13322",
+    "parent_segment": "clavicle.R",
+    "vertex_count": 420,
+    "triangle_count": 820,
+    "sha256": "0eff6dc9d4c1c2b2e62abba5329ae8fce5eadea25565d990938ccad6a905fe76",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Clavicle_R.obj",
+    "bounds": [
+      [
+        -0.145277,
+        1.3867311999999998,
+        -0.0455875
+      ],
+      [
+        -0.00966165,
+        1.4335512,
+        0.04694800000000002
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-13.bin"
+  },
+  "FJ3387": {
+    "asset_id": "FJ3387",
+    "bone_name": "Tibia_R",
+    "canonical_name": "Right tibia",
+    "fma_id": "FMA:24477",
+    "parent_segment": "shank.R",
+    "vertex_count": 334,
+    "triangle_count": 634,
+    "sha256": "2fe1e44d01ad385de1c5bd99c700c1785817060e04e6080bd17a4761f505b7bb",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Tibia_R.obj",
+    "bounds": [
+      [
+        -0.10935299999999999,
+        0.07207404,
+        -0.04792710000000001
+      ],
+      [
+        -0.035216000000000004,
+        0.4520312,
+        0.014834999999999987
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-13.bin"
+  },
+  "FJ3360": {
+    "asset_id": "FJ3360",
+    "bone_name": "Calcaneus_R",
+    "canonical_name": "Right calcaneus",
+    "fma_id": "FMA:24497",
+    "parent_segment": "foot.R",
+    "vertex_count": 641,
+    "triangle_count": 1076,
+    "sha256": "5db839d32865e3c0a25de6796f970ead96f4e41b75b6ca7e0241a40750dcec54",
+    "obj_file": "tools\\blender_anatomy_studio\\assets\\bp3d\\Calcaneus_R.obj",
+    "bounds": [
+      [
+        -0.10078100000000001,
+        0.009620500000000004,
+        -0.0759949
+      ],
+      [
+        -0.0448758,
+        0.05895650000000001,
+        -0.0058515000000000095
+      ]
+    ],
+    "license": "CC BY 4.0 DBCLS Japan",
+    "source_chunk": "body-13.bin"
+  }
+}

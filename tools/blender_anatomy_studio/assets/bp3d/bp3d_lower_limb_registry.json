@@ -1,0 +1,98 @@
+{
+  "FJ3365": {
+    "asset_id": "FJ3365",
+    "name": "Femur_R",
+    "canonical_name": "Right femur",
+    "fma_id": "FMA:9611",
+    "type": "BONE",
+    "canonical_bone": "thigh_r",
+    "vertex_count": 480,
+    "triangle_count": 930,
+    "sha256": "538f85b4b527e6f6f0edfc6cefc9e8e02e760f10c9446ef5a5fc17c7e6980a0a",
+    "obj_file": "Femur_R.obj"
+  },
+  "FJ3387": {
+    "asset_id": "FJ3387",
+    "name": "Tibia_R",
+    "canonical_name": "Right tibia",
+    "fma_id": "FMA:24476",
+    "type": "BONE",
+    "canonical_bone": "calf_r",
+    "vertex_count": 334,
+    "triangle_count": 634,
+    "sha256": "2fe1e44d01ad385de1c5bd99c700c1785817060e04e6080bd17a4761f505b7bb",
+    "obj_file": "Tibia_R.obj"
+  },
+  "FJ3366": {
+    "asset_id": "FJ3366",
+    "name": "Fibula_R",
+    "canonical_name": "Right fibula",
+    "fma_id": "FMA:24479",
+    "type": "BONE",
+    "canonical_bone": "calf_r",
+    "vertex_count": 162,
+    "triangle_count": 298,
+    "sha256": "e472938466f30b9db4e4671d71013dfbd950a37a9ff73d3178f446ed676bc61d",
+    "obj_file": "Fibula_R.obj"
+  },
+  "FJ3381": {
+    "asset_id": "FJ3381",
+    "name": "Patella_R",
+    "canonical_name": "Right patella",
+    "fma_id": "FMA:24485",
+    "type": "BONE",
+    "canonical_bone": "thigh_r",
+    "vertex_count": 176,
+    "triangle_count": 304,
+    "sha256": "886cb8b82abb5f5b9199ad0882915fb6a1bb482b0401c05edd19afa7d7e74fd9",
+    "obj_file": "Patella_R.obj"
+  },
+  "FJ1433": {
+    "asset_id": "FJ1433",
+    "name": "Rectus_femoris_R",
+    "canonical_name": "Right rectus femoris",
+    "fma_id": "FMA:22428",
+    "type": "MUSCLE",
+    "canonical_bone": "thigh_r",
+    "vertex_count": 910,
+    "triangle_count": 1250,
+    "sha256": "bca2774b9538ae17b3ed78076f0b8960b6e96fa0e15c5521815d66ad9301cd95",
+    "obj_file": "Rectus_femoris_R.obj"
+  },
+  "FJ1441": {
+    "asset_id": "FJ1441",
+    "name": "Vastus_intermedius_R",
+    "canonical_name": "Right vastus intermedius",
+    "fma_id": "FMA:22432",
+    "type": "MUSCLE",
+    "canonical_bone": "thigh_r",
+    "vertex_count": 840,
+    "triangle_count": 936,
+    "sha256": "3c34016ff13f0e4682834ec1dfdacabd6a59ad2c80cde6bade29ce5073b8e9eb",
+    "obj_file": "Vastus_intermedius_R.obj"
+  },
+  "FJ1442": {
+    "asset_id": "FJ1442",
+    "name": "Vastus_lateralis_R",
+    "canonical_name": "Right vastus lateralis",
+    "fma_id": "FMA:22430",
+    "type": "MUSCLE",
+    "canonical_bone": "thigh_r",
+    "vertex_count": 1091,
+    "triangle_count": 1470,
+    "sha256": "a8214741b40ab9f981ae70b9edc476aaf054f5f57d393214250f12de20b78360",
+    "obj_file": "Vastus_lateralis_R.obj"
+  },
+  "FJ1443": {
+    "asset_id": "FJ1443",
+    "name": "Vastus_medialis_R",
+    "canonical_name": "Right vastus medialis",
+    "fma_id": "FMA:22431",
+    "type": "MUSCLE",
+    "canonical_bone": "thigh_r",
+    "vertex_count": 784,
+    "triangle_count": 1000,
+    "sha256": "fb52895b361f71839246519d05a9b8ee02ec05c5c38c2208e1848900458eee10",
+    "obj_file": "Vastus_medialis_R.obj"
+  }
+}

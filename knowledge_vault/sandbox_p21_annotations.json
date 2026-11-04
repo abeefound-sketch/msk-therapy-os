@@ -1,0 +1,627 @@
+{
+  "annotations": [
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103170749-001",
+      "created_at": "2026-11-03T17:07:49.281304+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt ST36 theo WHO 2008 bám trên tibia (shank.R), không thể gắn vào cấu trúc 'left femur'.",
+      "annotation_id": "PT-20261103170750-002",
+      "created_at": "2026-11-03T17:07:50.323563+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103171011-003",
+      "created_at": "2026-11-03T17:10:11.511171+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt ST36 theo WHO 2008 bám trên tibia (shank.R), không thể gắn vào cấu trúc 'left femur'.",
+      "annotation_id": "PT-20261103171012-004",
+      "created_at": "2026-11-03T17:10:12.395160+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103171213-005",
+      "created_at": "2026-11-03T17:12:13.197926+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt ST36 theo WHO 2008 bám trên tibia (shank.R), không thể gắn vào cấu trúc 'left femur'.",
+      "annotation_id": "PT-20261103171213-006",
+      "created_at": "2026-11-03T17:12:13.986128+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103172847-007",
+      "created_at": "2026-11-03T17:28:47.304744+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103172921-008",
+      "created_at": "2026-11-03T17:29:21.332427+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103173004-009",
+      "created_at": "2026-11-03T17:30:04.817439+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103173050-010",
+      "created_at": "2026-11-03T17:30:50.168037+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103173204-011",
+      "created_at": "2026-11-03T17:32:04.633652+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103173400-012",
+      "created_at": "2026-11-03T17:34:00.476355+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103173544-013",
+      "created_at": "2026-11-03T17:35:44.910269+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103173724-014",
+      "created_at": "2026-11-03T17:37:24.141242+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103174109-015",
+      "created_at": "2026-11-03T17:41:09.809949+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261103174323-016",
+      "created_at": "2026-11-03T17:43:23.210919+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt ST36 theo WHO 2008 bám trên tibia (shank.R), không thể gắn vào cấu trúc 'left femur'.",
+      "annotation_id": "PT-20261103174324-017",
+      "created_at": "2026-11-03T17:43:24.029883+00:00"
+    },
+    {
+      "label": "Accidental Clavicle LI4",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261104040911-018",
+      "created_at": "2026-11-04T04:09:11.883548+00:00"
+    },
+    {
+      "label": "Test LI4 Marker",
+      "standard_code": "LI4",
+      "anatomical_target": {
+        "mesh_id": "FJ3237",
+        "structure_name": "Left clavicle",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.045,
+          1.412,
+          0.021
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt LI4 theo WHO 2008 bám trên metacarpal (hand.R), không thể gắn vào cấu trúc 'left clavicle'.",
+      "annotation_id": "PT-20261104041354-019",
+      "created_at": "2026-11-04T04:13:54.065927+00:00"
+    },
+    {
+      "label": "ST36 Test Point",
+      "standard_code": "ST36",
+      "anatomical_target": {
+        "mesh_id": "FJ3259",
+        "structure_name": "Left femur",
+        "system": "skeletal",
+        "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee"
+      },
+      "spatial_attachment": {
+        "world_position": [
+          0.08,
+          0.65,
+          -0.02
+        ],
+        "uncertainty_radius_mm": 5.0
+      },
+      "verification_status": "USER_ANNOTATED_UNVERIFIED",
+      "binding_status": "INVALID_BINDING",
+      "validation_error": "Sai lệch giải phẫu: Huyệt ST36 theo WHO 2008 bám trên tibia (shank.R), không thể gắn vào cấu trúc 'left femur'.",
+      "annotation_id": "PT-20261104041355-020",
+      "created_at": "2026-11-04T04:13:55.133542+00:00"
+    }
+  ],
+  "polylines": [
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103170749-001",
+      "created_at": "2026-11-03T17:07:49.525218+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103171011-002",
+      "created_at": "2026-11-03T17:10:11.636604+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103171213-003",
+      "created_at": "2026-11-03T17:12:13.210604+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261103174323-004",
+      "created_at": "2026-11-03T17:43:23.225672+00:00"
+    },
+    {
+      "name": "Valid 3-Waypoint Polyline",
+      "waypoints": [
+        {
+          "index": 0,
+          "world_position": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "index": 1,
+          "world_position": [
+            0.1,
+            1.1,
+            0.0
+          ]
+        },
+        {
+          "index": 2,
+          "world_position": [
+            0.2,
+            1.2,
+            0.0
+          ]
+        }
+      ],
+      "status": "USER_DRAFT_UNVERIFIED",
+      "asset_sha256": "c359f4bcd2cba90b7411d66d5e9fc04dc81294d46cd5c1e8b212c824f2e5bbee",
+      "polyline_id": "PL-20261104041354-005",
+      "created_at": "2026-11-04T04:13:54.088015+00:00"
+    }
+  ]
+}

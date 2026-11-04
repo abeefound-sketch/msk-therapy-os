@@ -1,0 +1,107 @@
+{
+  "manifest_version": "1.0.0",
+  "milestone": "P37",
+  "project_name": "MSK-Therapy-OS",
+  "release_scope": "ENGINEERING_RESEARCH_ONLY",
+  "clinical_validation": "NOT_ESTABLISHED",
+  "git_commit_head": "4990f173a880e8a671c0622a04dd88c67264679c",
+  "generated_at": "2026-11-03T18:50:00+07:00",
+  "environment": {
+    "os": "Windows 11 Enterprise (Build 26100)",
+    "cpu": "Intel Core i7-5600U @ 2.60 GHz",
+    "gpu": "Intel HD Graphics 5500",
+    "ram_gb": 8.0,
+    "system_python": "Python 3.11.9",
+    "sidecar_python": "Python 3.11.9 (venv_pose)",
+    "blender_lts": "Blender 3.6.5 LTS",
+    "mediapipe_version": "1.2.0",
+    "opencv_version": "5.0.0"
+  },
+  "asset_manifest": [
+    {
+      "name": "BodyParts3D Right Radius",
+      "path": "tools/blender_anatomy_studio/assets/bp3d/Radius_R.obj",
+      "sha256": "347290571f6dbe692b6045ee33e7ee5a837e289bf53b9fba71ca706798032ba8",
+      "license": "CC BY 4.0 DBCLS Japan",
+      "canonical_ontology": "FMA:23464"
+    },
+    {
+      "name": "BodyParts3D Right Ulna",
+      "path": "tools/blender_anatomy_studio/assets/bp3d/Ulna_R.obj",
+      "sha256": "6af632e4dd2f6797f6c310c83a5441cb48bb446210b37651c6ebf26372b64d04",
+      "license": "CC BY 4.0 DBCLS Japan",
+      "canonical_ontology": "FMA:23467"
+    },
+    {
+      "name": "BodyParts3D Right 2nd Metacarpal",
+      "path": "tools/blender_anatomy_studio/assets/bp3d/Metacarpal_2_R.obj",
+      "sha256": "23c39f4eb1ff3ffc0ff314ae1938507851390499ba5d3989cf8bdfa3754e60fa",
+      "license": "CC BY 4.0 DBCLS Japan",
+      "canonical_ontology": "FMA:24466"
+    },
+    {
+      "name": "BodyParts3D Right Humerus",
+      "path": "tools/blender_anatomy_studio/assets/bp3d/Humerus_R.obj",
+      "sha256": "d583ad2e7ee11cf1523f2f819fbc7da3ce7fe505d96ca418bf7dd8178e72750d",
+      "license": "CC BY 4.0 DBCLS Japan",
+      "canonical_ontology": "FMA:23130"
+    },
+    {
+      "name": "BodyParts3D Right Scapula",
+      "path": "tools/blender_anatomy_studio/assets/bp3d/Scapula_R.obj",
+      "sha256": "0ee8ecd6595fb0b0467554f65c197e41be868d407ae48eb2cf829f0e1f37e19f",
+      "license": "CC BY 4.0 DBCLS Japan",
+      "canonical_ontology": "FMA:13395"
+    },
+    {
+      "name": "BodyParts3D Right Clavicle",
+      "path": "tools/blender_anatomy_studio/assets/bp3d/Clavicle_R.obj",
+      "sha256": "0eff6dc9d4c1a5db488bbd0bf85b03f0b2f790209dfa53e410f97970d4f26038",
+      "license": "CC BY 4.0 DBCLS Japan",
+      "canonical_ontology": "FMA:13322"
+    },
+    {
+      "name": "MediaPipe Pose Landmarker Model",
+      "path": "tools/pose_sidecar/models/pose_landmarker_heavy.task",
+      "sha256": "4eaa5eb7a98365221087693fcc286334cf0858e2eb6e15b506aa4a7ecdcec4ad",
+      "license": "Apache 2.0 Google LLC"
+    },
+    {
+      "name": "Pose2Sim Monocular Video Demo",
+      "path": "research/motion_samples/real_human_motion_cam01.mp4",
+      "sha256": "cf4f2816c86bea4bfbea255333d8626ff32a3ecabdab8b0fb147cea9167fde3a",
+      "license": "BSD 3-Clause / CC BY"
+    },
+    {
+      "name": "P35 Complete Limb Blender Scene",
+      "path": "1docs/audits/P35/evidence/p35_full_limb_binding.blend",
+      "sha256": "bcb8a931f1feac9e4f2dc9f68840b7da79e237b950a1021256dd807c6d95c2b2",
+      "license": "CC BY 4.0 DBCLS Japan Derived Work"
+    }
+  ],
+  "gates_status": {
+    "G1_Functional": {
+      "status": "PASS",
+      "evidence": "100 frames real video MediaPipe retargeted to 2:1 rig; 114/114 regression tests pass."
+    },
+    "G2_Data_Integrity": {
+      "status": "PASS",
+      "evidence": "Bit-exact asset hashes; verified zero roundtrip loss (<10^-9m); strict fail-closed validations."
+    },
+    "G3_Domain_Validity": {
+      "status": "PENDING",
+      "evidence": "Requires domain expert review packet sign-off for LI4/ST36/KI3 on live human/cadaver."
+    },
+    "G4_Independent_Acceptance": {
+      "status": "PENDING",
+      "evidence": "Independent engineering audit review pending external engineer audit reproduction."
+    }
+  },
+  "reproduction_commands": [
+    "cd D:\\5Projects\\msk-therapy-os",
+    "python -m pytest tests/test_p19_lineage_and_governance.py tests/test_p20_knowledge_vault.py tests/test_p21_atlas_poc.py tests/test_p22_coordinate_registry_and_lineage.py tests/test_p25_knowledge_integration.py tools/blender_anatomy_studio/tests/ tests/test_p31_cross_system_integration.py tests/test_p32_system_acceptance.py tests/test_p33_reality_acceptance.py tests/test_p35_anatomical_completeness.py tests/test_p36_motion_validation.py -v",
+    "python -m pytest tests/test_p33_browser_e2e.py -v",
+    "& 'C:\\Program Files\\Blender Foundation\\Blender 3.6\\blender.exe' -b --python tools/blender_anatomy_studio/headless_p35_full_limb_binding.py",
+    "python tools/run_p36_quantitative_evaluation.py"
+  ]
+}

@@ -1,0 +1,12 @@
+Upstream_Asset_Name,Local_Path,License_Type,Commercial_Use_Allowed,Redistribution_Rights,Quarantine_Status,Usage_In_V1
+BodyParts3D Anatomical Meshes,3refs/upstream/tcm-3d/public/models/ (chunks 0-14),CC BY 4.0 DBCLS Japan,Yes (with attribution),Yes (with attribution),APPROVED,Core anatomical bone/muscle/organ/skin geometry
+Z-Anatomy Upper Limb References,msk_therapy_os/static/education/models/shoulder_skeleton.glb,CC BY-SA 4.0,Yes (with ShareAlike),Yes (with ShareAlike),APPROVED,Upper limb skeletal reference and naming
+MakeHuman Core Mesh Assets,research/makehuman_assets/ (OBJ/DAE),CC0 1.0 Universal,Yes,Yes (Public Domain Dedication),APPROVED,Parametric skin and limb base topology
+MakeHuman Application Code,External upstream tool,AGPL v3,Conditional (copyleft),Requires source disclosure if combined,ISOLATED,Used only as offline CLI tool; no AGPL code linked into product
+MPFB2 Blender Add-on,External upstream tool,GPL v3,Yes,Requires Blender >= 4.2,QUARANTINED,Incompatible with Blender 3.6.5 LTS; rejected
+SMPL-X Statistical Body Model,External upstream research,Academic Non-Commercial,No,Restricted,QUARANTINED,Non-commercial restriction; excluded from V1.0 runtime
+MediaPipe Pose Landmarker Heavy,tools/pose_sidecar/models/pose_landmarker_heavy.task,Apache 2.0 Google LLC,Yes,Yes,APPROVED,Markerless pose estimation sidecar
+Pose2Sim Demo Video (cam01),research/motion_samples/real_human_motion_cam01.mp4,BSD 3-Clause / CC BY,Yes (with attribution),Yes,APPROVED,100-frame authentic test motion sequence
+CMU Graphics Lab Mocap Database,research/motion_samples/cmu_subject_02_arm.bvh,CC Attribution 3.0,Yes (with attribution),Yes,APPROVED,Independent reference motion bank
+WHO Standard Acupuncture Locations,knowledge_vault/sources/who_standard_2008.md,Copyright WHO 2008,No (academic citation only),Academic quotation only,APPROVED,Scholarly point location reference standards
+GB/T 12346-2021 Standard,knowledge_vault/sources/gbt_12346_2021.md,National Standard PR China,Academic citation only,Academic quotation only,APPROVED,Acupuncture nomenclature reference

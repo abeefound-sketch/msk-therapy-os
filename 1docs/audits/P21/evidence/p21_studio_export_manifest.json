@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "source_id": "Shoulder_Skeleton_BodyParts3D_Submodel",
+  "asset_sha256": "4359fb6993c38fb2018c1e1e543bd1b3b065ff3c78a561702adcab3d5a0fc0fa",
+  "license_id": "CC-BY-4.0",
+  "license_scope": "COMMERCIAL_PERMITTED_WITH_ATTRIBUTION",
+  "attribution": "BodyParts3D, © DBCLS Japan licensed under CC Attribution 4.0 International.",
+  "structure_ids": [
+    "Thorax",
+    "Clavicle_R",
+    "Scapula_R",
+    "Humerus_R"
+  ],
+  "frame_id": "canonical_bodyparts3d_meters_y_up",
+  "units": "meters",
+  "mesh_transform": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "anatomy_classes": [
+    "BONE",
+    "OTHER"
+  ],
+  "review_status": "USER_ANNOTATED_UNVERIFIED"
+}

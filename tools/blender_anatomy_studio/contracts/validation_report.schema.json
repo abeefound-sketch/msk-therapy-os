@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ValidationReport",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "report_id",
+    "milestone",
+    "status",
+    "gates",
+    "trial_ids",
+    "tests_evaluated",
+    "tests_passed",
+    "tests_failed",
+    "tests_blocked",
+    "metrics",
+    "artifact_hashes",
+    "blockers",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "report_id": { "type": "string" },
+    "milestone": {
+      "type": "string",
+      "enum": ["P21", "P22", "P23", "P24", "P25", "P26", "P27", "P28", "P29", "P30", "P31", "P32"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ENGINEERING_PASS_SCOPE_LIMITED", "PARTIAL", "BLOCKED", "FAIL"]
+    },
+    "gates": {
+      "type": "object",
+      "required": ["G1_Functional", "G2_Data_Integrity", "G3_Domain_Validity", "G4_Independent_Acceptance"],
+      "properties": {
+        "G1_Functional": { "type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "PENDING"] },
+        "G2_Data_Integrity": { "type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "PENDING"] },
+        "G3_Domain_Validity": { "type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "PENDING"] },
+        "G4_Independent_Acceptance": { "type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "PENDING"] }
+      },
+      "additionalProperties": false
+    },
+    "trial_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "tests_evaluated": { "type": "integer", "minimum": 0 },
+    "tests_passed": { "type": "integer", "minimum": 0 },
+    "tests_failed": { "type": "integer", "minimum": 0 },
+    "tests_blocked": { "type": "integer", "minimum": 0 },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": { "type": ["number", "string", "boolean", "null", "object", "array"] }
+    },
+    "artifact_hashes": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}
