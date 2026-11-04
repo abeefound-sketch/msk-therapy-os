@@ -196,7 +196,25 @@ ATLAS_UI_DIR = STATIC_DIR / "atlas"
 # Resolve the Open Anatomy Atlas data directory (same location the atlas tools use).
 _APPDATA = os.environ.get("APPDATA", "")
 _ATLAS_DATA_ENV = os.environ.get("MSK_ATLAS_DATA_DIR", "")
-ATLAS_DATA_DIR = Path(_ATLAS_DATA_ENV) if _ATLAS_DATA_ENV else (Path(_APPDATA) / "open-anatomy-atlas" / "dataset" if _APPDATA else None)
+
+def _find_atlas_data_dir() -> Optional[Path]:
+    if _ATLAS_DATA_ENV and Path(_ATLAS_DATA_ENV).exists():
+        return Path(_ATLAS_DATA_ENV)
+    if _APPDATA:
+        p = Path(_APPDATA) / "open-anatomy-atlas" / "dataset"
+        if p.exists():
+            return p
+    # Cross-platform fallbacks (WSL2 / Linux mounts or home directory)
+    for candidate in [
+        Path("/mnt/c/Users/tuanh/AppData/Roaming/open-anatomy-atlas/dataset"),
+        Path.home() / ".local" / "share" / "open-anatomy-atlas" / "dataset",
+        Path.home() / ".open-anatomy-atlas" / "dataset",
+    ]:
+        if candidate.exists():
+            return candidate
+    return Path(_APPDATA) / "open-anatomy-atlas" / "dataset" if _APPDATA else None
+
+ATLAS_DATA_DIR = _find_atlas_data_dir()
 
 MAX_JSON_PAYLOAD_SIZE = 5 * 1024 * 1024  # 5 MB payload limit to prevent DoS
 ALLOWED_ORIGIN_HOSTS = {"localhost", "127.0.0.1", "[::1]"}

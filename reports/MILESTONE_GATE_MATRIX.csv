@@ -1,0 +1,47 @@
+Milestone_ID,Category,Scope_Deliverables,Status,Code_Files,Test_Files,Test_Nodes,Test_Outcome,Gate_Status
+M1,Core MVP,SOAP Intake & Anatomical Workbench,VERIFIED,"msk_therapy_os/assessment.py, soap.py, db.py",tests/test_assessment_soap.py,22,PASS,G1-PASSED
+M2,Atlas & UI,Interactive 3D Atlas & Multilingual Nomenclature,VERIFIED,"msk_therapy_os/server.py, static/atlas/",tests/test_server.py,13,PASS,G2-PASSED
+M2.5,Governance,Multi-Tier Role-Based Access Control (RBAC),VERIFIED,msk_therapy_os/auth.py,tests/test_auth_and_rbac.py,26,PASS,G2-PASSED
+M2.6,Safety,Clinical Red-Flag Hard-Stop Gate,VERIFIED,msk_therapy_os/safety.py,tests/test_safety.py,18,PASS,G3-PASSED
+M2.7,Integration,Integrated WebGL & Clinical Documentation,VERIFIED,"msk_therapy_os/server.py, static/",tests/test_relationship_explorer.py,12,PASS,G2-PASSED
+M2.8,Performance,WebGL Performance & Rendering Optimization,VERIFIED,msk_therapy_os/static/atlas/meridians.js,tests/test_p9_2_webgl_performance.py,8,PASS,G2-PASSED
+M2.8.1,Security,HMAC-SHA256 Tamper-Evident Database Recovery,VERIFIED,msk_therapy_os/db.py,tests/test_security_hardening.py,16,PASS,G3-PASSED
+M2.8.2,Security,Disaster Recovery & Emergency Unlock Protocol,VERIFIED,"msk_therapy_os/db.py, auth.py",tests/test_safe_sqlite_restore.py,14,PASS,G3-PASSED
+P9.1,Biomechanics,Skeletal Landmark Registration Engine,VERIFIED,msk_therapy_os/landmark_registry.py,tests/test_p9_anatomical_registration.py,10,PASS,G2-PASSED
+P9.2,Geometry,Dynamic Coordinate Geometry Resolver,VERIFIED,msk_therapy_os/meridian_surface_engine.py,tests/test_p9_2_dynamic_geometry_resolver.py,14,PASS,G2-PASSED
+P9.3,Meridians,14 Classical Meridian Topological Route Graph,VERIFIED,msk_therapy_os/meridian_route_graph.py,tests/test_p9_3_meridian_geometry.py,12,PASS,G2-PASSED
+P9.4,Acupoints,361 Classical Acupoint Proportional Cun Matrix,VERIFIED,msk_therapy_os/cun_scaling.py,tests/test_p9_4_definitive_atlas.py,16,PASS,G2-PASSED
+P9.5,Forensics,Acupoint Data Quality Matrix & Class D Audit,VERIFIED,1docs/audits/P9_4_361_ACUPOINT_DATA_QUALITY_MATRIX.md,tests/test_p9_5_anatomical_remediation.py,15,PASS,G2-PASSED
+P9.6,Remediation,Tranche 1 Acupoint Remediation (Upper Limb),VERIFIED,msk_therapy_os/point_localization_rules.py,tests/test_p9_6_anatomical_remediation.py,18,PASS,G2-PASSED
+P9.7,Remediation,Tranche 2 Acupoint Remediation (Lower Limb),VERIFIED,msk_therapy_os/point_localization_rules.py,tests/test_p9_7_anatomical_remediation.py,18,PASS,G2-PASSED
+P9.8,Hardening,Coordinate Invariant Integrity Hardening,VERIFIED,msk_therapy_os/points.py,tests/test_p9_8_integrity_hardening.py,12,PASS,G3-PASSED
+P9.9,Skeletal,Skeletal-to-Surface Registration (BodyParts3D),VERIFIED,msk_therapy_os/character_anatomy_adapter.py,tests/test_p9_9_skeletal_registration.py,14,PASS,G2-PASSED
+P9.10,Forensics,Acupoint Forensic Validation & Drift Analysis,VERIFIED,msk_therapy_os/points.py,tests/test_p9_10_forensic_validation.py,12,PASS,G2-PASSED
+P9.11,Remediation,Class D Point Remediation (Head & Face),VERIFIED,msk_therapy_os/point_localization_rules.py,tests/test_p9_11_class_d_remediation.py,16,PASS,G2-PASSED
+P9.12,Remediation,"Tranche 1, 2, 3 Complete Remediation",VERIFIED,msk_therapy_os/point_localization_rules.py,tests/test_p9_12_tranche_1_remediation.py,45,PASS,G2-PASSED
+P9.13,Validation,Independent Anatomical Validation & Falsification,VERIFIED,msk_therapy_os/anatomical_validation.py,tests/test_p9_13_anatomical_validation.py,28,PASS,G3-PASSED
+P9.14,GroundTruth,ST19-ST30 Anatomical Pilot Evaluation,VERIFIED,1docs/audits/P9_14/P914_ST19_ST30_ANATOMICAL_PILOT.md,tests/test_p9_14_ground_truth.py,10,PASS,G3-PASSED
+P10.0,Protocol,External Validation & Protocol Lock Framework,VERIFIED,msk_therapy_os/anatomical_validation.py,tests/test_p10_0_external_validation.py,14,PASS,G3-PASSED
+P10.1,Hardening,DICOM Preflight & Data Quarantine Gate,VERIFIED,msk_therapy_os/anatomical_validation.py,tests/test_p10_1_hardening.py,16,PASS,G3-PASSED
+P10.2,Pipeline,Holdout Partitioning & Admin Sign-Off Workflow,VERIFIED,msk_therapy_os/anatomical_validation.py,tests/test_p10_2_validation_pipeline.py,18,PASS,G3-PASSED
+P10.3,Validation,CTCAE v5.0 Surveillance & Pilot Cohort Registry,VERIFIED,msk_therapy_os/clinical_evaluation.py,tests/test_p10_3_dicom_and_validation.py,20,PASS,G3-PASSED
+P10.4,Adversarial,Scientific Readiness & Adversarial Governance,VERIFIED,msk_therapy_os/anatomical_validation.py,tests/test_p10_4_adversarial_and_governance.py,15,PASS,G3-PASSED
+P10.5,Pilot,Pilot Activation & Scientific Gate Lockout,VERIFIED,msk_therapy_os/anatomical_validation.py,tests/test_p10_5_pilot_activation.py,14,PASS,G3-PASSED
+P10.6,Statistical,Adversarial Statistical Validation & Bootstrap,VERIFIED,msk_therapy_os/anatomical_validation.py,tests/test_p10_6_adversarial_statistical.py,16,PASS,G3-PASSED
+P10.7,Lock,Final Protocol Lock & Audit Trail Sealing,VERIFIED,msk_therapy_os/anatomical_validation.py,tests/test_p10_7_governance_and_protocol_lock.py,18,PASS,G3-PASSED
+P13,Biomechanics,Upper Limb Biomechanics Adapter & Goniometry,VERIFIED,msk_therapy_os/biomechanics.py,tests/test_p13_biomechanics_adapter.py,12,PASS,G2-PASSED
+P14,Motion,Kinematic Trajectory & Range of Motion Tracking,VERIFIED,msk_therapy_os/kinematics.py,tests/test_p14_biomechanics_adapter.py,14,PASS,G2-PASSED
+P15,Cervical,Cervicothoracic Kinematics & Posture Evaluation,VERIFIED,msk_therapy_os/cervicothoracic.py,tests/test_p15_cervicothoracic_adapter.py,12,PASS,G2-PASSED
+P16,Integrity,Biomechanics Integrity & Kinetic Chain Modeling,VERIFIED,msk_therapy_os/biomechanics.py,tests/test_p16_biomechanics_integrity.py,15,PASS,G2-PASSED
+P17,Acceptance,Functional Biomechanics Clinical Acceptance,VERIFIED,msk_therapy_os/biomechanics.py,tests/test_p17_functional_acceptance_playwright.py,8,PASS,G3-PASSED
+P18,Geometry,14-Meridian Surface Conforming B-Spline Projection,VERIFIED,msk_therapy_os/meridian_surface_engine.py,tests/test_p18_geometry_remediation.py,19,PASS,G2-PASSED
+P19,Lineage,Coordinate Lineage & Cryptographic Immutability,VERIFIED,msk_therapy_os/coordinate_lineage.py,tests/test_p19_lineage_and_governance.py,14,PASS,G3-PASSED
+P20,Knowledge,Knowledge Vault & Evidence Ledger DB,VERIFIED,msk_therapy_os/knowledge_vault.py,tests/test_p20_knowledge_vault.py,16,PASS,G2-PASSED
+P21,Atlas PoC,Integrated WebGL 3D Atlas Viewer & Sandbox,VERIFIED,msk_therapy_os/sandbox_p21_adapter.py,tests/test_p21_atlas_poc.py,12,PASS,G2-PASSED
+P22,Lineage,Coordinate Registry & Multi-Modal Lineage,VERIFIED,msk_therapy_os/coordinate_registry.py,tests/test_p22_coordinate_registry_and_lineage.py,15,PASS,G2-PASSED
+P25,Integration,Knowledge Vault Clinical Integration,VERIFIED,msk_therapy_os/knowledge_vault.py,tests/test_p25_knowledge_integration.py,14,PASS,G2-PASSED
+P31,Integration,Cross-System Clinical & Biomechanical Integration,VERIFIED,msk_therapy_os/cross_system.py,tests/test_p31_cross_system_integration.py,11,PASS,G3-PASSED
+P32,Acceptance,Full System Acceptance & Final Security Gate,VERIFIED,"msk_therapy_os/server.py, db.py",tests/test_p32_system_acceptance.py,10,PASS,G3-PASSED
+v1.1,UABS,17-Bone Canonical Skeleton & Rigid Bone Rigging,VERIFIED,msk_therapy_os/uabs.py,tests/test_v11_character_pipeline_e2e.py,5,PASS,G2-PASSED
+v1.2,ArmStudio,Barycentric Surface Anchoring & Muscle Deformation,VERIFIED,msk_therapy_os/character_anatomy_adapter.py,tests/test_v12_1_abs_integration_e2e.py,5,PASS,G2-PASSED
+v1.3,Universal,Full-Body UABS 19.4MB GLB Kinematic Evaluation,VERIFIED,msk_therapy_os/universal_abs.py,tests/test_v13_universal_abs_e2e.py,5,PASS,G3-PASSED

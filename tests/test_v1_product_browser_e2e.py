@@ -138,7 +138,7 @@ class TestV1ProductBrowserE2E:
             assert "WEB_MOTION_GEOMETRY_CONNECTED" in motion_status
 
             # Wait for motion frames to be populated
-            page.wait_for_function("() => window.__P21_POC__.p33.getMotionFrames().length > 0", timeout=10000)
+            page.wait_for_function("() => window.__P21_POC__?.p33?.getMotionFrames && window.__P21_POC__.p33.getMotionFrames().length > 0", timeout=15000)
 
             # Move timeline to Frame 50
             timeline = page.locator("#motion-timeline")

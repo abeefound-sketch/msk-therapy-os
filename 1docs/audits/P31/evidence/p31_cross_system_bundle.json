@@ -1,6 +1,6 @@
 {
-  "bundle_id": "bundle_p31_20261103T170751Z",
-  "created_at_utc": "2026-11-03T17:07:51.026506+00:00",
+  "bundle_id": "bundle_p31_20261104T230451Z",
+  "created_at_utc": "2026-11-04T23:04:51.919583+00:00",
   "release_scope": "ENGINEERING_RESEARCH_ONLY",
   "clinical_safety_barrier": "STRICT_RESEARCH_ONLY - NO_AUTONOMOUS_DIAGNOSIS_OR_PRESCRIPTION",
   "schema_version": "1.0.0",

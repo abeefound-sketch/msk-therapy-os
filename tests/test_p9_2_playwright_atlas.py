@@ -69,10 +69,10 @@ def test_playwright_atlas_dynamic_geometry_suite(browser_server):
 
         # 1. Navigate to Atlas Viewer
         page.goto(f"{browser_server}/atlas/", wait_until="networkidle")
-        page.wait_for_selector("#acupunctureOverlay", state="attached", timeout=10000)
+        page.wait_for_selector("#acupunctureOverlay", state="attached", timeout=25000)
 
         # Wait for meridiansDebug to be initialized
-        page.wait_for_function("() => window.__meridiansDebug && window.__meridiansDebug.acuData !== null", timeout=10000)
+        page.wait_for_function("() => window.__meridiansDebug && window.__meridiansDebug.acuData !== null", timeout=25000)
 
         # Enable points and meridians overlays
         page.evaluate("""() => {

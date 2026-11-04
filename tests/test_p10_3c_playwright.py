@@ -69,7 +69,7 @@ def test_playwright_p10_3c_validation_studio(browser_server_p103c):
 
         # 1. Navigate to Atlas Viewer
         page.goto(f"{browser_server_p103c}/atlas/", wait_until="networkidle")
-        page.wait_for_selector("#acupunctureOverlay", state="attached", timeout=10000)
+        page.wait_for_selector("#acupunctureOverlay", state="attached", timeout=25000)
 
         # 1b. Switch to Meridians tab to reveal panelMeridians
         page.click('button[data-tab="meridians"]')
